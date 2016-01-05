@@ -16,6 +16,10 @@ namespace GrammarGen {
 
 		private Dictionary<Variable, List<Production>> _table = new Dictionary<Variable, List<Production>>();
 
+		public List<Production> Productions {
+			get { return _productions; }
+		}
+
 		public Grammar(List<Production> productions) {
 			_productions = productions;
 			
@@ -34,6 +38,10 @@ namespace GrammarGen {
 			}
 		}
 
+		internal CNFGrammar ToCNF() {
+			return new CNFGrammar(this);
+		}
+		
 		internal Sentence ProduceVariable(Variable v) {
 			Sentence result = null;
 
