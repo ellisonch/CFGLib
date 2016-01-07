@@ -1,4 +1,4 @@
-﻿namespace GrammarGen {
+﻿namespace ContextFreeGrammars {
 	internal class CNFNonterminalProduction {
 		private readonly Variable _lhs;
 		private readonly Variable[] _rhs = new Variable[2];

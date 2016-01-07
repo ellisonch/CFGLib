@@ -1,4 +1,5 @@
-﻿using Generation;
+﻿using ContextFreeGrammars;
+using Generation;
 using Gutenberg;
 using System;
 using System.Collections.Generic;
@@ -125,8 +126,8 @@ namespace GrammarGen {
 			//var mysteriousIsland = new Book(@"D:\prog\GrammarGen\docs\8misl10h");
 
 
-			//var generator = new Generator();
-			//generator.Generate();
+			var generator = new Generator();
+			generator.Generate();
 
 			Console.Read();
 		}

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GrammarGen {
+namespace ContextFreeGrammars {
 	public class Variable : Word {
 		private static Dictionary<string, Variable> _history = new Dictionary<string, Variable>();
 

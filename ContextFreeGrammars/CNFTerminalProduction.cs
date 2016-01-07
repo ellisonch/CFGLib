@@ -1,4 +1,4 @@
-﻿namespace GrammarGen {
+﻿namespace ContextFreeGrammars {
 	internal class CNFTerminalProduction {
 		private readonly Variable _lhs;
 		private readonly Terminal _rhs;

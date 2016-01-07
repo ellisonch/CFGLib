@@ -54,9 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GrammarGen\GrammarGen.csproj">
-      <Project>{7c0eeeb7-1ea8-41e9-bbeb-36a552e4147b}</Project>
-      <Name>GrammarGen</Name>
+    <ProjectReference Include="..\ContextFreeGrammars\ContextFreeGrammars.csproj">
+      <Project>{9afc68e6-543b-4071-ba05-eb5fc4e9b839}</Project>
+      <Name>ContextFreeGrammars</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GrammarGen {
+namespace ContextFreeGrammars {
 	public class Grammar {
 		// Variables 
 		// Terminals

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GrammarGen {
+namespace ContextFreeGrammars {
 	public class CNFGrammar {
 		List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
 		List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
@@ -84,7 +84,7 @@ namespace GrammarGen {
 				ISet<CNFTerminalProduction> yields_a_i;
 				if (!_reverseTerminalProductions.TryGetValue(a_i, out yields_a_i)) {
 					// the grammar can't possibly produce this string if it doesn't know a terminal
-					return false; 
+					return false;
 				}
 				foreach (var production in yields_a_i) {
 					var j = RToJ[production.Lhs];
