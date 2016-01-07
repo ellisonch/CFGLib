@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GrammarGen {
-	class Grammar {
+	public class Grammar {
 		// Variables 
 		// Terminals
 		// productions
@@ -38,7 +38,7 @@ namespace GrammarGen {
 			}
 		}
 
-		internal CNFGrammar ToCNF() {
+		public CNFGrammar ToCNF() {
 			return new CNFGrammar(this);
 		}
 		

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GrammarGen {
-	class CNFGrammar {
+	public class CNFGrammar {
 		List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
 		List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
 		bool _producesEmpty = false;
@@ -49,7 +49,7 @@ namespace GrammarGen {
 			}
 		}
 
-
+		// https://en.wikipedia.org/wiki/CYK_algorithm
 		//let the input be a string S consisting of n characters: a1 ... an.
 		//let the grammar contain r nonterminal symbols R1 ... Rr.
 		//This grammar contains the subset Rs which is the set of start symbols.
@@ -67,6 +67,10 @@ namespace GrammarGen {
 		//else
 		//  S is not member of language
 		public bool Cyk(Sentence s) {
+			if (s.Count == 0) {
+				return _producesEmpty;
+			}
+
 			List<Variable> nonterminals_R = new List<Variable>(GetNonterminals());
 			Dictionary<Variable, int> RToJ = new Dictionary<Variable, int>();
 			for (int i = 0; i < nonterminals_R.Count; i++) {
@@ -77,7 +81,11 @@ namespace GrammarGen {
 			var P = new bool[s.Count, s.Count, nonterminals_R.Count];
 			for (int i = 0; i < s.Count; i++) {
 				var a_i = (Terminal)s[i];
-				var yields_a_i = _reverseTerminalProductions[a_i];
+				ISet<CNFTerminalProduction> yields_a_i;
+				if (!_reverseTerminalProductions.TryGetValue(a_i, out yields_a_i)) {
+					// the grammar can't possibly produce this string if it doesn't know a terminal
+					return false; 
+				}
 				foreach (var production in yields_a_i) {
 					var j = RToJ[production.Lhs];
 					P[0, i, j] = true;

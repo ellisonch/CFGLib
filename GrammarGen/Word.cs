@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace GrammarGen {
-	internal interface Word {
+	public interface Word {
 		Sentence ProduceBy(Grammar grammar);
 		bool IsVariable();
 	}

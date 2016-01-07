@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace GrammarGen {
-	internal class Production {
+	public class Production {
 		private Variable _lhs;
 		private Sentence _rhs;
 		private int _weight = 1;

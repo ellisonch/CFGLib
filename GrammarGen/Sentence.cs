@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GrammarGen {
-	class Sentence : IList<Word>, ICollection<Word>, IEnumerable<Word> {
+	public class Sentence : IList<Word>, ICollection<Word>, IEnumerable<Word> {
 		private List<Word> _sentence;
 
 		public Sentence() {
@@ -14,6 +14,14 @@ namespace GrammarGen {
 		}
 		public Sentence(IEnumerable<Word> l) {
 			_sentence = new List<Word>(l);
+		}
+
+		public static Sentence FromLetters(string s) {
+			var l = new List<Terminal>();
+			foreach (var c in s) {
+				l.Add(Terminal.Of(c.ToString()));
+			}
+			return new Sentence(l);
 		}
 
 		public void AddRange(Sentence collection) {

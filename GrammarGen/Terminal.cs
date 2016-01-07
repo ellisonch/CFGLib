@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GrammarGen {
-	class Terminal : Word {
+	public class Terminal : Word {
 		private static Dictionary<string, Terminal> _history = new Dictionary<string, Terminal>();
 
 		private readonly string _name;
@@ -18,7 +18,7 @@ namespace GrammarGen {
 			get { return _name; }
 		}
 
-		internal static Terminal Of(string v) {
+		public static Terminal Of(string v) {
 			Terminal terminal;
 			if (!_history.TryGetValue(v, out terminal)) {
 				terminal = new Terminal(v);

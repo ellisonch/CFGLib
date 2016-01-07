@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace GrammarGen {
-	internal class Variable : Word {
+	public class Variable : Word {
 		private static Dictionary<string, Variable> _history = new Dictionary<string, Variable>();
 
 		private readonly string _name;
@@ -11,7 +11,7 @@ namespace GrammarGen {
 			_name = name;
 		}
 
-		internal static Variable Of(string v) {
+		public static Variable Of(string v) {
 			Variable variable;
 			if (!_history.TryGetValue(v, out variable)) {
 				variable = new Variable(v);
