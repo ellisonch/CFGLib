@@ -96,7 +96,10 @@ namespace GrammarGen {
 			Console.WriteLine(g);
 
 			CNFGrammar h = g.ToCNF();
-			// Console.WriteLine(g);
+			Console.WriteLine(h);
+
+			var parses = h.Cyk(new Sentence { Terminal.Of("a"), Terminal.Of("b") });
+			Console.WriteLine(parses);
 
 			//for (int i = 0; i < 10; i++) {
 			//	var history = g.Produce();

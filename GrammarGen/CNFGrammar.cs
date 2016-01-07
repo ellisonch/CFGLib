@@ -11,32 +11,117 @@ namespace GrammarGen {
 		bool _producesEmpty = false;
 		Variable _start = Variable.Of("S");
 
+		Dictionary<Terminal, ISet<CNFTerminalProduction>> _reverseTerminalProductions = new Dictionary<Terminal, ISet<CNFTerminalProduction>>();
+
 		public CNFGrammar(Grammar grammar) {
-			// var productions = CloneGrammar(grammar);
-			var productions = grammar.Productions;
+			var productions = CloneGrammar(grammar);
+			// var productions = grammar.Productions;
 			StepStart(productions);
-			Console.WriteLine(grammar);
+			// Console.WriteLine(grammar);
 			StepTerm(productions);
-			Console.WriteLine(grammar);
+			// Console.WriteLine(grammar);
 			StepBin(productions);
-			Console.WriteLine(grammar);
+			// Console.WriteLine(grammar);
 			StepDel(productions);
-			Console.WriteLine(grammar);
+			// Console.WriteLine(grammar);
 			StepUnit(productions);
-			Console.WriteLine(grammar);
-			//foreach (var production in productions) {
-			//	if (production.Rhs.Count > 2) {
-			//		throw new Exception("Didn't expect more than 2");
-			//	} else if (production.Rhs.Count == 2) {
-			//		_nonterminalProductions.Add(new CNFNonterminalProduction(production));
-			//	} else if (production.Rhs.Count == 1) {
-			//		var rhs = production.Rhs[0];
-			//		_terminalProductions.Add(new CNFTerminalProduction(production));
-			//	} else if (production.Rhs.Count == 0) {
-			//		_producesEmpty = true;
-			//	}
-			//}
-		}	
+			// Console.WriteLine(grammar);
+			foreach (var production in productions) {
+				if (production.Rhs.Count > 2) {
+					throw new Exception("Didn't expect more than 2");
+				} else if (production.Rhs.Count == 2) {
+					_nonterminalProductions.Add(new CNFNonterminalProduction(production));
+				} else if (production.Rhs.Count == 1) {
+					var rhs = production.Rhs[0];
+					_terminalProductions.Add(new CNFTerminalProduction(production));
+				} else if (production.Rhs.Count == 0) {
+					_producesEmpty = true;
+				}
+			}
+
+			foreach (var production in _terminalProductions) {
+				ISet<CNFTerminalProduction> nonterms;
+				if (!_reverseTerminalProductions.TryGetValue(production.Rhs, out nonterms)) {
+					nonterms = new HashSet<CNFTerminalProduction>();
+					_reverseTerminalProductions[production.Rhs] = nonterms;
+				}
+				nonterms.Add(production);
+			}
+		}
+
+
+		//let the input be a string S consisting of n characters: a1 ... an.
+		//let the grammar contain r nonterminal symbols R1 ... Rr.
+		//This grammar contains the subset Rs which is the set of start symbols.
+		//let P[n,n,r] be an array of booleans. Initialize all elements of P to false.
+		//for each i = 1 to n
+		//  for each unit production Rj -> ai
+		//	set P[1,i,j] = true
+		//for each i = 2 to n -- Length of span
+		//  for each j = 1 to n-i+1 -- Start of span
+		//	for each k = 1 to i-1 -- Partition of span
+		//	  for each production RA -> RB RC
+		//		if P[k,j,B] and P[i-k,j+k,C] then set P[i,j,A] = true
+		//if any of P[n,1,x] is true (x is iterated over the set s, where s are all the indices for Rs) then
+		//  S is member of language
+		//else
+		//  S is not member of language
+		public bool Cyk(Sentence s) {
+			List<Variable> nonterminals_R = new List<Variable>(GetNonterminals());
+			Dictionary<Variable, int> RToJ = new Dictionary<Variable, int>();
+			for (int i = 0; i < nonterminals_R.Count; i++) {
+				var R = nonterminals_R[i];
+				RToJ[R] = i;
+			}
+
+			var P = new bool[s.Count, s.Count, nonterminals_R.Count];
+			for (int i = 0; i < s.Count; i++) {
+				var a_i = (Terminal)s[i];
+				var yields_a_i = _reverseTerminalProductions[a_i];
+				foreach (var production in yields_a_i) {
+					var j = RToJ[production.Lhs];
+					P[0, i, j] = true;
+				}
+			}
+
+			for (int i = 2; i <= s.Count; i++) {
+				for (int j = 1; j <= s.Count - i + 1; j++) {
+					for (int k = 1; k <= i - 1; k++) {
+						// Console.WriteLine("i, j, k = {0:00}, {1:00}, {2:00}", i, j, k);
+						foreach (var production in _nonterminalProductions) {
+							var R_A = production.Lhs;
+							var R_B = production.Rhs[0];
+							var R_C = production.Rhs[1];
+							var A = RToJ[R_A];
+							var B = RToJ[R_B];
+							var C = RToJ[R_C];
+
+							if (P[k-1, j-1, B] && P[i-k-1, j+k-1, C]) {
+								P[i - 1, j - 1, A] = true;
+							}
+						}
+					}
+				}
+			}
+
+			return P[s.Count - 1, 0, RToJ[_start]];
+		}
+
+		private HashSet<Variable> GetNonterminals() {
+			var results = new HashSet<Variable>();
+
+			foreach (var production in _nonterminalProductions) {
+				results.Add(production.Lhs);
+				results.Add(production.Rhs[0]);
+				results.Add(production.Rhs[1]);
+			}
+			foreach (var production in _terminalProductions) {
+				results.Add(production.Lhs);
+			}
+			results.Add(_start);
+
+			return results;
+		}
 
 		private void StepStart(List<Production> productions) {
 			var fresh = Getfresh();

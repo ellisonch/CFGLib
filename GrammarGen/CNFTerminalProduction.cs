@@ -7,5 +7,19 @@
 			_lhs = production.Lhs;
 			_rhs = (Terminal)production.Rhs[0];
 		}
+
+		public Variable Lhs {
+			get { return _lhs; }
+		}
+		public Terminal Rhs {
+			get { return _rhs; }
+		}
+
+		public override string ToString() {
+			var lhss = _lhs.ToString();
+			var rhss = _rhs.ToString();
+
+			return lhss + " → " + rhss;
+		}
 	}
 }
