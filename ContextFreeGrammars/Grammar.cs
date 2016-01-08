@@ -64,7 +64,7 @@ namespace ContextFreeGrammars {
 			return result;
 		}
 
-		internal List<Sentence> ProduceToDepth(int depth) {
+		public List<Sentence> ProduceToDepth(int depth) {
 			var start = new Sentence { Variable.Of("S") };
 			List<Sentence>[] intermediate = new List<Sentence>[depth + 1];
 			intermediate[0] = new List<Sentence> { start };
@@ -132,7 +132,7 @@ namespace ContextFreeGrammars {
 			return results;
 		}
 
-		internal List<Sentence> Produce() {
+		public List<Sentence> Produce() {
 			var history = new List<Sentence>();
 			var sentence = new Sentence { Variable.Of("S") };
 			

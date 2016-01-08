@@ -120,9 +120,21 @@ namespace ContextFreeGrammars {
 			var result = "";
 			foreach (var word in _sentence) {
 				var terminal = (Terminal)word;
-				result += terminal.Name;
+				result += terminal.Name + " ";
 			}
 			return result;
+		}
+
+		public static ISet<Terminal> GetAllTerminals(IEnumerable<Sentence> sentences) {
+			var terminals = new HashSet<Terminal>();
+			foreach (var sentence in sentences) {
+				foreach (var word in sentence) {
+					if (!word.IsVariable()) {
+						terminals.Add((Terminal)word);
+					}
+				}
+			}
+			return terminals;
 		}
 	}
 }

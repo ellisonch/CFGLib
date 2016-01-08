@@ -9,9 +9,33 @@ namespace ContextFreeGrammars {
 		List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
 		List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
 		bool _producesEmpty = false;
-		Variable _start = Variable.Of("S");
+		Variable _start;
 
-		Dictionary<Terminal, ISet<CNFTerminalProduction>> _reverseTerminalProductions = new Dictionary<Terminal, ISet<CNFTerminalProduction>>();
+		//Dictionary<Terminal, ISet<CNFTerminalProduction>> _reverseTerminalProductions = new Dictionary<Terminal, ISet<CNFTerminalProduction>>();
+
+
+		public List<CNFNonterminalProduction> NonterminalProductions {
+			get { return _nonterminalProductions; }
+		}
+
+		public List<CNFTerminalProduction> TerminalProductions {
+			get { return _terminalProductions; }
+		}
+
+		public Variable Start {
+			get { return _start; }
+			set { _start = value; }
+		}
+
+		private CNFGrammar() {
+		}
+
+		public CNFGrammar(List<CNFNonterminalProduction> nt, List<CNFTerminalProduction> t, bool producesEmpty, Variable start) {
+			_nonterminalProductions = nt;
+			_terminalProductions = t;
+			_producesEmpty = producesEmpty;
+			_start = start;
+		}
 
 		public CNFGrammar(Grammar grammar) {
 			var productions = CloneGrammar(grammar);
@@ -39,14 +63,37 @@ namespace ContextFreeGrammars {
 				}
 			}
 
+			// BuildLookups();
+		}
+
+		private Dictionary<Terminal, ISet<CNFTerminalProduction>> ReverseTerminalLookups() {
+			var retval = new Dictionary<Terminal, ISet<CNFTerminalProduction>>();
 			foreach (var production in _terminalProductions) {
 				ISet<CNFTerminalProduction> nonterms;
-				if (!_reverseTerminalProductions.TryGetValue(production.Rhs, out nonterms)) {
+				if (!retval.TryGetValue(production.Rhs, out nonterms)) {
 					nonterms = new HashSet<CNFTerminalProduction>();
-					_reverseTerminalProductions[production.Rhs] = nonterms;
+					retval[production.Rhs] = nonterms;
 				}
 				nonterms.Add(production);
 			}
+			return retval;
+		}
+
+		/// <summary>
+		/// Returns new CNFGrammar containing new immediate data structures, but reusing the same underlying productions
+		/// </summary>
+		/// <returns></returns>
+		public CNFGrammar ShallowClone() {
+			var newGrammar = new CNFGrammar();
+			newGrammar._nonterminalProductions.AddRange(_nonterminalProductions);
+			newGrammar._terminalProductions.AddRange(_terminalProductions);
+			newGrammar._start = _start;
+			newGrammar._producesEmpty = _producesEmpty;
+			// _nonterminalProductions = grammar._nonterminalProductions
+
+			// newGrammar.BuildLookups();
+
+			return newGrammar;
 		}
 
 		// https://en.wikipedia.org/wiki/CYK_algorithm
@@ -71,6 +118,8 @@ namespace ContextFreeGrammars {
 				return _producesEmpty;
 			}
 
+			var reverseTerminalProductions = ReverseTerminalLookups();
+
 			List<Variable> nonterminals_R = new List<Variable>(GetNonterminals());
 			Dictionary<Variable, int> RToJ = new Dictionary<Variable, int>();
 			for (int i = 0; i < nonterminals_R.Count; i++) {
@@ -82,7 +131,7 @@ namespace ContextFreeGrammars {
 			for (int i = 0; i < s.Count; i++) {
 				var a_i = (Terminal)s[i];
 				ISet<CNFTerminalProduction> yields_a_i;
-				if (!_reverseTerminalProductions.TryGetValue(a_i, out yields_a_i)) {
+				if (!reverseTerminalProductions.TryGetValue(a_i, out yields_a_i)) {
 					// the grammar can't possibly produce this string if it doesn't know a terminal
 					return false;
 				}
@@ -353,7 +402,7 @@ namespace ContextFreeGrammars {
 
 
 		public override string ToString() {
-			var retval = "CNFGrammar{\n";
+			var retval = "CNFGrammar(" + _start + "){\n";
 
 			foreach (var production in _nonterminalProductions) {
 				retval += "  " + production.ToString() + "\n";

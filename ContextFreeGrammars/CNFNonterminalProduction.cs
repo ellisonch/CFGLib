@@ -1,5 +1,5 @@
 ﻿namespace ContextFreeGrammars {
-	internal class CNFNonterminalProduction {
+	public class CNFNonterminalProduction {
 		private readonly Variable _lhs;
 		private readonly Variable[] _rhs = new Variable[2];
 
@@ -7,6 +7,11 @@
 			_lhs = production.Lhs;
 			_rhs[0] = (Variable)production.Rhs[0];
 			_rhs[1] = (Variable)production.Rhs[1];
+		}
+		public CNFNonterminalProduction(Variable lhs, Variable rhs1, Variable rhs2) {
+			_lhs = lhs;
+			_rhs[0] = rhs1;
+			_rhs[1] = rhs2;
 		}
 
 		public Variable Lhs {
