@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ContextFreeGrammars {
-	interface CNFProduction {
+	public interface CNFProduction {
 		Variable Lhs {
 			get;
 		}
 		int Weight {
 			get;
+			set;
 		}
 	}
 }

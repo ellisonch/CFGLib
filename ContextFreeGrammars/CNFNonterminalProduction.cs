@@ -2,7 +2,7 @@
 	public class CNFNonterminalProduction : CNFProduction {
 		private readonly Variable _lhs;
 		private readonly Variable[] _rhs = new Variable[2];
-		private readonly int _weight = 1;
+		private int _weight = 1;
 
 		public CNFNonterminalProduction(Production production) {
 			_lhs = production.Lhs;
@@ -25,6 +25,7 @@
 		}
 		public int Weight {
 			get { return _weight; }
+			set { _weight = value; }
 		}
 
 		public override string ToString() {

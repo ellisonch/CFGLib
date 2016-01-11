@@ -184,6 +184,7 @@ namespace GrammarGen {
 			var sentences = g.ProduceToDepth(5);
 			sentences = sentences.FindAll((x) => x.Count > 0);
 
+			var swp = sentences.Select((s) => new SentenceWithProbability(1.0 / sentences.Count, s));
 
 			Console.Read();
 		}

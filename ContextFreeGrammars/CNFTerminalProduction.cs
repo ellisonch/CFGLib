@@ -2,7 +2,8 @@
 	public class CNFTerminalProduction : CNFProduction {
 		private readonly Variable _lhs;
 		private readonly Terminal _rhs;
-		private readonly int _weight = 1;
+		// TODO: figure out how to keep this readonly?
+		private int _weight = 1;
 
 		public CNFTerminalProduction(Production production) {
 			_lhs = production.Lhs;
@@ -24,6 +25,7 @@
 		}
 		public int Weight {
 			get { return _weight; }
+			set { _weight = value; }
 		}
 
 		public override string ToString() {
