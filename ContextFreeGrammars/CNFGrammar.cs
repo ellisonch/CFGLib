@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 
 namespace ContextFreeGrammars {
 	public class CNFGrammar {
-		List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
-		List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
-		bool _producesEmpty = false;
-		Variable _start;
+		private List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
+		private List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
+		// private bool _producesEmpty = false;
+		// TODO: it's possible for the likelihood to be so low as to appear to be 0, but not actually be 
+		private double _producesEmpty = 0.0;
+		private Variable _start;
 
-		//Dictionary<Terminal, ISet<CNFTerminalProduction>> _reverseTerminalProductions = new Dictionary<Terminal, ISet<CNFTerminalProduction>>();
+		private Dictionary<Terminal, ISet<CNFTerminalProduction>> _reverseTerminalProductions;
+		private Dictionary<Variable, ISet<CNFNonterminalProduction>> _ntProductionsByVariable;
+		private Dictionary<Variable, ISet<CNFTerminalProduction>> _tProductionsByVariable;
 
 
 		public List<CNFNonterminalProduction> NonterminalProductions {
@@ -30,13 +34,14 @@ namespace ContextFreeGrammars {
 		private CNFGrammar() {
 		}
 
-		public CNFGrammar(List<CNFNonterminalProduction> nt, List<CNFTerminalProduction> t, bool producesEmpty, Variable start) {
+		public CNFGrammar(List<CNFNonterminalProduction> nt, List<CNFTerminalProduction> t, double producesEmpty, Variable start) {
 			_nonterminalProductions = nt;
 			_terminalProductions = t;
 			_producesEmpty = producesEmpty;
 			_start = start;
 		}
 
+		// TODO probably doesn't preserve weights
 		public CNFGrammar(Grammar grammar) {
 			var productions = CloneGrammar(grammar);
 			// var productions = grammar.Productions;
@@ -59,25 +64,26 @@ namespace ContextFreeGrammars {
 					var rhs = production.Rhs[0];
 					_terminalProductions.Add(new CNFTerminalProduction(production));
 				} else if (production.Rhs.Count == 0) {
-					_producesEmpty = true;
+					_producesEmpty = GetGrammarFromProductionList(production, productions);
 				}
 			}
 
 			// BuildLookups();
 		}
 
-		private Dictionary<Terminal, ISet<CNFTerminalProduction>> ReverseTerminalLookups() {
-			var retval = new Dictionary<Terminal, ISet<CNFTerminalProduction>>();
-			foreach (var production in _terminalProductions) {
-				ISet<CNFTerminalProduction> nonterms;
-				if (!retval.TryGetValue(production.Rhs, out nonterms)) {
-					nonterms = new HashSet<CNFTerminalProduction>();
-					retval[production.Rhs] = nonterms;
+		private double GetGrammarFromProductionList(Production target, List<Production> productions) {
+			double sumWeight = 0.0;
+			foreach (var production in productions) {
+				if (production.Lhs == target.Lhs) {
+					sumWeight += production.Weight;
 				}
-				nonterms.Add(production);
 			}
-			return retval;
+			return target.Weight / sumWeight;
 		}
+
+		//private Dictionary<Terminal, ISet<CNFTerminalProduction>> ReverseTerminalLookups() {
+
+		//}
 
 		/// <summary>
 		/// Returns new CNFGrammar containing new immediate data structures, but reusing the same underlying productions
@@ -94,6 +100,41 @@ namespace ContextFreeGrammars {
 			// newGrammar.BuildLookups();
 
 			return newGrammar;
+		}
+
+		private void BuildLookups() {
+			_reverseTerminalProductions = ConstructCache(
+				_terminalProductions,
+				(p) => p.Rhs,
+				(p) => p
+			);
+			_ntProductionsByVariable = ConstructCache(
+				_nonterminalProductions,
+				(p) => p.Lhs,
+				(p) => p
+			);
+			_tProductionsByVariable = ConstructCache(
+				_terminalProductions,
+				(p) => p.Lhs,
+				(p) => p
+			);
+		}
+
+		private Dictionary<T1, ISet<T2>> ConstructCache<T1, T2, T3>(
+			IEnumerable<T3> terminalProductions,
+			Func<T3, T1> getKey,
+			Func<T3, T2> getValue
+		) {
+			var cache = new Dictionary<T1, ISet<T2>>();
+			foreach (var production in terminalProductions) {
+				ISet<T2> result;
+				if (!cache.TryGetValue(getKey(production), out result)) {
+					result = new HashSet<T2>();
+					cache[getKey(production)] = result;
+				}
+				result.Add(getValue(production));
+			}
+			return cache;
 		}
 
 		// https://en.wikipedia.org/wiki/CYK_algorithm
@@ -113,12 +154,15 @@ namespace ContextFreeGrammars {
 		//  S is member of language
 		//else
 		//  S is not member of language
-		public bool Cyk(Sentence s) {
+		public double Cyk(Sentence s) {
 			if (s.Count == 0) {
 				return _producesEmpty;
 			}
 
-			var reverseTerminalProductions = ReverseTerminalLookups();
+			// TODO: don't need to do this every time, just every time there's a change
+			// TODO can maybe detect changes by using a dirty flag that bubbles up
+			BuildLookups(); 
+			// var reverseTerminalProductions = ReverseTerminalLookups();
 
 			List<Variable> nonterminals_R = new List<Variable>(GetNonterminals());
 			Dictionary<Variable, int> RToJ = new Dictionary<Variable, int>();
@@ -127,17 +171,18 @@ namespace ContextFreeGrammars {
 				RToJ[R] = i;
 			}
 
-			var P = new bool[s.Count, s.Count, nonterminals_R.Count];
+			// var P = new bool[s.Count, s.Count, nonterminals_R.Count];
+			var P = new double[s.Count, s.Count, nonterminals_R.Count];
 			for (int i = 0; i < s.Count; i++) {
 				var a_i = (Terminal)s[i];
 				ISet<CNFTerminalProduction> yields_a_i;
-				if (!reverseTerminalProductions.TryGetValue(a_i, out yields_a_i)) {
+				if (!_reverseTerminalProductions.TryGetValue(a_i, out yields_a_i)) {
 					// the grammar can't possibly produce this string if it doesn't know a terminal
-					return false;
+					return 0.0;
 				}
 				foreach (var production in yields_a_i) {
 					var j = RToJ[production.Lhs];
-					P[0, i, j] = true;
+					P[0, i, j] += GetProbability(production);
 				}
 			}
 
@@ -152,16 +197,42 @@ namespace ContextFreeGrammars {
 							var A = RToJ[R_A];
 							var B = RToJ[R_B];
 							var C = RToJ[R_C];
+							var probThis = GetProbability(production);
 
-							if (P[k-1, j-1, B] && P[i-k-1, j+k-1, C]) {
-								P[i - 1, j - 1, A] = true;
-							}
+							var pleft = P[k - 1, j - 1, B];
+							var pright = P[i - k - 1, j + k - 1, C];
+							//if (pleft && pright) {
+							//	P[i - 1, j - 1, A] = true;
+							//}
+							P[i - 1, j - 1, A] += pleft * pright * probThis;
 						}
 					}
 				}
 			}
 
 			return P[s.Count - 1, 0, RToJ[_start]];
+		}
+
+		public bool Accepts(Sentence s) {
+			return Cyk(s) > 0;
+		}
+		
+		private double GetProbability(CNFProduction target) {
+			int weightTotal = 0;
+
+			// var nts = _ntProductionsByVariable[target.Lhs];
+			var nts = _ntProductionsByVariable.LookupEnumerable(target.Lhs);
+			foreach (var production in nts) {
+				weightTotal += production.Weight;
+			}
+
+			// var ts = _tProductionsByVariable[target.Lhs];
+			var ts = _tProductionsByVariable.LookupEnumerable(target.Lhs);
+			foreach (var production in ts) {
+				weightTotal += production.Weight;
+			}
+
+			return (double)target.Weight / weightTotal;
 		}
 
 		private HashSet<Variable> GetNonterminals() {
@@ -180,6 +251,8 @@ namespace ContextFreeGrammars {
 			return results;
 		}
 
+		// TODO needs to be updated when we can have non-S start symbols
+		// Eliminate the start symbol from right-hand sides
 		private void StepStart(List<Production> productions) {
 			var fresh = Getfresh();
 			productions.Add(
@@ -188,6 +261,7 @@ namespace ContextFreeGrammars {
 			_start = fresh;
 		}
 
+		// Eliminate rules with nonsolitary terminals
 		private void StepTerm(List<Production> productions) {
 			var newProductions = new List<Production>();
 			var lookup = new Dictionary<Terminal, Variable>();
@@ -215,8 +289,8 @@ namespace ContextFreeGrammars {
 			productions.AddRange(newProductions);
 		}
 
+		// Eliminate right-hand sides with more than 2 nonterminals
 		private void StepBin(List<Production> productions) {
-			// List<Production> newProductions = new List<Production>();
 			List<Production> finalProductions = new List<Production>();
 			foreach (var production in productions) {
 				if (production.Rhs.Count < 3) {
@@ -226,10 +300,11 @@ namespace ContextFreeGrammars {
 				var rhs = production.Rhs;
 				var curr = production.Lhs;
 				for (int i = 0; i < rhs.Count-2; i++) {
+					int weight = (curr == production.Lhs) ? production.Weight : 1;
 					var left = rhs[i];
 					var newFresh = Getfresh();
 					finalProductions.Add(
-						new Production(curr, new Sentence { left, newFresh })
+						new Production(curr, new Sentence { left, newFresh }, weight)
 					);
 					curr = newFresh;
 				}
@@ -240,6 +315,9 @@ namespace ContextFreeGrammars {
 			productions.Clear();
 			productions.AddRange(finalProductions);
 		}
+
+		// Eliminate ε-rules
+		// TODO: definitely does not preserve weights; fix Nullate()
 		private void StepDel(List<Production> productions) {
 			var nullableSet = GetNullable(productions);
 			var newRules = new List<Production>();
@@ -252,6 +330,7 @@ namespace ContextFreeGrammars {
 			productions.AddRange(newRules);
 		}
 
+		// Eliminate unit rules
 		private void StepUnit(List<Production> productions) {
 			bool changed = true;
 			while (changed) {
@@ -259,15 +338,12 @@ namespace ContextFreeGrammars {
 			}
 		}
 
+		// TODO messes up weights
 		private bool StepUnitOnce(List<Production> productions) {
 			var table = BuildLookupTable(productions);
 			var result = new List<Production>(productions);
 			var changed = false;
 			
-			//if (productions.Count > 100) {
-			//	throw new Exception("Something's gone wrong");
-			//}
-
 			foreach (var production in productions) {
 				if (production.Rhs.Count == 1) {
 					var rhs = production.Rhs[0];
@@ -304,6 +380,7 @@ namespace ContextFreeGrammars {
 			return table;
 		}
 
+		// returns the set of all nonterminals that derive ε
 		private ISet<Variable> GetNullable(List<Production> originalProductions) {
 			var productions = CloneProductions(originalProductions);
 			var newProductions = new List<Production>();
@@ -410,7 +487,7 @@ namespace ContextFreeGrammars {
 			foreach (var production in _terminalProductions) {
 				retval += "  " + production.ToString() + "\n";
 			}
-			if (_producesEmpty) {
+			if (_producesEmpty > 0.0) {
 				retval += "  " + _start + " → ε";
 			}
 			retval += "}\n";

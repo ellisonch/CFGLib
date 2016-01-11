@@ -17,9 +17,18 @@ namespace ContextFreeGrammars {
 		}
 
 		public static Sentence FromLetters(string s) {
+			var tokens = s.ToCharArray().Select((c) => c.ToString());
+			return FromTokens(tokens);
+		}
+		public static Sentence FromWords(string s) {
+			var tokens = s.Split(new char[] { ' ' });
+			return FromTokens(tokens);
+		}
+		public static Sentence FromTokens(IEnumerable<string> tokens) {
 			var l = new List<Terminal>();
-			foreach (var c in s) {
-				l.Add(Terminal.Of(c.ToString()));
+			foreach (var token in tokens) {
+				// l.Add(Terminal.Of(c.ToString()));
+				l.Add(Terminal.Of(token));
 			}
 			return new Sentence(l);
 		}

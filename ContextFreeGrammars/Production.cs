@@ -7,7 +7,6 @@ namespace ContextFreeGrammars {
 		private Sentence _rhs;
 		private int _weight = 1;
 
-
 		public bool IsEmpty {
 			get { return _rhs.Count == 0; }
 		}
@@ -34,9 +33,10 @@ namespace ContextFreeGrammars {
 			}
 		}
 
-		public Production(Variable lhs, Sentence rhs) {
+		public Production(Variable lhs, Sentence rhs, int weight = 1) {
 			_lhs = lhs;
 			_rhs = rhs;
+			_weight = weight;
 		}
 
 		public override string ToString() {
@@ -47,7 +47,7 @@ namespace ContextFreeGrammars {
 		}
 
 		internal Production Clone() {
-			return new Production(_lhs, new Sentence(_rhs));
+			return new Production(_lhs, new Sentence(_rhs), _weight);
 		}
 	}
 }
