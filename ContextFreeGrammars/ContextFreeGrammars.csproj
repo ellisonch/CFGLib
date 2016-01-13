@@ -49,6 +49,7 @@
     <Compile Include="Production.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sentence.cs" />
+    <Compile Include="SentenceWithProbability.cs" />
     <Compile Include="Terminal.cs" />
     <Compile Include="Variable.cs" />
     <Compile Include="Word.cs" />

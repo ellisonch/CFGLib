@@ -41,7 +41,18 @@ namespace ContextFreeGrammars {
 		public CNFGrammar ToCNF() {
 			return new CNFGrammar(this);
 		}
-		
+
+		private double GetProbability(Production target) {
+			int weightTotal = 0;
+			
+			var productions = _table.LookupEnumerable(target.Lhs);
+			foreach (var production in productions) {
+				weightTotal += production.Weight;
+			}
+
+			return (double)target.Weight / weightTotal;
+		}
+
 		internal Sentence ProduceVariable(Variable v) {
 			Sentence result = null;
 
@@ -64,36 +75,38 @@ namespace ContextFreeGrammars {
 			return result;
 		}
 
-		public List<Sentence> ProduceToDepth(int depth) {
+		public List<SentenceWithProbability> ProduceToDepth(int depth) {
 			var start = new Sentence { Variable.Of("S") };
-			List<Sentence>[] intermediate = new List<Sentence>[depth + 1];
-			intermediate[0] = new List<Sentence> { start };
+			var intermediate = new List<SentenceWithProbability>[depth + 1];
+			var startSWP = new SentenceWithProbability(1.0, start);
+			intermediate[0] = new List<SentenceWithProbability> { startSWP };
 
 			for (int i = 0; i < depth; i++) {
 				var prev = intermediate[i];
-				var next = new List<Sentence>();
+				var next = new List<SentenceWithProbability>();
 				intermediate[i + 1] = next;
-				foreach (var sentence in prev) {
-					if (!sentence.OnlyTerminals()) {
-						var steps = GoOneStep(sentence);
+				foreach (var swp in prev) {
+					if (!swp.Sentence.OnlyTerminals()) {
+						var steps = GoOneStep(swp);
 						next.AddRange(steps);
 					}
 				}
 			}
-			var results = new List<Sentence>();
+			var results = new List<SentenceWithProbability>();
 			foreach (var step in intermediate) {
-				foreach (var sentence in step) {
-					if (sentence.OnlyTerminals()) {
-						results.Add(sentence);
+				foreach (var swp in step) {
+					if (swp.Sentence.OnlyTerminals()) {
+						results.Add(swp);
 					}
 				}
 			}
 			return results;
 		}
 
-		private List<Sentence> GoOneStep(Sentence sentence) {
-			var results = new List<Sentence> { new Sentence() };
-			foreach (var word in sentence) {
+		private List<SentenceWithProbability> GoOneStep(SentenceWithProbability swp) {
+			var start = new SentenceWithProbability(swp.Probability, new Sentence());
+			var results = new List<SentenceWithProbability> { start };
+			foreach (var word in swp.Sentence) {
 				if (word.IsVariable()) {
 					results = StepVariable(results, word);
 				} else {
@@ -103,31 +116,35 @@ namespace ContextFreeGrammars {
 			return results;
 		}
 
-		private List<Sentence> StepVariable(List<Sentence> results, Word word) {
-			var newResults = new List<Sentence>();
+		private List<SentenceWithProbability> StepVariable(List<SentenceWithProbability> results, Word word) {
+			var newResults = new List<SentenceWithProbability>();
 
 			var variable = (Variable)word;
 			foreach (var production in _table[variable]) {
+				var prob = GetProbability(production);
 				var copies = DeepCopy(results);
-				foreach (var copy in copies) {
-					copy.AddRange(production.Rhs);
+				foreach (var copy in copies) {  // sigh
+				// for (int i = 0; i < copies.Count; i++) {
+					// var copy = copies[i];
+					copy.Sentence.AddRange(production.Rhs);
+					copy.Probability *= prob;
 				}
 				newResults.AddRange(copies);
 			}
 			return newResults;
 		}
 
-		private List<Sentence> StepTerminal(List<Sentence> results, Word word) {
+		private List<SentenceWithProbability> StepTerminal(List<SentenceWithProbability> results, Word word) {
 			foreach (var result in results) {
-				result.Add(word);
+				result.Sentence.Add(word);
 			}
 			return results;
 		}
 
-		private List<Sentence> DeepCopy(List<Sentence> sentences) {
-			var results = new List<Sentence>();
+		private List<SentenceWithProbability> DeepCopy(List<SentenceWithProbability> sentences) {
+			var results = new List<SentenceWithProbability>();
 			foreach (var sentence in sentences) {
-				results.Add(new Sentence(sentence));
+				results.Add(new SentenceWithProbability(sentence.Probability, new Sentence(sentence.Sentence)));
 			}
 			return results;
 		}

@@ -16,5 +16,16 @@ namespace ContextFreeGrammars {
 			}
 			return Enumerable.Empty<T>();
 		}
+
+		public static IEnumerable<T> LookupEnumerable<TKey, T>(
+			this IDictionary<TKey, List<T>> dictionary,
+			TKey key
+		) {
+			List<T> retval;
+			if (dictionary.TryGetValue(key, out retval)) {
+				return retval;
+			}
+			return Enumerable.Empty<T>();
+		}
 	}
 }

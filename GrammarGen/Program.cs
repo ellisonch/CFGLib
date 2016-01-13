@@ -181,11 +181,17 @@ namespace GrammarGen {
 			//	}
 			//}
 
-			var sentences = g.ProduceToDepth(5);
-			sentences = sentences.FindAll((x) => x.Count > 0);
+			var sentences = g.ProduceToDepth(6);
+			sentences = sentences.FindAll((x) => x.Sentence.Count > 0);
 
-			var swp = sentences.Select((s) => new SentenceWithProbability(1.0 / sentences.Count, s));
+			// var swps = sentences.Select((s) => new SentenceWithProbability(1.0 / sentences.Count, s));
 
+			var sum = 0.0;
+			foreach (var swp in sentences) {
+				// Console.WriteLine(swp);
+				sum += swp.Probability;
+			}
+			Console.WriteLine("Test set has probability {0}", sum);
 			Console.Read();
 		}
 	}
