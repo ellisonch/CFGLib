@@ -6,8 +6,8 @@
     <ProjectGuid>{FA618744-71FE-4C69-A3AC-DF7247AB0CFF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GrammarGenTest</RootNamespace>
-    <AssemblyName>GrammarGenTest</AssemblyName>
+    <RootNamespace>CFGLibTest</RootNamespace>
+    <AssemblyName>CFGLibTest</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -54,9 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ContextFreeGrammars\ContextFreeGrammars.csproj">
+    <ProjectReference Include="..\ContextFreeGrammars\CFGLib.csproj">
       <Project>{9afc68e6-543b-4071-ba05-eb5fc4e9b839}</Project>
-      <Name>ContextFreeGrammars</Name>
+      <Name>CFGLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using ContextFreeGrammars;
+using CFGLib;
 
-namespace GrammarGenTest {
+namespace CFGLibTest {
 	[TestClass]
 	public class IntegrationTests {
 		[TestMethod]

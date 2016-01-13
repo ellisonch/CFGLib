@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ContextFreeGrammars {
+namespace CFGLib {
 	public interface Word {
 		Sentence ProduceBy(Grammar grammar);
 		bool IsVariable();

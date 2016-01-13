@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ContextFreeGrammars {
+namespace CFGLib {
 	public class Variable : Word {
 		private static Dictionary<string, Variable> _history = new Dictionary<string, Variable>();
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContextFreeGrammars {
+namespace CFGLib {
 	public class Terminal : Word {
 		private static Dictionary<string, Terminal> _history = new Dictionary<string, Terminal>();
 

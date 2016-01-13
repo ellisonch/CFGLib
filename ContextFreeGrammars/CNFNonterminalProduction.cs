@@ -1,4 +1,4 @@
-﻿namespace ContextFreeGrammars {
+﻿namespace CFGLib {
 	public class CNFNonterminalProduction : CNFProduction {
 		private readonly Variable _lhs;
 		private readonly Variable[] _rhs = new Variable[2];

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrammarGen", "GrammarGen\GrammarGen.csproj", "{7C0EEEB7-1EA8-41E9-BBEB-36A552E4147B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolePlayground", "GrammarGen\ConsolePlayground.csproj", "{7C0EEEB7-1EA8-41E9-BBEB-36A552E4147B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContextFreeGrammarsTest", "GrammarGenTest\ContextFreeGrammarsTest.csproj", "{FA618744-71FE-4C69-A3AC-DF7247AB0CFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CFGLibTest", "GrammarGenTest\CFGLibTest.csproj", "{FA618744-71FE-4C69-A3AC-DF7247AB0CFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContextFreeGrammars", "ContextFreeGrammars\ContextFreeGrammars.csproj", "{9AFC68E6-543B-4071-BA05-EB5FC4E9B839}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CFGLib", "ContextFreeGrammars\CFGLib.csproj", "{9AFC68E6-543B-4071-BA05-EB5FC4E9B839}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

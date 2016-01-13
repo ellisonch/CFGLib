@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7C0EEEB7-1EA8-41E9-BBEB-36A552E4147B}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{9AFC68E6-543B-4071-BA05-EB5FC4E9B839}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GrammarGen</RootNamespace>
-    <AssemblyName>GrammarGen</AssemblyName>
+    <RootNamespace>CFGLib</RootNamespace>
+    <AssemblyName>CFGLib</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -43,17 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="CNFGrammar.cs" />
+    <Compile Include="CNFNonterminalProduction.cs" />
+    <Compile Include="CNFProduction.cs" />
+    <Compile Include="CNFTerminalProduction.cs" />
+    <Compile Include="Grammar.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Production.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ContextFreeGrammars\ContextFreeGrammars.csproj">
-      <Project>{9afc68e6-543b-4071-ba05-eb5fc4e9b839}</Project>
-      <Name>ContextFreeGrammars</Name>
-    </ProjectReference>
+    <Compile Include="Sentence.cs" />
+    <Compile Include="SentenceWithProbability.cs" />
+    <Compile Include="Terminal.cs" />
+    <Compile Include="Variable.cs" />
+    <Compile Include="Word.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

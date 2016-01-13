@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContextFreeGrammars {
+namespace CFGLib {
 	public class CNFGrammar {
 		private List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
 		private List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();

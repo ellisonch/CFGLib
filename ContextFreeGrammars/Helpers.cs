@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContextFreeGrammars {
+namespace CFGLib {
 	internal static class Helpers {
 		public static IEnumerable<T> LookupEnumerable<TKey, T>	(
 			this IDictionary<TKey, ISet<T>> dictionary,

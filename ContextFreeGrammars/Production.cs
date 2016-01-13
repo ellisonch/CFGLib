@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ContextFreeGrammars {
+namespace CFGLib {
 	public class Production {
 		private Variable _lhs;
 		private Sentence _rhs;

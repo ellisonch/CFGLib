@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContextFreeGrammars {
+namespace CFGLib {
 	public class Sentence : IList<Word>, ICollection<Word>, IEnumerable<Word> {
 		private List<Word> _sentence;
 

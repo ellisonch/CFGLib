@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ContextFreeGrammars {
+namespace CFGLib {
 	public interface CNFProduction {
 		Variable Lhs {
 			get;

@@ -1,4 +1,4 @@
-﻿namespace ContextFreeGrammars {
+﻿namespace CFGLib {
 	public class CNFTerminalProduction : CNFProduction {
 		private readonly Variable _lhs;
 		private readonly Terminal _rhs;
