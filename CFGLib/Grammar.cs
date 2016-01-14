@@ -38,7 +38,7 @@ namespace CFGLib {
 		}
 
 		public CNFGrammar ToCNF() {
-			return new CNFGrammar(this);
+			return CNFGrammar.FromCFG(this);
 		}
 
 		private double GetProbability(Production target) {
