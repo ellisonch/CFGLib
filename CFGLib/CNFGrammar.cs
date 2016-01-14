@@ -103,38 +103,21 @@ namespace CFGLib {
 		}
 
 		private void BuildLookups() {
-			_reverseTerminalProductions = ConstructCache(
+			_reverseTerminalProductions = Helpers.ConstructCache(
 				_terminalProductions,
 				(p) => p.Rhs,
 				(p) => p
 			);
-			_ntProductionsByVariable = ConstructCache(
+			_ntProductionsByVariable = Helpers.ConstructCache(
 				_nonterminalProductions,
 				(p) => p.Lhs,
 				(p) => p
 			);
-			_tProductionsByVariable = ConstructCache(
+			_tProductionsByVariable = Helpers.ConstructCache(
 				_terminalProductions,
 				(p) => p.Lhs,
 				(p) => p
 			);
-		}
-
-		private Dictionary<T1, ISet<T2>> ConstructCache<T1, T2, T3>(
-			IEnumerable<T3> terminalProductions,
-			Func<T3, T1> getKey,
-			Func<T3, T2> getValue
-		) {
-			var cache = new Dictionary<T1, ISet<T2>>();
-			foreach (var production in terminalProductions) {
-				ISet<T2> result;
-				if (!cache.TryGetValue(getKey(production), out result)) {
-					result = new HashSet<T2>();
-					cache[getKey(production)] = result;
-				}
-				result.Add(getValue(production));
-			}
-			return cache;
 		}
 
 		// https://en.wikipedia.org/wiki/CYK_algorithm

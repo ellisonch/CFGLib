@@ -27,5 +27,22 @@ namespace CFGLib {
 			}
 			return Enumerable.Empty<T>();
 		}
+		
+		public static Dictionary<T1, ISet<T2>> ConstructCache<T1, T2, T3>(
+			IEnumerable<T3> terminalProductions,
+			Func<T3, T1> getKey,
+			Func<T3, T2> getValue
+		) {
+			var cache = new Dictionary<T1, ISet<T2>>();
+			foreach (var production in terminalProductions) {
+				ISet<T2> result;
+				if (!cache.TryGetValue(getKey(production), out result)) {
+					result = new HashSet<T2>();
+					cache[getKey(production)] = result;
+				}
+				result.Add(getValue(production));
+			}
+			return cache;
+		}
 	}
 }
