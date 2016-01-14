@@ -156,7 +156,7 @@ namespace ConsolePlayground {
 			//	),
 			//};
 
-			Grammar g = new Grammar(productions);
+			Grammar g = new Grammar(productions, Variable.Of("S"));
 			Console.WriteLine(g);
 
 			//CNFGrammar h = g.ToCNF();

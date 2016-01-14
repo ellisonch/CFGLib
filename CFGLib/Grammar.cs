@@ -13,6 +13,7 @@ namespace CFGLib {
 		// Start
 		private List<Production> _productions;
 		private Random _rand = new Random(0);
+		private Variable _start;
 
 		private Dictionary<Variable, List<Production>> _table = new Dictionary<Variable, List<Production>>();
 
@@ -20,7 +21,7 @@ namespace CFGLib {
 			get { return _productions; }
 		}
 
-		public Grammar(List<Production> productions) {
+		public Grammar(List<Production> productions, Variable start) {
 			_productions = productions;
 			
 			foreach (var production in productions) {
@@ -33,9 +34,7 @@ namespace CFGLib {
 				results.Add(production);
 			}
 
-			if (!_table.ContainsKey(Variable.Of("S"))) {
-				throw new Exception("There is no start production in the grammar");
-			}
+			_start = start;
 		}
 
 		public CNFGrammar ToCNF() {
@@ -76,7 +75,7 @@ namespace CFGLib {
 		}
 
 		public List<SentenceWithProbability> ProduceToDepth(int depth) {
-			var start = new Sentence { Variable.Of("S") };
+			var start = new Sentence { _start };
 			var intermediate = new List<SentenceWithProbability>[depth + 1];
 			var startSWP = new SentenceWithProbability(1.0, start);
 			intermediate[0] = new List<SentenceWithProbability> { startSWP };
@@ -151,7 +150,7 @@ namespace CFGLib {
 
 		public List<Sentence> Produce() {
 			var history = new List<Sentence>();
-			var sentence = new Sentence { Variable.Of("S") };
+			var sentence = new Sentence { _start };
 			
 			while (ContainsVariables(sentence)) {
 				history.Add(sentence);

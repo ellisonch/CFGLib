@@ -23,7 +23,7 @@ namespace CFGLibTest {
 					new Sentence { }
 				)
 			};
-			Grammar g = new Grammar(productions);
+			Grammar g = new Grammar(productions, Variable.Of("S"));
 			CNFGrammar h = g.ToCNF();
 
 			Assert.IsFalse(h.Accepts(Sentence.FromLetters("ab")));
