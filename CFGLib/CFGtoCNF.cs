@@ -24,8 +24,8 @@ namespace CFGLib {
 
 			var nonterminalProductions = new List<CNFNonterminalProduction>();
 			var terminalProductions = new List<CNFTerminalProduction>();
-			double producesEmpty = 0.0;
-
+			int producesEmptyWeight = 0;
+			
 			foreach (var production in productions) {
 				if (production.Rhs.Count > 2) {
 					throw new Exception("Didn't expect more than 2");
@@ -35,25 +35,26 @@ namespace CFGLib {
 					var rhs = production.Rhs[0];
 					terminalProductions.Add(new CNFTerminalProduction(production));
 				} else if (production.Rhs.Count == 0) {
-					producesEmpty = GetGrammarFromProductionList(production, productions);
+					producesEmptyWeight += production.Weight;
+						// GetGrammarFromProductionList(production, productions);
 				}
 			}
 
-			return new CNFGrammar(nonterminalProductions, terminalProductions, producesEmpty, _startSymbol);
+			return new CNFGrammar(nonterminalProductions, terminalProductions, producesEmptyWeight, _startSymbol);
 
 			// BuildLookups();
 		}
 
 
-		private static double GetGrammarFromProductionList(Production target, List<Production> productions) {
-			double sumWeight = 0.0;
-			foreach (var production in productions) {
-				if (production.Lhs == target.Lhs) {
-					sumWeight += production.Weight;
-				}
-			}
-			return target.Weight / sumWeight;
-		}
+		//private static double GetGrammarFromProductionList(Production target, List<Production> productions) {
+		//	double sumWeight = 0.0;
+		//	foreach (var production in productions) {
+		//		if (production.Lhs == target.Lhs) {
+		//			sumWeight += production.Weight;
+		//		}
+		//	}
+		//	return target.Weight / sumWeight;
+		//}
 
 		private static List<Production> CloneGrammar(Grammar grammar) {
 			return CloneProductions(grammar.Productions);

@@ -10,7 +10,7 @@ namespace CFGLib {
 		private List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
 		// private bool _producesEmpty = false;
 		// TODO: it's possible for the likelihood to be so low as to appear to be 0, but not actually be 
-		private double _producesEmpty = 0.0;
+		private int _producesEmptyWeight = 0;
 		private Variable _start;
 
 		private Dictionary<Terminal, ISet<CNFTerminalProduction>> _reverseTerminalProductions;
@@ -34,11 +34,13 @@ namespace CFGLib {
 		private CNFGrammar() {
 		}
 
-		public CNFGrammar(List<CNFNonterminalProduction> nt, List<CNFTerminalProduction> t, double producesEmpty, Variable start) {
+		public CNFGrammar(List<CNFNonterminalProduction> nt, List<CNFTerminalProduction> t, int producesEmptyWeight, Variable start) {
 			_nonterminalProductions = nt;
 			_terminalProductions = t;
-			_producesEmpty = producesEmpty;
+			_producesEmptyWeight = producesEmptyWeight;
 			_start = start;
+
+			BuildLookups();
 		}
 
 		// TODO probably doesn't preserve weights
@@ -63,7 +65,7 @@ namespace CFGLib {
 			newGrammar._nonterminalProductions.AddRange(_nonterminalProductions);
 			newGrammar._terminalProductions.AddRange(_terminalProductions);
 			newGrammar._start = _start;
-			newGrammar._producesEmpty = _producesEmpty;
+			newGrammar._producesEmptyWeight = _producesEmptyWeight;
 			// _nonterminalProductions = grammar._nonterminalProductions
 
 			// newGrammar.BuildLookups();
@@ -108,7 +110,7 @@ namespace CFGLib {
 		//  S is not member of language
 		public double Cyk(Sentence s) {
 			if (s.Count == 0) {
-				return _producesEmpty;
+				return GetProbability(_start, _producesEmptyWeight);
 			}
 
 			// TODO: don't need to do this every time, just every time there's a change
@@ -168,23 +170,30 @@ namespace CFGLib {
 		public bool Accepts(Sentence s) {
 			return Cyk(s) > 0;
 		}
-		
+
 		private double GetProbability(CNFProduction target) {
+			return GetProbability(target.Lhs, target.Weight);
+		}
+		private double GetProbability(Variable nonterminal, int weight) {
 			int weightTotal = 0;
 
 			// var nts = _ntProductionsByVariable[target.Lhs];
-			var nts = _ntProductionsByVariable.LookupEnumerable(target.Lhs);
+			var nts = _ntProductionsByVariable.LookupEnumerable(nonterminal);
 			foreach (var production in nts) {
 				weightTotal += production.Weight;
 			}
 
 			// var ts = _tProductionsByVariable[target.Lhs];
-			var ts = _tProductionsByVariable.LookupEnumerable(target.Lhs);
+			var ts = _tProductionsByVariable.LookupEnumerable(nonterminal);
 			foreach (var production in ts) {
 				weightTotal += production.Weight;
 			}
 
-			return (double)target.Weight / weightTotal;
+			if (_start == nonterminal) {
+				weightTotal += _producesEmptyWeight;
+			}
+
+			return (double)weight / weightTotal;
 		}
 
 		private HashSet<Variable> GetNonterminals() {

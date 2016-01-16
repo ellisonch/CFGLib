@@ -60,7 +60,7 @@ namespace CFGLibTest {
 				new CNFNonterminalProduction(Variable.Of("X_0"), Variable.Of("X_0"), Variable.Of("X_1"))
 			};
 			
-			var g = new CNFGrammar(nonterminalProductions, terminalProductions, 0.0, Variable.Of("X_0"));
+			var g = new CNFGrammar(nonterminalProductions, terminalProductions, 0, Variable.Of("X_0"));
 
 			
 			Assert.IsFalse(g.Accepts(Sentence.FromLetters("abc")));
@@ -148,7 +148,7 @@ namespace CFGLibTest {
 					4
 				),
 			};
-			var h = new CNFGrammar(nonterminalProductions, terminalProductions, 0.0, Variable.Of("S"));
+			var h = new CNFGrammar(nonterminalProductions, terminalProductions, 0, Variable.Of("S"));
 			// CNFGrammar h = g.ToCNF();
 
 			Assert.IsFalse(h.Accepts(Sentence.FromWords("saw the dog")));
@@ -158,7 +158,7 @@ namespace CFGLibTest {
 
 			// the man (0.8 * 0.1) = 0.08
 			// saw the dog (0.8 * 0.8 * 0.5) = 0.32
-			AssertNear(0.0256, h.Cyk(Sentence.FromWords("the man saw the dog")));
+			Helpers.AssertNear(0.0256, h.Cyk(Sentence.FromWords("the man saw the dog")));
 
 			// S -> NP VP
 			// NP PP Vt NP // 0.2 * 0.8
@@ -168,16 +168,7 @@ namespace CFGLibTest {
 			// the woman with DT NN saw the dog // 0.6 * 0.8
 			// the woman with the telescope saw the dog // 0.3
 			// == 0.00073728
-			AssertNear(0.00073728, h.Cyk(Sentence.FromWords("the woman with the telescope saw the dog")));
-		}
-
-		private static void AssertNear(double a, double b) {
-			double tolerance = Math.Abs(a * 0.00001);
-			double diff = Math.Abs(a - b);
-			if (diff <= tolerance) {
-				return;
-			}
-			Assert.Fail(string.Format("{0} is not near {1}", b, a));
+			Helpers.AssertNear(0.00073728, h.Cyk(Sentence.FromWords("the woman with the telescope saw the dog")));
 		}
 	}
 }

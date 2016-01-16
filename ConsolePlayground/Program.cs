@@ -162,6 +162,22 @@ namespace ConsolePlayground {
 			//CNFGrammar h = g.ToCNF();
 			//Console.WriteLine(h);
 
+			var randg = new CNFRandom();
+			for (int numProductions = 0; numProductions < 100; numProductions += 5) {
+				for (int numNonterminals = 0; numNonterminals < 200; numNonterminals += 5) {
+					for (int numTerminals = 1; numTerminals < 200; numTerminals += 5) {
+						var range = Enumerable.Range(0, numTerminals);
+						var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
+						var rg = randg.Next(numNonterminals, numProductions, terminals);
+						Console.WriteLine(rg);
+					}
+				}
+			}
+			for (int i = 0; i < 5; i++) {
+				var rg = randg.Next(5, 2, new List<Terminal> { Terminal.Of("a"), Terminal.Of("b") });
+				Console.WriteLine(rg);
+			}
+
 			//var parses = h.Cyk(new Sentence { Terminal.Of("a"), Terminal.Of("b") });
 			//Console.WriteLine(parses);
 
