@@ -211,20 +211,23 @@ namespace CFGLib {
 
 			return results;
 		}
-				
+
 		public override string ToString() {
 			var retval = "CNFGrammar(" + _start + "){\n";
 
 			foreach (var production in _nonterminalProductions) {
-				retval += "  " + production.ToString() + "\n";
+				var prob = GetProbability(production);
+				retval += string.Format("  {1:0.00e+000}: {0}\n", production.ToString(), prob);
 			}
 			foreach (var production in _terminalProductions) {
-				retval += "  " + production.ToString() + "\n";
+				var prob = GetProbability(production);
+				retval += string.Format("  {1:0.00e+000}: {0}\n", production.ToString(), prob);
 			}
-			if (_producesEmpty > 0.0) {
-				retval += "  " + _start + " → ε";
+			if (_producesEmptyWeight > 0) {
+				var prob = GetProbability(_start, _producesEmptyWeight);
+				retval += string.Format("  {1:0.00e+000}: {0} → ε\n", _start, prob);
 			}
-			retval += "}\n";
+			retval += "\n}\n";
 			return retval;
 		}
 	}
