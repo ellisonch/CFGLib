@@ -9,7 +9,7 @@ namespace CFGLib {
 		private Random _rand = new Random(0);
 
 		public CNFGrammar Next(int numNonTerminals, int numProductions, List<Terminal> terminals) {
-			var start = RandomVariable(numNonTerminals);
+			var start = RandomNonterminal(numNonTerminals);
 			int producesEmptyWeight = 0;
 			if (numProductions > 0) {
 				if (_rand.Next(2) == 1) {
@@ -36,12 +36,12 @@ namespace CFGLib {
 			return new CNFGrammar(nt, t, producesEmptyWeight, start);
 		}
 
-		private CNFNonterminalProduction RandomNTProduction(int numNonTerminals, Variable lhs = null) {
+		private CNFNonterminalProduction RandomNTProduction(int numNonTerminals, Nonterminal lhs = null) {
 			if (lhs == null) {
-				lhs = RandomVariable(numNonTerminals);
+				lhs = RandomNonterminal(numNonTerminals);
 			}
-			var rhs1 = RandomVariable(numNonTerminals);
-			var rhs2 = RandomVariable(numNonTerminals);
+			var rhs1 = RandomNonterminal(numNonTerminals);
+			var rhs2 = RandomNonterminal(numNonTerminals);
 
 			return new CNFNonterminalProduction(lhs, rhs1, rhs2);
 		}
@@ -50,13 +50,13 @@ namespace CFGLib {
 			if (rhs == null) {
 				rhs = RandomTerminal(terminals);
 			}
-			var lhs = RandomVariable(numNonTerminals);
+			var lhs = RandomNonterminal(numNonTerminals);
 
 			return new CNFTerminalProduction(lhs, rhs);
 		}
 
-		private Variable RandomVariable(int numNonTerminals) {
-			return Variable.Of("X_" + _rand.Next(numNonTerminals));
+		private Nonterminal RandomNonterminal(int numNonTerminals) {
+			return Nonterminal.Of("X_" + _rand.Next(numNonTerminals));
 		}
 		private Terminal RandomTerminal(List<Terminal> terminals) {
 			return terminals[_rand.Next(terminals.Count)];

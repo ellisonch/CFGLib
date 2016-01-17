@@ -13,15 +13,15 @@ namespace CFGLib {
 		// Start
 		private List<Production> _productions;
 		private Random _rand = new Random(0);
-		private Variable _start;
+		private Nonterminal _start;
 
-		private Dictionary<Variable, List<Production>> _table = new Dictionary<Variable, List<Production>>();
+		private Dictionary<Nonterminal, List<Production>> _table = new Dictionary<Nonterminal, List<Production>>();
 
 		public List<Production> Productions {
 			get { return _productions; }
 		}
 
-		public Grammar(List<Production> productions, Variable start) {
+		public Grammar(List<Production> productions, Nonterminal start) {
 			_productions = productions;
 			
 			foreach (var production in productions) {
@@ -52,7 +52,7 @@ namespace CFGLib {
 			return (double)target.Weight / weightTotal;
 		}
 
-		internal Sentence ProduceVariable(Variable v) {
+		internal Sentence ProduceNonterminal(Nonterminal v) {
 			Sentence result = null;
 
 			var productions = _table[v];
@@ -106,8 +106,8 @@ namespace CFGLib {
 			var start = new SentenceWithProbability(swp.Probability, new Sentence());
 			var results = new List<SentenceWithProbability> { start };
 			foreach (var word in swp.Sentence) {
-				if (word.IsVariable()) {
-					results = StepVariable(results, word);
+				if (word.IsNonterminal()) {
+					results = StepNonterminal(results, word);
 				} else {
 					results = StepTerminal(results, word);
 				}
@@ -115,11 +115,11 @@ namespace CFGLib {
 			return results;
 		}
 
-		private List<SentenceWithProbability> StepVariable(List<SentenceWithProbability> results, Word word) {
+		private List<SentenceWithProbability> StepNonterminal(List<SentenceWithProbability> results, Word word) {
 			var newResults = new List<SentenceWithProbability>();
 
-			var variable = (Variable)word;
-			foreach (var production in _table[variable]) {
+			var nonterminal = (Nonterminal)word;
+			foreach (var production in _table[nonterminal]) {
 				var prob = GetProbability(production);
 				var copies = DeepCopy(results);
 				foreach (var copy in copies) {  // sigh
@@ -152,7 +152,7 @@ namespace CFGLib {
 			var history = new List<Sentence>();
 			var sentence = new Sentence { _start };
 			
-			while (ContainsVariables(sentence)) {
+			while (ContainsNonterminal(sentence)) {
 				history.Add(sentence);
 				Sentence newSentence = new Sentence();
 				foreach (var word in sentence) {
@@ -165,9 +165,9 @@ namespace CFGLib {
 			return history;
 		}
 
-		private bool ContainsVariables(Sentence sentence) {
+		private bool ContainsNonterminal(Sentence sentence) {
 			foreach(var c in sentence) {
-				if (c.IsVariable()) {
+				if (c.IsNonterminal()) {
 					return true;
 				}
 			}

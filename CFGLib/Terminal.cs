@@ -34,7 +34,7 @@ namespace CFGLib {
 		public Sentence ProduceBy(Grammar grammar) {
 			return new Sentence { this };
 		}
-		public bool IsVariable() {
+		public bool IsNonterminal() {
 			return false;
 		}
 	}

@@ -11,19 +11,19 @@ namespace CFGLibTest {
 			// S -> aSa | bSb | ε
 			var productions = new List<Production> {
 				new Production(
-					Variable.Of("S"),
-					new Sentence { Terminal.Of("a"), Variable.Of("S"), Terminal.Of("a") }
+					Nonterminal.Of("S"),
+					new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") }
 				),
 				new Production(
-					Variable.Of("S"),
-					new Sentence { Terminal.Of("b"), Variable.Of("S"), Terminal.Of("b") }
+					Nonterminal.Of("S"),
+					new Sentence { Terminal.Of("b"), Nonterminal.Of("S"), Terminal.Of("b") }
 				),
 				new Production(
-					Variable.Of("S"),
+					Nonterminal.Of("S"),
 					new Sentence { }
 				)
 			};
-			Grammar g = new Grammar(productions, Variable.Of("S"));
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
 			CNFGrammar h = g.ToCNF();
 
 			Assert.IsFalse(h.Accepts(Sentence.FromLetters("ab")));
@@ -51,16 +51,16 @@ namespace CFGLibTest {
 			//	Var(X_2) → Trm(a)
 			//}
 			var terminalProductions = new List<CNFTerminalProduction> {
-				new CNFTerminalProduction(Variable.Of("X_2"), Terminal.Of("b")),
-				new CNFTerminalProduction(Variable.Of("X_0"), Terminal.Of("b")),
-				new CNFTerminalProduction(Variable.Of("X_0"), Terminal.Of("a")),
-				new CNFTerminalProduction(Variable.Of("X_2"), Terminal.Of("a")),
+				new CNFTerminalProduction(Nonterminal.Of("X_2"), Terminal.Of("b")),
+				new CNFTerminalProduction(Nonterminal.Of("X_0"), Terminal.Of("b")),
+				new CNFTerminalProduction(Nonterminal.Of("X_0"), Terminal.Of("a")),
+				new CNFTerminalProduction(Nonterminal.Of("X_2"), Terminal.Of("a")),
 			};
 			var nonterminalProductions = new List<CNFNonterminalProduction> {
-				new CNFNonterminalProduction(Variable.Of("X_0"), Variable.Of("X_0"), Variable.Of("X_1"))
+				new CNFNonterminalProduction(Nonterminal.Of("X_0"), Nonterminal.Of("X_0"), Nonterminal.Of("X_1"))
 			};
 			
-			var g = new CNFGrammar(nonterminalProductions, terminalProductions, 0, Variable.Of("X_0"));
+			var g = new CNFGrammar(nonterminalProductions, terminalProductions, 0, Nonterminal.Of("X_0"));
 
 			
 			Assert.IsFalse(g.Accepts(Sentence.FromLetters("abc")));
@@ -79,76 +79,76 @@ namespace CFGLibTest {
 
 			var nonterminalProductions = new List<CNFNonterminalProduction> {
 				new CNFNonterminalProduction(
-					Variable.Of("S"),
-					Variable.Of("NP"), Variable.Of("VP"),
+					Nonterminal.Of("S"),
+					Nonterminal.Of("NP"), Nonterminal.Of("VP"),
 					10
 				),
 				new CNFNonterminalProduction(
-					Variable.Of("VP"),
-					Variable.Of("Vt"), Variable.Of("NP"),
+					Nonterminal.Of("VP"),
+					Nonterminal.Of("Vt"), Nonterminal.Of("NP"),
 					8
 				),
 				new CNFNonterminalProduction(
-					Variable.Of("VP"),
-					Variable.Of("VP"), Variable.Of("PP"),
+					Nonterminal.Of("VP"),
+					Nonterminal.Of("VP"), Nonterminal.Of("PP"),
 					2
 				),
 				new CNFNonterminalProduction(
-					Variable.Of("NP"),
-					Variable.Of("DT"), Variable.Of("NN"),
+					Nonterminal.Of("NP"),
+					Nonterminal.Of("DT"), Nonterminal.Of("NN"),
 					8
 				),
 				new CNFNonterminalProduction(
-					Variable.Of("NP"),
-					Variable.Of("NP"), Variable.Of("PP"),
+					Nonterminal.Of("NP"),
+					Nonterminal.Of("NP"), Nonterminal.Of("PP"),
 					2
 				),
 				new CNFNonterminalProduction(
-					Variable.Of("PP"),
-					Variable.Of("IN"), Variable.Of("NP")
+					Nonterminal.Of("PP"),
+					Nonterminal.Of("IN"), Nonterminal.Of("NP")
 				),
 			};
 			var terminalProductions = new List<CNFTerminalProduction> {
 				new CNFTerminalProduction(
-					Variable.Of("Vt"),
+					Nonterminal.Of("Vt"),
 					Terminal.Of("saw")
 				),
 				new CNFTerminalProduction(
-					Variable.Of("NN"),
+					Nonterminal.Of("NN"),
 					Terminal.Of("man"),
 					1
 				),
 				new CNFTerminalProduction(
-					Variable.Of("NN"),
+					Nonterminal.Of("NN"),
 					Terminal.Of("woman"),
 					1
 				),
 				new CNFTerminalProduction(
-					Variable.Of("NN"),
+					Nonterminal.Of("NN"),
 					Terminal.Of("telescope"),
 					3
 				),
 				new CNFTerminalProduction(
-					Variable.Of("NN"),
+					Nonterminal.Of("NN"),
 					Terminal.Of("dog"),
 					5
 				),
 				new CNFTerminalProduction(
-					Variable.Of("DT"),
+					Nonterminal.Of("DT"),
 					Terminal.Of("the")
 				),
 				new CNFTerminalProduction(
-					Variable.Of("IN"),
+					Nonterminal.Of("IN"),
 					Terminal.Of("with"),
 					6
 				),
 				new CNFTerminalProduction(
-					Variable.Of("IN"),
+					Nonterminal.Of("IN"),
 					Terminal.Of("in"),
 					4
 				),
 			};
-			var h = new CNFGrammar(nonterminalProductions, terminalProductions, 0, Variable.Of("S"));
+			var h = new CNFGrammar(nonterminalProductions, terminalProductions, 0, Nonterminal.Of("S"));
 			// CNFGrammar h = g.ToCNF();
 
 			Assert.IsFalse(h.Accepts(Sentence.FromWords("saw the dog")));

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib {
 	public interface CNFProduction {
-		Variable Lhs {
+		Nonterminal Lhs {
 			get;
 		}
 		int Weight {

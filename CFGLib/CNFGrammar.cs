@@ -11,11 +11,11 @@ namespace CFGLib {
 		// private bool _producesEmpty = false;
 		// TODO: it's possible for the likelihood to be so low as to appear to be 0, but not actually be 
 		private int _producesEmptyWeight = 0;
-		private Variable _start;
+		private Nonterminal _start;
 
 		private Dictionary<Terminal, ISet<CNFTerminalProduction>> _reverseTerminalProductions;
-		private Dictionary<Variable, ISet<CNFNonterminalProduction>> _ntProductionsByVariable;
-		private Dictionary<Variable, ISet<CNFTerminalProduction>> _tProductionsByVariable;
+		private Dictionary<Nonterminal, ISet<CNFNonterminalProduction>> _ntProductionsByNonterminal;
+		private Dictionary<Nonterminal, ISet<CNFTerminalProduction>> _tProductionsByNonterminal;
 
 
 		public List<CNFNonterminalProduction> NonterminalProductions {
@@ -26,7 +26,7 @@ namespace CFGLib {
 			get { return _terminalProductions; }
 		}
 
-		public Variable Start {
+		public Nonterminal Start {
 			get { return _start; }
 			set { _start = value; }
 		}
@@ -34,7 +34,7 @@ namespace CFGLib {
 		private CNFGrammar() {
 		}
 
-		public CNFGrammar(List<CNFNonterminalProduction> nt, List<CNFTerminalProduction> t, int producesEmptyWeight, Variable start) {
+		public CNFGrammar(List<CNFNonterminalProduction> nt, List<CNFTerminalProduction> t, int producesEmptyWeight, Nonterminal start) {
 			_nonterminalProductions = nt;
 			_terminalProductions = t;
 			_producesEmptyWeight = producesEmptyWeight;
@@ -79,12 +79,12 @@ namespace CFGLib {
 				(p) => p.Rhs,
 				(p) => p
 			);
-			_ntProductionsByVariable = Helpers.ConstructCache(
+			_ntProductionsByNonterminal = Helpers.ConstructCache(
 				_nonterminalProductions,
 				(p) => p.Lhs,
 				(p) => p
 			);
-			_tProductionsByVariable = Helpers.ConstructCache(
+			_tProductionsByNonterminal = Helpers.ConstructCache(
 				_terminalProductions,
 				(p) => p.Lhs,
 				(p) => p
@@ -118,8 +118,8 @@ namespace CFGLib {
 			BuildLookups(); 
 			// var reverseTerminalProductions = ReverseTerminalLookups();
 
-			List<Variable> nonterminals_R = new List<Variable>(GetNonterminals());
-			Dictionary<Variable, int> RToJ = new Dictionary<Variable, int>();
+			List<Nonterminal> nonterminals_R = new List<Nonterminal>(GetNonterminals());
+			Dictionary<Nonterminal, int> RToJ = new Dictionary<Nonterminal, int>();
 			for (int i = 0; i < nonterminals_R.Count; i++) {
 				var R = nonterminals_R[i];
 				RToJ[R] = i;
@@ -174,17 +174,15 @@ namespace CFGLib {
 		private double GetProbability(CNFProduction target) {
 			return GetProbability(target.Lhs, target.Weight);
 		}
-		private double GetProbability(Variable nonterminal, int weight) {
+		private double GetProbability(Nonterminal nonterminal, int weight) {
 			int weightTotal = 0;
 
-			// var nts = _ntProductionsByVariable[target.Lhs];
-			var nts = _ntProductionsByVariable.LookupEnumerable(nonterminal);
+			var nts = _ntProductionsByNonterminal.LookupEnumerable(nonterminal);
 			foreach (var production in nts) {
 				weightTotal += production.Weight;
 			}
 
-			// var ts = _tProductionsByVariable[target.Lhs];
-			var ts = _tProductionsByVariable.LookupEnumerable(nonterminal);
+			var ts = _tProductionsByNonterminal.LookupEnumerable(nonterminal);
 			foreach (var production in ts) {
 				weightTotal += production.Weight;
 			}
@@ -196,8 +194,8 @@ namespace CFGLib {
 			return (double)weight / weightTotal;
 		}
 
-		private HashSet<Variable> GetNonterminals() {
-			var results = new HashSet<Variable>();
+		private HashSet<Nonterminal> GetNonterminals() {
+			var results = new HashSet<Nonterminal>();
 
 			foreach (var production in _nonterminalProductions) {
 				results.Add(production.Lhs);

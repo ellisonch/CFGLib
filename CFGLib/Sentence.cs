@@ -112,14 +112,14 @@ namespace CFGLib {
 		}
 
 		public bool OnlyTerminals() {
-			var hasVariable = false;
+			var hasNonterminal = false;
 			foreach (var word in _sentence) {
-				if (word.IsVariable()) {
-					hasVariable = true;
+				if (word.IsNonterminal()) {
+					hasNonterminal = true;
 					break;
 				}
 			}
-			return !hasVariable;
+			return !hasNonterminal;
 		}
 
 		public string AsTerminals() {
@@ -138,7 +138,7 @@ namespace CFGLib {
 			var terminals = new HashSet<Terminal>();
 			foreach (var sentence in sentences) {
 				foreach (var word in sentence) {
-					if (!word.IsVariable()) {
+					if (!word.IsNonterminal()) {
 						terminals.Add((Terminal)word);
 					}
 				}

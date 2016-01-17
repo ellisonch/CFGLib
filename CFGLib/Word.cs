@@ -3,6 +3,6 @@
 namespace CFGLib {
 	public interface Word {
 		Sentence ProduceBy(Grammar grammar);
-		bool IsVariable();
+		bool IsNonterminal();
 	}
 }

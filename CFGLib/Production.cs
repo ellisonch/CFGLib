@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CFGLib {
 	public class Production {
-		private Variable _lhs;
+		private Nonterminal _lhs;
 		private Sentence _rhs;
 		private int _weight = 1;
 
@@ -11,7 +11,7 @@ namespace CFGLib {
 			get { return _rhs.Count == 0; }
 		}
 
-		public Variable Lhs {
+		public Nonterminal Lhs {
 			get { return _lhs; }
 		}
 
@@ -33,7 +33,7 @@ namespace CFGLib {
 			}
 		}
 
-		public Production(Variable lhs, Sentence rhs, int weight = 1) {
+		public Production(Nonterminal lhs, Sentence rhs, int weight = 1) {
 			_lhs = lhs;
 			_rhs = rhs;
 			_weight = weight;

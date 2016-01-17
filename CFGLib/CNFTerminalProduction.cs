@@ -1,6 +1,6 @@
 ﻿namespace CFGLib {
 	public class CNFTerminalProduction : CNFProduction {
-		private readonly Variable _lhs;
+		private readonly Nonterminal _lhs;
 		private readonly Terminal _rhs;
 		// TODO: figure out how to keep this readonly?
 		private int _weight = 1;
@@ -11,13 +11,13 @@
 			_weight = production.Weight;
 		}
 
-		public CNFTerminalProduction(Variable lhs, Terminal rhs, int weight = 1) {
+		public CNFTerminalProduction(Nonterminal lhs, Terminal rhs, int weight = 1) {
 			_lhs = lhs;
 			_rhs = rhs;
 			_weight = weight;
 		}
 
-		public Variable Lhs {
+		public Nonterminal Lhs {
 			get { return _lhs; }
 		}
 		public Terminal Rhs {

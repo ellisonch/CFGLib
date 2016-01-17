@@ -52,7 +52,7 @@
     <Compile Include="Sentence.cs" />
     <Compile Include="SentenceWithProbability.cs" />
     <Compile Include="Terminal.cs" />
-    <Compile Include="Variable.cs" />
+    <Compile Include="Nonterminal.cs" />
     <Compile Include="Word.cs" />
   </ItemGroup>
   <ItemGroup>

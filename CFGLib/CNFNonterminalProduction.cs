@@ -1,26 +1,26 @@
 ﻿namespace CFGLib {
 	public class CNFNonterminalProduction : CNFProduction {
-		private readonly Variable _lhs;
-		private readonly Variable[] _rhs = new Variable[2];
+		private readonly Nonterminal _lhs;
+		private readonly Nonterminal[] _rhs = new Nonterminal[2];
 		private int _weight = 1;
 
 		public CNFNonterminalProduction(Production production) {
 			_lhs = production.Lhs;
-			_rhs[0] = (Variable)production.Rhs[0];
-			_rhs[1] = (Variable)production.Rhs[1];
+			_rhs[0] = (Nonterminal)production.Rhs[0];
+			_rhs[1] = (Nonterminal)production.Rhs[1];
 			_weight = production.Weight;
 		}
-		public CNFNonterminalProduction(Variable lhs, Variable rhs1, Variable rhs2, int weight = 1) {
+		public CNFNonterminalProduction(Nonterminal lhs, Nonterminal rhs1, Nonterminal rhs2, int weight = 1) {
 			_lhs = lhs;
 			_rhs[0] = rhs1;
 			_rhs[1] = rhs2;
 			_weight = weight;
 		}
 
-		public Variable Lhs {
+		public Nonterminal Lhs {
 			get { return _lhs; }
 		}
-		public Variable[] Rhs {
+		public Nonterminal[] Rhs {
 			get { return _rhs; }
 		}
 		public int Weight {

@@ -8,7 +8,7 @@ namespace CFGLib {
 	public class CFGtoCNF {
 		private Grammar _grammar;
 		private int _freshx = 0;
-		private Variable _startSymbol;
+		private Nonterminal _startSymbol;
 
 		public CFGtoCNF(Grammar grammar) {
 			_grammar = grammar;
@@ -74,7 +74,7 @@ namespace CFGLib {
 		private void StepStart(List<Production> productions) {
 			var fresh = Getfresh();
 			productions.Add(
-				new Production(fresh, new Sentence { Variable.Of("S") })
+				new Production(fresh, new Sentence { Nonterminal.Of("S") })
 			);
 			_startSymbol = fresh;
 		}
@@ -82,18 +82,18 @@ namespace CFGLib {
 		// Eliminate rules with nonsolitary terminals
 		private void StepTerm(List<Production> productions) {
 			var newProductions = new List<Production>();
-			var lookup = new Dictionary<Terminal, Variable>();
+			var lookup = new Dictionary<Terminal, Nonterminal>();
 			foreach (var production in productions) {
 				if (production.Rhs.Count < 2) {
 					continue;
 				}
 				for (int i = 0; i < production.Rhs.Count; i++) {
 					var word = production.Rhs[i];
-					if (word.IsVariable()) {
+					if (word.IsNonterminal()) {
 						continue;
 					}
 					Terminal terminal = (Terminal)word;
-					Variable fresh;
+					Nonterminal fresh;
 					if (!lookup.TryGetValue(terminal, out fresh)) {
 						fresh = Getfresh();
 						lookup[terminal] = fresh;
@@ -165,12 +165,12 @@ namespace CFGLib {
 			foreach (var production in productions) {
 				if (production.Rhs.Count == 1) {
 					var rhs = production.Rhs[0];
-					if (!rhs.IsVariable()) {
+					if (!rhs.IsNonterminal()) {
 						continue;
 					}
 					changed = true;
 					result.Remove(production);
-					var entries = table[(Variable)rhs];
+					var entries = table[(Nonterminal)rhs];
 					foreach (var entry in entries) {
 						var newProd = new Production(production.Lhs, entry.Rhs);
 						if (!newProd.IsSelfLoop) {
@@ -186,16 +186,16 @@ namespace CFGLib {
 		}
 
 		// returns the set of all nonterminals that derive ε
-		private static ISet<Variable> GetNullable(List<Production> originalProductions) {
+		private static ISet<Nonterminal> GetNullable(List<Production> originalProductions) {
 			var productions = CloneProductions(originalProductions);
 			var newProductions = new List<Production>();
-			var nullableVariables = new HashSet<Variable>();
+			var nullableNonterminals = new HashSet<Nonterminal>();
 			var changed = true;
 			while (changed) {
 				changed = false;
 				foreach (var production in productions) {
 					if (production.IsEmpty) {
-						nullableVariables.Add(production.Lhs);
+						nullableNonterminals.Add(production.Lhs);
 						changed = true;
 						continue;
 					}
@@ -204,7 +204,7 @@ namespace CFGLib {
 					}
 					for (int i = production.Rhs.Count - 1; i >= 0; i--) {
 						var word = production.Rhs[i];
-						if (nullableVariables.Contains(word)) {
+						if (nullableNonterminals.Contains(word)) {
 							production.Rhs.RemoveAt(i);
 							changed = true;
 						}
@@ -216,7 +216,7 @@ namespace CFGLib {
 				newProductions = oldProductions;
 				newProductions.Clear();
 			}
-			return nullableVariables;
+			return nullableNonterminals;
 		}
 
 		// remove A -> X unless A is the start symbol
@@ -236,7 +236,7 @@ namespace CFGLib {
 			}
 		}
 
-		private static List<Production> Nullate(Production originalProduction, ISet<Variable> nullableSet) {
+		private static List<Production> Nullate(Production originalProduction, ISet<Nonterminal> nullableSet) {
 			var results = new List<Production>();
 			results.Add(originalProduction);
 			if (originalProduction.IsEmpty) {
@@ -262,14 +262,14 @@ namespace CFGLib {
 		}
 
 		// todo: horrible
-		private Variable Getfresh() {
-			var result = Variable.Of("X_" + _freshx);
+		private Nonterminal Getfresh() {
+			var result = Nonterminal.Of("X_" + _freshx);
 			_freshx++;
 			return result;
 		}
 		
-		private static Dictionary<Variable, List<Production>> BuildLookupTable(List<Production> productions) {
-			var table = new Dictionary<Variable, List<Production>>();
+		private static Dictionary<Nonterminal, List<Production>> BuildLookupTable(List<Production> productions) {
+			var table = new Dictionary<Nonterminal, List<Production>>();
 			foreach (var production in productions) {
 				List<Production> entries;
 				if (!table.TryGetValue(production.Lhs, out entries)) {

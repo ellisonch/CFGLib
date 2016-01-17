@@ -11,15 +11,15 @@ namespace ConsolePlayground {
 		static void Main(string[] args) {
 			var productions = new List<Production> {
 				new Production(
-					Variable.Of("S"),
-					new Sentence { Terminal.Of("a"), Variable.Of("S"), Terminal.Of("a") }
+					Nonterminal.Of("S"),
+					new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") }
 				),
 				new Production(
-					Variable.Of("S"),
-					new Sentence { Terminal.Of("b"), Variable.Of("S"), Terminal.Of("b") }
+					Nonterminal.Of("S"),
+					new Sentence { Terminal.Of("b"), Nonterminal.Of("S"), Terminal.Of("b") }
 				),
 				new Production(
-					Variable.Of("S"),
+					Nonterminal.Of("S"),
 					new Sentence { }
 				)
 			};
@@ -29,27 +29,27 @@ namespace ConsolePlayground {
 			// B → b | ε
 			//var productions = new List<Production> {
 			//	new Production(
-			//		Variable.Of("S"),
-			//		new Sentence { Variable.Of("A"), Variable.Of("S"), Variable.Of("A") }
+			//		Nonterminal.Of("S"),
+			//		new Sentence { Nonterminal.Of("A"), Nonterminal.Of("S"), Nonterminal.Of("A") }
 			//	),
 			//	new Production(
-			//		Variable.Of("S"),
-			//		new Sentence { Terminal.Of("a"), Variable.Of("B") }
+			//		Nonterminal.Of("S"),
+			//		new Sentence { Terminal.Of("a"), Nonterminal.Of("B") }
 			//	),
 			//	new Production(
-			//		Variable.Of("A"),
-			//		new Sentence { Variable.Of("B") }
+			//		Nonterminal.Of("A"),
+			//		new Sentence { Nonterminal.Of("B") }
 			//	),
 			//	new Production(
-			//		Variable.Of("A"),
-			//		new Sentence { Variable.Of("S") }
+			//		Nonterminal.Of("A"),
+			//		new Sentence { Nonterminal.Of("S") }
 			//	),
 			//	new Production(
-			//		Variable.Of("B"),
+			//		Nonterminal.Of("B"),
 			//		new Sentence { Terminal.Of("b") }
 			//	),
 			//	new Production(
-			//		Variable.Of("B"),
+			//		Nonterminal.Of("B"),
 			//		new Sentence { }
 			//	)
 			//};
@@ -60,103 +60,103 @@ namespace ConsolePlayground {
 			//A → a | ε
 			//var productions = new List<Production> {
 			//	new Production(
-			//		Variable.Of("S"),
-			//		new Sentence { Variable.Of("A"), Terminal.Of("b"), Variable.Of("B") }
+			//		Nonterminal.Of("S"),
+			//		new Sentence { Nonterminal.Of("A"), Terminal.Of("b"), Nonterminal.Of("B") }
 			//	),
 			//	new Production(
-			//		Variable.Of("S"),
-			//		new Sentence { Variable.Of("C") }
+			//		Nonterminal.Of("S"),
+			//		new Sentence { Nonterminal.Of("C") }
 			//	),
 			//	new Production(
-			//		Variable.Of("B"),
-			//		new Sentence { Variable.Of("A"), Variable.Of("A") }
+			//		Nonterminal.Of("B"),
+			//		new Sentence { Nonterminal.Of("A"), Nonterminal.Of("A") }
 			//	),
 			//	new Production(
-			//		Variable.Of("B"),
-			//		new Sentence { Variable.Of("A"), Variable.Of("C") }
+			//		Nonterminal.Of("B"),
+			//		new Sentence { Nonterminal.Of("A"), Nonterminal.Of("C") }
 			//	),
 			//	new Production(
-			//		Variable.Of("C"),
+			//		Nonterminal.Of("C"),
 			//		new Sentence { Terminal.Of("b") }
 			//	),
 			//	new Production(
-			//		Variable.Of("C"),
+			//		Nonterminal.Of("C"),
 			//		new Sentence { Terminal.Of("c") }
 			//	),
 			//	new Production(
-			//		Variable.Of("A"),
+			//		Nonterminal.Of("A"),
 			//		new Sentence { Terminal.Of("a") }
 			//	),
 			//	new Production(
-			//		Variable.Of("A"),
+			//		Nonterminal.Of("A"),
 			//		new Sentence { }
 			//	)
 			//};
 
 			//var productions = new List<Production> {
 			//	new Production(
-			//		Variable.Of("S"),
-			//		new Sentence { Variable.Of("NP"), Variable.Of("VP") }
+			//		Nonterminal.Of("S"),
+			//		new Sentence { Nonterminal.Of("NP"), Nonterminal.Of("VP") }
 			//	),
 			//	new Production(
-			//		Variable.Of("NP"),
-			//		new Sentence { Variable.Of("N") }
+			//		Nonterminal.Of("NP"),
+			//		new Sentence { Nonterminal.Of("N") }
 			//	),
 			//	new Production(
-			//		Variable.Of("NP"),
-			//		new Sentence { Variable.Of("Det"), Variable.Of("N") }
+			//		Nonterminal.Of("NP"),
+			//		new Sentence { Nonterminal.Of("Det"), Nonterminal.Of("N") }
 			//	),
 			//	new Production(
-			//		Variable.Of("VP"),
-			//		new Sentence { Variable.Of("V") }
+			//		Nonterminal.Of("VP"),
+			//		new Sentence { Nonterminal.Of("V") }
 			//	),
 			//	new Production(
-			//		Variable.Of("VP"),
-			//		new Sentence { Variable.Of("V"), Variable.Of("PP") }
+			//		Nonterminal.Of("VP"),
+			//		new Sentence { Nonterminal.Of("V"), Nonterminal.Of("PP") }
 			//	),
 			//	new Production(
-			//		Variable.Of("PP"),
-			//		new Sentence { Variable.Of("Prep"), Variable.Of("NP") }
+			//		Nonterminal.Of("PP"),
+			//		new Sentence { Nonterminal.Of("Prep"), Nonterminal.Of("NP") }
 			//	),
 			//	new Production(
-			//		Variable.Of("N"),
+			//		Nonterminal.Of("N"),
 			//		new Sentence { Terminal.Of("boy") }
 			//	),
 			//	new Production(
-			//		Variable.Of("N"),
+			//		Nonterminal.Of("N"),
 			//		new Sentence { Terminal.Of("cat") }
 			//	),
 			//	new Production(
-			//		Variable.Of("N"),
+			//		Nonterminal.Of("N"),
 			//		new Sentence { Terminal.Of("trampoline") }
 			//	),
 			//	new Production(
-			//		Variable.Of("Prep"),
+			//		Nonterminal.Of("Prep"),
 			//		new Sentence { Terminal.Of("of") }
 			//	),
 			//	new Production(
-			//		Variable.Of("Prep"),
+			//		Nonterminal.Of("Prep"),
 			//		new Sentence { Terminal.Of("through") }
 			//	),
 			//	new Production(
-			//		Variable.Of("V"),
+			//		Nonterminal.Of("V"),
 			//		new Sentence { Terminal.Of("kicked") }
 			//	),
 			//	new Production(
-			//		Variable.Of("V"),
+			//		Nonterminal.Of("V"),
 			//		new Sentence { Terminal.Of("works") }
 			//	),
 			//	new Production(
-			//		Variable.Of("Det"),
+			//		Nonterminal.Of("Det"),
 			//		new Sentence { Terminal.Of("a") }
 			//	),
 			//	new Production(
-			//		Variable.Of("Det"),
+			//		Nonterminal.Of("Det"),
 			//		new Sentence { Terminal.Of("the") }
 			//	),
 			//};
 
-			Grammar g = new Grammar(productions, Variable.Of("S"));
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
 			Console.WriteLine(g);
 
 			//CNFGrammar h = g.ToCNF();
