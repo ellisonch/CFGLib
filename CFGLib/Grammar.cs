@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib {
 	public class Grammar : BaseGrammar {
-		private HashSet<BaseProduction> _productions;
+		private List<BaseProduction> _productions;
 		private Nonterminal _start;
 
 		private Dictionary<Nonterminal, List<BaseProduction>> _table = new Dictionary<Nonterminal, List<BaseProduction>>();
@@ -16,7 +16,7 @@ namespace CFGLib {
 			return _table.LookupEnumerable(lhs);
 		}
 
-		public override ISet<BaseProduction> Productions {
+		public override IEnumerable<BaseProduction> Productions {
 			get { return _productions; }
 		}
 
@@ -37,7 +37,7 @@ namespace CFGLib {
 		}
 
 		public Grammar(IEnumerable<BaseProduction> productions, Nonterminal start) {
-			_productions = new HashSet<BaseProduction>(productions);
+			_productions = new List<BaseProduction>(productions);
 			
 			foreach (var production in productions) {
 				var lhs = production.Lhs;

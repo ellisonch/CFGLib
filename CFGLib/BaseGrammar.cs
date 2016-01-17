@@ -13,7 +13,7 @@ namespace CFGLib {
 		public abstract ISet<Terminal> Terminals {
 			get;
 		}
-		public abstract ISet<BaseProduction> Productions {
+		public abstract IEnumerable<BaseProduction> Productions {
 			get;
 		}
 		public abstract Nonterminal Start {
@@ -21,8 +21,7 @@ namespace CFGLib {
 		}
 		
 		internal abstract IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs);
-
-
+		
 		private Random _rand = new Random(0);
 
 		public List<SentenceWithProbability> ProduceToDepth(int depth) {

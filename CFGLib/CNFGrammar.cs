@@ -28,17 +28,17 @@ namespace CFGLib {
 
 
 		internal override IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs) {
-			IEnumerable<BaseProduction> set1 = _ntProductionsByNonterminal.LookupEnumerable(lhs);
-			IEnumerable<BaseProduction> set2 = _tProductionsByNonterminal.LookupEnumerable(lhs);
+			IEnumerable<BaseProduction> list1 = _ntProductionsByNonterminal.LookupEnumerable(lhs);
+			IEnumerable<BaseProduction> list2 = _tProductionsByNonterminal.LookupEnumerable(lhs);
 
-			return set1.Concat(set2);
+			return list1.Concat(list2);
 		}
 
-		public override ISet<BaseProduction> Productions {
+		public override IEnumerable<BaseProduction> Productions {
 			get {
 				IEnumerable<BaseProduction> list1 = _nonterminalProductions;
 				IEnumerable<BaseProduction> list2 = _terminalProductions;
-				return new HashSet<BaseProduction>(list1.Concat(list2));
+				return list1.Concat(list2);
 			}
 		}
 

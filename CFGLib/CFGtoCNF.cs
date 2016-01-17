@@ -60,7 +60,7 @@ namespace CFGLib {
 			return CloneProductions(grammar.Productions);
 		}
 
-		private static ISet<BaseProduction> CloneProductions(ISet<BaseProduction> productions) {
+		private static ISet<BaseProduction> CloneProductions(IEnumerable<BaseProduction> productions) {
 			var result = new HashSet<BaseProduction>();
 			foreach (var production in productions) {
 				// var productions = grammar.Productions;
