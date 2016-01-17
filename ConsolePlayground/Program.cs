@@ -9,7 +9,7 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			var productions = new List<Production> {
+			var productions = new List<BaseProduction> {
 				new Production(
 					Nonterminal.Of("S"),
 					new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") }

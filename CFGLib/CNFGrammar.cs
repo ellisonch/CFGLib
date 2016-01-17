@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
-	public class CNFGrammar {
+	public class CNFGrammar : BaseGrammar {
 		private List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
 		private List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
 		// private bool _producesEmpty = false;
@@ -26,10 +26,39 @@ namespace CFGLib {
 			get { return _terminalProductions; }
 		}
 
-		public Nonterminal Start {
-			get { return _start; }
-			set { _start = value; }
+
+		internal override IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs) {
+			IEnumerable<BaseProduction> set1 = _ntProductionsByNonterminal.LookupEnumerable(lhs);
+			IEnumerable<BaseProduction> set2 = _tProductionsByNonterminal.LookupEnumerable(lhs);
+
+			return set1.Concat(set2);
 		}
+
+		public override ISet<BaseProduction> Productions {
+			get {
+				IEnumerable<BaseProduction> list1 = _nonterminalProductions;
+				IEnumerable<BaseProduction> list2 = _terminalProductions;
+				return new HashSet<BaseProduction>(list1.Concat(list2));
+			}
+		}
+
+		public override ISet<Terminal> Terminals {
+			get {
+				return null;
+			}
+		}
+		public override ISet<Nonterminal> Nonterminals {
+			get {
+				return null;
+				// return new HashSet<Nonterminal>(this.Productions.Select((x) =>));
+			}
+		}
+
+		public override Nonterminal Start {
+			get { return _start; }
+		}
+
+
 
 		private CNFGrammar() {
 		}
@@ -76,7 +105,7 @@ namespace CFGLib {
 		private void BuildLookups() {
 			_reverseTerminalProductions = Helpers.ConstructCache(
 				_terminalProductions,
-				(p) => p.Rhs,
+				(p) => p.SpecificRhs,
 				(p) => p
 			);
 			_ntProductionsByNonterminal = Helpers.ConstructCache(
@@ -146,8 +175,8 @@ namespace CFGLib {
 						// Console.WriteLine("i, j, k = {0:00}, {1:00}, {2:00}", i, j, k);
 						foreach (var production in _nonterminalProductions) {
 							var R_A = production.Lhs;
-							var R_B = production.Rhs[0];
-							var R_C = production.Rhs[1];
+							var R_B = production.SpecificRhs[0];
+							var R_C = production.SpecificRhs[1];
 							var A = RToJ[R_A];
 							var B = RToJ[R_B];
 							var C = RToJ[R_C];
@@ -171,7 +200,7 @@ namespace CFGLib {
 			return Cyk(s) > 0;
 		}
 
-		private double GetProbability(CNFProduction target) {
+		private double GetProbability(BaseProduction target) {
 			return GetProbability(target.Lhs, target.Weight);
 		}
 		private double GetProbability(Nonterminal nonterminal, int weight) {
@@ -199,8 +228,8 @@ namespace CFGLib {
 
 			foreach (var production in _nonterminalProductions) {
 				results.Add(production.Lhs);
-				results.Add(production.Rhs[0]);
-				results.Add(production.Rhs[1]);
+				results.Add(production.SpecificRhs[0]);
+				results.Add(production.SpecificRhs[1]);
 			}
 			foreach (var production in _terminalProductions) {
 				results.Add(production.Lhs);

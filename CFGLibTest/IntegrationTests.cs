@@ -9,7 +9,7 @@ namespace CFGLibTest {
 		[TestMethod]
 		public void TestMethod1() {
 			// S -> aSa | bSb | ε
-			var productions = new List<Production> {
+			var productions = new List<BaseProduction> {
 				new Production(
 					Nonterminal.Of("S"),
 					new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") }

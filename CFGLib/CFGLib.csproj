@@ -40,10 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseProduction.cs" />
     <Compile Include="CFGtoCNF.cs" />
     <Compile Include="CNFGrammar.cs" />
     <Compile Include="CNFNonterminalProduction.cs" />
-    <Compile Include="CNFProduction.cs" />
     <Compile Include="CNFTerminalProduction.cs" />
     <Compile Include="Grammar.cs" />
     <Compile Include="Helpers.cs" />

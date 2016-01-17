@@ -2,52 +2,21 @@
 using System.Collections.Generic;
 
 namespace CFGLib {
-	public class Production {
-		private Nonterminal _lhs;
+	public class Production : BaseProduction {
 		private Sentence _rhs;
-		private int _weight = 1;
 
-		public bool IsEmpty {
-			get { return _rhs.Count == 0; }
-		}
-
-		public Nonterminal Lhs {
-			get { return _lhs; }
-		}
-
-		public int Weight {
-			get { return _weight; }
-		}
-
-		public Sentence Rhs {
+		public override Sentence Rhs {
 			get { return _rhs; }
 		}
 
-		public bool IsSelfLoop {
-			get {
-				if (this.Rhs.Count != 1) {
-					return false;
-				}
-				var rword = this.Rhs[0];
-				return Lhs == rword;
-			}
-		}
-
 		public Production(Nonterminal lhs, Sentence rhs, int weight = 1) {
-			_lhs = lhs;
+			this.Lhs = lhs;
 			_rhs = rhs;
-			_weight = weight;
+			this.Weight = weight;
 		}
 
-		public override string ToString() {
-			var lhss = _lhs.ToString();
-			var rhss = _rhs.ToString();
-			
-			return lhss + " → " + rhss;
-		}
-
-		internal Production Clone() {
-			return new Production(_lhs, new Sentence(_rhs), _weight);
+		internal override BaseProduction Clone() {
+			return new Production(this.Lhs, new Sentence(_rhs), this.Weight);
 		}
 	}
 }

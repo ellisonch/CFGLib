@@ -13,14 +13,14 @@ namespace CFGLib {
 		public abstract ISet<Terminal> Terminals {
 			get;
 		}
-		public abstract ISet<Production> Productions {
+		public abstract ISet<BaseProduction> Productions {
 			get;
 		}
 		public abstract Nonterminal Start {
 			get;
 		}
 		
-		internal abstract IEnumerable<Production> ProductionsFrom(Nonterminal lhs);
+		internal abstract IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs);
 
 
 		private Random _rand = new Random(0);
@@ -101,7 +101,7 @@ namespace CFGLib {
 			return results;
 		}
 
-		private double GetProbability(Production target) {
+		private double GetProbability(BaseProduction target) {
 			int weightTotal = 0;
 
 			var productions = ProductionsFrom(target.Lhs);
