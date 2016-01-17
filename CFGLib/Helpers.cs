@@ -6,41 +6,31 @@ using System.Threading.Tasks;
 
 namespace CFGLib {
 	internal static class Helpers {
-		public static IEnumerable<T> LookupEnumerable<TKey, T>	(
-			this IDictionary<TKey, ISet<T>> dictionary,
+		public static IEnumerable<T> LookupEnumerable<TKey, T> (
+			this IDictionary<TKey, ICollection<T>> dictionary,
 			TKey key
 		) {
-			ISet<T> retval;
-			if (dictionary.TryGetValue(key, out retval)) {
-				return retval;
-			}
-			return Enumerable.Empty<T>();
-		}
-
-		public static IEnumerable<T> LookupEnumerable<TKey, T>(
-			this IDictionary<TKey, List<T>> dictionary,
-			TKey key
-		) {
-			List<T> retval;
+			ICollection<T> retval;
 			if (dictionary.TryGetValue(key, out retval)) {
 				return retval;
 			}
 			return Enumerable.Empty<T>();
 		}
 		
-		public static Dictionary<T1, ISet<T2>> ConstructCache<T1, T2, T3>(
-			IEnumerable<T3> terminalProductions,
-			Func<T3, T1> getKey,
-			Func<T3, T2> getValue
+		public static Dictionary<T1, ICollection<T2>> ConstructCache<T1, T2, TElm>(
+			IEnumerable<TElm> inputListOfElements,
+			Func<TElm, T1> getKeyFromElement,
+			Func<TElm, T2> getValueFromElement,
+			Func<ICollection<T2>> newEnumerable
 		) {
-			var cache = new Dictionary<T1, ISet<T2>>();
-			foreach (var production in terminalProductions) {
-				ISet<T2> result;
-				if (!cache.TryGetValue(getKey(production), out result)) {
-					result = new HashSet<T2>();
-					cache[getKey(production)] = result;
+			var cache = new Dictionary<T1, ICollection<T2>>();
+			foreach (var production in inputListOfElements) {
+				ICollection<T2> result;
+				if (!cache.TryGetValue(getKeyFromElement(production), out result)) {
+					result = newEnumerable();
+					cache[getKeyFromElement(production)] = result;
 				}
-				result.Add(getValue(production));
+				result.Add(getValueFromElement(production));
 			}
 			return cache;
 		}

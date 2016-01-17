@@ -10,7 +10,7 @@ namespace CFGLib {
 		private List<BaseProduction> _productions;
 		private Nonterminal _start;
 
-		private Dictionary<Nonterminal, List<BaseProduction>> _table = new Dictionary<Nonterminal, List<BaseProduction>>();
+		private Dictionary<Nonterminal, ICollection<BaseProduction>> _table = new Dictionary<Nonterminal, ICollection<BaseProduction>>();
 
 		internal override IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs) {
 			return _table.LookupEnumerable(lhs);
@@ -38,16 +38,13 @@ namespace CFGLib {
 
 		public Grammar(IEnumerable<BaseProduction> productions, Nonterminal start) {
 			_productions = new List<BaseProduction>(productions);
-			
-			foreach (var production in productions) {
-				var lhs = production.Lhs;
-				List<BaseProduction> results;
-				if (!_table.TryGetValue(lhs, out results)) {
-					results = new List<BaseProduction>();
-					_table[lhs] = results;
-				}
-				results.Add(production);
-			}
+
+			_table = Helpers.ConstructCache(
+				_productions,
+				(p) => p.Lhs,
+				(p) => p,
+				() => new List<BaseProduction>()
+			);
 
 			_start = start;
 		}

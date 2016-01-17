@@ -13,9 +13,9 @@ namespace CFGLib {
 		private int _producesEmptyWeight = 0;
 		private Nonterminal _start;
 
-		private Dictionary<Terminal, ISet<CNFTerminalProduction>> _reverseTerminalProductions;
-		private Dictionary<Nonterminal, ISet<CNFNonterminalProduction>> _ntProductionsByNonterminal;
-		private Dictionary<Nonterminal, ISet<CNFTerminalProduction>> _tProductionsByNonterminal;
+		private Dictionary<Terminal, ICollection<CNFTerminalProduction>> _reverseTerminalProductions;
+		private Dictionary<Nonterminal, ICollection<CNFNonterminalProduction>> _ntProductionsByNonterminal;
+		private Dictionary<Nonterminal, ICollection<CNFTerminalProduction>> _tProductionsByNonterminal;
 
 
 		public List<CNFNonterminalProduction> NonterminalProductions {
@@ -106,17 +106,20 @@ namespace CFGLib {
 			_reverseTerminalProductions = Helpers.ConstructCache(
 				_terminalProductions,
 				(p) => p.SpecificRhs,
-				(p) => p
+				(p) => p,
+				() => new HashSet<CNFTerminalProduction>()
 			);
 			_ntProductionsByNonterminal = Helpers.ConstructCache(
 				_nonterminalProductions,
 				(p) => p.Lhs,
-				(p) => p
+				(p) => p,
+				() => new HashSet<CNFNonterminalProduction>()
 			);
 			_tProductionsByNonterminal = Helpers.ConstructCache(
 				_terminalProductions,
 				(p) => p.Lhs,
-				(p) => p
+				(p) => p,
+				() => new HashSet<CNFTerminalProduction>()
 			);
 		}
 
@@ -158,7 +161,7 @@ namespace CFGLib {
 			var P = new double[s.Count, s.Count, nonterminals_R.Count];
 			for (int i = 0; i < s.Count; i++) {
 				var a_i = (Terminal)s[i];
-				ISet<CNFTerminalProduction> yields_a_i;
+				ICollection<CNFTerminalProduction> yields_a_i;
 				if (!_reverseTerminalProductions.TryGetValue(a_i, out yields_a_i)) {
 					// the grammar can't possibly produce this string if it doesn't know a terminal
 					return 0.0;
