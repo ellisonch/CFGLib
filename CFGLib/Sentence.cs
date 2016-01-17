@@ -133,6 +133,15 @@ namespace CFGLib {
 			}
 			return result;
 		}
+		
+		public bool ContainsNonterminal() {
+			foreach (var c in this) {
+				if (c.IsNonterminal()) {
+					return true;
+				}
+			}
+			return false;
+		}
 
 		public static ISet<Terminal> GetAllTerminals(IEnumerable<Sentence> sentences) {
 			var terminals = new HashSet<Terminal>();

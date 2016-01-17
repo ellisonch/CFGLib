@@ -2,7 +2,7 @@
 
 namespace CFGLib {
 	public interface Word {
-		Sentence ProduceBy(Grammar grammar);
+		Sentence ProduceBy(BaseGrammar grammar);
 		bool IsNonterminal();
 	}
 }

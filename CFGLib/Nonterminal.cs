@@ -24,11 +24,12 @@ namespace CFGLib {
 			return string.Format("Var({0})", _name);
 		}
 
-		public Sentence ProduceBy(Grammar grammar) {
-			return grammar.ProduceNonterminal(this);
-		}
 		public bool IsNonterminal() {
 			return true;
+		}
+		
+		public Sentence ProduceBy(BaseGrammar grammar) {
+			return grammar.ProduceNonterminal(this);
 		}
 	}
 }

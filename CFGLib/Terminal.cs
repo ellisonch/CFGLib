@@ -31,7 +31,7 @@ namespace CFGLib {
 			return string.Format("Trm({0})", _name);
 		}
 
-		public Sentence ProduceBy(Grammar grammar) {
+		public Sentence ProduceBy(BaseGrammar grammar) {
 			return new Sentence { this };
 		}
 		public bool IsNonterminal() {

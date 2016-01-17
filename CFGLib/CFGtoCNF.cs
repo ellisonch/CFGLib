@@ -56,12 +56,12 @@ namespace CFGLib {
 		//	return target.Weight / sumWeight;
 		//}
 
-		private static List<Production> CloneGrammar(Grammar grammar) {
+		private static ISet<Production> CloneGrammar(Grammar grammar) {
 			return CloneProductions(grammar.Productions);
 		}
 
-		private static List<Production> CloneProductions(List<Production> productions) {
-			var result = new List<Production>();
+		private static ISet<Production> CloneProductions(ISet<Production> productions) {
+			var result = new HashSet<Production>();
 			foreach (var production in productions) {
 				// var productions = grammar.Productions;
 				result.Add(production.Clone());
@@ -71,7 +71,7 @@ namespace CFGLib {
 
 		// TODO needs to be updated when we can have non-S start symbols
 		// Eliminate the start symbol from right-hand sides
-		private void StepStart(List<Production> productions) {
+		private void StepStart(ISet<Production> productions) {
 			var fresh = Getfresh();
 			productions.Add(
 				new Production(fresh, new Sentence { Nonterminal.Of("S") })
@@ -80,7 +80,7 @@ namespace CFGLib {
 		}
 
 		// Eliminate rules with nonsolitary terminals
-		private void StepTerm(List<Production> productions) {
+		private void StepTerm(ISet<Production> productions) {
 			var newProductions = new List<Production>();
 			var lookup = new Dictionary<Terminal, Nonterminal>();
 			foreach (var production in productions) {
@@ -104,11 +104,11 @@ namespace CFGLib {
 					production.Rhs[i] = fresh;
 				}
 			}
-			productions.AddRange(newProductions);
+			productions.UnionWith(newProductions);
 		}
 
 		// Eliminate right-hand sides with more than 2 nonterminals
-		private void StepBin(List<Production> productions) {
+		private void StepBin(ISet<Production> productions) {
 			List<Production> finalProductions = new List<Production>();
 			foreach (var production in productions) {
 				if (production.Rhs.Count < 3) {
@@ -131,12 +131,12 @@ namespace CFGLib {
 				);
 			}
 			productions.Clear();
-			productions.AddRange(finalProductions);
+			productions.UnionWith(finalProductions);
 		}
 
 		// Eliminate ε-rules
 		// TODO: definitely does not preserve weights; fix Nullate()
-		private void StepDel(List<Production> productions) {
+		private void StepDel(ISet<Production> productions) {
 			var nullableSet = GetNullable(productions);
 			var newRules = new List<Production>();
 			foreach (var production in productions) {
@@ -145,11 +145,11 @@ namespace CFGLib {
 				newRules.AddRange(toAdd);
 			}
 			productions.Clear();
-			productions.AddRange(newRules);
+			productions.UnionWith(newRules);
 		}
 
 		// Eliminate unit rules
-		private static void StepUnit(List<Production> productions) {
+		private static void StepUnit(ISet<Production> productions) {
 			bool changed = true;
 			while (changed) {
 				changed = StepUnitOnce(productions);
@@ -157,9 +157,9 @@ namespace CFGLib {
 		}
 
 		// TODO messes up weights
-		private static bool StepUnitOnce(List<Production> productions) {
+		private static bool StepUnitOnce(ISet<Production> productions) {
 			var table = BuildLookupTable(productions);
-			var result = new List<Production>(productions);
+			var result = new HashSet<Production>(productions);
 			var changed = false;
 
 			foreach (var production in productions) {
@@ -181,14 +181,14 @@ namespace CFGLib {
 				}
 			}
 			productions.Clear();
-			productions.AddRange(result);
+			productions.UnionWith(result);
 			return changed;
 		}
 
 		// returns the set of all nonterminals that derive ε
-		private static ISet<Nonterminal> GetNullable(List<Production> originalProductions) {
+		private static ISet<Nonterminal> GetNullable(ISet<Production> originalProductions) {
 			var productions = CloneProductions(originalProductions);
-			var newProductions = new List<Production>();
+			ISet<Production> newProductions = new HashSet<Production>();
 			var nullableNonterminals = new HashSet<Nonterminal>();
 			var changed = true;
 			while (changed) {
@@ -268,7 +268,7 @@ namespace CFGLib {
 			return result;
 		}
 		
-		private static Dictionary<Nonterminal, List<Production>> BuildLookupTable(List<Production> productions) {
+		private static Dictionary<Nonterminal, List<Production>> BuildLookupTable(ISet<Production> productions) {
 			var table = new Dictionary<Nonterminal, List<Production>>();
 			foreach (var production in productions) {
 				List<Production> entries;

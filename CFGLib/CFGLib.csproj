@@ -47,6 +47,7 @@
     <Compile Include="CNFTerminalProduction.cs" />
     <Compile Include="Grammar.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="BaseGrammar.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sentence.cs" />
