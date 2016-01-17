@@ -9,6 +9,9 @@ namespace CFGLib {
 		private Random _rand = new Random(0);
 
 		public CNFGrammar Next(int numNonTerminals, int numProductions, List<Terminal> terminals) {
+			if (numNonTerminals < 1) {
+				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
+			}
 			var start = RandomNonterminal(numNonTerminals);
 			int producesEmptyWeight = 0;
 			if (numProductions > 0) {
