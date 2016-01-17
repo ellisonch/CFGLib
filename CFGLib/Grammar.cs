@@ -36,8 +36,17 @@ namespace CFGLib {
 			get { return _start; }
 		}
 
+		internal override void RemoveProductions(IEnumerable<BaseProduction> toRemove) {
+			foreach (var production in toRemove) {
+				_productions.Remove(production);
+			}
+		}
+
 		public Grammar(IEnumerable<BaseProduction> productions, Nonterminal start) {
 			_productions = new List<BaseProduction>(productions);
+			_start = start;
+
+			RemoveDuplicates();
 
 			_table = Helpers.ConstructCache(
 				_productions,
@@ -45,8 +54,6 @@ namespace CFGLib {
 				(p) => p,
 				() => new List<BaseProduction>()
 			);
-
-			_start = start;
 		}
 
 		public CNFGrammar ToCNF() {

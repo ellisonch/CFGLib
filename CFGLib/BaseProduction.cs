@@ -20,7 +20,7 @@ namespace CFGLib {
 
 		public int Weight {
 			get { return _weight; }
-			protected set { _weight = value; }
+			internal set { _weight = value; }
 		}
 
 		public abstract Sentence Rhs {

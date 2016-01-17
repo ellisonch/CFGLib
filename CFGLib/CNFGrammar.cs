@@ -58,7 +58,17 @@ namespace CFGLib {
 			get { return _start; }
 		}
 
-
+		internal override void RemoveProductions(IEnumerable<BaseProduction> toRemove) {
+			foreach (var production in toRemove) {
+				if (production is CNFNonterminalProduction) {
+					var ntprod = (CNFNonterminalProduction)production;
+					_nonterminalProductions.Remove(ntprod);
+				} else {
+					var tprod = (CNFTerminalProduction)production;
+					_terminalProductions.Remove(tprod);
+				}
+			}
+		}
 
 		private CNFGrammar() {
 		}
@@ -69,6 +79,7 @@ namespace CFGLib {
 			_producesEmptyWeight = producesEmptyWeight;
 			_start = start;
 
+			RemoveDuplicates();
 			BuildLookups();
 		}
 

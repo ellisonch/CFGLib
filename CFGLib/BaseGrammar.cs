@@ -72,9 +72,7 @@ namespace CFGLib {
 			foreach (var production in ProductionsFrom(nonterminal)) {
 				var prob = GetProbability(production);
 				var copies = DeepCopy(results);
-				foreach (var copy in copies) {  // sigh
-												// for (int i = 0; i < copies.Count; i++) {
-												// var copy = copies[i];
+				foreach (var copy in copies) {
 					copy.Sentence.AddRange(production.Rhs);
 					copy.Probability *= prob;
 				}
@@ -150,7 +148,29 @@ namespace CFGLib {
 			history.Add(sentence);
 			return history;
 		}
-		
+
+		protected void RemoveDuplicates() {
+			var productionList = new List<BaseProduction>(this.Productions);
+			var toRemove = new List<BaseProduction>();
+
+			for (int i = 0; i < productionList.Count; i++) {
+				var production = productionList[i];
+				for (int j = i + 1; j < productionList.Count; j++) {
+					var candidate = productionList[j];
+					if (production.Lhs != candidate.Lhs) {
+						continue;
+					}
+					if (candidate.Rhs.SequenceEqual(production.Rhs)) {
+						production.Weight += candidate.Weight;
+						toRemove.Add(candidate);
+					}
+				}
+			}
+			this.RemoveProductions(toRemove);
+		}
+
+		internal abstract void RemoveProductions(IEnumerable<BaseProduction> toRemove);
+
 		public override string ToString() {
 			var retval = "Grammar{\n";
 

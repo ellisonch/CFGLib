@@ -7,8 +7,8 @@ using System.Linq;
 namespace CFGLibTest {
 	[TestClass]
 	public class RandomTests {
-		int _maxProductions = 20;
-		int _maxNonterminals = 20;
+		int _maxNonterminals = 5;
+		int _maxProductions = 15;
 		int _maxTerminals = 20;
 		int _step = 5;
 
@@ -33,7 +33,7 @@ namespace CFGLibTest {
 				var swps = rg.ProduceToDepth(i);
 				Console.WriteLine("------Depth {0}------", i);
 				foreach (var swp in swps) {
-					Console.WriteLine(swp.Sentence.AsTerminals());
+					// Console.WriteLine(swp.Sentence.AsTerminals());
 					// Console.WriteLine(sentence);
 				}
 			}

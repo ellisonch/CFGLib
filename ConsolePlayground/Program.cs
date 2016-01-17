@@ -219,32 +219,33 @@ namespace ConsolePlayground {
 
 
 
-			//int _maxProductions = 20;
-			//int _maxNonterminals = 20;
-			//int _maxTerminals = 20;
-			//int _step = 5;
-
 			var randg = new CNFRandom();
 
-			//for (int numProductions = 0; numProductions < _maxProductions; numProductions += _step) {
-			//	for (int numNonterminals = 0; numNonterminals < _maxNonterminals; numNonterminals += _step) {
-			//		for (int numTerminals = 1; numTerminals < _maxTerminals; numTerminals += _step) {
-			//			var range = Enumerable.Range(0, numTerminals);
-			//			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
-			//			var rg = randg.Next(numNonterminals, numProductions, terminals);
-			//			TestGrammar(rg);
-			//		}
-			//	}
-			//}
+			int _maxNonterminals = 5;
+			int _maxProductions = 15;
+			int _maxTerminals = 20;
+			int _step = 5;
 
-			var range = Enumerable.Range(0, 1);
-			var rg = randg.Next(1, 10, new List<Terminal>(range.Select((x) => Terminal.Of("x" + x))));
-			Console.WriteLine(rg);
-			Console.WriteLine("Producing...");
-			var sw = Stopwatch.StartNew();
-			var swps = rg.ProduceToDepth(3);
-			sw.Stop();
-			Console.WriteLine("Done in {0}s", sw.Elapsed.TotalMilliseconds/1000);
+			for (int numProductions = 0; numProductions < _maxProductions; numProductions += _step) {
+				for (int numNonterminals = 1; numNonterminals < _maxNonterminals; numNonterminals += _step) {
+					for (int numTerminals = 1; numTerminals < _maxTerminals; numTerminals += _step) {
+						var range = Enumerable.Range(0, numTerminals);
+						var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
+						Console.WriteLine("{0}, {1}, {2}", numNonterminals, numProductions, numTerminals);
+						var rg = randg.Next(numNonterminals, numProductions, terminals);
+						TestGrammar(rg);
+					}
+				}
+			}
+
+			//var range = Enumerable.Range(0, 1);
+			//var rg = randg.Next(1, 12, new List<Terminal>(range.Select((x) => Terminal.Of("x" + x))));
+			//Console.WriteLine(rg);
+			//Console.WriteLine("Producing...");
+			//var sw = Stopwatch.StartNew();
+			//var swps = rg.ProduceToDepth(3);
+			//sw.Stop();
+			//Console.WriteLine("Done in {0}s", sw.Elapsed.TotalMilliseconds/1000);
 
 			Console.Read();
 		}
@@ -255,7 +256,15 @@ namespace ConsolePlayground {
 				var swps = rg.ProduceToDepth(i);
 				Console.WriteLine("------Depth {0}------", i);
 				foreach (var swp in swps) {
-					Console.WriteLine(swp.Sentence.AsTerminals());
+					var actual = rg.Cyk(swp.Sentence);
+					var expected = swp.Probability;
+					if (actual != expected) {
+						Console.WriteLine("{0}, {1}", actual, expected);
+						Console.WriteLine(rg);
+						Console.WriteLine(swp);
+
+					}
+					// Console.WriteLine(swp.Sentence.AsTerminals());
 					// Console.WriteLine(sentence);
 				}
 			}
