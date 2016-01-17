@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib {
 	public class Grammar : BaseGrammar {
-		private List<BaseProduction> _productions;
+		private HashSet<BaseProduction> _productions;
 		private Nonterminal _start;
 
 		private Dictionary<Nonterminal, List<BaseProduction>> _table = new Dictionary<Nonterminal, List<BaseProduction>>();
@@ -17,7 +17,7 @@ namespace CFGLib {
 		}
 
 		public override ISet<BaseProduction> Productions {
-			get { return new HashSet<BaseProduction>(_productions); }
+			get { return _productions; }
 		}
 
 		public override ISet<Terminal> Terminals {
@@ -36,8 +36,8 @@ namespace CFGLib {
 			get { return _start; }
 		}
 
-		public Grammar(List<BaseProduction> productions, Nonterminal start) {
-			_productions = productions;
+		public Grammar(IEnumerable<BaseProduction> productions, Nonterminal start) {
+			_productions = new HashSet<BaseProduction>(productions);
 			
 			foreach (var production in productions) {
 				var lhs = production.Lhs;
@@ -55,6 +55,5 @@ namespace CFGLib {
 		public CNFGrammar ToCNF() {
 			return CNFGrammar.FromCFG(this);
 		}
-
 	}
 }

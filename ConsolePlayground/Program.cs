@@ -1,6 +1,7 @@
 ﻿using CFGLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -162,21 +163,22 @@ namespace ConsolePlayground {
 			//CNFGrammar h = g.ToCNF();
 			//Console.WriteLine(h);
 
-			var randg = new CNFRandom();
-			for (int numProductions = 0; numProductions < 100; numProductions += 5) {
-				for (int numNonterminals = 0; numNonterminals < 200; numNonterminals += 5) {
-					for (int numTerminals = 1; numTerminals < 200; numTerminals += 5) {
-						var range = Enumerable.Range(0, numTerminals);
-						var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
-						var rg = randg.Next(numNonterminals, numProductions, terminals);
-						Console.WriteLine(rg);
-					}
-				}
-			}
-			for (int i = 0; i < 5; i++) {
-				var rg = randg.Next(5, 2, new List<Terminal> { Terminal.Of("a"), Terminal.Of("b") });
-				Console.WriteLine(rg);
-			}
+			//var randg = new CNFRandom();
+			//for (int numProductions = 0; numProductions < 100; numProductions += 5) {
+			//	for (int numNonterminals = 0; numNonterminals < 200; numNonterminals += 5) {
+			//		for (int numTerminals = 1; numTerminals < 200; numTerminals += 5) {
+			//			var range = Enumerable.Range(0, numTerminals);
+			//			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
+			//			var rg = randg.Next(numNonterminals, numProductions, terminals);
+			//			Console.WriteLine(rg);
+			//		}
+			//	}
+			//}
+			//for (int i = 0; i < 5; i++) {
+			//	var rg = randg.Next(5, 2, new List<Terminal> { Terminal.Of("a"), Terminal.Of("b") });
+			//	Console.WriteLine(rg);
+			//}
+			
 
 			//var parses = h.Cyk(new Sentence { Terminal.Of("a"), Terminal.Of("b") });
 			//Console.WriteLine(parses);
@@ -209,7 +211,54 @@ namespace ConsolePlayground {
 				sum += swp.Probability;
 			}
 			Console.WriteLine("Test set has probability {0}", sum);
+
+
+
+
+
+
+
+
+			//int _maxProductions = 20;
+			//int _maxNonterminals = 20;
+			//int _maxTerminals = 20;
+			//int _step = 5;
+
+			var randg = new CNFRandom();
+
+			//for (int numProductions = 0; numProductions < _maxProductions; numProductions += _step) {
+			//	for (int numNonterminals = 0; numNonterminals < _maxNonterminals; numNonterminals += _step) {
+			//		for (int numTerminals = 1; numTerminals < _maxTerminals; numTerminals += _step) {
+			//			var range = Enumerable.Range(0, numTerminals);
+			//			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
+			//			var rg = randg.Next(numNonterminals, numProductions, terminals);
+			//			TestGrammar(rg);
+			//		}
+			//	}
+			//}
+
+			var range = Enumerable.Range(0, 1);
+			var rg = randg.Next(1, 10, new List<Terminal>(range.Select((x) => Terminal.Of("x" + x))));
+			Console.WriteLine(rg);
+			Console.WriteLine("Producing...");
+			var sw = Stopwatch.StartNew();
+			var swps = rg.ProduceToDepth(3);
+			sw.Stop();
+			Console.WriteLine("Done in {0}s", sw.Elapsed.TotalMilliseconds/1000);
+
 			Console.Read();
+		}
+
+		private static void TestGrammar(CNFGrammar rg) {
+			Console.WriteLine("=====================");
+			for (int i = 0; i < 5; i++) {
+				var swps = rg.ProduceToDepth(i);
+				Console.WriteLine("------Depth {0}------", i);
+				foreach (var swp in swps) {
+					Console.WriteLine(swp.Sentence.AsTerminals());
+					// Console.WriteLine(sentence);
+				}
+			}
 		}
 	}
 }

@@ -7,13 +7,18 @@ using System.Linq;
 namespace CFGLibTest {
 	[TestClass]
 	public class RandomTests {
+		int _maxProductions = 20;
+		int _maxNonterminals = 20;
+		int _maxTerminals = 20;
+		int _step = 5;
+
 		[TestMethod]
 		public void RandomClimbing() {
 			var randg = new CNFRandom();
 
-			for (int numProductions = 0; numProductions < 100; numProductions += 5) {
-				for (int numNonterminals = 0; numNonterminals < 200; numNonterminals += 5) {
-					for (int numTerminals = 1; numTerminals < 200; numTerminals += 5) {
+			for (int numProductions = 0; numProductions < _maxProductions; numProductions += _step) {
+				for (int numNonterminals = 0; numNonterminals < _maxNonterminals; numNonterminals += _step) {
+					for (int numTerminals = 1; numTerminals < _maxTerminals; numTerminals += _step) {
 						var range = Enumerable.Range(0, numTerminals);
 						var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
 						var rg = randg.Next(numNonterminals, numProductions, terminals);
@@ -24,14 +29,14 @@ namespace CFGLibTest {
 		}
 
 		private void TestGrammar(CNFGrammar rg) {
-			//for (int i = 0; i < 10; i++) {
-			//	var sentences = rg.ProduceToDepth(i);
-			//	Console.WriteLine("------Depth {0}------", i);
-			//	foreach (var sentence in sentences) {
-			//		Console.WriteLine(sentence.AsTerminals());
-			//		// Console.WriteLine(sentence);
-			//	}
-			//}
+			for (int i = 0; i < 10; i++) {
+				var swps = rg.ProduceToDepth(i);
+				Console.WriteLine("------Depth {0}------", i);
+				foreach (var swp in swps) {
+					Console.WriteLine(swp.Sentence.AsTerminals());
+					// Console.WriteLine(sentence);
+				}
+			}
 		}
 	}
 }
