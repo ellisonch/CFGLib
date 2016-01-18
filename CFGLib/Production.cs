@@ -10,6 +10,9 @@ namespace CFGLib {
 		}
 
 		public Production(Nonterminal lhs, Sentence rhs, int weight = 1) {
+			if (weight < 1) {
+				throw new ArgumentOutOfRangeException("Weights must be positive");
+			}
 			this.Lhs = lhs;
 			_rhs = rhs;
 			this.Weight = weight;

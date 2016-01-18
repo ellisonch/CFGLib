@@ -258,7 +258,7 @@ namespace ConsolePlayground {
 				foreach (var swp in swps) {
 					var actual = rg.Cyk(swp.Sentence);
 					var expected = swp.Probability;
-					if (actual < expected) {
+					if (actual != expected) {
 						Console.WriteLine("{0}, {1}", actual, expected);
 						Console.WriteLine(rg);
 						Console.WriteLine(swp);

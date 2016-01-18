@@ -13,6 +13,7 @@ namespace CFGLibTest {
 		int _step = 5;
 
 		[TestMethod]
+		[Ignore]
 		public void RandomClimbing() {
 			var randg = new CNFRandom();
 

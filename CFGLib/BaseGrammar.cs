@@ -169,6 +169,32 @@ namespace CFGLib {
 			this.RemoveProductions(toRemove);
 		}
 
+		public void GenerateSequences() {
+			// BaseGrammar g = this.DeepCopy();
+			/*
+			for each production l -> r:
+				for all productions p,
+					add a new production p[l <- r]
+				remove useless productions
+			*/
+			//Grammar{
+			//	Var(S) → Trm(a) Var(S) Trm(a)
+			//	Var(S) → Trm(b) Var(S) Trm(b)
+			//	Var(S) → ε
+			//}
+			/*
+			Var(S) → Trm(a) Var(S) Trm(a)
+			Var(S) → Trm(b) Var(S) Trm(b)
+			Var(S) → ε
+			Var(S) → Trm(a) Trm(a) Var(S) Trm(a) Trm(a)
+			Var(S) → Trm(b) Trm(a) Var(S) Trm(a) Trm(b)
+			Var(S) → Trm(a) Trm(b) Var(S) Trm(b) Trm(a)
+			Var(S) → Trm(b) Trm(b) Var(S) Trm(b) Trm(b)
+			Var(S) → Trm(a) Trm(a)
+			Var(S) → Trm(b) Trm(b)
+			*/
+		}
+
 		internal abstract void RemoveProductions(IEnumerable<BaseProduction> toRemove);
 
 		public override string ToString() {
