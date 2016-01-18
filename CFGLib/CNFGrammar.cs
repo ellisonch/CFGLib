@@ -8,9 +8,12 @@ namespace CFGLib {
 	public class CNFGrammar : BaseGrammar {
 		private List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
 		private List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
+
+		private Production _emptyProduction;
+
 		// private bool _producesEmpty = false;
 		// TODO: it's possible for the likelihood to be so low as to appear to be 0, but not actually be 
-		private int _producesEmptyWeight = 0;
+		// private int _producesEmptyWeight = 0;
 		private Nonterminal _start;
 
 		private Dictionary<Terminal, ICollection<CNFTerminalProduction>> _reverseTerminalProductions;
@@ -18,11 +21,11 @@ namespace CFGLib {
 		private Dictionary<Nonterminal, ICollection<CNFTerminalProduction>> _tProductionsByNonterminal;
 
 
-		public List<CNFNonterminalProduction> NonterminalProductions {
+		protected List<CNFNonterminalProduction> NonterminalProductions {
 			get { return _nonterminalProductions; }
 		}
 
-		public List<CNFTerminalProduction> TerminalProductions {
+		protected List<CNFTerminalProduction> TerminalProductions {
 			get { return _terminalProductions; }
 		}
 
@@ -31,14 +34,18 @@ namespace CFGLib {
 			IEnumerable<BaseProduction> list1 = _ntProductionsByNonterminal.LookupEnumerable(lhs);
 			IEnumerable<BaseProduction> list2 = _tProductionsByNonterminal.LookupEnumerable(lhs);
 
-			return list1.Concat(list2);
+			var result = list1.Concat(list2);
+			if (lhs == _start) {
+				result = result.Concat(new Production[] { _emptyProduction });
+			}
+			return result;
 		}
 
 		public override IEnumerable<BaseProduction> Productions {
 			get {
 				IEnumerable<BaseProduction> list1 = _nonterminalProductions;
 				IEnumerable<BaseProduction> list2 = _terminalProductions;
-				return list1.Concat(list2);
+				return list1.Concat(list2).Concat(new Production[] { _emptyProduction });
 			}
 		}
 
@@ -76,7 +83,7 @@ namespace CFGLib {
 		public CNFGrammar(List<CNFNonterminalProduction> nt, List<CNFTerminalProduction> t, int producesEmptyWeight, Nonterminal start) {
 			_nonterminalProductions = nt;
 			_terminalProductions = t;
-			_producesEmptyWeight = producesEmptyWeight;
+			_emptyProduction = new Production(start, new Sentence(), producesEmptyWeight);
 			_start = start;
 
 			RemoveDuplicates();
@@ -105,7 +112,7 @@ namespace CFGLib {
 			newGrammar._nonterminalProductions.AddRange(_nonterminalProductions);
 			newGrammar._terminalProductions.AddRange(_terminalProductions);
 			newGrammar._start = _start;
-			newGrammar._producesEmptyWeight = _producesEmptyWeight;
+			newGrammar._emptyProduction = _emptyProduction;
 			// _nonterminalProductions = grammar._nonterminalProductions
 
 			// newGrammar.BuildLookups();
@@ -153,7 +160,7 @@ namespace CFGLib {
 		//  S is not member of language
 		public double Cyk(Sentence s) {
 			if (s.Count == 0) {
-				return GetProbability(_start, _producesEmptyWeight);
+				return GetProbability(_emptyProduction);
 			}
 
 			// TODO: don't need to do this every time, just every time there's a change
@@ -231,7 +238,7 @@ namespace CFGLib {
 			}
 
 			if (_start == nonterminal) {
-				weightTotal += _producesEmptyWeight;
+				weightTotal += _emptyProduction.Weight;
 			}
 
 			return (double)weight / weightTotal;
@@ -264,8 +271,8 @@ namespace CFGLib {
 				var prob = GetProbability(production);
 				retval += string.Format("  {1:0.00e+000}: {0}\n", production.ToString(), prob);
 			}
-			if (_producesEmptyWeight > 0) {
-				var prob = GetProbability(_start, _producesEmptyWeight);
+			if (_emptyProduction.Weight > 0) {
+				var prob = GetProbability(_emptyProduction);
 				retval += string.Format("  {1:0.00e+000}: {0} → ε\n", _start, prob);
 			}
 			retval += "\n}\n";
