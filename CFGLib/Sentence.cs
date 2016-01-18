@@ -126,16 +126,19 @@ namespace CFGLib {
 			return !hasNonterminal;
 		}
 
-		public string AsTerminals() {
+		public string AsTerminals(string separator = "") {
 			if (!OnlyTerminals()) {
 				throw new Exception("Can only use AsTerminals() on sentences that only contain terminals");
 			}
-			var result = "";
+			var resultList = new List<string>();
 			foreach (var word in _sentence) {
 				var terminal = (Terminal)word;
-				result += terminal.Name + " ";
+				resultList.Add(terminal.Name);
 			}
-			return result;
+			if (resultList.Count == 0) {
+				return "ε";
+			}
+			return string.Join(separator, resultList);
 		}
 		
 		public bool ContainsNonterminal() {

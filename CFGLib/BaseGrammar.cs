@@ -171,7 +171,7 @@ namespace CFGLib {
 		public void PrintProbabilities(long iterations, double correction) {
 			var dict = new Dictionary<string, long>();
 			for (int i = 0; i < iterations; i++) {
-				var key = this.ProduceRandom().AsTerminals();
+				var key = this.ProduceRandom().AsTerminals("");
 				if (!dict.ContainsKey(key)) {
 					dict[key] = 0;
 				}
