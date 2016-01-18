@@ -7,7 +7,7 @@ namespace CFGLibTest {
 	[TestClass]
 	public class IntegrationTests {
 		[TestMethod]
-		public void TestMethod1() {
+		public void TestIntegration01() {
 			// S -> aSa | bSb | ε
 			var productions = new List<BaseProduction> {
 				new Production(
@@ -42,7 +42,7 @@ namespace CFGLibTest {
 		}
 
 		[TestMethod]
-		public void TestMethod2() {
+		public void TestIntegration02() {
 			//CNFGrammar(Var(X_0)){
 			//	Var(X_0) → Var(X_0) Var(X_1)
 			//	Var(X_2) → Trm(b)
@@ -74,7 +74,7 @@ namespace CFGLibTest {
 		}
 
 		[TestMethod]
-		public void TestMethod3() {
+		public void TestIntegration03() {
 			// http://www.cs.columbia.edu/~mcollins/courses/nlp2011/notes/pcfgs.pdf
 
 			var nonterminalProductions = new List<CNFNonterminalProduction> {

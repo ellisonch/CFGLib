@@ -45,6 +45,7 @@
     <Compile Include="CNFGrammar.cs" />
     <Compile Include="CNFNonterminalProduction.cs" />
     <Compile Include="CNFTerminalProduction.cs" />
+    <Compile Include="Experimental.cs" />
     <Compile Include="Grammar.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="BaseGrammar.cs" />
