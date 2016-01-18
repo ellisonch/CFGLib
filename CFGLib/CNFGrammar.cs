@@ -284,7 +284,7 @@ namespace CFGLib {
 				var prob = GetProbability(_start, EmptyProductionWeight);
 				retval += string.Format("  {1:0.00e+000}: {0} → ε\n", _start, prob);
 			}
-			retval += "\n}\n";
+			retval += "}\n";
 			return retval;
 		}
 	}
