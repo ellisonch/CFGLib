@@ -22,5 +22,32 @@ namespace CFGLibTest {
 			Assert.IsTrue(g.ProduceToDepth(1).Count == 0);
 			Assert.IsTrue(g.ProduceToDepth(2).Count == 0);
 		}
+
+		[TestMethod]
+		public void TestCYK() {
+			var nonterminalProductions = new List<CNFNonterminalProduction> {
+				new CNFNonterminalProduction(
+					Nonterminal.Of("S"),
+					Nonterminal.Of("S"), Nonterminal.Of("S"),
+					2
+				)
+			};
+			var terminalProductions = new List<CNFTerminalProduction> {
+				new CNFTerminalProduction(
+					Nonterminal.Of("S"),
+					Terminal.Of("a"),
+					8
+				)
+			};
+
+			var g = new CNFGrammar(
+				nonterminalProductions,
+				terminalProductions,
+				0,
+				Nonterminal.Of("S")
+			);
+
+			Helpers.AssertNear(0.0032768, g.Cyk(Sentence.FromLetters("aaaa")));
+		}
 	}
 }
