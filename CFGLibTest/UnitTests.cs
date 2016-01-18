@@ -24,17 +24,27 @@ namespace CFGLibTest {
 		}
 
 		[TestMethod]
-		public void TestCYK() {
+		public void TestCYK01() {
 			var nonterminalProductions = new List<CNFNonterminalProduction> {
 				new CNFNonterminalProduction(
 					Nonterminal.Of("S"),
-					Nonterminal.Of("S"), Nonterminal.Of("S"),
+					Nonterminal.Of("X"), Nonterminal.Of("X"),
+					2
+				),
+				new CNFNonterminalProduction(
+					Nonterminal.Of("X"),
+					Nonterminal.Of("X"), Nonterminal.Of("X"),
 					2
 				)
 			};
 			var terminalProductions = new List<CNFTerminalProduction> {
 				new CNFTerminalProduction(
 					Nonterminal.Of("S"),
+					Terminal.Of("a"),
+					8
+				),
+				new CNFTerminalProduction(
+					Nonterminal.Of("X"),
 					Terminal.Of("a"),
 					8
 				)
@@ -47,7 +57,13 @@ namespace CFGLibTest {
 				Nonterminal.Of("S")
 			);
 
-			Helpers.AssertNear(0.0032768, g.Cyk(Sentence.FromLetters("aaaa")));
+			// g.PrintProbabilities(5000000, 0.2);
+
+			Helpers.AssertNear(0.8, g.Cyk(Sentence.FromLetters("a")));
+			Helpers.AssertNear(0.128, g.Cyk(Sentence.FromLetters("aa")));
+			Helpers.AssertNear(0.04096, g.Cyk(Sentence.FromLetters("aaa")));
+			Helpers.AssertNear(0.016384, g.Cyk(Sentence.FromLetters("aaaa")));
+			Helpers.AssertNear(0.007340032, g.Cyk(Sentence.FromLetters("aaaaa")));
 		}
 	}
 }

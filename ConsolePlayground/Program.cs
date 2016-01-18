@@ -10,20 +10,20 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			var productions = new List<BaseProduction> {
-				new Production(
-					Nonterminal.Of("S"),
-					new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") }
-				),
-				new Production(
-					Nonterminal.Of("S"),
-					new Sentence { Terminal.Of("b"), Nonterminal.Of("S"), Terminal.Of("b") }
-				),
-				new Production(
-					Nonterminal.Of("S"),
-					new Sentence { }
-				)
-			};
+			//var productions = new List<BaseProduction> {
+			//	new Production(
+			//		Nonterminal.Of("S"),
+			//		new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") }
+			//	),
+			//	new Production(
+			//		Nonterminal.Of("S"),
+			//		new Sentence { Terminal.Of("b"), Nonterminal.Of("S"), Terminal.Of("b") }
+			//	),
+			//	new Production(
+			//		Nonterminal.Of("S"),
+			//		new Sentence { }
+			//	)
+			//};
 
 			// S → ASA | aB
 			// A → B | S
@@ -157,8 +157,8 @@ namespace ConsolePlayground {
 			//	),
 			//};
 
-			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
-			Console.WriteLine(g);
+			//Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			//Console.WriteLine(g);
 
 			//CNFGrammar h = g.ToCNF();
 			//Console.WriteLine(h);
@@ -178,7 +178,7 @@ namespace ConsolePlayground {
 			//	var rg = randg.Next(5, 2, new List<Terminal> { Terminal.Of("a"), Terminal.Of("b") });
 			//	Console.WriteLine(rg);
 			//}
-			
+
 
 			//var parses = h.Cyk(new Sentence { Terminal.Of("a"), Terminal.Of("b") });
 			//Console.WriteLine(parses);
@@ -200,17 +200,17 @@ namespace ConsolePlayground {
 			//	}
 			//}
 
-			var sentences = g.ProduceToDepth(6);
-			sentences = sentences.FindAll((x) => x.Sentence.Count > 0);
+			//var sentences = g.ProduceToDepth(6);
+			//sentences = sentences.FindAll((x) => x.Sentence.Count > 0);
 
 			// var swps = sentences.Select((s) => new SentenceWithProbability(1.0 / sentences.Count, s));
 
-			var sum = 0.0;
-			foreach (var swp in sentences) {
-				// Console.WriteLine(swp);
-				sum += swp.Probability;
-			}
-			Console.WriteLine("Test set has probability {0}", sum);
+			//var sum = 0.0;
+			//foreach (var swp in sentences) {
+			//	// Console.WriteLine(swp);
+			//	sum += swp.Probability;
+			//}
+			//Console.WriteLine("Test set has probability {0}", sum);
 
 
 
@@ -219,35 +219,40 @@ namespace ConsolePlayground {
 
 
 
-			var randg = new CNFRandom();
+				var randg = new CNFRandom();
 
-			int _maxNonterminals = 5;
-			int _maxProductions = 15;
-			int _maxTerminals = 20;
-			int _step = 5;
+				int _maxNonterminals = 8;
+				int _maxProductions = 10;
+				int _maxTerminals = 20;
+				int _step = 1;
 
-			for (int numProductions = 0; numProductions < _maxProductions; numProductions += _step) {
-				for (int numNonterminals = 1; numNonterminals < _maxNonterminals; numNonterminals += _step) {
-					for (int numTerminals = 1; numTerminals < _maxTerminals; numTerminals += _step) {
-						var range = Enumerable.Range(0, numTerminals);
-						var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
-						Console.WriteLine("{0}, {1}, {2}", numNonterminals, numProductions, numTerminals);
-						var rg = randg.Next(numNonterminals, numProductions, terminals);
-						TestGrammar(rg);
+				for (int numProductions = 0; numProductions < _maxProductions; numProductions += _step) {
+					for (int numNonterminals = 1; numNonterminals < _maxNonterminals; numNonterminals += _step) {
+						for (int numTerminals = 1; numTerminals < _maxTerminals; numTerminals += _step) {
+							var range = Enumerable.Range(0, numTerminals);
+							var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
+							Console.WriteLine("{0}, {1}, {2}", numNonterminals, numProductions, numTerminals);
+							var rg = randg.Next(numNonterminals, numProductions, terminals);
+							TestGrammar(rg);
+						}
 					}
 				}
-			}
 
-			//var range = Enumerable.Range(0, 1);
-			//var rg = randg.Next(1, 12, new List<Terminal>(range.Select((x) => Terminal.Of("x" + x))));
-			//Console.WriteLine(rg);
-			//Console.WriteLine("Producing...");
-			//var sw = Stopwatch.StartNew();
-			//var swps = rg.ProduceToDepth(3);
-			//sw.Stop();
-			//Console.WriteLine("Done in {0}s", sw.Elapsed.TotalMilliseconds/1000);
 
-			Console.Read();
+				//var ut = new CFGLibTest.UnitTests();
+				//ut.TestCYK02();
+
+
+				//var range = Enumerable.Range(0, 1);
+				//var rg = randg.Next(1, 12, new List<Terminal>(range.Select((x) => Terminal.Of("x" + x))));
+				//Console.WriteLine(rg);
+				//Console.WriteLine("Producing...");
+				//var sw = Stopwatch.StartNew();
+				//var swps = rg.ProduceToDepth(3);
+				//sw.Stop();
+				//Console.WriteLine("Done in {0}s", sw.Elapsed.TotalMilliseconds/1000);
+
+				Console.Read();
 		}
 
 		private static void TestGrammar(CNFGrammar rg) {
@@ -258,7 +263,7 @@ namespace ConsolePlayground {
 				foreach (var swp in swps) {
 					var actual = rg.Cyk(swp.Sentence);
 					var expected = swp.Probability;
-					if (actual != expected) {
+					if (actual < expected) {
 						Console.WriteLine("{0}, {1}", actual, expected);
 						Console.WriteLine(rg);
 						Console.WriteLine(swp);

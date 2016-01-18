@@ -132,6 +132,7 @@ namespace CFGLib {
 			return result;
 		}
 
+		// TODO what's this for?
 		public List<Sentence> Produce() {
 			var history = new List<Sentence>();
 			var sentence = new Sentence { this.Start };
@@ -147,6 +148,45 @@ namespace CFGLib {
 			}
 			history.Add(sentence);
 			return history;
+		}
+
+		// TODO: MIGHT NOT TERMINATE!
+		public Sentence ProduceRandom() {
+			var sentence = new Sentence { this.Start };
+			while (sentence.ContainsNonterminal()) {
+				// for (int i = 0; i < sentence.Count; i++) {
+				for (int i = sentence.Count-1; i >= 0; i--) {
+					var word = sentence[i];
+					if (!word.IsNonterminal()) {
+						continue;
+					}
+					var newStuff = ProduceNonterminal((Nonterminal)word);
+					sentence.RemoveAt(i);
+					sentence.InsertRange(i, newStuff);
+				}
+			}
+			return sentence;
+		}
+
+		public void PrintProbabilities(long iterations, double correction) {
+			var dict = new Dictionary<string, long>();
+			for (int i = 0; i < iterations; i++) {
+				var key = this.ProduceRandom().AsTerminals();
+				if (!dict.ContainsKey(key)) {
+					dict[key] = 0;
+				}
+				dict[key]++;
+			}
+			List<KeyValuePair<string, long>> listPairs = dict.ToList();
+			listPairs.Sort((firstPair, nextPair) => {
+				return nextPair.Value.CompareTo(firstPair.Value);
+			}
+			);
+			foreach (var entry in listPairs) {
+				var key = entry.Key;
+				var value = entry.Value;
+				Console.WriteLine("{0}: {1}", key, (double)value / iterations * correction);
+			}
 		}
 
 		protected void RemoveDuplicates() {
@@ -167,32 +207,6 @@ namespace CFGLib {
 				}
 			}
 			this.RemoveProductions(toRemove);
-		}
-
-		public void GenerateSequences() {
-			// BaseGrammar g = this.DeepCopy();
-			/*
-			for each production l -> r:
-				for all productions p,
-					add a new production p[l <- r]
-				remove useless productions
-			*/
-			//Grammar{
-			//	Var(S) → Trm(a) Var(S) Trm(a)
-			//	Var(S) → Trm(b) Var(S) Trm(b)
-			//	Var(S) → ε
-			//}
-			/*
-			Var(S) → Trm(a) Var(S) Trm(a)
-			Var(S) → Trm(b) Var(S) Trm(b)
-			Var(S) → ε
-			Var(S) → Trm(a) Trm(a) Var(S) Trm(a) Trm(a)
-			Var(S) → Trm(b) Trm(a) Var(S) Trm(a) Trm(b)
-			Var(S) → Trm(a) Trm(b) Var(S) Trm(b) Trm(a)
-			Var(S) → Trm(b) Trm(b) Var(S) Trm(b) Trm(b)
-			Var(S) → Trm(a) Trm(a)
-			Var(S) → Trm(b) Trm(b)
-			*/
 		}
 
 		internal abstract void RemoveProductions(IEnumerable<BaseProduction> toRemove);

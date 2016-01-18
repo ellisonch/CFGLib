@@ -87,6 +87,10 @@ namespace CFGLib {
 			_sentence.Insert(index, item);
 		}
 
+		public void InsertRange(int index, IEnumerable<Word> collection) {
+			_sentence.InsertRange(index, collection);
+		}
+
 		public bool Remove(Word item) {
 			return _sentence.Remove(item);
 		}

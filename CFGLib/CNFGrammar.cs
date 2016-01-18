@@ -174,7 +174,7 @@ namespace CFGLib {
 
 			// TODO: don't need to do this every time, just every time there's a change
 			// TODO can maybe detect changes by using a dirty flag that bubbles up
-			BuildLookups(); 
+			BuildLookups();
 			// var reverseTerminalProductions = ReverseTerminalLookups();
 
 			List<Nonterminal> nonterminals_R = new List<Nonterminal>(GetNonterminals());
@@ -222,8 +222,26 @@ namespace CFGLib {
 					}
 				}
 			}
+			// PrintP(s, P);
 
 			return P[s.Count - 1, 0, RToJ[_start]];
+		}
+
+		private static void PrintP(Sentence s, double[,,] P) {
+			Console.WriteLine("--------P--------");
+			for (var i = 0; i < s.Count; i++) {
+				var word = s[i];
+				Console.Write("{0,-10}", word);
+			}
+			Console.WriteLine();
+			for (var i = 0; i < s.Count; i++) {
+				for (var j = 0; j < s.Count; j++) {
+					Console.Write("{0,-10}", P[i, j, 0]);
+				}
+				Console.WriteLine();
+			}
+			Console.WriteLine();
+			Console.WriteLine("--------P--------");
 		}
 
 		public bool Accepts(Sentence s) {

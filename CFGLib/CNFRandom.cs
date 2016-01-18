@@ -12,7 +12,7 @@ namespace CFGLib {
 			if (numNonTerminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
 			}
-			var start = RandomNonterminal(numNonTerminals);
+			var start = RandomNonterminal(1);
 			int producesEmptyWeight = 0;
 			if (numProductions > 0) {
 				if (_rand.Next(2) == 1) {
@@ -43,8 +43,8 @@ namespace CFGLib {
 			if (lhs == null) {
 				lhs = RandomNonterminal(numNonTerminals);
 			}
-			var rhs1 = RandomNonterminal(numNonTerminals);
-			var rhs2 = RandomNonterminal(numNonTerminals);
+			var rhs1 = RandomNonterminal(numNonTerminals, false);
+			var rhs2 = RandomNonterminal(numNonTerminals, false);
 
 			return new CNFNonterminalProduction(lhs, rhs1, rhs2);
 		}
@@ -58,8 +58,15 @@ namespace CFGLib {
 			return new CNFTerminalProduction(lhs, rhs);
 		}
 
-		private Nonterminal RandomNonterminal(int numNonTerminals) {
-			return Nonterminal.Of("X_" + _rand.Next(numNonTerminals));
+		private Nonterminal RandomNonterminal(int numNonTerminals, bool allowStart = true) {
+			int num;
+			
+			if (allowStart) {
+				num = _rand.Next(0, numNonTerminals);
+			} else {
+				num = _rand.Next(1, numNonTerminals);
+			}
+			return Nonterminal.Of("X_" + num);
 		}
 		private Terminal RandomTerminal(List<Terminal> terminals) {
 			return terminals[_rand.Next(terminals.Count)];

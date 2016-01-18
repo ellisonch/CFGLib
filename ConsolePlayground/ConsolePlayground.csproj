@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CFGLibTest\CFGLibTest.csproj">
+      <Project>{fa618744-71fe-4c69-a3ac-df7247ab0cff}</Project>
+      <Name>CFGLibTest</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CFGLib\CFGLib.csproj">
       <Project>{9afc68e6-543b-4071-ba05-eb5fc4e9b839}</Project>
       <Name>CFGLib</Name>
