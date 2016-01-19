@@ -10,18 +10,9 @@ namespace CFGLibTest {
 		public void TestIntegration01() {
 			// S -> aSa | bSb | ε
 			var productions = new List<BaseProduction> {
-				new Production(
-					Nonterminal.Of("S"),
-					new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") }
-				),
-				new Production(
-					Nonterminal.Of("S"),
-					new Sentence { Terminal.Of("b"), Nonterminal.Of("S"), Terminal.Of("b") }
-				),
-				new Production(
-					Nonterminal.Of("S"),
-					new Sentence { }
-				)
+				CFGParser.Production(@"<S> -> 'a' <S> 'a'"),
+				CFGParser.Production(@"<S> -> 'b' <S> 'b'"),
+				CFGParser.Production(@"<S> -> ε"),
 			};
 			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
 			CNFGrammar h = g.ToCNF();

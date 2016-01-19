@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseProduction.cs" />
+    <Compile Include="CFGParser.cs" />
     <Compile Include="CFGtoCNF.cs" />
     <Compile Include="CNFGrammar.cs" />
     <Compile Include="CNFNonterminalProduction.cs" />

@@ -10,7 +10,10 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			Readme();
+			CFGParser.Production(@"<X> -> <X0> <X1> 'asdf as_-""fw' <Z23X>");
+
+			// Readme();
+
 			//var ut = new CFGLibTest.UnitTests();
 			//ut.TestCYK02();
 
