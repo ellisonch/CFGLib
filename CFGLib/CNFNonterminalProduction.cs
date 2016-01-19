@@ -5,15 +5,15 @@ namespace CFGLib {
 		private readonly Nonterminal[] _rhs = new Nonterminal[2];
 
 		public CNFNonterminalProduction(BaseProduction production) {
+			if (production.Rhs.Count != 2) {
+				throw new ArgumentException("CNFNonterminalProductions need RHSs with exactly two items");
+			}
 			this.Lhs = production.Lhs;
 			_rhs[0] = (Nonterminal)production.Rhs[0];
 			_rhs[1] = (Nonterminal)production.Rhs[1];
 			this.Weight = production.Weight;
 		}
 		public CNFNonterminalProduction(Nonterminal lhs, Nonterminal rhs1, Nonterminal rhs2, int weight = 1) {
-			if (weight < 1) {
-				throw new ArgumentOutOfRangeException("Weights must be positive");
-			}
 			this.Lhs = lhs;
 			_rhs[0] = rhs1;
 			_rhs[1] = rhs2;

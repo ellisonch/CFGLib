@@ -87,9 +87,15 @@ namespace CFGLib {
 		private CNFGrammar() {
 		}
 
-		public CNFGrammar(IEnumerable<CNFNonterminalProduction> nt, IEnumerable<CNFTerminalProduction> t, int producesEmptyWeight, Nonterminal start) {
-			_nonterminalProductions = new List<CNFNonterminalProduction>(nt);
-			_terminalProductions = new List<CNFTerminalProduction>(t);
+		public CNFGrammar(IEnumerable<BaseProduction> nt, IEnumerable<BaseProduction> t, int producesEmptyWeight, Nonterminal start) {
+			_nonterminalProductions = new List<CNFNonterminalProduction>();
+			foreach (var production in nt) {
+				_nonterminalProductions.Add(new CNFNonterminalProduction(production));
+			}
+			_terminalProductions = new List<CNFTerminalProduction>();
+			foreach (var production in t) {
+				_terminalProductions.Add(new CNFTerminalProduction(production));
+			}
 			if (producesEmptyWeight > 0) {
 				_emptyProductions.Add(new Production(start, new Sentence(), producesEmptyWeight));
 			}

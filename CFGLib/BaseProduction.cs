@@ -20,7 +20,12 @@ namespace CFGLib {
 
 		public int Weight {
 			get { return _weight; }
-			internal set { _weight = value; }
+			internal set {
+				if (value < 1) {
+					throw new ArgumentOutOfRangeException("Weights must be positive");
+				}
+				_weight = value;
+			}
 		}
 
 		public abstract Sentence Rhs {

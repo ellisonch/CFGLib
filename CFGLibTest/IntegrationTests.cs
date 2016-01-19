@@ -41,18 +41,16 @@ namespace CFGLibTest {
 			//	Var(X_0) → Trm(a)
 			//	Var(X_2) → Trm(a)
 			//}
-			var terminalProductions = new List<CNFTerminalProduction> {
-				new CNFTerminalProduction(Nonterminal.Of("X_2"), Terminal.Of("b")),
-				new CNFTerminalProduction(Nonterminal.Of("X_0"), Terminal.Of("b")),
-				new CNFTerminalProduction(Nonterminal.Of("X_0"), Terminal.Of("a")),
-				new CNFTerminalProduction(Nonterminal.Of("X_2"), Terminal.Of("a")),
+			var nonterminalProductions = new List<BaseProduction> {
+				CFGParser.Production("<X_0> -> <X_0> <X_1>"),
 			};
-			var nonterminalProductions = new List<CNFNonterminalProduction> {
-				new CNFNonterminalProduction(Nonterminal.Of("X_0"), Nonterminal.Of("X_0"), Nonterminal.Of("X_1"))
+			var terminalProductions = new List<BaseProduction> {
+				CFGParser.Production("<X_2> -> 'b'"),
+				CFGParser.Production("<X_0> -> 'b'"),
+				CFGParser.Production("<X_0> -> 'a'"),
+				CFGParser.Production("<X_2> -> 'a'"),
 			};
-			
 			var g = new CNFGrammar(nonterminalProductions, terminalProductions, 0, Nonterminal.Of("X_0"));
-
 			
 			Assert.IsFalse(g.Accepts(Sentence.FromLetters("abc")));
 			Assert.IsFalse(g.Accepts(Sentence.FromLetters("ab")));
