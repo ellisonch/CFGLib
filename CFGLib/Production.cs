@@ -10,6 +10,12 @@ namespace CFGLib {
 		}
 
 		public Production(Nonterminal lhs, Sentence rhs, int weight = 1) {
+			if (lhs == null) {
+				throw new ArgumentNullException("Lhs must be non-null");
+			}
+			if (rhs == null) {
+				throw new ArgumentNullException("Rhs must be non-null");
+			}
 			if (weight < 1) {
 				throw new ArgumentOutOfRangeException("Weights must be positive");
 			}
