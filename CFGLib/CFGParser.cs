@@ -25,7 +25,7 @@ namespace CFGLib {
 		}
 
 		// <X> -> <X> 'a' <X>
-		public static Production Production(string s) {
+		public static BaseProduction Production(string s) {
 			var match = ProductionRegex.Match(s);
 			
 			var lhsMatch = match.Groups["lhs"];
