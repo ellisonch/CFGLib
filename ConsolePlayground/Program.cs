@@ -10,7 +10,8 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			CFGParser.Production(@"<X> -> <X0> <X1> 'asdf as_-""fw' <Z23X>");
+
+			Benchmark();
 
 			// Readme();
 
@@ -19,6 +20,45 @@ namespace ConsolePlayground {
 
 			Console.Read();
 		}
+
+		static void Benchmark() {
+			// CFGParser.Production(@"<X> -> <X0> <X1> 'asdf as_-""fw' <Z23X>");
+			int _numNonterminals = 10;
+			int _numProductions = 100;
+			int _numTerminals = 5;
+			int _maxLength = 4;
+			int _numGrammars = 40;
+
+			var range = Enumerable.Range(0, _numTerminals);
+			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
+			var preparedSentences = new List<Sentence>();
+			for (int length = 1; length <= _maxLength; length++) {
+				foreach (var target in Helpers.CombinationsWithRepetition(terminals, length)) {
+					var sentence = new Sentence(target);
+					preparedSentences.Add(sentence);
+				}
+			}
+
+			var randg = new CNFRandom();
+			var preparedGrammars = new List<CNFGrammar>();
+			for (int i = 0; i < _numGrammars; i++) {
+				var g = randg.Next(_numNonterminals, _numProductions, terminals);
+				preparedGrammars.Add(g);
+			}
+
+			var sw = Stopwatch.StartNew();
+			foreach (var g in preparedGrammars) {
+				// Console.WriteLine(g);
+				foreach (var sentence in preparedSentences) {
+					var chance = g.Cyk(sentence);
+					// Console.WriteLine("{0}: {1}", sentence, chance);
+				}
+			}
+			sw.Stop();
+			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+			Console.WriteLine("Per CYK: {0}ms", sw.Elapsed.TotalMilliseconds / (_numGrammars * preparedSentences.Count));
+		}
+		
 		static void Readme() {
 			// S -> aSa | bSb | ε
 			var productions = new List<BaseProduction> {
