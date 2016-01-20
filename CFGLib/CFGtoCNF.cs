@@ -64,7 +64,7 @@ namespace CFGLib {
 			var result = new HashSet<BaseProduction>();
 			foreach (var production in productions) {
 				// var productions = grammar.Productions;
-				result.Add(production.Clone());
+				result.Add(production.DeepClone());
 			}
 			return result;
 		}
@@ -250,7 +250,7 @@ namespace CFGLib {
 						continue;
 					}
 					// var with = production.Clone();
-					var without = production.Clone();
+					var without = production.DeepClone();
 					without.Rhs.RemoveAt(i);
 					newResults.Add(without);
 				}

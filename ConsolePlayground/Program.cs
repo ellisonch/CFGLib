@@ -10,7 +10,6 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-
 			Benchmark();
 
 			// Readme();

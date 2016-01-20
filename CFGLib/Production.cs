@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace CFGLib {
 	public class Production : BaseProduction {
 		private Sentence _rhs;
-
+		
 		public override Sentence Rhs {
 			get { return _rhs; }
 		}
@@ -24,7 +24,7 @@ namespace CFGLib {
 			this.Weight = weight;
 		}
 
-		internal override BaseProduction Clone() {
+		internal override BaseProduction DeepClone() {
 			return new Production(this.Lhs, new Sentence(_rhs), this.Weight);
 		}
 	}

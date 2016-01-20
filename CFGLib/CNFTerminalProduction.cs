@@ -25,7 +25,7 @@ namespace CFGLib {
 			get { return _rhs; }
 		}
 		
-		internal override BaseProduction Clone() {
+		internal override BaseProduction DeepClone() {
 			return new CNFTerminalProduction(this.Lhs, this.SpecificRhs, this.Weight);
 		}
 	}
