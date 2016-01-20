@@ -254,29 +254,6 @@ namespace CFGLib {
 			return Cyk(s) > 0;
 		}
 
-		private double GetProbability(BaseProduction target) {
-			return GetProbability(target.Lhs, target.Weight);
-		}
-		private double GetProbability(Nonterminal nonterminal, int weight) {
-			int weightTotal = 0;
-
-			var nts = _ntProductionsByNonterminal.LookupEnumerable(nonterminal);
-			foreach (var production in nts) {
-				weightTotal += production.Weight;
-			}
-
-			var ts = _tProductionsByNonterminal.LookupEnumerable(nonterminal);
-			foreach (var production in ts) {
-				weightTotal += production.Weight;
-			}
-
-			if (_start == nonterminal) {
-				weightTotal += EmptyProductionWeight;
-			}
-
-			return (double)weight / weightTotal;
-		}
-
 		private HashSet<Nonterminal> GetNonterminals() {
 			var results = new HashSet<Nonterminal>();
 

@@ -88,8 +88,6 @@ namespace CFGLib {
 			return results;
 		}
 
-
-
 		private List<SentenceWithProbability> DeepCopy(List<SentenceWithProbability> sentences) {
 			var results = new List<SentenceWithProbability>();
 			foreach (var sentence in sentences) {
@@ -98,15 +96,18 @@ namespace CFGLib {
 			return results;
 		}
 
-		private double GetProbability(BaseProduction target) {
+		protected double GetProbability(BaseProduction target) {
+			return this.GetProbability(target.Lhs, target.Weight);
+		}
+		protected double GetProbability(Nonterminal lhs, int weight) {
 			int weightTotal = 0;
 
-			var productions = ProductionsFrom(target.Lhs);
-			foreach (var production in this.Productions) {
+			var productions = ProductionsFrom(lhs);
+			foreach (var production in productions) {
 				weightTotal += production.Weight;
 			}
 
-			return (double)target.Weight / weightTotal;
+			return (double)weight / weightTotal;
 		}
 
 
