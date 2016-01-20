@@ -103,6 +103,7 @@ namespace CFGLib {
 
 			RemoveDuplicates();
 			BuildLookups();
+			BuildHelpers();
 		}
 
 		// TODO probably doesn't preserve weights
@@ -130,7 +131,8 @@ namespace CFGLib {
 			newGrammar._emptyProductions = _emptyProductions;
 			// _nonterminalProductions = grammar._nonterminalProductions
 
-			// newGrammar.BuildLookups();
+			newGrammar.BuildLookups();
+			newGrammar.BuildHelpers();
 
 			return newGrammar;
 		}
@@ -140,19 +142,22 @@ namespace CFGLib {
 				_terminalProductions,
 				(p) => p.SpecificRhs,
 				(p) => p,
-				() => new HashSet<CNFTerminalProduction>()
+				() => (ICollection<CNFTerminalProduction>)new HashSet<CNFTerminalProduction>(),
+				(x, y) => x.Add(y)
 			);
 			_ntProductionsByNonterminal = Helpers.ConstructCache(
 				_nonterminalProductions,
 				(p) => p.Lhs,
 				(p) => p,
-				() => new HashSet<CNFNonterminalProduction>()
+				() => (ICollection<CNFNonterminalProduction>)new HashSet<CNFNonterminalProduction>(),
+				(x, y) => x.Add(y)
 			);
 			_tProductionsByNonterminal = Helpers.ConstructCache(
 				_terminalProductions,
 				(p) => p.Lhs,
 				(p) => p,
-				() => new HashSet<CNFTerminalProduction>()
+				() => (ICollection<CNFTerminalProduction>)new HashSet<CNFTerminalProduction>(),
+				(x, y) => x.Add(y)
 			);
 		}
 

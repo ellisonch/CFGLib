@@ -17,20 +17,43 @@ namespace CFGLib {
 			return Enumerable.Empty<T>();
 		}
 		
-		public static Dictionary<T1, ICollection<T2>> ConstructCache<T1, T2, TElm>(
+		public static Dictionary<T1, TStored> ConstructCache<T1, T2, TElm, TStored>(
 			IEnumerable<TElm> inputListOfElements,
 			Func<TElm, T1> getKeyFromElement,
 			Func<TElm, T2> getValueFromElement,
-			Func<ICollection<T2>> newEnumerable
-		) {
-			var cache = new Dictionary<T1, ICollection<T2>>();
+			Func<TStored> newEnumerable,
+			Action<TStored, T2> updateStored
+		) where TStored : class {
+			var cache = new Dictionary<T1, TStored>();
 			foreach (var production in inputListOfElements) {
-				ICollection<T2> result;
-				if (!cache.TryGetValue(getKeyFromElement(production), out result)) {
+				var key = getKeyFromElement(production);
+				var value = getValueFromElement(production);
+				TStored result;
+				if (!cache.TryGetValue(key, out result)) {
 					result = newEnumerable();
-					cache[getKeyFromElement(production)] = result;
+					cache[key] = result;
 				}
-				result.Add(getValueFromElement(production));
+				updateStored(result, value);
+			}
+			return cache;
+		}
+		public static Dictionary<T1, TStored> ConstructCacheValue<T1, T2, TElm, TStored>(
+			IEnumerable<TElm> inputListOfElements,
+			Func<TElm, T1> getKeyFromElement,
+			Func<TElm, T2> getValueFromElement,
+			Func<TStored> newEnumerable,
+			Func<TStored, T2, TStored> updateStored
+		) {
+			var cache = new Dictionary<T1, TStored>();
+			foreach (var production in inputListOfElements) {
+				var key = getKeyFromElement(production);
+				var value = getValueFromElement(production);
+				TStored result;
+				if (!cache.TryGetValue(key, out result)) {
+					result = newEnumerable();
+					cache[key] = result;
+				}
+				cache[key] = updateStored(result, value);
 			}
 			return cache;
 		}

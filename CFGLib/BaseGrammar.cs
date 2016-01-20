@@ -24,6 +24,18 @@ namespace CFGLib {
 		
 		private Random _rand = new Random(0);
 
+		private Dictionary<Nonterminal, long> _weightTotalsByNonterminal;
+
+		protected void BuildHelpers() {
+			_weightTotalsByNonterminal = Helpers.ConstructCacheValue(
+				this.Productions,
+				(p) => p.Lhs,
+				(p) => p.Weight,
+				() => 0L,
+				(x, y) => x += y
+			);
+		}
+
 		public List<SentenceWithProbability> ProduceToDepth(int depth) {
 			var start = new Sentence { this.Start };
 			var intermediate = new List<SentenceWithProbability>[depth + 1];
@@ -99,14 +111,10 @@ namespace CFGLib {
 		protected double GetProbability(BaseProduction target) {
 			return this.GetProbability(target.Lhs, target.Weight);
 		}
+		// TODO: use checked arithmetic
 		protected double GetProbability(Nonterminal lhs, int weight) {
-			int weightTotal = 0;
-
-			var productions = ProductionsFrom(lhs);
-			foreach (var production in productions) {
-				weightTotal += production.Weight;
-			}
-
+			long weightTotal = _weightTotalsByNonterminal[lhs];
+			
 			return (double)weight / weightTotal;
 		}
 

@@ -52,8 +52,11 @@ namespace CFGLib {
 				_productions,
 				(p) => p.Lhs,
 				(p) => p,
-				() => new List<BaseProduction>()
+				() => (ICollection<BaseProduction>)new List<BaseProduction>(),
+				(x, y) => x.Add(y)
 			);
+
+			BuildHelpers();
 		}
 
 		public CNFGrammar ToCNF() {
