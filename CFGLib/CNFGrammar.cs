@@ -107,34 +107,9 @@ namespace CFGLib {
 		}
 
 		// TODO probably doesn't preserve weights
-		//public CNFGrammar(Grammar grammar) {
-		//	CFGtoCNF.Convert(grammar)
-		//}
 		public static CNFGrammar FromCFG(Grammar grammar) {
 			var conv = new CFGtoCNF(grammar);
 			return conv.Convert();
-		}
-
-		//private Dictionary<Terminal, ISet<CNFTerminalProduction>> ReverseTerminalLookups() {
-
-		//}
-
-		/// <summary>
-		/// Returns new CNFGrammar containing new immediate data structures, but reusing the same underlying productions
-		/// </summary>
-		/// <returns></returns>
-		public CNFGrammar ShallowClone() {
-			var newGrammar = new CNFGrammar();
-			newGrammar._nonterminalProductions.AddRange(_nonterminalProductions);
-			newGrammar._terminalProductions.AddRange(_terminalProductions);
-			newGrammar._start = _start;
-			newGrammar._emptyProductions = _emptyProductions;
-			// _nonterminalProductions = grammar._nonterminalProductions
-
-			newGrammar.BuildLookups();
-			newGrammar.BuildHelpers();
-
-			return newGrammar;
 		}
 
 		private void BuildLookups() {
@@ -225,9 +200,6 @@ namespace CFGLib {
 
 							var pleft = P[k - 1, j - 1, B];
 							var pright = P[i - k - 1, j + k - 1, C];
-							//if (pleft && pright) {
-							//	P[i - 1, j - 1, A] = true;
-							//}
 							P[i - 1, j - 1, A] += pleft * pright * probThis;
 						}
 					}
@@ -257,41 +229,6 @@ namespace CFGLib {
 
 		public bool Accepts(Sentence s) {
 			return Cyk(s) > 0;
-		}
-
-		private HashSet<Nonterminal> GetNonterminals() {
-			var results = new HashSet<Nonterminal>();
-
-			foreach (var production in _nonterminalProductions) {
-				results.Add(production.Lhs);
-				results.Add(production.SpecificRhs[0]);
-				results.Add(production.SpecificRhs[1]);
-			}
-			foreach (var production in _terminalProductions) {
-				results.Add(production.Lhs);
-			}
-			results.Add(_start);
-
-			return results;
-		}
-
-		public override string ToString() {
-			var retval = "CNFGrammar(" + _start + "){\n";
-
-			foreach (var production in _nonterminalProductions) {
-				var prob = GetProbability(production);
-				retval += string.Format("  {1:0.00e+000}: {0}\n", production.ToString(), prob);
-			}
-			foreach (var production in _terminalProductions) {
-				var prob = GetProbability(production);
-				retval += string.Format("  {1:0.00e+000}: {0}\n", production.ToString(), prob);
-			}
-			if (EmptyProductionWeight > 0) {
-				var prob = GetProbability(_start, EmptyProductionWeight);
-				retval += string.Format("  {1:0.00e+000}: {0} → ε\n", _start, prob);
-			}
-			retval += "}\n";
-			return retval;
 		}
 	}
 }

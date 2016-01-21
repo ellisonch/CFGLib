@@ -12,7 +12,7 @@ namespace ConsolePlayground {
 		static void Main(string[] args) {
 			Benchmark();
 
-			// Readme();
+			Readme();
 
 			//var ut = new CFGLibTest.UnitTests();
 			//ut.TestCYK02();
@@ -78,7 +78,9 @@ namespace ConsolePlayground {
 				)
 			};
 			Grammar cfg = new Grammar(productions, Nonterminal.Of("S"));
+			Console.WriteLine(cfg);
 			CNFGrammar cnf = cfg.ToCNF();
+			Console.WriteLine(cnf);
 			Console.WriteLine(cnf.Cyk(Sentence.FromLetters("aabb")));
 			Console.WriteLine(cnf.Cyk(Sentence.FromLetters("abba")));
 

@@ -118,7 +118,6 @@ namespace CFGLib {
 			return (double)weight / weightTotal;
 		}
 
-
 		internal Sentence ProduceNonterminal(Nonterminal v) {
 			Sentence result = null;
 
@@ -139,6 +138,23 @@ namespace CFGLib {
 
 			Debug.Assert(result != null);
 			return result;
+		}
+		
+		public ISet<Nonterminal> GetNonterminals() {
+			var results = new HashSet<Nonterminal>();
+			results.Add(this.Start);
+
+			foreach (var production in this.Productions) {
+				results.Add(production.Lhs);
+				foreach (var word in production.Rhs) {
+					var nonterminal = word as Nonterminal;
+					if (nonterminal != null) {
+						results.Add(nonterminal);
+					}
+				}
+			}
+
+			return results;
 		}
 
 		// TODO what's this for?
@@ -220,11 +236,22 @@ namespace CFGLib {
 
 		internal abstract void RemoveProductions(IEnumerable<BaseProduction> toRemove);
 
+		//public override string ToString() {
+		//	var retval = "Grammar{\n";
+
+		//	foreach (var production in this.Productions) {
+		//		retval += "  " + production.ToString() + "\n";
+		//	}
+		//	retval += "}\n";
+		//	return retval;
+		//}
+
 		public override string ToString() {
-			var retval = "Grammar{\n";
+			var retval = "Grammar(" + this.Start + "){\n";
 
 			foreach (var production in this.Productions) {
-				retval += "  " + production.ToString() + "\n";
+				var prob = GetProbability(production);
+				retval += string.Format("  {1:0.00e+000}: {0}\n", production.ToString(), prob);
 			}
 			retval += "}\n";
 			return retval;
