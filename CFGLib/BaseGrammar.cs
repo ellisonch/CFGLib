@@ -234,6 +234,60 @@ namespace CFGLib {
 			this.RemoveProductions(toRemove);
 		}
 
+		// TODO: very inefficient
+		protected void RemoveUnproductive() {
+			var productiveSymbols = new HashSet<Nonterminal> ();
+
+			bool changed = true;
+			while (changed) {
+				changed = false;
+				foreach (var production in this.Productions) {
+					// if we already know a symbol is productive, we can move on
+					if (productiveSymbols.Contains(production.Lhs)) {
+						continue;
+					}
+					if (!isProductive(production, productiveSymbols)) {
+						continue;
+					}
+					productiveSymbols.Add(production.Lhs);
+					changed = true;
+				}
+			}
+
+			var toRemove = new HashSet<BaseProduction>();
+			foreach (var production in this.Productions) {
+				// remove rule if LHS is nonproductive
+				if (!productiveSymbols.Contains(production.Lhs)) {
+					toRemove.Add(production);
+					continue;
+				}
+				// remove rule if RHS contains nonproductive
+				foreach (var word in production.Rhs) {
+					if (word is Terminal) {
+						continue;
+					}
+					var nt = (Nonterminal)word;
+					if (!productiveSymbols.Contains(word)) {
+						toRemove.Add(production);
+					}
+				}
+			}
+			RemoveProductions(toRemove);
+		}
+
+		private bool isProductive(BaseProduction production, HashSet<Nonterminal> productiveSymbols) {
+			foreach (var word in production.Rhs) {
+				if (word is Terminal) {
+					continue;
+				}
+				var nt = (Nonterminal)word;
+				if (!productiveSymbols.Contains(nt)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
 		internal abstract void RemoveProductions(IEnumerable<BaseProduction> toRemove);
 
 		//public override string ToString() {

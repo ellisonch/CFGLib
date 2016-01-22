@@ -102,6 +102,7 @@ namespace CFGLib {
 			_start = start;
 
 			RemoveDuplicates();
+			RemoveUnproductive();
 			BuildLookups();
 			BuildHelpers();
 		}
