@@ -59,7 +59,7 @@
     <Compile Include="Word.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CNFRandom.cs" />
+    <Compile Include="GrammarGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

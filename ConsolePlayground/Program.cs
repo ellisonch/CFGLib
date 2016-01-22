@@ -10,9 +10,18 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			Benchmark();
+			//Benchmark();
+			//Readme();
 
-			Readme();
+			var rt = new CFGLibTest.RandomTests();
+			rt.RandomCFGToCNFTest();
+
+
+			//var randg = new GrammarGenerator();
+			//var range = Enumerable.Range(0, 5);
+			//var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
+			//var g = randg.NextCFG(5, 10, 4, terminals);
+			//Console.WriteLine(g);
 
 			//var ut = new CFGLibTest.UnitTests();
 			//ut.TestCYK02();
@@ -32,7 +41,7 @@ namespace ConsolePlayground {
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
 			var preparedSentences = new List<Sentence>();
 			for (int length = 1; length <= _maxLength; length++) {
-				foreach (var target in Helpers.CombinationsWithRepetition(terminals, length)) {
+				foreach (var target in CFGLibTest.Helpers.CombinationsWithRepetition(terminals, length)) {
 					var sentence = new Sentence(target);
 					preparedSentences.Add(sentence);
 				}

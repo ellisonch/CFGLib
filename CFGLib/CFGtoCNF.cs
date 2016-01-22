@@ -170,7 +170,8 @@ namespace CFGLib {
 					}
 					changed = true;
 					result.Remove(production);
-					var entries = table[(Nonterminal)rhs];
+					var entries = table.LookupEnumerable((Nonterminal)rhs);
+					// var entries = table[(Nonterminal)rhs];
 					foreach (var entry in entries) {
 						var newProd = new Production(production.Lhs, entry.Rhs);
 						if (!newProd.IsSelfLoop) {
@@ -268,16 +269,25 @@ namespace CFGLib {
 			return result;
 		}
 		
-		private static Dictionary<Nonterminal, List<BaseProduction>> BuildLookupTable(ISet<BaseProduction> productions) {
-			var table = new Dictionary<Nonterminal, List<BaseProduction>>();
-			foreach (var production in productions) {
-				List<BaseProduction> entries;
-				if (!table.TryGetValue(production.Lhs, out entries)) {
-					entries = new List<BaseProduction>();
-					table[production.Lhs] = entries;
-				}
-				entries.Add(production);
-			}
+		private static Dictionary<Nonterminal, ICollection<BaseProduction>> BuildLookupTable(ISet<BaseProduction> productions) {
+			Dictionary<Nonterminal, ICollection<BaseProduction>> table;
+
+			table = Helpers.ConstructCache(
+				productions,
+				(p) => p.Lhs,
+				(p) => p,
+				() => (ICollection<BaseProduction>)new List<BaseProduction>(),
+				(l, p) => l.Add(p)
+			);
+
+			//foreach (var production in productions) {
+			//	List<BaseProduction> entries;
+			//	if (!table.TryGetValue(production.Lhs, out entries)) {
+			//		entries = new List<BaseProduction>();
+			//		table[production.Lhs] = entries;
+			//	}
+			//	entries.Add(production);
+			//}
 			return table;
 		}
 	}
