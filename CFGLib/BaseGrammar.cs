@@ -16,12 +16,12 @@ namespace CFGLib {
 		public abstract IEnumerable<BaseProduction> Productions {
 			get;
 		}
-		public abstract Nonterminal Start {
-			get;
+		private Nonterminal _start;
+		public Nonterminal Start {
+			get { return _start; }
+			protected set { _start = value; }
 		}
-		
-		internal abstract IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs);
-		
+
 		private Random _rand = new Random(0);
 
 		private Dictionary<Nonterminal, long> _weightTotalsByNonterminal;
@@ -35,6 +35,8 @@ namespace CFGLib {
 				(x, y) => x += y
 			);
 		}
+
+		internal abstract IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs);
 
 		public List<SentenceWithProbability> ProduceToDepth(int depth) {
 			var start = new Sentence { this.Start };

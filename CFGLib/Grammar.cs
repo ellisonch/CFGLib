@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace CFGLib {
 	public class Grammar : BaseGrammar {
 		private List<BaseProduction> _productions;
-		private Nonterminal _start;
 
 		private Dictionary<Nonterminal, ICollection<BaseProduction>> _table = new Dictionary<Nonterminal, ICollection<BaseProduction>>();
 
@@ -32,10 +31,6 @@ namespace CFGLib {
 			}
 		}
 
-		public override Nonterminal Start {
-			get { return _start; }
-		}
-
 		internal override void RemoveProductions(IEnumerable<BaseProduction> toRemove) {
 			foreach (var production in toRemove) {
 				_productions.Remove(production);
@@ -44,7 +39,7 @@ namespace CFGLib {
 
 		public Grammar(IEnumerable<BaseProduction> productions, Nonterminal start, bool simplify = true) {
 			_productions = new List<BaseProduction>(productions);
-			_start = start;
+			this.Start = start;
 
 			if (simplify) {
 				Simplify();

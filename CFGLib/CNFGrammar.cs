@@ -21,8 +21,6 @@ namespace CFGLib {
 			}
 		}
 
-		private Nonterminal _start;
-
 		private Dictionary<Terminal, ICollection<CNFTerminalProduction>> _reverseTerminalProductions;
 		private Dictionary<Nonterminal, ICollection<CNFNonterminalProduction>> _ntProductionsByNonterminal;
 		private Dictionary<Nonterminal, ICollection<CNFTerminalProduction>> _tProductionsByNonterminal;
@@ -42,7 +40,7 @@ namespace CFGLib {
 			IEnumerable<BaseProduction> list2 = _tProductionsByNonterminal.LookupEnumerable(lhs);
 
 			var result = list1.Concat(list2);
-			if (lhs == _start) {
+			if (lhs == this.Start) {
 				result = result.Concat(_emptyProductions);
 			}
 			return result;
@@ -66,10 +64,6 @@ namespace CFGLib {
 				return null;
 				// return new HashSet<Nonterminal>(this.Productions.Select((x) =>));
 			}
-		}
-
-		public override Nonterminal Start {
-			get { return _start; }
 		}
 
 		internal override void RemoveProductions(IEnumerable<BaseProduction> toRemove) {
@@ -101,7 +95,7 @@ namespace CFGLib {
 			if (producesEmptyWeight > 0) {
 				_emptyProductions.Add(new Production(start, new Sentence(), producesEmptyWeight));
 			}
-			_start = start;
+			this.Start = start;
 			
 			if (simplify) {
 				Simplify();
@@ -154,7 +148,7 @@ namespace CFGLib {
 		//  S is not member of language
 		public double Cyk(Sentence s) {
 			if (s.Count == 0) {
-				return GetProbability(_start, EmptyProductionWeight);
+				return GetProbability(this.Start, EmptyProductionWeight);
 			}
 
 			// TODO: don't need to do this every time, just every time there's a change
@@ -206,7 +200,7 @@ namespace CFGLib {
 			}
 			// PrintP(s, P);
 
-			return P[s.Count - 1, 0, RToJ[_start]];
+			return P[s.Count - 1, 0, RToJ[this.Start]];
 		}
 
 		private static void PrintP(Sentence s, double[,,] P) {
