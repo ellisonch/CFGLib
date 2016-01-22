@@ -47,6 +47,7 @@ namespace CFGLib {
 			_start = start;
 
 			RemoveDuplicates();
+			RemoveUnreachable();
 			RemoveUnproductive();
 
 			_table = Helpers.ConstructCache(

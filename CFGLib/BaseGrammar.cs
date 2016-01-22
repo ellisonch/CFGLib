@@ -233,10 +233,38 @@ namespace CFGLib {
 			}
 			this.RemoveProductions(toRemove);
 		}
+		
+		protected void RemoveUnreachable() {
+			var reachableSymbols = new HashSet<Nonterminal>();
+			
+			var currReachableSymbols = new HashSet<Nonterminal> { this.Start };
+			while (currReachableSymbols.Count > 0) {
+				reachableSymbols.UnionWith(currReachableSymbols);
+				var newReachableSymbols = new HashSet<Nonterminal>();
+				foreach (var production in this.Productions) {
+					if (!currReachableSymbols.Contains(production.Lhs)) {
+						continue;
+					}
+					foreach (var word in production.Rhs) {
+						if (word is Terminal) {
+							continue;
+						}
+						var nt = (Nonterminal)word;
+						if (reachableSymbols.Contains(nt)) {
+							continue;
+						}
+						newReachableSymbols.Add(nt);
+					}
+				}
+				currReachableSymbols = newReachableSymbols;
+			}
+
+			RemoveProductionsContainingOtherThan(reachableSymbols);
+		}
 
 		// TODO: very inefficient
 		protected void RemoveUnproductive() {
-			var productiveSymbols = new HashSet<Nonterminal> ();
+			var productiveSymbols = new HashSet<Nonterminal>();
 
 			bool changed = true;
 			while (changed) {
@@ -254,6 +282,10 @@ namespace CFGLib {
 				}
 			}
 
+			RemoveProductionsContainingOtherThan(productiveSymbols);
+		}
+
+		private void RemoveProductionsContainingOtherThan(ISet<Nonterminal> productiveSymbols) {
 			var toRemove = new HashSet<BaseProduction>();
 			foreach (var production in this.Productions) {
 				// remove rule if LHS is nonproductive
