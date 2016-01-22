@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
-	public class CNFRandom {
+	public class GrammarGenerator {
 		private Random _rand = new Random(0);
 
-		public CNFGrammar Next(int numNonTerminals, int numProductions, List<Terminal> terminals) {
+		public CNFGrammar NextCNF(int numNonTerminals, int numProductions, List<Terminal> terminals) {
 			if (numNonTerminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
 			}

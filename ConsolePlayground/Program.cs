@@ -38,10 +38,10 @@ namespace ConsolePlayground {
 				}
 			}
 
-			var randg = new CNFRandom();
+			var randg = new GrammarGenerator();
 			var preparedGrammars = new List<CNFGrammar>();
 			for (int i = 0; i < _numGrammars; i++) {
-				var g = randg.Next(_numNonterminals, _numProductions, terminals);
+				var g = randg.NextCNF(_numNonterminals, _numProductions, terminals);
 				preparedGrammars.Add(g);
 			}
 

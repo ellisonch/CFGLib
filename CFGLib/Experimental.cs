@@ -140,7 +140,7 @@ namespace CFGLib {
 			//};
 		}
 		public void RandomTesting() {
-			var randg = new CNFRandom();
+			var randg = new GrammarGenerator();
 
 			int _maxNonterminals = 8;
 			int _maxProductions = 8;
@@ -153,7 +153,7 @@ namespace CFGLib {
 						var range = Enumerable.Range(0, numTerminals);
 						var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
 						Console.WriteLine("{0}, {1}, {2}", numNonterminals, numProductions, numTerminals);
-						var rg = randg.Next(numNonterminals, numProductions, terminals);
+						var rg = randg.NextCNF(numNonterminals, numProductions, terminals);
 						TestGrammar(rg);
 					}
 				}
