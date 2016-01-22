@@ -16,21 +16,37 @@ namespace CFGLib {
 			protected set { _start = value; }
 		}
 
+		private List<IDirtyable> _caches = new List<IDirtyable>();
+		protected List<IDirtyable> Caches {
+			get {
+				return _caches;
+			}
+		}
+
 		private Random _rand = new Random(0);
 
-		private Dictionary<Nonterminal, long> _weightTotalsByNonterminal;
+		private Cache<Nonterminal, Boxed<long>> _weightTotalsByNonterminal;
 
 		protected void BuildHelpers() {
-			_weightTotalsByNonterminal = Helpers.ConstructCacheValue(
-				this.Productions,
+			// Dictionary<Nonterminal, long>
+			_weightTotalsByNonterminal = Cache.Create(
+				() => this.Productions,
 				(p) => p.Lhs,
 				(p) => p.Weight,
-				() => 0L,
-				(x, y) => x += y
+				() => new Boxed<long>(0L),
+				(x, y) => x.Value += y
 			);
+			this.Caches.Add(_weightTotalsByNonterminal);
 		}
 
 		internal abstract IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs);
+
+
+		public void InvalidateCaches() {
+			foreach (var cache in this.Caches) {
+				cache.SetDirty();
+			}
+		}
 
 		public List<SentenceWithProbability> ProduceToDepth(int depth) {
 			var start = new Sentence { this.Start };
@@ -109,7 +125,7 @@ namespace CFGLib {
 		}
 		// TODO: use checked arithmetic
 		protected double GetProbability(Nonterminal lhs, int weight) {
-			long weightTotal = _weightTotalsByNonterminal[lhs];
+			long weightTotal = _weightTotalsByNonterminal[lhs].Value;
 			
 			return (double)weight / weightTotal;
 		}
@@ -225,6 +241,11 @@ namespace CFGLib {
 		}
 
 		public void Simplify() {
+			SimplifyWithoutInvalidate();
+			InvalidateCaches();
+		}
+		
+		protected void SimplifyWithoutInvalidate() {
 			RemoveDuplicates();
 			int oldCount;
 			do {

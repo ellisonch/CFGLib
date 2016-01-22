@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +22,9 @@ namespace CFGLib {
 			}
 		}
 
-		private Dictionary<Terminal, ICollection<CNFTerminalProduction>> _reverseTerminalProductions;
-		private Dictionary<Nonterminal, ICollection<CNFNonterminalProduction>> _ntProductionsByNonterminal;
-		private Dictionary<Nonterminal, ICollection<CNFTerminalProduction>> _tProductionsByNonterminal;
+		private Cache<Terminal, ICollection<CNFTerminalProduction>> _reverseTerminalProductions;
+		private Cache<Nonterminal, ICollection<CNFNonterminalProduction>> _ntProductionsByNonterminal;
+		private Cache<Nonterminal, ICollection<CNFTerminalProduction>> _tProductionsByNonterminal;
 
 
 		protected List<CNFNonterminalProduction> NonterminalProductions {
@@ -36,8 +37,8 @@ namespace CFGLib {
 
 
 		internal override IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs) {
-			IEnumerable<BaseProduction> list1 = _ntProductionsByNonterminal.LookupEnumerable(lhs);
-			IEnumerable<BaseProduction> list2 = _tProductionsByNonterminal.LookupEnumerable(lhs);
+			IEnumerable<BaseProduction> list1 = _ntProductionsByNonterminal[lhs];
+			IEnumerable<BaseProduction> list2 = _tProductionsByNonterminal[lhs];
 
 			var result = list1.Concat(list2);
 			if (lhs == this.Start) {
@@ -86,7 +87,7 @@ namespace CFGLib {
 			this.Start = start;
 			
 			if (simplify) {
-				Simplify();
+				SimplifyWithoutInvalidate();
 			}
 
 			BuildLookups();
@@ -94,27 +95,32 @@ namespace CFGLib {
 		}
 
 		private void BuildLookups() {
-			_reverseTerminalProductions = Helpers.ConstructCache(
-				_terminalProductions,
+			_reverseTerminalProductions = Cache.Create(
+				() => _terminalProductions,
 				(p) => p.SpecificRhs,
 				(p) => p,
 				() => (ICollection<CNFTerminalProduction>)new HashSet<CNFTerminalProduction>(),
 				(x, y) => x.Add(y)
 			);
-			_ntProductionsByNonterminal = Helpers.ConstructCache(
-				_nonterminalProductions,
+			this.Caches.Add(_reverseTerminalProductions);
+
+			_ntProductionsByNonterminal = Cache.Create(
+				() => _nonterminalProductions,
 				(p) => p.Lhs,
 				(p) => p,
 				() => (ICollection<CNFNonterminalProduction>)new HashSet<CNFNonterminalProduction>(),
 				(x, y) => x.Add(y)
 			);
-			_tProductionsByNonterminal = Helpers.ConstructCache(
-				_terminalProductions,
+			this.Caches.Add(_ntProductionsByNonterminal);
+
+			_tProductionsByNonterminal = Cache.Create(
+				() => _terminalProductions,
 				(p) => p.Lhs,
 				(p) => p,
 				() => (ICollection<CNFTerminalProduction>)new HashSet<CNFTerminalProduction>(),
 				(x, y) => x.Add(y)
 			);
+			this.Caches.Add(_tProductionsByNonterminal);
 		}
 
 		// https://en.wikipedia.org/wiki/CYK_algorithm
@@ -138,25 +144,19 @@ namespace CFGLib {
 			if (s.Count == 0) {
 				return GetProbability(this.Start, EmptyProductionWeight);
 			}
-
-			// TODO: don't need to do this every time, just every time there's a change
-			// TODO can maybe detect changes by using a dirty flag that bubbles up
-			BuildLookups();
-			// var reverseTerminalProductions = ReverseTerminalLookups();
-
+			
 			List<Nonterminal> nonterminals_R = new List<Nonterminal>(GetNonterminals());
 			Dictionary<Nonterminal, int> RToJ = new Dictionary<Nonterminal, int>();
 			for (int i = 0; i < nonterminals_R.Count; i++) {
 				var R = nonterminals_R[i];
 				RToJ[R] = i;
 			}
-
-			// var P = new bool[s.Count, s.Count, nonterminals_R.Count];
+			
 			var P = new double[s.Count, s.Count, nonterminals_R.Count];
 			for (int i = 0; i < s.Count; i++) {
 				var a_i = (Terminal)s[i];
-				ICollection<CNFTerminalProduction> yields_a_i;
-				if (!_reverseTerminalProductions.TryGetValue(a_i, out yields_a_i)) {
+				ICollection<CNFTerminalProduction> yields_a_i = _reverseTerminalProductions[a_i];
+				if (yields_a_i.Count == 0) {
 					// the grammar can't possibly produce this string if it doesn't know a terminal
 					return 0.0;
 				}
