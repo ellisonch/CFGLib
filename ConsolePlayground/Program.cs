@@ -12,7 +12,7 @@ namespace ConsolePlayground {
 		static void Main(string[] args) {
 			//Benchmark();
 			//Readme();
-
+			//8.7s
 			var rt = new CFGLibTest.RandomTests();
 			var sw = Stopwatch.StartNew();
 			rt.RandomSimplificationTest();

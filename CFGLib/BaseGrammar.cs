@@ -7,12 +7,6 @@ using System.Threading.Tasks;
 
 namespace CFGLib {
 	public abstract class BaseGrammar {
-		public abstract ISet<Nonterminal> Nonterminals {
-			get;
-		}
-		public abstract ISet<Terminal> Terminals {
-			get;
-		}
 		public abstract IEnumerable<BaseProduction> Productions {
 			get;
 		}
@@ -158,6 +152,20 @@ namespace CFGLib {
 
 			return results;
 		}
+		public ISet<Terminal> GetTerminals() {
+			var results = new HashSet<Terminal>();
+
+			foreach (var production in this.Productions) {
+				foreach (var word in production.Rhs) {
+					var terminal = word as Terminal;
+					if (terminal != null) {
+						results.Add(terminal);
+					}
+				}
+			}
+
+			return results;
+		}
 
 		// TODO what's this for?
 		public List<Sentence> Produce() {
@@ -286,7 +294,7 @@ namespace CFGLib {
 					if (productiveSymbols.Contains(production.Lhs)) {
 						continue;
 					}
-					if (!isProductive(production, productiveSymbols)) {
+					if (!IsProductive(production, productiveSymbols)) {
 						continue;
 					}
 					productiveSymbols.Add(production.Lhs);
@@ -319,7 +327,7 @@ namespace CFGLib {
 			RemoveProductions(toRemove);
 		}
 
-		private bool isProductive(BaseProduction production, HashSet<Nonterminal> productiveSymbols) {
+		private bool IsProductive(BaseProduction production, HashSet<Nonterminal> productiveSymbols) {
 			foreach (var word in production.Rhs) {
 				if (word is Terminal) {
 					continue;
@@ -333,17 +341,7 @@ namespace CFGLib {
 		}
 
 		internal abstract void RemoveProductions(IEnumerable<BaseProduction> toRemove);
-
-		//public override string ToString() {
-		//	var retval = "Grammar{\n";
-
-		//	foreach (var production in this.Productions) {
-		//		retval += "  " + production.ToString() + "\n";
-		//	}
-		//	retval += "}\n";
-		//	return retval;
-		//}
-
+		
 		public override string ToString() {
 			var retval = "Grammar(" + this.Start + "){\n";
 

@@ -54,18 +54,6 @@ namespace CFGLib {
 			}
 		}
 
-		public override ISet<Terminal> Terminals {
-			get {
-				return null;
-			}
-		}
-		public override ISet<Nonterminal> Nonterminals {
-			get {
-				return null;
-				// return new HashSet<Nonterminal>(this.Productions.Select((x) =>));
-			}
-		}
-
 		internal override void RemoveProductions(IEnumerable<BaseProduction> toRemove) {
 			foreach (var production in toRemove) {
 				if (production.Lhs == this.Start && production.Rhs.Count == 0) {
