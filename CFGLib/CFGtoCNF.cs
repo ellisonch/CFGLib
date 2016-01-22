@@ -14,7 +14,7 @@ namespace CFGLib {
 			_grammar = grammar;
 		}
 
-		public CNFGrammar Convert() {
+		public CNFGrammar Convert(bool simplify) {
 			var productions = CloneGrammar(_grammar);
 			StepStart(productions);
 			StepTerm(productions);
@@ -40,7 +40,7 @@ namespace CFGLib {
 				}
 			}
 
-			return new CNFGrammar(nonterminalProductions, terminalProductions, producesEmptyWeight, _startSymbol);
+			return new CNFGrammar(nonterminalProductions, terminalProductions, producesEmptyWeight, _startSymbol, simplify);
 
 			// BuildLookups();
 		}

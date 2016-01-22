@@ -74,7 +74,9 @@ namespace CFGLib {
 
 		internal override void RemoveProductions(IEnumerable<BaseProduction> toRemove) {
 			foreach (var production in toRemove) {
-				if (production is CNFNonterminalProduction) {
+				if (production.Lhs == this.Start && production.Rhs.Count == 0) {
+					throw new Exception("Don't handle removing empty production in CNF yet");
+				} else if (production is CNFNonterminalProduction) {
 					var ntprod = (CNFNonterminalProduction)production;
 					_nonterminalProductions.Remove(ntprod);
 				} else {
@@ -87,7 +89,7 @@ namespace CFGLib {
 		private CNFGrammar() {
 		}
 
-		public CNFGrammar(IEnumerable<BaseProduction> nt, IEnumerable<BaseProduction> t, int producesEmptyWeight, Nonterminal start) {
+		public CNFGrammar(IEnumerable<BaseProduction> nt, IEnumerable<BaseProduction> t, int producesEmptyWeight, Nonterminal start, bool simplify = true) {
 			_nonterminalProductions = new List<CNFNonterminalProduction>();
 			foreach (var production in nt) {
 				_nonterminalProductions.Add(new CNFNonterminalProduction(production));
@@ -100,18 +102,13 @@ namespace CFGLib {
 				_emptyProductions.Add(new Production(start, new Sentence(), producesEmptyWeight));
 			}
 			_start = start;
+			
+			if (simplify) {
+				Simplify();
+			}
 
-			RemoveDuplicates();
-			RemoveUnreachable();
-			RemoveUnproductive();
 			BuildLookups();
 			BuildHelpers();
-		}
-
-		// TODO probably doesn't preserve weights
-		public static CNFGrammar FromCFG(Grammar grammar) {
-			var conv = new CFGtoCNF(grammar);
-			return conv.Convert();
 		}
 
 		private void BuildLookups() {
@@ -231,6 +228,10 @@ namespace CFGLib {
 
 		public bool Accepts(Sentence s) {
 			return Cyk(s) > 0;
+		}
+
+		public CNFGrammar Clone() {
+			return new CNFGrammar(this.NonterminalProductions, this.TerminalProductions, EmptyProductionWeight, this.Start, false);
 		}
 	}
 }

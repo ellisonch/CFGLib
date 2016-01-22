@@ -14,7 +14,10 @@ namespace ConsolePlayground {
 			//Readme();
 
 			var rt = new CFGLibTest.RandomTests();
-			rt.RandomCFGToCNFTest();
+			var sw = Stopwatch.StartNew();
+			rt.RandomSimplificationTest();
+			sw.Stop();
+			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 
 			//var randg = new GrammarGenerator();

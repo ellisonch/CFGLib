@@ -31,7 +31,38 @@ namespace CFGLibTest {
 				//	var pg = g.C
 				//}
 			}
+		}
 
+		[TestMethod]
+		public void RandomSimplificationTest() {
+			int _maxInputLength = 4;
+			int _numNonterminals = 10;
+			int _numProductions = 40;
+			int _numTrials = 100;
+
+			var randg = new GrammarGenerator();
+			var range = Enumerable.Range(0, 5);
+			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
+
+			var preparedSentences = new List<Sentence>();
+			foreach (var target in CFGLibTest.Helpers.CombinationsWithRepetition(terminals, _maxInputLength)) {
+				var sentence = new Sentence(target);
+				preparedSentences.Add(sentence);
+			}
+
+			for (int i = 0; i < _numTrials; i++) {
+				var g = randg.NextCNF(_numNonterminals, _numProductions, terminals, false);
+				var h = g.Clone();
+				h.Simplify();
+				//Console.WriteLine(g);
+				//Console.WriteLine(h);
+				foreach (var sentence in preparedSentences) {
+					var chanceg = g.Cyk(sentence);
+					var chanceh = h.Cyk(sentence);
+					Helpers.AssertNear(chanceg, chanceh);
+				}
+				// Console.WriteLine("-------------------------------");
+			}
 		}
 	}
 }

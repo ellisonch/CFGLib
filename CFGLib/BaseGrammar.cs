@@ -117,7 +117,7 @@ namespace CFGLib {
 			
 			return (double)weight / weightTotal;
 		}
-
+		
 		internal Sentence ProduceNonterminal(Nonterminal v) {
 			Sentence result = null;
 
@@ -212,6 +212,16 @@ namespace CFGLib {
 				var value = entry.Value;
 				Console.WriteLine("{0}: {1}", key, (double)value / iterations * correction);
 			}
+		}
+
+		public void Simplify() {
+			RemoveDuplicates();
+			int oldCount;
+			do {
+				oldCount = this.Productions.Count();
+				RemoveUnreachable();
+				RemoveUnproductive();
+			} while (oldCount != this.Productions.Count());
 		}
 
 		protected void RemoveDuplicates() {

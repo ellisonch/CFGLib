@@ -39,7 +39,7 @@ namespace CFGLib {
 			return new Production(lhs, rhs, weight);
 		}
 
-		public CNFGrammar NextCNF(int numNonterminals, int numProductions, IList<Terminal> terminals) {
+		public CNFGrammar NextCNF(int numNonterminals, int numProductions, IList<Terminal> terminals, bool simplify = true) {
 			if (numNonterminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
 			}
@@ -63,7 +63,7 @@ namespace CFGLib {
 				var terminal = RandomTerminal(terminals);
 				t.Add(RandomTProduction(numNonterminals, terminals, terminal));
 			}
-			return new CNFGrammar(nt, t, producesEmptyWeight, start);
+			return new CNFGrammar(nt, t, producesEmptyWeight, start, simplify);
 		}
 
 		private CNFNonterminalProduction RandomNTProduction(int numNonTerminals, Nonterminal lhs = null) {

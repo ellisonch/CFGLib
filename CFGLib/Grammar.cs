@@ -42,13 +42,13 @@ namespace CFGLib {
 			}
 		}
 
-		public Grammar(IEnumerable<BaseProduction> productions, Nonterminal start) {
+		public Grammar(IEnumerable<BaseProduction> productions, Nonterminal start, bool simplify = true) {
 			_productions = new List<BaseProduction>(productions);
 			_start = start;
 
-			RemoveDuplicates();
-			RemoveUnreachable();
-			RemoveUnproductive();
+			if (simplify) {
+				Simplify();
+			}
 
 			_table = Helpers.ConstructCache(
 				_productions,
@@ -61,8 +61,9 @@ namespace CFGLib {
 			BuildHelpers();
 		}
 
-		public CNFGrammar ToCNF() {
-			return CNFGrammar.FromCFG(this);
+		public CNFGrammar ToCNF(bool simplify = true) {
+			var conv = new CFGtoCNF(this);
+			return conv.Convert(simplify);
 		}
 	}
 }
