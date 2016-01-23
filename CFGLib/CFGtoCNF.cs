@@ -269,10 +269,10 @@ namespace CFGLib {
 			return result;
 		}
 		
-		private static Cache<Nonterminal, ICollection<BaseProduction>> BuildLookupTable(ISet<BaseProduction> productions) {
-			Cache<Nonterminal, ICollection<BaseProduction>> table;
+		private static Dictionary<Nonterminal, ICollection<BaseProduction>> BuildLookupTable(ISet<BaseProduction> productions) {
+			Dictionary<Nonterminal, ICollection<BaseProduction>> table;
 
-			table = Cache.Create(
+			table = Helpers.BuildLookup(
 				() => productions,
 				(p) => p.Lhs,
 				(p) => p,

@@ -22,9 +22,9 @@ namespace CFGLib {
 			}
 		}
 
-		private Cache<Terminal, ICollection<CNFTerminalProduction>> _reverseTerminalProductions;
-		private Cache<Nonterminal, ICollection<CNFNonterminalProduction>> _ntProductionsByNonterminal;
-		private Cache<Nonterminal, ICollection<CNFTerminalProduction>> _tProductionsByNonterminal;
+		private Cache<Dictionary<Terminal, ICollection<CNFTerminalProduction>>> _reverseTerminalProductions;
+		private Cache<Dictionary<Nonterminal, ICollection<CNFNonterminalProduction>>> _ntProductionsByNonterminal;
+		private Cache<Dictionary<Nonterminal, ICollection<CNFTerminalProduction>>> _tProductionsByNonterminal;
 
 
 		protected List<CNFNonterminalProduction> NonterminalProductions {
@@ -37,8 +37,8 @@ namespace CFGLib {
 
 
 		internal override IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs) {
-			IEnumerable<BaseProduction> list1 = _ntProductionsByNonterminal[lhs];
-			IEnumerable<BaseProduction> list2 = _tProductionsByNonterminal[lhs];
+			IEnumerable<BaseProduction> list1 = _ntProductionsByNonterminal.Value.LookupEnumerable(lhs);
+			IEnumerable<BaseProduction> list2 = _tProductionsByNonterminal.Value.LookupEnumerable(lhs);
 
 			var result = list1.Concat(list2);
 			if (lhs == this.Start) {
@@ -95,31 +95,31 @@ namespace CFGLib {
 		}
 
 		private void BuildLookups() {
-			_reverseTerminalProductions = Cache.Create(
+			_reverseTerminalProductions = Cache.Create(() => Helpers.BuildLookup(
 				() => _terminalProductions,
 				(p) => p.SpecificRhs,
 				(p) => p,
 				() => (ICollection<CNFTerminalProduction>)new HashSet<CNFTerminalProduction>(),
 				(x, y) => x.Add(y)
-			);
+			));
 			this.Caches.Add(_reverseTerminalProductions);
 
-			_ntProductionsByNonterminal = Cache.Create(
+			_ntProductionsByNonterminal = Cache.Create(() => Helpers.BuildLookup(
 				() => _nonterminalProductions,
 				(p) => p.Lhs,
 				(p) => p,
 				() => (ICollection<CNFNonterminalProduction>)new HashSet<CNFNonterminalProduction>(),
 				(x, y) => x.Add(y)
-			);
+			));
 			this.Caches.Add(_ntProductionsByNonterminal);
 
-			_tProductionsByNonterminal = Cache.Create(
+			_tProductionsByNonterminal = Cache.Create(() => Helpers.BuildLookup(
 				() => _terminalProductions,
 				(p) => p.Lhs,
 				(p) => p,
 				() => (ICollection<CNFTerminalProduction>)new HashSet<CNFTerminalProduction>(),
 				(x, y) => x.Add(y)
-			);
+			));
 			this.Caches.Add(_tProductionsByNonterminal);
 		}
 
@@ -155,8 +155,8 @@ namespace CFGLib {
 			var P = new double[s.Count, s.Count, nonterminals_R.Count];
 			for (int i = 0; i < s.Count; i++) {
 				var a_i = (Terminal)s[i];
-				ICollection<CNFTerminalProduction> yields_a_i = _reverseTerminalProductions[a_i];
-				if (yields_a_i.Count == 0) {
+				ICollection<CNFTerminalProduction> yields_a_i;
+				if (!_reverseTerminalProductions.Value.TryGetValue(a_i, out yields_a_i)) {
 					// the grammar can't possibly produce this string if it doesn't know a terminal
 					return 0.0;
 				}

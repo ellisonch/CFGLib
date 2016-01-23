@@ -9,10 +9,10 @@ namespace CFGLib {
 	public class Grammar : BaseGrammar {
 		private List<BaseProduction> _productions;
 
-		private Cache<Nonterminal, ICollection<BaseProduction>> _table;
+		private Cache<Dictionary<Nonterminal, ICollection<BaseProduction>>> _table;
 
 		internal override IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs) {
-			return _table[lhs];
+			return _table.Value.LookupEnumerable(lhs);
 		}
 
 		public override IEnumerable<BaseProduction> Productions {
@@ -33,13 +33,13 @@ namespace CFGLib {
 				SimplifyWithoutInvalidate();
 			}
 
-			_table = Cache.Create(
+			_table = Cache.Create(() => Helpers.BuildLookup(
 				() => _productions,
 				(p) => p.Lhs,
 				(p) => p,
 				() => (ICollection<BaseProduction>)new List<BaseProduction>(),
 				(x, y) => x.Add(y)
-			);
+			));
 			this.Caches.Add(_table);
 
 			BuildHelpers();

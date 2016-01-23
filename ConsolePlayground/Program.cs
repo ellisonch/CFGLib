@@ -40,7 +40,7 @@ namespace ConsolePlayground {
 			int _numProductions = 100;
 			int _numTerminals = 5;
 			int _maxLength = 4;
-			int _numGrammars = 40;
+			int _numGrammars = 80;
 
 			var range = Enumerable.Range(0, _numTerminals);
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));

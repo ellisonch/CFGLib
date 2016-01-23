@@ -25,52 +25,48 @@ namespace CFGLib {
 
 		private Random _rand = new Random(0);
 		
-		private Cache<Nonterminal, Boxed<long>> _weightTotalsByNonterminal;
-		private Cache<int, ISet<Nonterminal>> _nonterminals;
-		private Cache<int, ISet<Terminal>> _terminals;
+		private Cache<Dictionary<Nonterminal, Boxed<long>>> _weightTotalsByNonterminal;
+		private Cache<ISet<Nonterminal>> _nonterminals;
+		private Cache<ISet<Terminal>> _terminals;
 
 		protected void BuildHelpers() {
 			// Dictionary<Nonterminal, long>
-			_weightTotalsByNonterminal = Cache.Create(
+			_weightTotalsByNonterminal = Cache.Create(() => Helpers.BuildLookup(
 				() => this.Productions,
 				(p) => p.Lhs,
 				(p) => p.Weight,
 				() => new Boxed<long>(0L),
 				(x, y) => x.Value += y
-			);
+			));
 			this.Caches.Add(_weightTotalsByNonterminal);
 
-			_nonterminals = Cache.Create(
-				() => this.Productions,
-				(p) => 0,
-				(p) => p,
-				() => (ISet<Nonterminal>)new HashSet<Nonterminal>(),
-				(hs, p) => {
-					hs.Add(p.Lhs);
-					foreach (var word in p.Rhs) {
+			_nonterminals = Cache.Create(() => {
+				var hs = new HashSet<Nonterminal>();
+				foreach (var production in this.Productions) {
+					hs.Add(production.Lhs);
+					foreach (var word in production.Rhs) {
 						var nonterminal = word as Nonterminal;
 						if (nonterminal != null) {
 							hs.Add(nonterminal);
 						}
 					}
 				}
-			);
+				return (ISet<Nonterminal>)hs;
+			});
 			this.Caches.Add(_nonterminals);
 
-			_terminals = Cache.Create(
-				() => this.Productions,
-				(p) => 0,
-				(p) => p,
-				() => (ISet<Terminal>)new HashSet<Terminal>(),
-				(hs, p) => {
-					foreach (var word in p.Rhs) {
+			_terminals = Cache.Create(() => {
+				var hs = new HashSet<Terminal>();
+				foreach (var production in this.Productions) {
+					foreach (var word in production.Rhs) {
 						var terminal = word as Terminal;
 						if (terminal != null) {
 							hs.Add(terminal);
 						}
 					}
 				}
-			);
+				return (ISet<Terminal>)hs;
+			});
 			this.Caches.Add(_terminals);
 		}
 
@@ -160,7 +156,7 @@ namespace CFGLib {
 		}
 		// TODO: use checked arithmetic
 		protected double GetProbability(Nonterminal lhs, int weight) {
-			long weightTotal = _weightTotalsByNonterminal[lhs].Value;
+			long weightTotal = _weightTotalsByNonterminal.Value[lhs].Value;
 			
 			return (double)weight / weightTotal;
 		}
@@ -188,10 +184,10 @@ namespace CFGLib {
 		}
 		
 		public ISet<Nonterminal> GetNonterminals() {
-			return _nonterminals[0];
+			return _nonterminals.Value;
 		}
 		public ISet<Terminal> GetTerminals() {
-			return _terminals[0];
+			return _terminals.Value;
 		}
 
 		// TODO what's this for?
