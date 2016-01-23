@@ -24,8 +24,10 @@ namespace CFGLib {
 		}
 
 		private Random _rand = new Random(0);
-
+		
 		private Cache<Nonterminal, Boxed<long>> _weightTotalsByNonterminal;
+		private Cache<int, ISet<Nonterminal>> _nonterminals;
+		private Cache<int, ISet<Terminal>> _terminals;
 
 		protected void BuildHelpers() {
 			// Dictionary<Nonterminal, long>
@@ -37,6 +39,39 @@ namespace CFGLib {
 				(x, y) => x.Value += y
 			);
 			this.Caches.Add(_weightTotalsByNonterminal);
+
+			_nonterminals = Cache.Create(
+				() => this.Productions,
+				(p) => 0,
+				(p) => p,
+				() => (ISet<Nonterminal>)new HashSet<Nonterminal>(),
+				(hs, p) => {
+					hs.Add(p.Lhs);
+					foreach (var word in p.Rhs) {
+						var nonterminal = word as Nonterminal;
+						if (nonterminal != null) {
+							hs.Add(nonterminal);
+						}
+					}
+				}
+			);
+			this.Caches.Add(_nonterminals);
+
+			_terminals = Cache.Create(
+				() => this.Productions,
+				(p) => 0,
+				(p) => p,
+				() => (ISet<Terminal>)new HashSet<Terminal>(),
+				(hs, p) => {
+					foreach (var word in p.Rhs) {
+						var terminal = word as Terminal;
+						if (terminal != null) {
+							hs.Add(terminal);
+						}
+					}
+				}
+			);
+			this.Caches.Add(_terminals);
 		}
 
 		internal abstract IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs);
@@ -153,34 +188,10 @@ namespace CFGLib {
 		}
 		
 		public ISet<Nonterminal> GetNonterminals() {
-			var results = new HashSet<Nonterminal>();
-			results.Add(this.Start);
-
-			foreach (var production in this.Productions) {
-				results.Add(production.Lhs);
-				foreach (var word in production.Rhs) {
-					var nonterminal = word as Nonterminal;
-					if (nonterminal != null) {
-						results.Add(nonterminal);
-					}
-				}
-			}
-
-			return results;
+			return _nonterminals[0];
 		}
 		public ISet<Terminal> GetTerminals() {
-			var results = new HashSet<Terminal>();
-
-			foreach (var production in this.Productions) {
-				foreach (var word in production.Rhs) {
-					var terminal = word as Terminal;
-					if (terminal != null) {
-						results.Add(terminal);
-					}
-				}
-			}
-
-			return results;
+			return _terminals[0];
 		}
 
 		// TODO what's this for?

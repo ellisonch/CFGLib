@@ -10,14 +10,16 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			//Benchmark();
+			Benchmark();
 			//Readme();
 			//8.7s
-			var rt = new CFGLibTest.RandomTests();
-			var sw = Stopwatch.StartNew();
-			rt.RandomSimplificationTest();
-			sw.Stop();
-			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+
+			//var rt = new CFGLibTest.RandomTests();
+			//var sw = Stopwatch.StartNew();
+			//// rt.RandomSimplificationTest();
+			//rt.RandomCFGToCNFTest();
+			//sw.Stop();
+			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 
 			//var randg = new GrammarGenerator();
