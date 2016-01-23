@@ -24,7 +24,7 @@ namespace CFGLib {
 			Func<TElm, T2> getValueFromElement,
 			Func<TValue> newEnumerable,
 			Action<TValue, T2> updateStored
-		) {
+		) where TValue : class {
 			var dict = new Dictionary<TKey, TValue>();
 			foreach (var production in getInputListOfElements()) {
 				var key = getKeyFromElement(production);

@@ -155,6 +155,9 @@ namespace CFGLib {
 		protected double GetProbability(BaseProduction target) {
 			var lhs = target.Lhs;
 			var weight = target.Weight;
+			// 9.23s calculating all
+			// 7.06 accessing target
+			// 6.4 doing none
 			long weightTotal = _weightTotalsByNonterminal.Value[lhs].Value;
 			return (double)weight / weightTotal;
 		}
