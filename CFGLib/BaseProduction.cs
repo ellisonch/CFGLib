@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
+	/// <summary>
+	/// This class represents an abstract Production
+	/// </summary>
 	public abstract class BaseProduction {
 		private Nonterminal _lhs;
 		private int _weight = 1;

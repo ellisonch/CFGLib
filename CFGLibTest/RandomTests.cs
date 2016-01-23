@@ -54,15 +54,15 @@ namespace CFGLibTest {
 
 			for (int i = 0; i < _numTrials; i++) {
 				var g = randg.NextCNF(_numNonterminals, _numProductions, terminals, false);
-				var h = g.Clone();
-				h.Simplify();
+				//var h = g.Clone();
+				//h.Simplify();
 				//Console.WriteLine(g);
 				//Console.WriteLine(h);
-				foreach (var sentence in preparedSentences) {
-					var chanceg = g.Cyk(sentence);
-					var chanceh = h.Cyk(sentence);
-					// Helpers.AssertNear(chanceg, chanceh);
-				}
+				//foreach (var sentence in preparedSentences) {
+				//	var chanceg = g.Cyk(sentence);
+				//	var chanceh = h.Cyk(sentence);
+				//	// Helpers.AssertNear(chanceg, chanceh);
+				//}
 				// Console.WriteLine("-------------------------------");
 			}
 		}

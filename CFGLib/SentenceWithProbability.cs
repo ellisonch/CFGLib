@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
+	/// <summary>
+	/// Represents a sentence together with its associated probability of being generated
+	/// </summary>
 	public class SentenceWithProbability {
 		public double Probability;
 		public Sentence Sentence;

@@ -5,9 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
+	/// <summary>
+	/// This class can be used to generate random grammars
+	/// </summary>
 	public class GrammarGenerator {
 		private Random _rand = new Random(0);
 
+		/// <summary>
+		/// Generates a new, random generic grammar
+		/// </summary>
+		/// <param name="numNonterminals"></param>
+		/// <param name="numProductions"></param>
+		/// <param name="maxProductionLength"></param>
+		/// <param name="terminals"></param>
+		/// <returns></returns>
 		public Grammar NextCFG(int numNonterminals, int numProductions, int maxProductionLength, IList<Terminal> terminals) {
 			if (numNonterminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
@@ -39,6 +50,14 @@ namespace CFGLib {
 			return new Production(lhs, rhs, weight);
 		}
 
+		/// <summary>
+		/// Generates a new, random CNF grammar
+		/// </summary>
+		/// <param name="numNonterminals"></param>
+		/// <param name="numProductions"></param>
+		/// <param name="terminals"></param>
+		/// <param name="simplify"></param>
+		/// <returns></returns>
 		public CNFGrammar NextCNF(int numNonterminals, int numProductions, IList<Terminal> terminals, bool simplify = true) {
 			if (numNonterminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");

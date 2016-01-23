@@ -27,9 +27,5 @@ namespace CFGLib {
 		public bool IsNonterminal() {
 			return true;
 		}
-		
-		public Sentence ProduceBy(BaseGrammar grammar) {
-			return grammar.ProduceNonterminal(this);
-		}
 	}
 }

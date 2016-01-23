@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
+	/// <summary>
+	/// Represents a concrete (probabilistic) context free grammar in Chomsky normal form (CNF)
+	/// </summary>
 	public class CNFGrammar : BaseGrammar {
 		private List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
 		private List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
@@ -140,6 +143,11 @@ namespace CFGLib {
 		//  S is member of language
 		//else
 		//  S is not member of language
+		/// <summary>
+		/// Returns the probability that this grammar generated the given sentence
+		/// </summary>
+		/// <param name="s"></param>
+		/// <returns></returns>
 		public double Cyk(Sentence s) {
 			if (s.Count == 0) {
 				if (_emptyProductions.Count == 0) {
@@ -211,12 +219,17 @@ namespace CFGLib {
 			Console.WriteLine("--------P--------");
 		}
 
+		/// <summary>
+		/// Returns whether this grammar accepts the given sentence
+		/// </summary>
+		/// <param name="s"></param>
+		/// <returns></returns>
 		public bool Accepts(Sentence s) {
 			return Cyk(s) > 0;
 		}
-
-		public CNFGrammar Clone() {
-			return new CNFGrammar(this.NonterminalProductions, this.TerminalProductions, EmptyProductionWeight, this.Start, false);
-		}
+		
+		//public CNFGrammar Clone() {
+		//	return new CNFGrammar(this.NonterminalProductions, this.TerminalProductions, EmptyProductionWeight, this.Start, false);
+		//}
 	}
 }

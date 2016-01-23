@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace CFGLib {
+	/// <summary>
+	/// This class helps turn strings into grammars.
+	/// </summary>
 	public class CFGParser {
 		private static Regex _productionRegex = null;
 
@@ -24,7 +27,14 @@ namespace CFGLib {
 			}
 		}
 
-		// <X> -> <X> 'a' <X>
+		/// <summary>
+		/// Turns a string like
+		/// &lt;X> -> &lt;X> 'a' &lt;X>
+		/// into a production.
+		/// Nonterminals must be surrounded by angled brackets, terminals must be surrounded by single quotes, and everything must be separated by spaces.
+		/// </summary>
+		/// <param name="s"></param>
+		/// <returns></returns>
 		public static BaseProduction Production(string s) {
 			var match = ProductionRegex.Match(s);
 			

@@ -5,16 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
-	public class CFGtoCNF {
+	/// <summary>
+	/// A class to help transform a generic grammar into a CNF grammar
+	/// </summary>
+	internal class CFGtoCNF {
 		private Grammar _grammar;
 		private int _freshx = 0;
 		private Nonterminal _startSymbol;
 
-		public CFGtoCNF(Grammar grammar) {
+		internal CFGtoCNF(Grammar grammar) {
 			_grammar = grammar;
 		}
 
-		public CNFGrammar Convert(bool simplify) {
+		/// <summary>
+		/// Actually performs the conversion and returns a new CNF grammar based on the old grammar
+		/// </summary>
+		/// <param name="simplify"></param>
+		/// <returns></returns>
+		internal CNFGrammar Convert(bool simplify) {
 			var productions = CloneGrammar(_grammar);
 			StepStart(productions);
 			StepTerm(productions);

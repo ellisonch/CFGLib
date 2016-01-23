@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 
 namespace CFGLib {
+	/// <summary>
+	/// This class represents a generic but concrete production
+	/// </summary>
 	public class Production : BaseProduction {
 		private Sentence _rhs;
 		

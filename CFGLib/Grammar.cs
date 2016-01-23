@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
+	/// <summary>
+	/// Represents a concrete (probabilistic) context free grammar
+	/// </summary>
 	public class Grammar : BaseGrammar {
 		private List<BaseProduction> _productions;
 
@@ -45,6 +48,13 @@ namespace CFGLib {
 			BuildHelpers();
 		}
 
+		// TODO: preserve probabilities
+		/// <summary>
+		/// Returns a new grammar that is the CNF equivalent of this grammar.
+		/// WARNING: currently this does not always preserve probabilities!
+		/// </summary>
+		/// <param name="simplify"></param>
+		/// <returns></returns>
 		public CNFGrammar ToCNF(bool simplify = true) {
 			var conv = new CFGtoCNF(this);
 			return conv.Convert(simplify);

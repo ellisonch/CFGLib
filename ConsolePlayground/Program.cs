@@ -56,6 +56,8 @@ namespace ConsolePlayground {
 			var preparedGrammars = new List<CNFGrammar>();
 			for (int i = 0; i < _numGrammars; i++) {
 				var g = randg.NextCNF(_numNonterminals, _numProductions, terminals);
+				// Console.WriteLine(g);
+				// g.PrintProbabilities(2, 3);
 				preparedGrammars.Add(g);
 			}
 

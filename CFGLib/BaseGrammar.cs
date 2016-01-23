@@ -6,28 +6,34 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
+	/// <summary>
+	/// Represents an abstract (probabilistic) context free grammar
+	/// </summary>
 	public abstract class BaseGrammar {
+		private Random _rand = new Random(0);
+		private Nonterminal _start;
+		private List<IDirtyable> _caches = new List<IDirtyable>();
+		private Cache<Dictionary<Nonterminal, Boxed<long>>> _weightTotalsByNonterminal;
+		private Cache<ISet<Nonterminal>> _nonterminals;
+		private Cache<ISet<Terminal>> _terminals;
+
 		public abstract IEnumerable<BaseProduction> Productions {
 			get;
 		}
-		private Nonterminal _start;
+		
+		/// <summary>
+		/// The start symbol
+		/// </summary>
 		public Nonterminal Start {
 			get { return _start; }
 			protected set { _start = value; }
 		}
 
-		private List<IDirtyable> _caches = new List<IDirtyable>();
 		protected List<IDirtyable> Caches {
 			get {
 				return _caches;
 			}
 		}
-
-		private Random _rand = new Random(0);
-		
-		private Cache<Dictionary<Nonterminal, Boxed<long>>> _weightTotalsByNonterminal;
-		private Cache<ISet<Nonterminal>> _nonterminals;
-		private Cache<ISet<Terminal>> _terminals;
 
 		protected void BuildHelpers() {
 			// Dictionary<Nonterminal, long>
@@ -36,7 +42,7 @@ namespace CFGLib {
 				(p) => p.Lhs,
 				(p) => p.Weight,
 				() => new Boxed<long>(0L),
-				(x, y) => x.Value += y
+				(x, y) => x.Value = checked(x.Value + y)
 			));
 			this.Caches.Add(_weightTotalsByNonterminal);
 
@@ -72,13 +78,20 @@ namespace CFGLib {
 
 		internal abstract IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs);
 
-
+		/// <summary>
+		/// Call this after making any changes to the grammar so that cached lookup tables can be rebuilt
+		/// </summary>
 		public void InvalidateCaches() {
 			foreach (var cache in this.Caches) {
 				cache.SetDirty();
 			}
 		}
 
+		/// <summary>
+		/// Returns all the sentences (with their probabilities) that can be generated up to a certain depth
+		/// </summary>
+		/// <param name="depth"></param>
+		/// <returns></returns>
 		public List<SentenceWithProbability> ProduceToDepth(int depth) {
 			var start = new Sentence { this.Start };
 			var intermediate = new List<SentenceWithProbability>[depth + 1];
@@ -150,8 +163,7 @@ namespace CFGLib {
 			}
 			return results;
 		}
-
-		// TODO: use checked arithmetic
+		
 		protected double GetProbability(BaseProduction target) {
 			var lhs = target.Lhs;
 			var weight = target.Weight;
@@ -184,32 +196,26 @@ namespace CFGLib {
 			return result;
 		}
 		
+		/// <summary>
+		/// Returns a list of all the nonterminals used anywhere in the productions
+		/// </summary>
+		/// <returns></returns>
 		public ISet<Nonterminal> GetNonterminals() {
 			return _nonterminals.Value;
 		}
+		/// <summary>
+		/// Returns a list of all the terminals used anywhere in the productions
+		/// </summary>
+		/// <returns></returns>
 		public ISet<Terminal> GetTerminals() {
 			return _terminals.Value;
 		}
-
-		// TODO what's this for?
-		public List<Sentence> Produce() {
-			var history = new List<Sentence>();
-			var sentence = new Sentence { this.Start };
-
-			while (sentence.ContainsNonterminal()) {
-				history.Add(sentence);
-				Sentence newSentence = new Sentence();
-				foreach (var word in sentence) {
-					var newWords = word.ProduceBy(this);
-					newSentence.AddRange(newWords);
-				}
-				sentence = newSentence;
-			}
-			history.Add(sentence);
-			return history;
-		}
-
+		
 		// TODO: MIGHT NOT TERMINATE!
+		/// <summary>
+		/// Returns a random sentence produced by this grammar.
+		/// </summary>
+		/// <returns></returns>
 		public Sentence ProduceRandom() {
 			var sentence = new Sentence { this.Start };
 			while (sentence.ContainsNonterminal()) {
@@ -227,7 +233,11 @@ namespace CFGLib {
 			return sentence;
 		}
 
-		public void PrintProbabilities(long iterations, double correction) {
+		/// <summary>
+		/// Tries to estimate the probability of the sentences this grammar can generate by generating a bunch randomly and counting.
+		/// </summary>
+		/// <param name="iterations"></param>
+		internal void EstimateProbabilities(long iterations) {
 			var dict = new Dictionary<string, long>();
 			for (int i = 0; i < iterations; i++) {
 				var key = this.ProduceRandom().AsTerminals("");
@@ -244,10 +254,13 @@ namespace CFGLib {
 			foreach (var entry in listPairs) {
 				var key = entry.Key;
 				var value = entry.Value;
-				Console.WriteLine("{0}: {1}", key, (double)value / iterations * correction);
+				Console.WriteLine("{0}: {1}", key, (double)value / iterations);
 			}
 		}
 
+		/// <summary>
+		/// Simplifies the grammar by removing duplicate productions as well as productions involving unreachable and unproductive nonterminals
+		/// </summary>
 		public void Simplify() {
 			SimplifyWithoutInvalidate();
 			InvalidateCaches();

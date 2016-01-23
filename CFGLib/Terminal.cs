@@ -30,10 +30,7 @@ namespace CFGLib {
 		public override string ToString() {
 			return string.Format("Trm({0})", _name);
 		}
-
-		public Sentence ProduceBy(BaseGrammar grammar) {
-			return new Sentence { this };
-		}
+		
 		public bool IsNonterminal() {
 			return false;
 		}

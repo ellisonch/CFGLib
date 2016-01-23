@@ -1,6 +1,9 @@
 ﻿using System;
 
 namespace CFGLib {
+	/// <summary>
+	/// This class represents a Terminal CNF production (e.g., X -> a)
+	/// </summary>
 	public class CNFTerminalProduction : BaseProduction {
 		private readonly Terminal _rhs;
 
