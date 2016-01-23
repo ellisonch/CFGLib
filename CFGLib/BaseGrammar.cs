@@ -151,13 +151,11 @@ namespace CFGLib {
 			return results;
 		}
 
-		protected double GetProbability(BaseProduction target) {
-			return this.GetProbability(target.Lhs, target.Weight);
-		}
 		// TODO: use checked arithmetic
-		protected double GetProbability(Nonterminal lhs, int weight) {
+		protected double GetProbability(BaseProduction target) {
+			var lhs = target.Lhs;
+			var weight = target.Weight;
 			long weightTotal = _weightTotalsByNonterminal.Value[lhs].Value;
-			
 			return (double)weight / weightTotal;
 		}
 		

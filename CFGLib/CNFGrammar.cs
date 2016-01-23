@@ -142,7 +142,10 @@ namespace CFGLib {
 		//  S is not member of language
 		public double Cyk(Sentence s) {
 			if (s.Count == 0) {
-				return GetProbability(this.Start, EmptyProductionWeight);
+				if (_emptyProductions.Count == 0) {
+					return 0.0;
+				}
+				return GetProbability(_emptyProductions.First());
 			}
 			
 			List<Nonterminal> nonterminals_R = new List<Nonterminal>(GetNonterminals());

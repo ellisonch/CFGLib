@@ -17,7 +17,7 @@ namespace CFGLib {
 	internal class Cache<TValue> : IDirtyable where TValue : class {
 		private bool _dirty = true;
 		private TValue _value;
-		private Func<TValue> _build;
+		private readonly Func<TValue> _build;
 
 		private Cache(Func<TValue> buildCommand) {
 			_build = buildCommand;
