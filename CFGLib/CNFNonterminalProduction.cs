@@ -16,7 +16,7 @@ namespace CFGLib {
 			_rhs[1] = (Nonterminal)production.Rhs[1];
 			this.Weight = production.Weight;
 		}
-		public CNFNonterminalProduction(Nonterminal lhs, Nonterminal rhs1, Nonterminal rhs2, int weight = 1) {
+		public CNFNonterminalProduction(Nonterminal lhs, Nonterminal rhs1, Nonterminal rhs2, ulong weight = 1) {
 			this.Lhs = lhs;
 			_rhs[0] = rhs1;
 			_rhs[1] = rhs2;

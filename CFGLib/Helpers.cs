@@ -38,6 +38,61 @@ namespace CFGLib {
 			}
 			return dict;
 		}
+		
+		public static ulong Sum<T>(this IEnumerable<T> source, Func<T, ulong> selector) {
+			if (source == null) {
+				throw new ArgumentNullException("Cannot sum a null list");
+			}
+			var sum = 0UL;
+			foreach (var item in source) {
+				var number = selector(item);
+				sum = checked(sum + number);
+			}
+			return sum;
+		}
+
+		/// <summary>
+		/// Returns a random number in [0, maxValue)
+		/// </summary>
+		/// <param name="rand"></param>
+		/// <param name="maxValue"></param>
+		/// <returns></returns>
+		public static ulong Next(this Random rand, ulong maxValue) {
+			if (maxValue <= int.MaxValue) {
+				return (ulong)rand.Next((int)maxValue);
+			}
+
+			var bitmask = NextHighestBitmask(maxValue);
+			byte[] randomBytes = new byte[8];
+			ulong candidate;
+			do {
+				rand.NextBytes(randomBytes);
+				ulong randomUInt64 = BitConverter.ToUInt64(randomBytes, 0);
+				candidate = randomUInt64 & bitmask;
+			} while (candidate >= maxValue);
+
+			return candidate;
+		}
+
+		/// <summary>
+		/// Returns a bitmask just large enough to cover the given number
+		/// </summary>
+		/// <param name="n"></param>
+		/// <returns></returns>
+		private static ulong NextHighestBitmask(ulong n) {
+			if (n == 0UL) {
+				return 0UL;
+			}
+			n--;
+			n |= n >> 1;
+			n |= n >> 2;
+			n |= n >> 4;
+			n |= n >> 8;
+			n |= n >> 16;
+			n |= n >> 32;
+
+			return n;
+		}
 	}
 	internal class Boxed<T> {
 		public T Value;

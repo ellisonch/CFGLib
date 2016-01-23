@@ -32,7 +32,7 @@ namespace CFGLib {
 
 			var nonterminalProductions = new List<CNFNonterminalProduction>();
 			var terminalProductions = new List<CNFTerminalProduction>();
-			int producesEmptyWeight = 0;
+			var producesEmptyWeight = 0UL;
 			
 			foreach (var production in productions) {
 				if (production.Rhs.Count > 2) {
@@ -43,7 +43,7 @@ namespace CFGLib {
 					var rhs = production.Rhs[0];
 					terminalProductions.Add(new CNFTerminalProduction(production));
 				} else if (production.Rhs.Count == 0) {
-					producesEmptyWeight += production.Weight;
+					producesEmptyWeight = checked(producesEmptyWeight + production.Weight);
 						// GetGrammarFromProductionList(production, productions);
 				}
 			}
@@ -126,7 +126,7 @@ namespace CFGLib {
 				var rhs = production.Rhs;
 				var curr = production.Lhs;
 				for (int i = 0; i < rhs.Count - 2; i++) {
-					int weight = (curr == production.Lhs) ? production.Weight : 1;
+					ulong weight = (curr == production.Lhs) ? production.Weight : 1UL;
 					var left = rhs[i];
 					var newFresh = Getfresh();
 					finalProductions.Add(

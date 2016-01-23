@@ -53,6 +53,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Helpers.cs" />
+    <Compile Include="RegressionTests.cs" />
     <Compile Include="RandomTests.cs" />
     <Compile Include="IntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

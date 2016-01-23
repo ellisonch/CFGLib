@@ -13,7 +13,7 @@ namespace CFGLib {
 		private Random _rand = new Random(0);
 		private Nonterminal _start;
 		private List<IDirtyable> _caches = new List<IDirtyable>();
-		private Cache<Dictionary<Nonterminal, Boxed<long>>> _weightTotalsByNonterminal;
+		private Cache<Dictionary<Nonterminal, Boxed<ulong>>> _weightTotalsByNonterminal;
 		private Cache<ISet<Nonterminal>> _nonterminals;
 		private Cache<ISet<Terminal>> _terminals;
 
@@ -36,12 +36,11 @@ namespace CFGLib {
 		}
 
 		protected void BuildHelpers() {
-			// Dictionary<Nonterminal, long>
 			_weightTotalsByNonterminal = Cache.Create(() => Helpers.BuildLookup(
 				() => this.Productions,
 				(p) => p.Lhs,
 				(p) => p.Weight,
-				() => new Boxed<long>(0L),
+				() => new Boxed<ulong>(0UL),
 				(x, y) => x.Value = checked(x.Value + y)
 			));
 			this.Caches.Add(_weightTotalsByNonterminal);
@@ -170,7 +169,7 @@ namespace CFGLib {
 			// 9.23s calculating all
 			// 7.06 accessing target
 			// 6.4 doing none
-			long weightTotal = _weightTotalsByNonterminal.Value[lhs].Value;
+			ulong weightTotal = _weightTotalsByNonterminal.Value[lhs].Value;
 			return (double)weight / weightTotal;
 		}
 		
@@ -182,9 +181,9 @@ namespace CFGLib {
 			var totalWeight = productions.Sum(w => w.Weight);
 			var targetValue = _rand.Next(totalWeight) + 1;
 
-			var currentWeight = 0;
+			var currentWeight = 0UL;
 			foreach (var production in productions) {
-				currentWeight += production.Weight;
+				currentWeight = checked(currentWeight + production.Weight);
 				if (currentWeight < targetValue) {
 					continue;
 				}

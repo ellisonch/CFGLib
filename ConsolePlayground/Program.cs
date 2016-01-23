@@ -14,6 +14,9 @@ namespace ConsolePlayground {
 			//Readme();
 			//8.7s
 
+			var p = CFGParser.Production("<S> -> 'a' [5]");
+			Console.WriteLine(p);
+
 			//var rt = new CFGLibTest.RandomTests();
 			//var sw = Stopwatch.StartNew();
 			//// rt.RandomSimplificationTest();

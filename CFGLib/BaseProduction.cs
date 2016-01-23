@@ -10,7 +10,7 @@ namespace CFGLib {
 	/// </summary>
 	public abstract class BaseProduction {
 		private Nonterminal _lhs;
-		private int _weight = 1;
+		private ulong _weight = 1;
 		
 		/// <summary>
 		/// The left-hand side of the Production (e.g., Lhs -> Rhs)
@@ -23,7 +23,7 @@ namespace CFGLib {
 		/// <summary>
 		/// The weight of the Production.  Weights are compared to the weights of other productions with the same Lhs to calculate Production probability.
 		/// </summary>
-		public int Weight {
+		public ulong Weight {
 			get { return _weight; }
 			internal set {
 				if (value < 1) {

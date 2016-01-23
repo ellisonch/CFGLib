@@ -12,7 +12,7 @@ namespace CFGLib {
 			get { return _rhs; }
 		}
 
-		public Production(Nonterminal lhs, Sentence rhs, int weight = 1) {
+		public Production(Nonterminal lhs, Sentence rhs, ulong weight = 1) {
 			if (lhs == null) {
 				throw new ArgumentNullException("Lhs must be non-null");
 			}
