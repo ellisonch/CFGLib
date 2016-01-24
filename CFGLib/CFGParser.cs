@@ -42,11 +42,18 @@ namespace CFGLib {
 		/// <returns></returns>
 		public static BaseProduction Production(string s) {
 			var match = ProductionRegex.Match(s);
-			
+			if (!match.Success) {
+				throw new Exception("Didn't find valid string");
+			}
+
 			var lhsMatch = match.Groups["lhs"];
 			var ntMatch = match.Groups["nt"];
 			var tMatch = match.Groups["t"];
 			var weightMatch = match.Groups["weight"];
+
+			if (!lhsMatch.Success) {
+				throw new Exception("Didn't find LHS");
+			}
 
 			double weight;
 			if (!double.TryParse(weightMatch.Value, out weight)) {
