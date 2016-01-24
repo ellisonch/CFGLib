@@ -30,5 +30,21 @@ namespace CFGLibTest.Unit {
 			Assert.IsTrue(actualp.ValueEquals(expectedp));
 			Assert.IsFalse(actualp.ValueEquals(unexpectedp));
 		}
+		[TestMethod]
+		public void TestProductionWeight() {
+			Func<double, BaseProduction> prodp = (w) => new Production(
+				Nonterminal.Of("S"),
+				new Sentence { Nonterminal.Of("X") },
+				w
+			);
+
+			var p1 = CFGParser.Production(@"<S> -> <X> [3]");
+			var p2 = CFGParser.Production(@"<S> -> <X> [3.0000]");
+
+			Assert.IsTrue(p1.ValueEquals(p2));
+
+			Assert.IsTrue(p1.ValueEquals(prodp(3.0)));
+			Assert.IsFalse(p1.ValueEquals(prodp(1.0)));
+		}
 	}
 }
