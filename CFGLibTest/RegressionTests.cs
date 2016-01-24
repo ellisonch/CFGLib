@@ -66,9 +66,10 @@ namespace CFGLibTest {
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(Exception), "A bad production string was allowed")]
 		public void TestParserFailure() {
-			var fails = CFGParser.Production(@"<X_0> -> X_0 X_0");
+			Helpers.AssertThrows<Exception>(() =>
+				CFGParser.Production(@"<X_0> -> X_0 X_0")
+			);
 		}
 	}
 }

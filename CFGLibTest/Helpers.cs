@@ -16,6 +16,16 @@ namespace CFGLibTest {
 			Assert.Fail(string.Format("Expected {0}, but got {1}", expected, actual));
 		}
 
+		public static T AssertThrows<T>(Action action) where T : Exception {
+			try {
+				action();
+			} catch (T exception) {
+				return exception;
+			}
+			Assert.Fail("Expected to throw exception {0}", typeof(T).Name);
+			return null;
+		}
+
 		// Used with permission from Jared Parsons
 		// http://stackoverflow.com/questions/1210295/how-can-i-add-an-item-to-a-ienumerablet-collection
 		public static IEnumerable<T> Append<T>(this IEnumerable<T> e, T value) {
