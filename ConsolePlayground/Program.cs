@@ -10,7 +10,10 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			Benchmark();
+			var t = new CFGLibTest.RegressionTests();
+			t.TestMissingStart();
+
+			// Benchmark();
 			//Readme();
 			//8.7s
 

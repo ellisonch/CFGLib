@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
+[assembly: InternalsVisibleTo("CFGLibTest")]
 namespace CFGLib {
 	/// <summary>
 	/// A class to help transform a generic grammar into a CNF grammar
@@ -49,20 +51,7 @@ namespace CFGLib {
 			}
 
 			return new CNFGrammar(nonterminalProductions, terminalProductions, producesEmptyWeight, _startSymbol, simplify);
-
-			// BuildLookups();
 		}
-
-
-		//private static double GetGrammarFromProductionList(Production target, List<Production> productions) {
-		//	double sumWeight = 0.0;
-		//	foreach (var production in productions) {
-		//		if (production.Lhs == target.Lhs) {
-		//			sumWeight += production.Weight;
-		//		}
-		//	}
-		//	return target.Weight / sumWeight;
-		//}
 
 		private static ISet<BaseProduction> CloneGrammar(Grammar grammar) {
 			return CloneProductions(grammar.Productions);
@@ -78,16 +67,22 @@ namespace CFGLib {
 		}
 
 		// TODO needs to be updated when we can have non-S start symbols
-		// Eliminate the start symbol from right-hand sides
+		/// <summary>
+		/// Eliminate the start symbol from right-hand sides
+		/// </summary>
+		/// <param name="productions"></param>
 		private void StepStart(ISet<BaseProduction> productions) {
-			var fresh = Getfresh();
+			var fresh = GetFresh();
 			productions.Add(
 				new Production(fresh, new Sentence { Nonterminal.Of("S") })
 			);
 			_startSymbol = fresh;
 		}
-
-		// Eliminate rules with nonsolitary terminals
+		
+		/// <summary>
+		/// Eliminate rules with nonsolitary terminals
+		/// </summary>
+		/// <param name="productions"></param>
 		private void StepTerm(ISet<BaseProduction> productions) {
 			var newProductions = new List<BaseProduction>();
 			var lookup = new Dictionary<Terminal, Nonterminal>();
@@ -103,7 +98,7 @@ namespace CFGLib {
 					Terminal terminal = (Terminal)word;
 					Nonterminal fresh;
 					if (!lookup.TryGetValue(terminal, out fresh)) {
-						fresh = Getfresh();
+						fresh = GetFresh();
 						lookup[terminal] = fresh;
 						newProductions.Add(
 							new Production(fresh, new Sentence { terminal })
@@ -114,8 +109,11 @@ namespace CFGLib {
 			}
 			productions.UnionWith(newProductions);
 		}
-
-		// Eliminate right-hand sides with more than 2 nonterminals
+		
+		/// <summary>
+		/// Eliminate right-hand sides with more than 2 nonterminals
+		/// </summary>
+		/// <param name="productions"></param>
 		private void StepBin(ISet<BaseProduction> productions) {
 			List<BaseProduction> finalProductions = new List<BaseProduction>();
 			foreach (var production in productions) {
@@ -128,7 +126,7 @@ namespace CFGLib {
 				for (int i = 0; i < rhs.Count - 2; i++) {
 					ulong weight = (curr == production.Lhs) ? production.Weight : 1UL;
 					var left = rhs[i];
-					var newFresh = Getfresh();
+					var newFresh = GetFresh();
 					finalProductions.Add(
 						new Production(curr, new Sentence { left, newFresh }, weight)
 					);
@@ -142,7 +140,10 @@ namespace CFGLib {
 			productions.UnionWith(finalProductions);
 		}
 
-		// Eliminate ε-rules
+		/// <summary>
+		/// Eliminate ε-rules
+		/// </summary>
+		/// <param name="productions"></param>
 		// TODO: definitely does not preserve weights; fix Nullate()
 		private void StepDel(ISet<BaseProduction> productions) {
 			var nullableSet = GetNullable(productions);
@@ -156,7 +157,10 @@ namespace CFGLib {
 			productions.UnionWith(newRules);
 		}
 
-		// Eliminate unit rules
+		/// <summary>
+		/// Eliminate unit rules (e.g., &lt;X> -> &lt;Y>)
+		/// </summary>
+		/// <param name="productions"></param>
 		private static void StepUnit(ISet<BaseProduction> productions) {
 			bool changed = true;
 			while (changed) {
@@ -178,8 +182,7 @@ namespace CFGLib {
 					}
 					changed = true;
 					result.Remove(production);
-					var entries = table[(Nonterminal)rhs];
-					// var entries = table[(Nonterminal)rhs];
+					var entries = table.LookupEnumerable((Nonterminal)rhs);
 					foreach (var entry in entries) {
 						var newProd = new Production(production.Lhs, entry.Rhs);
 						if (!newProd.IsSelfLoop) {
@@ -194,7 +197,11 @@ namespace CFGLib {
 			return changed;
 		}
 
-		// returns the set of all nonterminals that derive ε
+		/// <summary>
+		/// Returns the set of all nonterminals that derive ε (in one or many steps)
+		/// </summary>
+		/// <param name="originalProductions"></param>
+		/// <returns></returns>
 		private static ISet<Nonterminal> GetNullable(ISet<BaseProduction> originalProductions) {
 			var productions = CloneProductions(originalProductions);
 			ISet<BaseProduction> newProductions = new HashSet<BaseProduction>();
@@ -228,23 +235,33 @@ namespace CFGLib {
 			return nullableNonterminals;
 		}
 
-		// remove A -> X unless A is the start symbol
+		/// <summary>
+		/// Remove &lt;A> -> ε unless A is the start symbol 
+		/// </summary>
+		/// <param name="productions"></param>
 		private void RemoveExtraneousNulls(List<BaseProduction> productions) {
-			// var results = new List<Production>();
 			if (productions.Count == 0) {
 				return;
 			}
 			for (int i = productions.Count - 1; i >= 0; i--) {
 				var production = productions[i];
-				if (production.IsEmpty) {
-					if (production.Lhs != _startSymbol) {
-						productions.RemoveAt(i);
-					}
+				if (production.Lhs == _startSymbol) {
+					continue;
 				}
-				// results.Add(production);
+				if (production.IsEmpty) {
+					productions.RemoveAt(i);
+				}
 			}
 		}
 
+		/// <summary>
+		/// From a production, derive a set of productions for each combination of skipping nullable nonterminals.
+		/// E.g., for production S -> AbB and nullable {A, B}, we get productions
+		/// S -> AbB | Ab | bB | b
+		/// </summary>
+		/// <param name="originalProduction"></param>
+		/// <param name="nullableSet"></param>
+		/// <returns></returns>
 		private static List<BaseProduction> Nullate(BaseProduction originalProduction, ISet<Nonterminal> nullableSet) {
 			var results = new List<BaseProduction>();
 			results.Add(originalProduction);
@@ -271,7 +288,7 @@ namespace CFGLib {
 		}
 
 		// todo: horrible
-		private Nonterminal Getfresh() {
+		private Nonterminal GetFresh() {
 			var result = Nonterminal.Of("X_" + _freshx);
 			_freshx++;
 			return result;

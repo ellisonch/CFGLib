@@ -41,5 +41,34 @@ namespace CFGLibTest {
 			Helpers.AssertNear((3.0 / 8) * 0.5, h.Cyk(Sentence.FromLetters("bb")));
 			Helpers.AssertNear((1.0 / 8) * (3.0 / 8) * 0.5, h.Cyk(Sentence.FromLetters("abba")));
 		}
+
+		[TestMethod]
+		public void TestMissingStart() {
+			var productions = new List<BaseProduction> {
+				CFGParser.Production(@"<X_0> -> <X_0> <X_0>"),
+				CFGParser.Production(@"<X_0> -> 'a'"),
+			};
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			CNFGrammar h = g.ToCNF();
+		}
+
+		[TestMethod]
+		public void TestFreshNames() {
+			var productions = new List<BaseProduction> {
+				CFGParser.Production(@"<S> -> 'a'"),
+				CFGParser.Production(@"<X_0> -> 'b'"),
+			};
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"), false);
+			CNFGrammar h = g.ToCNF();
+
+			Assert.IsTrue(h.Accepts(Sentence.FromLetters("a")));
+			Assert.IsFalse(h.Accepts(Sentence.FromLetters("b")));
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(Exception), "A bad production string was allowed")]
+		public void TestParserFailure() {
+			var fails = CFGParser.Production(@"<X_0> -> X_0 X_0");
+		}
 	}
 }

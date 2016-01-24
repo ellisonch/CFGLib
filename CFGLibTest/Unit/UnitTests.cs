@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CFGLib;
 using System.Linq;
 
-namespace CFGLibTest {
+namespace CFGLibTest.Unit {
 	/// <summary>
 	/// Summary description for UnitTests
 	/// </summary>
