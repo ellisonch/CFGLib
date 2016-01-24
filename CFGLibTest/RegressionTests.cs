@@ -26,30 +26,20 @@ namespace CFGLibTest {
 		}
 
 		[TestMethod]
-		[Ignore]
 		public void TestCFGToCNFBadProb01() {
 			// S -> aSa | bSb | ε
 			var productions = new List<BaseProduction> {
-				CFGParser.Production(@"<S> -> 'a' <S> 'a'"),
-				CFGParser.Production(@"<S> -> 'b' <S> 'b'"),
-				CFGParser.Production(@"<S> -> ε"),
+				CFGParser.Production(@"<S> -> 'a' <S> 'a' [1]"),
+				CFGParser.Production(@"<S> -> 'b' <S> 'b' [3]"),
+				CFGParser.Production(@"<S> -> ε [4]"),
 			};
 			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
 			CNFGrammar h = g.ToCNF();
 
-			Assert.IsFalse(h.Accepts(Sentence.FromLetters("ab")));
-			Assert.IsFalse(h.Accepts(Sentence.FromLetters("abc")));
-			Assert.IsFalse(h.Accepts(Sentence.FromLetters("aaa")));
-			Assert.IsFalse(h.Accepts(Sentence.FromLetters("abbba")));
-
-			Assert.IsTrue(h.Accepts(Sentence.FromLetters("")));
-			Assert.IsTrue(h.Accepts(Sentence.FromLetters("aa")));
-			Assert.IsTrue(h.Accepts(Sentence.FromLetters("bb")));
-			Assert.IsTrue(h.Accepts(Sentence.FromLetters("abba")));
-			Assert.IsTrue(h.Accepts(Sentence.FromLetters("baab")));
-			Assert.IsTrue(h.Accepts(Sentence.FromLetters("aaaa")));
-			Assert.IsTrue(h.Accepts(Sentence.FromLetters("bbbb")));
-			Assert.IsTrue(h.Accepts(Sentence.FromLetters("aaabbabbabbaaa")));
+			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("")));
+			Helpers.AssertNear((1.0 / 8) * 0.5 , h.Cyk(Sentence.FromLetters("aa")));
+			Helpers.AssertNear((3.0 / 8) * 0.5, h.Cyk(Sentence.FromLetters("bb")));
+			Helpers.AssertNear((1.0 / 8) * (3.0 / 8) * 0.5, h.Cyk(Sentence.FromLetters("abba")));
 		}
 	}
 }
