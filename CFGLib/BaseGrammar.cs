@@ -13,7 +13,7 @@ namespace CFGLib {
 		private Random _rand = new Random(0);
 		private Nonterminal _start;
 		private List<IDirtyable> _caches = new List<IDirtyable>();
-		private Cache<Dictionary<Nonterminal, Boxed<ulong>>> _weightTotalsByNonterminal;
+		private Cache<Dictionary<Nonterminal, Boxed<double>>> _weightTotalsByNonterminal;
 		private Cache<ISet<Nonterminal>> _nonterminals;
 		private Cache<ISet<Terminal>> _terminals;
 
@@ -40,8 +40,8 @@ namespace CFGLib {
 				() => this.Productions,
 				(p) => p.Lhs,
 				(p) => p.Weight,
-				() => new Boxed<ulong>(0UL),
-				(x, y) => x.Value = checked(x.Value + y)
+				() => new Boxed<double>(0.0),
+				(x, y) => x.Value += y
 			));
 			this.Caches.Add(_weightTotalsByNonterminal);
 
@@ -169,21 +169,22 @@ namespace CFGLib {
 			// 9.23s calculating all
 			// 7.06 accessing target
 			// 6.4 doing none
-			ulong weightTotal = _weightTotalsByNonterminal.Value[lhs].Value;
-			return (double)weight / weightTotal;
+			double weightTotal = _weightTotalsByNonterminal.Value[lhs].Value;
+			return weight / weightTotal;
 		}
 		
+		// TODO: need to check that this is unbiased
 		internal Sentence ProduceNonterminal(Nonterminal v) {
 			Sentence result = null;
 
 			var productions = ProductionsFrom(v);
 
 			var totalWeight = productions.Sum(w => w.Weight);
-			var targetValue = _rand.Next(totalWeight) + 1;
+			var targetValue = totalWeight * _rand.NextDouble();
 
-			var currentWeight = 0UL;
+			var currentWeight = 0.0;
 			foreach (var production in productions) {
-				currentWeight = checked(currentWeight + production.Weight);
+				currentWeight += production.Weight;
 				if (currentWeight < targetValue) {
 					continue;
 				}

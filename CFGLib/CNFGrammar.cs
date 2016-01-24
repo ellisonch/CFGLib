@@ -15,10 +15,10 @@ namespace CFGLib {
 		
 		private List<Production> _emptyProductions = new List<Production>();
 
-		private ulong EmptyProductionWeight {
+		private double EmptyProductionWeight {
 			get {
 				if (_emptyProductions.Count == 0) {
-					return 0UL;
+					return 0.0;
 				} else {
 					return _emptyProductions.First().Weight;
 				}
@@ -75,7 +75,7 @@ namespace CFGLib {
 		private CNFGrammar() {
 		}
 
-		public CNFGrammar(IEnumerable<BaseProduction> nt, IEnumerable<BaseProduction> t, ulong producesEmptyWeight, Nonterminal start, bool simplify = true) {
+		public CNFGrammar(IEnumerable<BaseProduction> nt, IEnumerable<BaseProduction> t, double producesEmptyWeight, Nonterminal start, bool simplify = true) {
 			_nonterminalProductions = new List<CNFNonterminalProduction>();
 			foreach (var production in nt) {
 				_nonterminalProductions.Add(new CNFNonterminalProduction(production));

@@ -12,14 +12,14 @@ namespace CFGLib {
 			get { return _rhs; }
 		}
 
-		public Production(Nonterminal lhs, Sentence rhs, ulong weight = 1) {
+		public Production(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
 			if (lhs == null) {
 				throw new ArgumentNullException("Lhs must be non-null");
 			}
 			if (rhs == null) {
 				throw new ArgumentNullException("Rhs must be non-null");
 			}
-			if (weight < 1) {
+			if (weight < 0.0) {
 				throw new ArgumentOutOfRangeException("Weights must be positive");
 			}
 			this.Lhs = lhs;

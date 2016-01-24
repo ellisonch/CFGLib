@@ -13,8 +13,8 @@ namespace CFGLib {
 			this.Weight = production.Weight;
 		}
 
-		public CNFTerminalProduction(Nonterminal lhs, Terminal rhs, ulong weight = 1UL) {
-			if (weight < 1UL) {
+		public CNFTerminalProduction(Nonterminal lhs, Terminal rhs, double weight = 1.0) {
+			if (weight < 0.0) {
 				throw new ArgumentOutOfRangeException("Weights must be positive");
 			}
 			this.Lhs = lhs;
