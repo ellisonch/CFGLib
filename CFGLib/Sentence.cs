@@ -130,11 +130,7 @@ namespace CFGLib {
 				return "ε";
 			}
 
-			var retval = "";
-			foreach (var c in _sentence) {
-				retval += c.ToString() + " ";
-			}
-			return retval;
+			return string.Join(" ", _sentence.Select((s) => s.ToString()));
 		}
 
 		public bool OnlyTerminals() {

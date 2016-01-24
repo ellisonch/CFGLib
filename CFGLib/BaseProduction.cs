@@ -61,10 +61,7 @@ namespace CFGLib {
 		}
 
 		public override string ToString() {
-			var lhss = this.Lhs.ToString();
-			var rhss = this.Rhs.ToString();
-
-			return lhss + " → " + rhss;
+			return string.Format("{0} → {1} [{2}]", this.Lhs, this.Rhs, this.Weight);
 		}
 		
 		/// <summary>
