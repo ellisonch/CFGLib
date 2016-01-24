@@ -18,7 +18,7 @@ namespace CFGLib {
 			var terminalPattern = @"[^']+";
 			var lhsPattern = string.Format(@"<(?<lhs>{0})>", variablePattern);
 			var rhsPattern = string.Format(@"(?:\s+(?:<(?<nt>{0})>|'(?<t>{1})'|ε))*", variablePattern, terminalPattern);
-			var probabilityPattern = string.Format(@"(?:\s+\[(?<weight>[1-9][0-9]*)\])?");
+			var probabilityPattern = string.Format(@"(?:\s+\[(?<weight>[1-9][0-9]*\.?[0-9]*)\])?");
 			var regexString = string.Format(@"^\s*{0}\s+{1}{2}{3}\s*$", lhsPattern, arrow, rhsPattern, probabilityPattern);
 			_productionRegex = new Regex(regexString);
 		}
@@ -48,9 +48,9 @@ namespace CFGLib {
 			var tMatch = match.Groups["t"];
 			var weightMatch = match.Groups["weight"];
 
-			ulong weight;
-			if (!ulong.TryParse(weightMatch.Value, out weight)) {
-				weight = 1;
+			double weight;
+			if (!double.TryParse(weightMatch.Value, out weight)) {
+				weight = 1.0;
 			}
 			
 			var rhsList = new SortedList<int, Word>();
@@ -65,7 +65,7 @@ namespace CFGLib {
 			}
 			var rhs = new Sentence(rhsList.Values);
 			Console.WriteLine(rhs);
-			var lhs = Nonterminal.Of(lhsMatch.Value); 
+			var lhs = Nonterminal.Of(lhsMatch.Value);
 
 			var retval = new Production(lhs, rhs, weight);
 			return retval;

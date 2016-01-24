@@ -70,5 +70,23 @@ namespace CFGLib {
 		/// </summary>
 		/// <returns></returns>
 		internal abstract BaseProduction DeepClone();
+
+		/// <summary>
+		/// Checks whether the productions have the same parts
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public bool ValueEquals(BaseProduction other) {
+			if (this.Lhs != other.Lhs) {
+				return false;
+			}
+			if (!this.Rhs.SequenceEqual(other.Rhs)) {
+				return false;
+			}
+			if (this.Weight != other.Weight) {
+				return false;
+			}
+			return true;
+		}
 	}
 }
