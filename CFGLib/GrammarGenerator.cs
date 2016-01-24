@@ -36,7 +36,7 @@ namespace CFGLib {
 
 		private BaseProduction RandomProduction(int maxProductionLength, int numNonterminals, IList<Terminal> terminals) {
 			var lhs = RandomNonterminal(numNonterminals);
-			var weight = _rand.Next(100UL) + 1UL;
+			var weight = 100 * _rand.NextDouble() + 1.0;
 			var productionLength = _rand.Next(maxProductionLength + 1);
 			Sentence rhs = new Sentence();
 			for (int i = 0; i < productionLength; i++) {
@@ -63,10 +63,10 @@ namespace CFGLib {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
 			}
 			var start = RandomNonterminal(1);
-			ulong producesEmptyWeight = 0UL;
+			double producesEmptyWeight = 0.0;
 			if (numProductions > 0) {
 				if (_rand.Next(2) == 1) {
-					producesEmptyWeight = _rand.Next(100UL);
+					producesEmptyWeight = 100 * _rand.NextDouble();
 					numProductions--;
 				}
 			}
