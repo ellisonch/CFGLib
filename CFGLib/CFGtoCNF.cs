@@ -66,7 +66,6 @@ namespace CFGLib {
 			return result;
 		}
 
-		// TODO needs to be updated when we can have non-S start symbols
 		/// <summary>
 		/// Eliminate the start symbol from right-hand sides
 		/// </summary>
@@ -74,7 +73,8 @@ namespace CFGLib {
 		private void StepStart(ISet<BaseProduction> productions) {
 			var fresh = GetFresh();
 			productions.Add(
-				new Production(fresh, new Sentence { Nonterminal.Of("S") })
+				// new Production(fresh, new Sentence { Nonterminal.Of("S") })
+				new Production(fresh, new Sentence { _grammar.Start })
 			);
 			_startSymbol = fresh;
 		}
