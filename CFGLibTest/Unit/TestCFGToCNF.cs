@@ -11,16 +11,19 @@ namespace CFGLibTest.Unit {
 		public void TestNullate01() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 			
-			var production = CFGParser.Production("<S> -> <A> 'b' <B>");
-			var nullableSet = new HashSet<Nonterminal> { Nonterminal.Of("A"), Nonterminal.Of("B") };
+			var production = CFGParser.Production("<S> -> <A> 'b' <B> [1]");
+			var nullableDictionary = new Dictionary<Nonterminal, double> {
+				{ Nonterminal.Of("A"), 0.5 },
+				{ Nonterminal.Of("B"), 0.2 }
+			};
 
-			var actualList = (List<BaseProduction>)cfgToCnf.InvokeStatic("Nullate", new object[] { production, nullableSet });
+			var actualList = (List<BaseProduction>)cfgToCnf.InvokeStatic("Nullate", new object[] { production, nullableDictionary });
 			var actual = new HashSet<string>(actualList.Select((p) => p.ToString()));
 			var expected = new HashSet<string> {
-				CFGParser.Production("<S> -> <A> 'b' <B>").ToString(),
-				CFGParser.Production("<S> -> <A> 'b'").ToString(),
-				CFGParser.Production("<S> -> 'b' <B>").ToString(),
-				CFGParser.Production("<S> -> 'b'").ToString(),
+				CFGParser.Production("<S> -> <A> 'b' <B> [0.4]").ToString(),
+				CFGParser.Production("<S> -> <A> 'b' [0.1]").ToString(),
+				CFGParser.Production("<S> -> 'b' <B> [0.4]").ToString(),
+				CFGParser.Production("<S> -> 'b' [0.1]").ToString(),
 			};
 			Assert.IsTrue(actual.SetEquals(expected));
 		}

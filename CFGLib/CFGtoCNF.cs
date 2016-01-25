@@ -146,10 +146,10 @@ namespace CFGLib {
 		/// <param name="productions"></param>
 		// TODO: definitely does not preserve weights; fix Nullate()
 		private void StepDel(ISet<BaseProduction> productions) {
-			var nullableSet = GetNullable(productions);
+			var nullableProbabilities = GetNullable(productions);
 			var newRules = new List<BaseProduction>();
 			foreach (var production in productions) {
-				var toAdd = Nullate(production, nullableSet);
+				var toAdd = Nullate(production, nullableProbabilities);
 				RemoveExtraneousNulls(toAdd);
 				newRules.AddRange(toAdd);
 			}
@@ -202,16 +202,19 @@ namespace CFGLib {
 		/// </summary>
 		/// <param name="originalProductions"></param>
 		/// <returns></returns>
-		private static ISet<Nonterminal> GetNullable(ISet<BaseProduction> originalProductions) {
+		private static Dictionary<Nonterminal, double> GetNullable(ISet<BaseProduction> originalProductions) {
 			var productions = CloneProductions(originalProductions);
 			ISet<BaseProduction> newProductions = new HashSet<BaseProduction>();
-			var nullableNonterminals = new HashSet<Nonterminal>();
+			var nullableNonterminals = new Dictionary<Nonterminal, double>();
 			var changed = true;
 			while (changed) {
 				changed = false;
 				foreach (var production in productions) {
 					if (production.IsEmpty) {
-						nullableNonterminals.Add(production.Lhs);
+						if (!nullableNonterminals.ContainsKey(production.Lhs)) {
+							nullableNonterminals[production.Lhs] = 0.0;
+						}
+						nullableNonterminals[production.Lhs] += production.Weight;
 						changed = true;
 						continue;
 					}
@@ -220,7 +223,9 @@ namespace CFGLib {
 					}
 					for (int i = production.Rhs.Count - 1; i >= 0; i--) {
 						var word = production.Rhs[i];
-						if (nullableNonterminals.Contains(word)) {
+						var nt = word as Nonterminal;
+						if (nt == null) { continue; }
+						if (nullableNonterminals.ContainsKey(nt)) {
 							production.Rhs.RemoveAt(i);
 							changed = true;
 						}
@@ -232,6 +237,25 @@ namespace CFGLib {
 				newProductions = oldProductions;
 				newProductions.Clear();
 			}
+
+			// our dictionary contains weights, need to convert to probabilities
+			var weightTable = Helpers.BuildLookup(
+				() => productions,
+				(p) => p.Lhs,
+				(p) => p.Weight,
+				() => new Boxed<double>(0.0),
+				(o, n) => o.Value += n
+			);
+			foreach (var key in nullableNonterminals.Keys.ToList()) {
+				var weight = nullableNonterminals[key];
+				Boxed<double> boxedSum;
+				double sum = 0.0;
+				if (weightTable.TryGetValue(key, out boxedSum)) {
+					sum = boxedSum.Value;
+				}
+				nullableNonterminals[key] = weight / sum;
+			}
+
 			return nullableNonterminals;
 		}
 
@@ -262,7 +286,7 @@ namespace CFGLib {
 		/// <param name="originalProduction"></param>
 		/// <param name="nullableSet"></param>
 		/// <returns></returns>
-		private static List<BaseProduction> Nullate(BaseProduction originalProduction, ISet<Nonterminal> nullableSet) {
+		private static List<BaseProduction> Nullate(BaseProduction originalProduction, Dictionary<Nonterminal, double> nullableProbabilities) {
 			var results = new List<BaseProduction>();
 			results.Add(originalProduction);
 			if (originalProduction.IsEmpty) {
@@ -272,7 +296,9 @@ namespace CFGLib {
 				var newResults = new List<BaseProduction>();
 				foreach (var production in results) {
 					var word = production.Rhs[i];
-					if (!nullableSet.Contains(word)) {
+					var nt = word as Nonterminal;
+					if (nt == null) { continue; }
+					if (!nullableProbabilities.ContainsKey(nt)) {
 						continue;
 					}
 					// var with = production.Clone();
