@@ -174,22 +174,23 @@ namespace CFGLib {
 			var changed = false;
 
 			foreach (var production in productions) {
-				if (production.Rhs.Count == 1) {
-					var rhs = production.Rhs[0];
-					if (!rhs.IsNonterminal()) {
-						continue;
-					}
-					changed = true;
-					result.Remove(production);
-					var entries = table.LookupEnumerable((Nonterminal)rhs);
-					foreach (var entry in entries) {
-						var newProd = new Production(production.Lhs, entry.Rhs);
-						if (!newProd.IsSelfLoop) {
-							result.Add(newProd);
-						}
-					}
-					break;
+				if (production.Rhs.Count != 1) {
+					continue;
 				}
+				var rhs = production.Rhs[0];
+				if (rhs.IsTerminal()) {
+					continue;
+				}
+				changed = true;
+				result.Remove(production);
+				var entries = table.LookupEnumerable((Nonterminal)rhs);
+				foreach (var entry in entries) {
+					var newProd = new Production(production.Lhs, entry.Rhs);
+					if (!newProd.IsSelfLoop) {
+						result.Add(newProd);
+					}
+				}
+				break;
 			}
 			productions.Clear();
 			productions.UnionWith(result);
