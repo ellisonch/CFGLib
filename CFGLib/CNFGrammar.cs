@@ -88,7 +88,8 @@ namespace CFGLib {
 				_emptyProductions.Add(new Production(start, new Sentence(), producesEmptyWeight));
 			}
 			this.Start = start;
-			
+
+			RemoveDuplicates();
 			if (simplify) {
 				SimplifyWithoutInvalidate();
 			}

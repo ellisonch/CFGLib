@@ -32,6 +32,7 @@ namespace CFGLib {
 			_productions = new List<BaseProduction>(productions);
 			this.Start = start;
 
+			RemoveDuplicates();
 			if (simplify) {
 				SimplifyWithoutInvalidate();
 			}

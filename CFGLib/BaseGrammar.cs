@@ -267,7 +267,6 @@ namespace CFGLib {
 		}
 		
 		protected void SimplifyWithoutInvalidate() {
-			RemoveDuplicates();
 			int oldCount;
 			do {
 				oldCount = this.Productions.Count();
