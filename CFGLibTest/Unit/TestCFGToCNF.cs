@@ -129,5 +129,71 @@ namespace CFGLibTest.Unit {
 			Assert.IsTrue(result[Nonterminal.Of("B")] == 0.5);
 			Assert.IsTrue(result[Nonterminal.Of("X")] == 0.25);
 		}
+
+		[TestMethod]
+		[Ignore]
+		public void TestGetNullable02() {
+			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<A> -> ε"),
+				CFGParser.Production("<A> -> <B>"),
+				CFGParser.Production("<A> -> 'a'"),
+				CFGParser.Production("<B> -> ε"),
+				CFGParser.Production("<B> -> <A>"),
+				CFGParser.Production("<B> -> 'b'"),
+			};
+
+			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable2", new object[] { productions });
+
+			foreach (var key in result.Keys) {
+				Console.WriteLine("{0}: {1}", key, result[key]);
+			}
+		}
+
+		[TestMethod]
+		public void TestGetNullable03() {
+			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
+
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<A> -> <B> <C>"),
+				CFGParser.Production("<B> -> <C>"),
+				CFGParser.Production("<B> -> 'b'"),
+				CFGParser.Production("<B> -> ε"),
+				CFGParser.Production("<C> -> <B>"),
+				CFGParser.Production("<C> -> 'c'"),
+				CFGParser.Production("<C> -> ε"),
+			};
+
+			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+
+			Assert.IsTrue(result.Count == 3);
+			Assert.IsTrue(result[Nonterminal.Of("A")] == 0.25);
+			Assert.IsTrue(result[Nonterminal.Of("B")] == 0.5);
+			Assert.IsTrue(result[Nonterminal.Of("C")] == 0.5);
+		}
+
+		[TestMethod]
+		public void TestToCNF03() {
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<A> -> <B> <C>"),
+				CFGParser.Production("<B> -> <C>"),
+				CFGParser.Production("<B> -> 'b'"),
+				CFGParser.Production("<B> -> ε"),
+				CFGParser.Production("<C> -> <B>"),
+				CFGParser.Production("<C> -> 'c'"),
+				CFGParser.Production("<C> -> ε"),
+			};
+
+			Grammar g = new Grammar(productions, Nonterminal.Of("A"));
+			CNFGrammar h = g.ToCNF();
+
+			Helpers.AssertNear(0.25, h.Cyk(Sentence.FromLetters("")));
+			Helpers.AssertNear(0.25, h.Cyk(Sentence.FromLetters("b")));
+			Helpers.AssertNear(0.25, h.Cyk(Sentence.FromLetters("c")));
+			Helpers.AssertNear(0.140625, h.Cyk(Sentence.FromLetters("bc")));
+			Helpers.AssertNear(0.046875, h.Cyk(Sentence.FromLetters("cc")));
+			Helpers.AssertNear(0.046875, h.Cyk(Sentence.FromLetters("bb")));
+			Helpers.AssertNear(0.015625, h.Cyk(Sentence.FromLetters("cb")));
+		}
 	}
 }
