@@ -50,25 +50,11 @@ namespace CFGLib {
 			}
 			return sum;
 		}
-		
-		/// <summary>
-		/// Returns a bitmask just large enough to cover the given number
-		/// </summary>
-		/// <param name="n"></param>
-		/// <returns></returns>
-		private static ulong NextHighestBitmask(ulong n) {
-			if (n == 0UL) {
-				return 0UL;
-			}
-			n--;
-			n |= n >> 1;
-			n |= n >> 2;
-			n |= n >> 4;
-			n |= n >> 8;
-			n |= n >> 16;
-			n |= n >> 32;
 
-			return n;
+		public static void Swap<T>(ref T a, ref T b) {
+			var temp = a;
+			a = b;
+			b = temp;
 		}
 	}
 	internal class Boxed<T> {

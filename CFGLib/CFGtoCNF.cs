@@ -218,9 +218,6 @@ namespace CFGLib {
 						changed = true;
 						continue;
 					}
-					if (production.Rhs.OnlyTerminals()) {
-						continue;
-					}
 					for (int i = production.Rhs.Count - 1; i >= 0; i--) {
 						var word = production.Rhs[i];
 						var nt = word as Nonterminal;
@@ -232,9 +229,7 @@ namespace CFGLib {
 					}
 					newProductions.Add(production);
 				}
-				var oldProductions = productions;
-				productions = newProductions;
-				newProductions = oldProductions;
+				Helpers.Swap(ref productions, ref newProductions);
 				newProductions.Clear();
 			}
 
