@@ -71,7 +71,6 @@ namespace CFGLib {
 				rhsList.Add(capture.Index, word);
 			}
 			var rhs = new Sentence(rhsList.Values);
-			Console.WriteLine(rhs);
 			var lhs = Nonterminal.Of(lhsMatch.Value);
 
 			var retval = new Production(lhs, rhs, weight);

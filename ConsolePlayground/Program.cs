@@ -13,9 +13,9 @@ namespace ConsolePlayground {
 			//var t = new CFGLibTest.RegressionTests();
 			//t.TestMissingStart();
 
-			CFGParser.Production("<X> -> Y");
+			CFGParser.Production("<X> -> <Y>");
 
-			// Benchmark();
+			Benchmark();
 			//Readme();
 			//8.7s
 
