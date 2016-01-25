@@ -24,7 +24,7 @@ namespace CFGLib {
 			return string.Format("Var({0})", _name);
 		}
 
-		public bool IsNonterminal() {
+		public override bool IsNonterminal() {
 			return true;
 		}
 	}
