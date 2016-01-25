@@ -18,7 +18,7 @@ namespace CFGLib {
 			var terminalPattern = @"[^']+";
 			var lhsPattern = string.Format(@"<(?<lhs>{0})>", variablePattern);
 			var rhsPattern = string.Format(@"(?:\s+(?:<(?<nt>{0})>|'(?<t>{1})'|ε))*", variablePattern, terminalPattern);
-			var probabilityPattern = string.Format(@"(?:\s+\[(?<weight>[1-9][0-9]*\.?[0-9]*)\])?");
+			var probabilityPattern = string.Format(@"(?:\s+\[(?<weight>[0-9]*\.?[0-9]*)\])?");
 			var regexString = string.Format(@"^\s*{0}\s+{1}{2}{3}\s*$", lhsPattern, arrow, rhsPattern, probabilityPattern);
 			_productionRegex = new Regex(regexString);
 		}

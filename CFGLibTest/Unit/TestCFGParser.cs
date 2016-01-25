@@ -40,11 +40,14 @@ namespace CFGLibTest.Unit {
 
 			var p1 = CFGParser.Production(@"<S> -> <X> [3]");
 			var p2 = CFGParser.Production(@"<S> -> <X> [3.0000]");
+			var p3 = CFGParser.Production(@"<S> -> <X> [0.5]");
 
 			Assert.IsTrue(p1.ValueEquals(p2));
 
 			Assert.IsTrue(p1.ValueEquals(prodp(3.0)));
 			Assert.IsFalse(p1.ValueEquals(prodp(1.0)));
+
+			Assert.IsTrue(p3.ValueEquals(prodp(0.5)));
 		}
 	}
 }
