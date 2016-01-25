@@ -134,14 +134,20 @@ namespace CFGLib {
 		}
 
 		public bool OnlyTerminals() {
-			var hasNonterminal = false;
 			foreach (var word in _sentence) {
 				if (word.IsNonterminal()) {
-					hasNonterminal = true;
-					break;
+					return false;
 				}
 			}
-			return !hasNonterminal;
+			return true;
+		}
+		public bool OnlyNonterminals() {
+			foreach (var word in _sentence) {
+				if (word.IsTerminal()) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		public string AsTerminals(string separator = "") {
