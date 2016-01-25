@@ -91,27 +91,27 @@ namespace CFGLib {
 		/// </summary>
 		/// <param name="depth"></param>
 		/// <returns></returns>
-		public List<SentenceWithProbability> ProduceToDepth(int depth) {
+		public List<Probable<Sentence>> ProduceToDepth(int depth) {
 			var start = new Sentence { this.Start };
-			var intermediate = new List<SentenceWithProbability>[depth + 1];
-			var startSWP = new SentenceWithProbability(1.0, start);
-			intermediate[0] = new List<SentenceWithProbability> { startSWP };
+			var intermediate = new List<Probable<Sentence>>[depth + 1];
+			var startSWP = new Probable<Sentence>(1.0, start);
+			intermediate[0] = new List<Probable<Sentence>> { startSWP };
 
 			for (int i = 0; i < depth; i++) {
 				var prev = intermediate[i];
-				var next = new List<SentenceWithProbability>();
+				var next = new List<Probable<Sentence>>();
 				intermediate[i + 1] = next;
 				foreach (var swp in prev) {
-					if (!swp.Sentence.OnlyTerminals()) {
+					if (!swp.Value.OnlyTerminals()) {
 						var steps = GoOneStep(swp);
 						next.AddRange(steps);
 					}
 				}
 			}
-			var results = new List<SentenceWithProbability>();
+			var results = new List<Probable<Sentence>>();
 			foreach (var step in intermediate) {
 				foreach (var swp in step) {
-					if (swp.Sentence.OnlyTerminals()) {
+					if (swp.Value.OnlyTerminals()) {
 						results.Add(swp);
 					}
 				}
@@ -119,10 +119,10 @@ namespace CFGLib {
 			return results;
 		}
 
-		private List<SentenceWithProbability> GoOneStep(SentenceWithProbability swp) {
-			var start = new SentenceWithProbability(swp.Probability, new Sentence());
-			var results = new List<SentenceWithProbability> { start };
-			foreach (var word in swp.Sentence) {
+		private List<Probable<Sentence>> GoOneStep(Probable<Sentence> swp) {
+			var start = new Probable<Sentence>(swp.Probability, new Sentence());
+			var results = new List<Probable<Sentence>> { start };
+			foreach (var word in swp.Value) {
 				if (word.IsNonterminal()) {
 					results = StepNonterminal(results, word);
 				} else {
@@ -132,15 +132,15 @@ namespace CFGLib {
 			return results;
 		}
 
-		private List<SentenceWithProbability> StepNonterminal(List<SentenceWithProbability> results, Word word) {
-			var newResults = new List<SentenceWithProbability>();
+		private List<Probable<Sentence>> StepNonterminal(List<Probable<Sentence>> results, Word word) {
+			var newResults = new List<Probable<Sentence>>();
 
 			var nonterminal = (Nonterminal)word;
 			foreach (var production in ProductionsFrom(nonterminal)) {
 				var prob = GetProbability(production);
 				var copies = DeepCopy(results);
 				foreach (var copy in copies) {
-					copy.Sentence.AddRange(production.Rhs);
+					copy.Value.AddRange(production.Rhs);
 					copy.Probability *= prob;
 				}
 				newResults.AddRange(copies);
@@ -148,17 +148,17 @@ namespace CFGLib {
 			return newResults;
 		}
 
-		private List<SentenceWithProbability> StepTerminal(List<SentenceWithProbability> results, Word word) {
+		private List<Probable<Sentence>> StepTerminal(List<Probable<Sentence>> results, Word word) {
 			foreach (var result in results) {
-				result.Sentence.Add(word);
+				result.Value.Add(word);
 			}
 			return results;
 		}
 
-		private List<SentenceWithProbability> DeepCopy(List<SentenceWithProbability> sentences) {
-			var results = new List<SentenceWithProbability>();
+		private List<Probable<Sentence>> DeepCopy(List<Probable<Sentence>> sentences) {
+			var results = new List<Probable<Sentence>>();
 			foreach (var sentence in sentences) {
-				results.Add(new SentenceWithProbability(sentence.Probability, new Sentence(sentence.Sentence)));
+				results.Add(new Probable<Sentence>(sentence.Probability, new Sentence(sentence.Value)));
 			}
 			return results;
 		}

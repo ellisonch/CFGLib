@@ -166,7 +166,7 @@ namespace CFGLib {
 				var swps = rg.ProduceToDepth(i);
 				Console.WriteLine("------Depth {0}------", i);
 				foreach (var swp in swps) {
-					var actual = rg.Cyk(swp.Sentence);
+					var actual = rg.Cyk(swp.Value);
 					var expected = swp.Probability;
 					if (actual < expected) {
 						Console.WriteLine("{0}, {1}", actual, expected);

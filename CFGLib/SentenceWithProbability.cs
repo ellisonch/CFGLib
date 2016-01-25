@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace CFGLib {
 	/// <summary>
-	/// Represents a sentence together with its associated probability of being generated
+	/// Represents an item, together with an associated probability
 	/// </summary>
-	public class SentenceWithProbability {
+	public class Probable<T> {
 		public double Probability;
-		public Sentence Sentence;
+		public T Value;
 
-		public SentenceWithProbability(double v, Sentence s) {
+		public Probable(double v, T s) {
 			this.Probability = v;
-			this.Sentence = s;
+			this.Value = s;
 		}
 		public override string ToString() {
-			return string.Format("{0}: {1}", Probability, Sentence);
+			return string.Format("{0}: {1}", Probability, Value);
 		}
 	}
 }
