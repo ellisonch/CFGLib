@@ -289,8 +289,12 @@ namespace CFGLib {
 
 		// todo: horrible
 		private Nonterminal GetFresh() {
-			var result = Nonterminal.Of("X_" + _freshx);
-			_freshx++;
+			var originalNonterminals = _grammar.GetNonterminals();
+			Nonterminal result;
+			do {
+				result = Nonterminal.Of("X_" + _freshx);
+				_freshx++;
+			} while (originalNonterminals.Contains(result));
 			return result;
 		}
 		
