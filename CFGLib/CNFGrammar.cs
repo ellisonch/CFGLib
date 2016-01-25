@@ -178,18 +178,16 @@ namespace CFGLib {
 				}
 			}
 
+			var localProductionList = BuildLocalCYKProductionList(RToJ);
+
 			for (int i = 2; i <= s.Count; i++) {
 				for (int j = 1; j <= s.Count - i + 1; j++) {
 					for (int k = 1; k <= i - 1; k++) {
-						// Console.WriteLine("i, j, k = {0:00}, {1:00}, {2:00}", i, j, k);
-						foreach (var production in _nonterminalProductions) {
-							var R_A = production.Lhs;
-							var R_B = production.SpecificRhs[0];
-							var R_C = production.SpecificRhs[1];
-							var A = RToJ[R_A];
-							var B = RToJ[R_B];
-							var C = RToJ[R_C];
-							var probThis = GetProbability(production);
+						foreach (var production in localProductionList) {
+							var A = production.A;
+							var B = production.B;
+							var C = production.C;
+							var probThis = production.Probability;
 
 							var pleft = P[k - 1, j - 1, B];
 							var pright = P[i - k - 1, j + k - 1, C];
@@ -201,6 +199,38 @@ namespace CFGLib {
 			// PrintP(s, P);
 
 			return P[s.Count - 1, 0, RToJ[this.Start]];
+		}
+
+		private struct LocalProductionList {
+			public int A;
+			public int B;
+			public int C;
+			public double Probability;
+			public LocalProductionList(int A, int B, int C, double Probability) {
+				this.A = A;
+				this.B = B;
+				this.C = C;
+				this.Probability = Probability;
+			}
+		}
+		/// <summary>
+		/// Returns a representation of the nt productions that is efficient for CYK
+		/// </summary>
+		/// <param name="RToJ"></param>
+		/// <returns></returns>
+		private IEnumerable<LocalProductionList> BuildLocalCYKProductionList(Dictionary<Nonterminal, int> RToJ) {
+			var retval = new List<LocalProductionList>();
+			foreach (var production in _nonterminalProductions) {
+				var R_A = production.Lhs;
+				var R_B = production.SpecificRhs[0];
+				var R_C = production.SpecificRhs[1];
+				var A = RToJ[R_A];
+				var B = RToJ[R_B];
+				var C = RToJ[R_C];
+				var probThis = GetProbability(production);
+				retval.Add(new LocalProductionList(A, B, C, probThis));
+			}
+			return retval;
 		}
 
 		private static void PrintP(Sentence s, double[,,] P) {

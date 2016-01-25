@@ -180,7 +180,9 @@ namespace CFGLib {
 			// 9.23s calculating all
 			// 7.06 accessing target
 			// 6.4 doing none
-			double weightTotal = _weightTotalsByNonterminal.Value[lhs].Value;
+			var lookupTable = _weightTotalsByNonterminal.Value;
+			var boxedSum = lookupTable[lhs];
+			double weightTotal = boxedSum.Value;
 			return weight / weightTotal;
 		}
 		

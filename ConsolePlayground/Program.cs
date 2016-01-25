@@ -11,7 +11,10 @@ namespace ConsolePlayground {
 	class Program {
 		static void Main(string[] args) {
 			var t = new CFGLibTest.RandomTests();
+			var sw = Stopwatch.StartNew();
 			t.RandomCFGToCNFTest();
+			sw.Stop();
+			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 			// CFGParser.Production("<X> -> <Y>");
 
