@@ -91,13 +91,17 @@ namespace CFGLib {
 		/// </summary>
 		/// <param name="depth"></param>
 		/// <returns></returns>
-		public List<Probable<Sentence>> ProduceToDepth(int depth) {
+		public List<Probable<Sentence>> ProduceToDepth(int depth, int limit = int.MaxValue) {
 			var start = new Sentence { this.Start };
 			var intermediate = new List<Probable<Sentence>>[depth + 1];
 			var startSWP = new Probable<Sentence>(1.0, start);
 			intermediate[0] = new List<Probable<Sentence>> { startSWP };
 
+			int count = 0;
 			for (int i = 0; i < depth; i++) {
+				if (count >= limit) {
+					break;
+				}
 				var prev = intermediate[i];
 				var next = new List<Probable<Sentence>>();
 				intermediate[i + 1] = next;
@@ -105,6 +109,10 @@ namespace CFGLib {
 					if (!swp.Value.OnlyTerminals()) {
 						var steps = GoOneStep(swp);
 						next.AddRange(steps);
+						count += steps.Count;
+					}
+					if (count >= limit) {
+						break;
 					}
 				}
 			}
@@ -112,6 +120,7 @@ namespace CFGLib {
 			// TODO: terrible :(
 			var resultDict = new Dictionary<string, Probable<Sentence>>();
 			foreach (var step in intermediate) {
+				if (step == null) { continue; }
 				foreach (var swp in step) {
 					if (!swp.Value.OnlyTerminals()) {
 						continue;

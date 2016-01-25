@@ -92,5 +92,25 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear((23.0 / 108.0) * (85.0 / 108.0), h.Cyk(Sentence.FromWords("x3")));
 			Helpers.AssertNear((23.0 / 108.0) * (23.0 / 108.0) * (85.0 / 108.0), h.Cyk(Sentence.FromWords("x3 x3")));
 		}
+
+		[TestMethod]
+		public void TestToCNF02() {
+			var productions = new List<BaseProduction> {
+				CFGParser.Production(@"<S> -> 'a' <B> <B>"),
+				CFGParser.Production(@"<B> -> 'b'"),
+				CFGParser.Production(@"<B> -> ε"),
+			};
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			CNFGrammar h = g.ToCNF();
+
+			var pa = h.Cyk(Sentence.FromLetters("a"));
+			var pab = h.Cyk(Sentence.FromLetters("ab"));
+			var pabb = h.Cyk(Sentence.FromLetters("abb"));
+
+			Assert.IsTrue(pa > 0.0);
+			Assert.IsTrue(pab > 0.0);
+			Assert.IsTrue(pabb > 0.0);
+			Helpers.IsNear(1.0, pa + pab + pabb);
+		}
 	}
 }
