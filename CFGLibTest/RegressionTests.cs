@@ -8,7 +8,6 @@ namespace CFGLibTest {
 	public class RegressionTests {
 		[TestMethod]
 		public void TestHugeWeights() {
-			// S -> aSa | bSb | ε
 			var ntproductions = new List<BaseProduction> {
 				CFGParser.Production(@"<S> -> <A> <B> [3000000000]"),
 				CFGParser.Production(@"<S> -> <C> <A> [3000000000]"),
