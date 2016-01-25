@@ -144,7 +144,6 @@ namespace CFGLib {
 		/// Eliminate ε-rules
 		/// </summary>
 		/// <param name="productions"></param>
-		// TODO: definitely does not preserve weights; fix Nullate()
 		private void StepDel(ISet<BaseProduction> productions) {
 			var nullableProbabilities = GetNullable(productions);
 			var newRules = new List<BaseProduction>();
@@ -305,6 +304,8 @@ namespace CFGLib {
 					var without = production.DeepClone();
 					without.Rhs.RemoveAt(i);
 					newResults.Add(without);
+					without.Weight *= nullableProbabilities[nt];
+					production.Weight *= 1.0 - nullableProbabilities[nt];
 				}
 				results.AddRange(newResults);
 			}
