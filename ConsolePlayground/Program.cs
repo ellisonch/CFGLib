@@ -10,11 +10,21 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			var t = new CFGLibTest.RandomTests();
-			var sw = Stopwatch.StartNew();
-			t.RandomCFGToCNFTest();
-			sw.Stop();
-			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+			var productions = new List<BaseProduction> {
+				CFGParser.Production(@"<S> -> 'a' <B> <B>"),
+				CFGParser.Production(@"<B> -> 'b'"),
+				CFGParser.Production(@"<B> -> ε"),
+			};
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			CNFGrammar h = g.ToCNF();
+			Console.WriteLine(g);
+			Console.WriteLine(h);
+
+			//var t = new CFGLibTest.RandomTests();
+			//var sw = Stopwatch.StartNew();
+			//t.RandomCFGToCNFTest();
+			//sw.Stop();
+			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 			// CFGParser.Production("<X> -> <Y>");
 
@@ -22,8 +32,8 @@ namespace ConsolePlayground {
 			// Readme();
 			//8.7s
 
-			var p = CFGParser.Production("<S> -> 'a' [5]");
-			Console.WriteLine(p);
+			//var p = CFGParser.Production("<S> -> 'a' [5]");
+			//Console.WriteLine(p);
 
 			//var rt = new CFGLibTest.RandomTests();
 			//var sw = Stopwatch.StartNew();
@@ -42,6 +52,7 @@ namespace ConsolePlayground {
 			//var ut = new CFGLibTest.UnitTests();
 			//ut.TestCYK02();
 
+			Console.WriteLine("Finished!");
 			Console.Read();
 		}
 

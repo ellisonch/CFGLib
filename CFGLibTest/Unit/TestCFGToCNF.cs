@@ -112,5 +112,22 @@ namespace CFGLibTest.Unit {
 			Assert.IsTrue(pabb > 0.0);
 			Helpers.IsNear(1.0, pa + pab + pabb);
 		}
+
+		[TestMethod]
+		public void TestGetNullable01() {
+			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
+			
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<X> -> <B> <B>"),
+				CFGParser.Production("<B> -> 'b'"),
+				CFGParser.Production("<B> -> ε"),
+			};
+
+			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			
+			Assert.IsTrue(result.Count == 2);
+			Assert.IsTrue(result[Nonterminal.Of("B")] == 0.5);
+			Assert.IsTrue(result[Nonterminal.Of("X")] == 0.25);
+		}
 	}
 }
