@@ -167,7 +167,6 @@ namespace CFGLib {
 			}
 		}
 
-		// TODO messes up weights
 		private static bool StepUnitOnce(ISet<BaseProduction> productions) {
 			var table = BuildLookupTable(productions);
 			var result = new HashSet<BaseProduction>(productions);
@@ -184,8 +183,9 @@ namespace CFGLib {
 				changed = true;
 				result.Remove(production);
 				var entries = table.LookupEnumerable((Nonterminal)rhs);
+				var sum = entries.Sum((p) => p.Weight);
 				foreach (var entry in entries) {
-					var newProd = new Production(production.Lhs, entry.Rhs);
+					var newProd = new Production(production.Lhs, entry.Rhs, production.Weight * (entry.Weight / sum));
 					if (!newProd.IsSelfLoop) {
 						result.Add(newProd);
 					}
@@ -240,7 +240,7 @@ namespace CFGLib {
 
 			// our dictionary contains weights, need to convert to probabilities
 			var weightTable = Helpers.BuildLookup(
-				() => productions,
+				() => originalProductions,
 				(p) => p.Lhs,
 				(p) => p.Weight,
 				() => new Boxed<double>(0.0),

@@ -48,8 +48,7 @@ namespace CFGLib {
 
 			BuildHelpers();
 		}
-
-		// TODO: preserve probabilities
+		
 		/// <summary>
 		/// Returns a new grammar that is the CNF equivalent of this grammar.
 		/// WARNING: currently this does not always preserve probabilities!
