@@ -109,14 +109,25 @@ namespace CFGLib {
 				}
 			}
 			var results = new List<Probable<Sentence>>();
+			// TODO: terrible :(
+			var resultDict = new Dictionary<string, Probable<Sentence>>();
 			foreach (var step in intermediate) {
 				foreach (var swp in step) {
-					if (swp.Value.OnlyTerminals()) {
-						results.Add(swp);
+					if (!swp.Value.OnlyTerminals()) {
+						continue;
 					}
+					Probable<Sentence> psentence;
+					var stringrep = swp.Value.ToString();
+					if (!resultDict.TryGetValue(stringrep, out psentence)) {
+						psentence = new Probable<Sentence>(0.0, swp.Value);
+						resultDict[stringrep] = psentence;
+					}
+					psentence.Probability += swp.Probability;
+					// results.Add(swp);
 				}
 			}
-			return results;
+
+			return resultDict.Values.ToList();
 		}
 
 		private List<Probable<Sentence>> GoOneStep(Probable<Sentence> swp) {
