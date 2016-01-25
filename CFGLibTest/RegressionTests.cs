@@ -43,6 +43,24 @@ namespace CFGLibTest {
 		}
 
 		[TestMethod]
+		public void TestCFGToCNFBadProb02() {
+			// S -> aSa | bSb | ε
+			var productions = new List<BaseProduction> {
+				CFGParser.Production(@"<S> -> 'a' <X> 'a' [1]"),
+				CFGParser.Production(@"<S> -> 'c' [1]"),
+				CFGParser.Production(@"<X> -> 'b' [1]"),
+				CFGParser.Production(@"<X> -> ε [3]"),
+			};
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			CNFGrammar h = g.ToCNF();
+
+			Helpers.AssertNear(0.0, h.Cyk(Sentence.FromLetters("")));
+			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("c")));
+			Helpers.AssertNear((3.0 / 4) * 0.5, h.Cyk(Sentence.FromLetters("aa")));
+			Helpers.AssertNear((1.0 / 4) * 0.5, h.Cyk(Sentence.FromLetters("aba")));
+		}
+
+		[TestMethod]
 		public void TestMissingStart() {
 			var productions = new List<BaseProduction> {
 				CFGParser.Production(@"<X_0> -> <X_0> <X_0>"),
