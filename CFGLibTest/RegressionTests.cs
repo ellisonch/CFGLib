@@ -26,41 +26,6 @@ namespace CFGLibTest {
 		}
 
 		[TestMethod]
-		public void TestCFGToCNFBadProb01() {
-			// S -> aSa | bSb | ε
-			var productions = new List<BaseProduction> {
-				CFGParser.Production(@"<S> -> 'a' <S> 'a' [1]"),
-				CFGParser.Production(@"<S> -> 'b' <S> 'b' [3]"),
-				CFGParser.Production(@"<S> -> ε [4]"),
-			};
-			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
-			CNFGrammar h = g.ToCNF();
-
-			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("")));
-			Helpers.AssertNear((1.0 / 8) * 0.5 , h.Cyk(Sentence.FromLetters("aa")));
-			Helpers.AssertNear((3.0 / 8) * 0.5, h.Cyk(Sentence.FromLetters("bb")));
-			Helpers.AssertNear((1.0 / 8) * (3.0 / 8) * 0.5, h.Cyk(Sentence.FromLetters("abba")));
-		}
-
-		[TestMethod]
-		public void TestCFGToCNFBadProb02() {
-			// S -> aSa | bSb | ε
-			var productions = new List<BaseProduction> {
-				CFGParser.Production(@"<S> -> 'a' <X> 'a' [1]"),
-				CFGParser.Production(@"<S> -> 'c' [1]"),
-				CFGParser.Production(@"<X> -> 'b' [1]"),
-				CFGParser.Production(@"<X> -> ε [3]"),
-			};
-			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
-			CNFGrammar h = g.ToCNF();
-
-			Helpers.AssertNear(0.0, h.Cyk(Sentence.FromLetters("")));
-			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("c")));
-			Helpers.AssertNear((3.0 / 4) * 0.5, h.Cyk(Sentence.FromLetters("aa")));
-			Helpers.AssertNear((1.0 / 4) * 0.5, h.Cyk(Sentence.FromLetters("aba")));
-		}
-
-		[TestMethod]
 		public void TestMissingStart() {
 			var productions = new List<BaseProduction> {
 				CFGParser.Production(@"<X_0> -> <X_0> <X_0>"),
