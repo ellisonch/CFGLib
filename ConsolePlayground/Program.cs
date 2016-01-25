@@ -10,13 +10,13 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			//var t = new CFGLibTest.RegressionTests();
-			//t.TestMissingStart();
+			var t = new CFGLibTest.RandomTests();
+			t.RandomCFGToCNFTest();
 
-			CFGParser.Production("<X> -> <Y>");
+			// CFGParser.Production("<X> -> <Y>");
 
-			Benchmark();
-			//Readme();
+			// Benchmark();
+			// Readme();
 			//8.7s
 
 			var p = CFGParser.Production("<S> -> 'a' [5]");

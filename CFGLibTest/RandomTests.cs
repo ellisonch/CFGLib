@@ -11,6 +11,7 @@ namespace CFGLibTest {
 		[Ignore]
 		public void RandomCFGToCNFTest() {
 			int _maxDepth = 6;
+			var _numGrammars = 10;
 			var randg = new GrammarGenerator();
 			var range = Enumerable.Range(0, 5);
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
@@ -21,7 +22,7 @@ namespace CFGLibTest {
 			//	preparedSentences.Add(sentence);
 			//}
 
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < _numGrammars; i++) {
 				var g = randg.NextCFG(5, 10, 4, terminals);
 				var h = g.ToCNF();
 				Console.WriteLine(g);
@@ -29,6 +30,7 @@ namespace CFGLibTest {
 
 				var swps = g.ProduceToDepth(_maxDepth);
 				foreach (var swp in swps) {
+					// Console.WriteLine(swp);
 					var p1 = swp.Probability;
 					var p2 = h.Cyk(swp.Value);
 					Assert.IsTrue(p1 <= p2 || Helpers.IsNear(p1, p2));
