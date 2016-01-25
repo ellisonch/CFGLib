@@ -26,7 +26,7 @@ namespace CFGLib {
 		public double Weight {
 			get { return _weight; }
 			internal set {
-				if (value <= 0.0) {
+				if (value < 0.0) {
 					throw new ArgumentOutOfRangeException("Weights must be positive");
 				}
 				_weight = value;
