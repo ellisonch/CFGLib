@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 namespace CFGLibTest {
 	public static class Helpers {
 		public static void AssertNear(double expected, double actual) {
+			if (!Helpers.IsNear(expected, actual)) {
+				Assert.Fail(string.Format("Expected {0}, but got {1}", expected, actual));
+			}
+		}
+		public static bool IsNear(double expected, double actual) {
 			double tolerance = Math.Abs(expected * 0.00001);
 			double diff = Math.Abs(expected - actual);
 			if (diff <= tolerance) {
-				return;
+				return true;
 			}
-			Assert.Fail(string.Format("Expected {0}, but got {1}", expected, actual));
+			return false;
 		}
 
 		public static T AssertThrows<T>(Action action) where T : Exception {
