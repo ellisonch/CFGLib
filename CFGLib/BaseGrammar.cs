@@ -256,6 +256,41 @@ namespace CFGLib {
 		}
 
 		/// <summary>
+		/// Produces a random sentence and returns whether or not it was null
+		/// </summary>
+		/// <param name="nt"></param>
+		/// <returns></returns>
+		public bool ProduceNull(Nonterminal nt) {
+			var sentence = new Sentence { nt };
+			while (sentence.Count > 0) {
+				for (int i = sentence.Count - 1; i >= 0; i--) {
+					var word = sentence[i];
+					var newStuff = ProduceNonterminal((Nonterminal)word);
+					if (!newStuff.OnlyNonterminals()) {
+						return false;
+					}
+					sentence.RemoveAt(i);
+					sentence.InsertRange(i, newStuff);
+				}
+			}
+			return true;
+		}
+
+		/// <summary>
+		/// Tries to estimate the probability of a nonterminal yielding null by generating a bunch randomly and counting.
+		/// </summary>
+		/// <param name="iterations"></param>
+		public double EstimateProbabilityNull(Nonterminal nt, long iterations) {
+			long nulls = 0;
+			for (int i = 0; i < iterations; i++) {
+				if (this.ProduceNull(nt)) {
+					nulls++;
+				}
+			}
+			return (double)nulls / iterations;
+		}
+
+		/// <summary>
 		/// Tries to estimate the probability of the sentences this grammar can generate by generating a bunch randomly and counting.
 		/// </summary>
 		/// <param name="iterations"></param>
