@@ -167,16 +167,7 @@ namespace CFGLib {
 				changed = StepUnitOnce(productions, previouslyDeleted);
 			}
 		}
-
-		private struct ValueUnitProduction {
-			public Nonterminal Lhs;
-			public Word Rhs;
-			public ValueUnitProduction(Nonterminal lhs, Word rhs) {
-				this.Lhs = lhs;
-				this.Rhs = rhs;
-			}
-		}
-
+		
 		private static bool StepUnitOnce(ISet<BaseProduction> productions, ISet<ValueUnitProduction> previouslyDeleted) {
 			var table = BuildLookupTable(productions);
 			var result = new HashSet<BaseProduction>(productions);

@@ -57,6 +57,7 @@
     <Compile Include="Probable.cs" />
     <Compile Include="Terminal.cs" />
     <Compile Include="Nonterminal.cs" />
+    <Compile Include="ValueUnitProduction.cs" />
     <Compile Include="Word.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -20,11 +20,11 @@ namespace ConsolePlayground {
 			};
 
 			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
-			CNFGrammar h = g.ToCNF();
+			CNFGrammar h = g.ToCNF(false);
 			Console.WriteLine(g);
 			Console.WriteLine(h);
 
-			g.EstimateProbabilities(1000000);
+			// g.EstimateProbabilities(1000000);
 
 			//var t = new CFGLibTest.RandomTests();
 			//var sw = Stopwatch.StartNew();
