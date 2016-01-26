@@ -247,5 +247,39 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear(0.00585872, h.Cyk(Sentence.FromLetters("bb")));
 			Helpers.AssertNear(0.00538844, h.Cyk(Sentence.FromLetters("aa")));
 		}
+
+		[TestMethod]
+		public void TestCNFNoNull02() {
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<A> -> <A>"),
+				CFGParser.Production("<A> -> 'a'"),
+				CFGParser.Production("<A> -> 'b'"),
+			};
+
+			Grammar g = new Grammar(productions, Nonterminal.Of("A"));
+			CNFGrammar h = g.ToCNF();
+
+			Helpers.AssertNear(0, h.Cyk(Sentence.FromLetters("")));
+			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("a")));
+			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("b")));
+		}
+		[TestMethod]
+		public void TestCNFNoNull03() {
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<S> -> <A>"),
+				CFGParser.Production("<S> -> <B>"),
+				CFGParser.Production("<A> -> <B>"),
+				CFGParser.Production("<B> -> <A>"),
+				CFGParser.Production("<A> -> 'a'"),
+				CFGParser.Production("<B> -> 'b'"),
+			};
+
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			CNFGrammar h = g.ToCNF();
+
+			Helpers.AssertNear(0, h.Cyk(Sentence.FromLetters("")));
+			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("a")));
+			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("b")));
+		}
 	}
 }

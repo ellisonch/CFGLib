@@ -11,19 +11,20 @@ namespace ConsolePlayground {
 	class Program {
 		static void Main(string[] args) {
 			var productions = new HashSet<BaseProduction> {
-				CFGParser.Production("<A> -> <A> <B>"),
+				CFGParser.Production("<S> -> <A>"),
+				CFGParser.Production("<S> -> <B>"),
 				CFGParser.Production("<A> -> <B>"),
-				CFGParser.Production("<A> -> 'a' [10]"),
 				CFGParser.Production("<B> -> <A>"),
-				CFGParser.Production("<B> -> 'b' [10]"),
+				CFGParser.Production("<A> -> 'a'"),
+				CFGParser.Production("<B> -> 'b'"),
 			};
 
-			Grammar g = new Grammar(productions, Nonterminal.Of("A"));
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
 			CNFGrammar h = g.ToCNF();
 			Console.WriteLine(g);
 			Console.WriteLine(h);
 
-			g.EstimateProbabilities(50000000);
+			g.EstimateProbabilities(1000000);
 
 			//var t = new CFGLibTest.RandomTests();
 			//var sw = Stopwatch.StartNew();
