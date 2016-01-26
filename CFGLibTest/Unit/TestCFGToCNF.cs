@@ -170,6 +170,22 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		public void TestGetNullable04() {
+			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
+
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<A> -> <A> <A>"),
+				CFGParser.Production("<A> -> ε"),
+				CFGParser.Production("<A> -> 'a'"),
+			};
+
+			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+
+			Assert.IsTrue(result.Count == 1);
+			Assert.IsTrue(result[Nonterminal.Of("A")] == 0.381966);
+		}
+
+		[TestMethod]
 		public void TestToCNF03() {
 			var productions = new HashSet<BaseProduction> {
 				CFGParser.Production("<A> -> <B> <C>"),
@@ -210,5 +226,7 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear(0.5 + third * 0.5, h.Cyk(Sentence.FromLetters("")));
 			Helpers.AssertNear(0.222222, h.Cyk(Sentence.FromLetters("b")));
 		}
+
+
 	}
 }
