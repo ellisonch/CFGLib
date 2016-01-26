@@ -161,18 +161,29 @@ namespace CFGLib {
 		/// </summary>
 		/// <param name="productions"></param>
 		private static void StepUnit(ISet<BaseProduction> productions) {
+			var previouslyDeleted = new HashSet<ValueUnitProduction>();
 			bool changed = true;
 			while (changed) {
-				changed = StepUnitOnce(productions);
+				changed = StepUnitOnce(productions, previouslyDeleted);
 			}
 		}
 
-		private static bool StepUnitOnce(ISet<BaseProduction> productions) {
+		private struct ValueUnitProduction {
+			public Nonterminal Lhs;
+			public Word Rhs;
+			public ValueUnitProduction(Nonterminal lhs, Word rhs) {
+				this.Lhs = lhs;
+				this.Rhs = rhs;
+			}
+		}
+
+		private static bool StepUnitOnce(ISet<BaseProduction> productions, ISet<ValueUnitProduction> previouslyDeleted) {
 			var table = BuildLookupTable(productions);
 			var result = new HashSet<BaseProduction>(productions);
 			var changed = false;
 
 			foreach (var production in productions) {
+				var lhs = production.Lhs;
 				if (production.Rhs.Count != 1) {
 					continue;
 				}
@@ -180,15 +191,27 @@ namespace CFGLib {
 				if (rhs.IsTerminal()) {
 					continue;
 				}
+				// at this point we have a unit production lhs -> rhs
 				changed = true;
 				result.Remove(production);
+				previouslyDeleted.Add(new ValueUnitProduction(lhs, rhs));
 				var entries = table.LookupEnumerable((Nonterminal)rhs);
 				var sum = entries.Sum((p) => p.Weight);
 				foreach (var entry in entries) {
-					var newProd = new Production(production.Lhs, entry.Rhs, production.Weight * (entry.Weight / sum));
-					if (!newProd.IsSelfLoop) {
-						result.Add(newProd);
+					var newProd = new Production(lhs, entry.Rhs, production.Weight * (entry.Weight / sum));
+
+					// TODO: these exceptions probably mess up probability
+					if (newProd.IsSelfLoop) {
+						continue;
 					}
+					if (entry.Rhs.Count == 1) {
+						var vup = new ValueUnitProduction(lhs, entry.Rhs[0]);
+						if (previouslyDeleted.Contains(vup)) {
+							continue;
+						}
+					}				
+
+					result.Add(newProd);
 				}
 				break;
 			}
