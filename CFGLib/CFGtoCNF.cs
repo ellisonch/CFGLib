@@ -197,6 +197,65 @@ namespace CFGLib {
 			return changed;
 		}
 
+		// TODO: reused, need to pull out
+		private static ISet<Nonterminal> GetNonterminals(ISet<BaseProduction> productions) {
+			var hs = new HashSet<Nonterminal>();
+			foreach (var production in productions) {
+				hs.Add(production.Lhs);
+				foreach (var word in production.Rhs) {
+					var nonterminal = word as Nonterminal;
+					if (nonterminal != null) {
+						hs.Add(nonterminal);
+					}
+				}
+			}
+			return hs;
+		}
+
+		private static Dictionary<Nonterminal, double> GetNullable2(ISet<BaseProduction> originalProductions) {
+			var probNulls = new Dictionary<Nonterminal, string>();
+
+			var nonterminals = GetNonterminals(originalProductions).ToList();
+			Dictionary<Nonterminal, int> RToJ = new Dictionary<Nonterminal, int>();
+			for (int i = 0; i < nonterminals.Count; i++) {
+				var R = nonterminals[i];
+				RToJ[R] = i;
+			}
+
+			// our dictionary contains weights, need to convert to probabilities
+			var weightTable = Helpers.BuildLookup(
+				() => originalProductions,
+				(p) => p.Lhs,
+				(p) => p.Weight,
+				() => new Boxed<double>(0.0),
+				(o, n) => o.Value += n
+			);
+
+			foreach (var production in originalProductions) {
+				var lhs = production.Lhs;
+				var rhs = production.Rhs;
+
+				if (!probNulls.ContainsKey(lhs)) {
+					probNulls[lhs] = "0";
+				}
+				if (!rhs.OnlyNonterminals()) {
+					continue;
+				}
+				if (rhs.Count == 0) {
+					probNulls[lhs] += string.Format(" + {0}", production.Weight);
+				}
+				foreach (var word in rhs) {
+					var nt = (Nonterminal)word;
+					probNulls[lhs] += string.Format(" + {0} * p(X{1})", production.Weight, RToJ[nt]);
+				}
+			}
+
+			foreach (var key in probNulls.Keys) {
+				Console.WriteLine("X{0}: ({1}) / {2}", RToJ[key], probNulls[key], weightTable[key].Value);
+			}
+			return null;
+		}
+
 		/// <summary>
 		/// Returns the set of all nonterminals that derive ε (in one or many steps)
 		/// </summary>

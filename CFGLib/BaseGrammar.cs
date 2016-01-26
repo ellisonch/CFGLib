@@ -259,7 +259,7 @@ namespace CFGLib {
 		/// Tries to estimate the probability of the sentences this grammar can generate by generating a bunch randomly and counting.
 		/// </summary>
 		/// <param name="iterations"></param>
-		internal void EstimateProbabilities(long iterations) {
+		public void EstimateProbabilities(long iterations) {
 			var dict = new Dictionary<string, long>();
 			for (int i = 0; i < iterations; i++) {
 				var key = this.ProduceRandom().AsTerminals("");
