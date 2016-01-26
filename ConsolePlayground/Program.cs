@@ -10,15 +10,20 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			var productions = new List<BaseProduction> {
-				CFGParser.Production(@"<S> -> 'a' <B> <B>"),
-				CFGParser.Production(@"<B> -> 'b'"),
-				CFGParser.Production(@"<B> -> ε"),
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<A> -> <A> <B>"),
+				CFGParser.Production("<A> -> <B>"),
+				CFGParser.Production("<A> -> 'a' [10]"),
+				CFGParser.Production("<B> -> <A>"),
+				CFGParser.Production("<B> -> 'b' [10]"),
 			};
-			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+
+			Grammar g = new Grammar(productions, Nonterminal.Of("A"));
 			CNFGrammar h = g.ToCNF();
 			Console.WriteLine(g);
 			Console.WriteLine(h);
+
+			g.EstimateProbabilities(50000000);
 
 			//var t = new CFGLibTest.RandomTests();
 			//var sw = Stopwatch.StartNew();

@@ -227,6 +227,25 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear(0.222222, h.Cyk(Sentence.FromLetters("b")));
 		}
 
+		[TestMethod]
+		public void TestCNFNoNull01() {
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<A> -> <A> <B>"),
+				CFGParser.Production("<A> -> <B>"),
+				CFGParser.Production("<A> -> 'a'"),
+				CFGParser.Production("<B> -> <A>"),
+				CFGParser.Production("<B> -> 'b'"),
+			};
 
+			Grammar g = new Grammar(productions, Nonterminal.Of("A"));
+			CNFGrammar h = g.ToCNF();
+
+			Helpers.AssertNear(0, h.Cyk(Sentence.FromLetters("")));
+			Helpers.AssertNear(0.83967276, h.Cyk(Sentence.FromLetters("a")));
+			Helpers.AssertNear(0.0763439, h.Cyk(Sentence.FromLetters("b")));
+			Helpers.AssertNear(0.06462378, h.Cyk(Sentence.FromLetters("ab")));
+			Helpers.AssertNear(0.00585872, h.Cyk(Sentence.FromLetters("bb")));
+			Helpers.AssertNear(0.00538844, h.Cyk(Sentence.FromLetters("aa")));
+		}
 	}
 }
