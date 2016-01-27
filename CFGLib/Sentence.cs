@@ -34,6 +34,9 @@ namespace CFGLib {
 		/// <param name="s"></param>
 		/// <returns></returns>
 		public static Sentence FromWords(string s) {
+			if (s.Length == 0) {
+				return new Sentence();
+			}
 			var tokens = s.Split(new char[] { ' ' });
 			return FromTokens(tokens);
 		}
