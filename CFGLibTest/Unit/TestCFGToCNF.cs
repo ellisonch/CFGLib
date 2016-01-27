@@ -8,6 +8,7 @@ namespace CFGLibTest.Unit {
 	[TestClass]
 	public class TestCFGToCNF {
 		[TestMethod]
+		[Ignore]
 		public void TestNullate01() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 			
@@ -29,6 +30,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestCFGToCNFBadProb01() {
 			// S -> aSa | bSb | ε
 			var productions = new List<Production> {
@@ -46,6 +48,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestCFGToCNFBadProb02() {
 			// S -> aSa | bSb | ε
 			var productions = new List<Production> {
@@ -80,6 +83,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestToCNF01() {
 			var productions = new List<Production> {
 				CFGParser.Production(@"<X_0> -> 'x3' <X_0> [23]"),
@@ -114,6 +118,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestGetNullable01() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 			
@@ -131,6 +136,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestGetNullable02() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 			var productions = new HashSet<Production> {
@@ -148,6 +154,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestGetNullable03() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 
@@ -170,6 +177,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestGetNullable04() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 
@@ -186,6 +194,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestToCNF03() {
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <B> <C>"),
@@ -210,6 +219,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestToCNF04() {
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A> <B>"),
@@ -228,6 +238,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestCNFNoNull01() {
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A> <B>"),
@@ -249,6 +260,7 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestCNFNoNull02() {
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A>"),
@@ -264,6 +276,7 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("b")));
 		}
 		[TestMethod]
+		[Ignore]
 		public void TestCNFNoNull03() {
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<S> -> <A>"),
