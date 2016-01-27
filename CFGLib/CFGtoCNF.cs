@@ -164,6 +164,12 @@ namespace CFGLib {
 			var previouslyDeleted = new HashSet<ValueUnitProduction>();
 			// TODO: maybe we shouldn't allow self loops?
 			RemoveSelfLoops(productions);
+
+			var toRemove = BaseGrammar.RemoveDuplicatesHelper(productions);
+			foreach (var production in toRemove) {
+				productions.Remove(production);
+			}
+
 			bool changed = true;
 			while (changed) {
 				changed = StepUnitOnce(productions, previouslyDeleted);

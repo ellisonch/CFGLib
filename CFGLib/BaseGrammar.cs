@@ -337,7 +337,12 @@ namespace CFGLib {
 		}
 
 		protected void RemoveDuplicates() {
-			var productionList = new List<BaseProduction>(this.Productions);
+			var toRemove = BaseGrammar.RemoveDuplicatesHelper(this.Productions);
+			this.RemoveProductions(toRemove);
+		}
+
+		internal static List<BaseProduction> RemoveDuplicatesHelper(IEnumerable<BaseProduction> productions) {
+			var productionList = new List<BaseProduction>(productions);
 			var toRemove = new List<BaseProduction>();
 
 			for (int i = 0; i < productionList.Count; i++) {
@@ -353,9 +358,9 @@ namespace CFGLib {
 					}
 				}
 			}
-			this.RemoveProductions(toRemove);
+			return toRemove;
 		}
-		
+
 		protected void RemoveUnreachable() {
 			var reachableSymbols = new HashSet<Nonterminal>();
 			
