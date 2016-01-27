@@ -110,6 +110,4 @@ This is still being worked on.
 * `BaseGrammar` > {`Grammar`, `CNFGrammar`}: All kinds of grammars inherit from `BaseGrammar`.
   * `Sentence ProduceRandom();`
   * `double EstimateProbabilityNull(Nonterminal nt, long iterations);`
-  * `void Simplify();` [^1]
-
-[^1]: Grammars are simplified by default, but this can be suppressed with a constructor argument)
+  * `void Simplify();` [Note: Grammars are simplified by default, but this can be suppressed with a constructor argument and this function used when desired.]
