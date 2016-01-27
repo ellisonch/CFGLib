@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace CFGLib {
 	internal struct ValueUnitProduction {
 		public Nonterminal Lhs;
-		public Word Rhs;
-		public ValueUnitProduction(Nonterminal lhs, Word rhs) {
+		public Nonterminal Rhs;
+		public ValueUnitProduction(Nonterminal lhs, Nonterminal rhs) {
 			this.Lhs = lhs;
 			this.Rhs = rhs;
 		}

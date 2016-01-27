@@ -185,21 +185,31 @@ namespace CFGLib {
 				// at this point we have a unit production lhs -> rhs
 				changed = true;
 				result.Remove(production);
-				previouslyDeleted.Add(new ValueUnitProduction(lhs, rhs));
+				previouslyDeleted.Add(new ValueUnitProduction(lhs, (Nonterminal)rhs));
 				var entries = table.LookupEnumerable((Nonterminal)rhs);
 				var sum = entries.Sum((p) => p.Weight);
 				foreach (var entry in entries) {
-					var newProd = new Production(lhs, entry.Rhs, production.Weight * (entry.Weight / sum));
+					var probThisEntry = entry.Weight / sum;
+					var newProd = new Production(lhs, entry.Rhs, production.Weight * probThisEntry);
 
 					// TODO: these exceptions probably mess up probability
 					if (newProd.IsSelfLoop) {
 						continue;
 					}
 					if (entry.Rhs.Count == 1) {
-						var vup = new ValueUnitProduction(lhs, entry.Rhs[0]);
-						if (previouslyDeleted.Contains(vup)) {
-							continue;
-						}
+						if (entry.Rhs[0].IsNonterminal()) {
+							var vup = new ValueUnitProduction(lhs, (Nonterminal)entry.Rhs[0]);
+							if (previouslyDeleted.Contains(vup)) {
+								//// we're trying to add vup.Lhs -> vup.Rhs
+								//// but we don't want to add a unit we've already deleted
+								//// we need to divide up the newProd.weight among all the 
+								//// rules vup.Lhs -> X where vup.Rhs -> X
+								//var destinations = table.LookupEnumerable(vup.Rhs);
+								//foreach (var relayed in destinations) {
+								//}
+								continue;
+							}
+						}						
 					}				
 
 					result.Add(newProd);
