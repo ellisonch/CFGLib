@@ -384,7 +384,8 @@ namespace CFGLib {
 					without.Rhs.RemoveAt(i);
 					newResults.Add(without);
 					without.Weight *= nullableProbabilities[nt];
-					production.Weight *= 1.0 - nullableProbabilities[nt];
+					// production.Weight *= 1.0 - nullableProbabilities[nt];
+					production.Weight *= 1.0; // TODO: all wrong
 				}
 				results.AddRange(newResults);
 			}
