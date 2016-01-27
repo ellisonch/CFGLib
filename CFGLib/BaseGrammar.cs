@@ -107,7 +107,7 @@ namespace CFGLib {
 				intermediate[i + 1] = next;
 				foreach (var swp in prev) {
 					if (!swp.Value.OnlyTerminals()) {
-						var steps = GoOneStep(swp);
+						var steps = GoOneStep(swp, limit);
 						next.AddRange(steps);
 						count += steps.Count;
 					}
@@ -139,10 +139,14 @@ namespace CFGLib {
 			return resultDict.Values.ToList();
 		}
 
-		private List<Probable<Sentence>> GoOneStep(Probable<Sentence> swp) {
+		private List<Probable<Sentence>> GoOneStep(Probable<Sentence> swp, int limit = int.MaxValue) {
 			var start = new Probable<Sentence>(swp.Probability, new Sentence());
 			var results = new List<Probable<Sentence>> { start };
 			foreach (var word in swp.Value) {
+				if (results.Count > limit) {
+					// have to return empty here, since we don't have complete sentences
+					return new List<Probable<Sentence>>();
+				}
 				if (word.IsNonterminal()) {
 					results = StepNonterminal(results, word);
 				} else {
