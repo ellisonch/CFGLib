@@ -4,7 +4,7 @@ namespace CFGLib {
 	/// <summary>
 	/// This class represents a Terminal CNF production (e.g., X -> a)
 	/// </summary>
-	public class CNFTerminalProduction : BaseProduction {
+	internal class CNFTerminalProduction : BaseProduction {
 		private readonly Terminal _rhs;
 
 		public CNFTerminalProduction(BaseProduction production) {

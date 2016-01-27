@@ -400,8 +400,6 @@ namespace CFGLib {
 		/// E.g., for production S -> AbB and nullable {A, B}, we get productions
 		/// S -> AbB | Ab | bB | b
 		/// </summary>
-		/// <param name="originalProduction"></param>
-		/// <param name="nullableSet"></param>
 		/// <returns></returns>
 		private static List<BaseProduction> Nullate(BaseProduction originalProduction, Dictionary<Nonterminal, double> nullableProbabilities) {
 			var results = new List<BaseProduction>();

@@ -7,7 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsolePlayground {
-	// A console app for playing around
+	/// <summary>
+	/// A console app for playing around.
+	/// To use CFGLib, you only need the CFGLib project.
+	/// This project is just to make my own testing and debugging easier.
+	/// </summary>
 	class Program {
 		static void Main(string[] args) {
 			//var productions = new HashSet<BaseProduction> {
@@ -29,11 +33,11 @@ namespace ConsolePlayground {
 			//var q = new CNFGrammar(new HashSet<BaseProduction> { }, new HashSet<BaseProduction> { }, 1, Nonterminal.Of("S"), true);
 			//Console.WriteLine(q.Accepts(Sentence.FromWords("")));
 
-			var rt = new CFGLibTest.RandomTests();
-			var sw = Stopwatch.StartNew();
-			rt.RandomAcceptanceTest();
-			sw.Stop();
-			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+			//var rt = new CFGLibTest.RandomTests();
+			//var sw = Stopwatch.StartNew();
+			//rt.RandomAcceptanceTest();
+			//sw.Stop();
+			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 			//var productions = new HashSet<BaseProduction> {
 			//	CFGParser.Production("<S> -> <A>"),
@@ -60,7 +64,7 @@ namespace ConsolePlayground {
 			// CFGParser.Production("<X> -> <Y>");
 
 			// Benchmark();
-			// Readme();
+			Readme();
 			//8.7s
 
 			//var p = CFGParser.Production("<S> -> 'a' [5]");
@@ -130,31 +134,25 @@ namespace ConsolePlayground {
 		static void Readme() {
 			// S -> aSa | bSb | ε
 			var productions = new List<BaseProduction> {
-				new Production(
-					lhs: Nonterminal.Of("S"),
-					rhs: new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") },
-					weight: 20
-				),
-				new Production(
-					Nonterminal.Of("S"),
-					new Sentence { Terminal.Of("b"), Nonterminal.Of("S"), Terminal.Of("b") },
-					10
-				),
-				new Production(
-					Nonterminal.Of("S"),
-					new Sentence { },
-					1
-				)
-			};
-			Grammar cfg = new Grammar(productions, Nonterminal.Of("S"));
-			Console.WriteLine(cfg);
-			CNFGrammar cnf = cfg.ToCNF();
-			Console.WriteLine(cnf);
-			Console.WriteLine(cnf.Cyk(Sentence.FromLetters("aabb")));
-			Console.WriteLine(cnf.Cyk(Sentence.FromLetters("abba")));
+			// construct productions the usual way...
+			BaseProduction.New(
+				lhs: Nonterminal.Of("S"),
+				rhs: new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") },
+				weight: 20
+			),
+			// or from a string...
+			CFGParser.Production(@"<S> -> 'b' <S> 'b' [10]"),
+			CFGParser.Production(@"<S> -> ε [5]"),
+};
+			var cfg = new Grammar(productions, Nonterminal.Of("S"));
+			var cnf = cfg.ToCNF();
+			// Does this grammar accept the string "aabb"?
+			Console.WriteLine(cnf.Accepts(Sentence.FromLetters("aabb")));
+			// How about "abba"?
+			Console.WriteLine(cnf.Accepts(Sentence.FromLetters("abba")));
 
 			for (int i = 0; i < 5; i++) {
-				Console.WriteLine(cnf.ProduceRandom().AsTerminals());
+				Console.WriteLine(cfg.ProduceRandom().AsTerminals());
 			}
 		}
 	}

@@ -30,11 +30,11 @@ namespace CFGLib {
 		private Cache<Dictionary<Nonterminal, ICollection<CNFTerminalProduction>>> _tProductionsByNonterminal;
 
 
-		protected List<CNFNonterminalProduction> NonterminalProductions {
+		private List<CNFNonterminalProduction> NonterminalProductions {
 			get { return _nonterminalProductions; }
 		}
 
-		protected List<CNFTerminalProduction> TerminalProductions {
+		private List<CNFTerminalProduction> TerminalProductions {
 			get { return _terminalProductions; }
 		}
 

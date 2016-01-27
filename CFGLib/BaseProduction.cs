@@ -11,7 +11,11 @@ namespace CFGLib {
 	public abstract class BaseProduction {
 		private Nonterminal _lhs;
 		private double _weight = 1.0;
-		
+
+		public static BaseProduction New(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
+			return new Production(lhs, rhs, weight);
+		}
+
 		/// <summary>
 		/// The left-hand side of the Production (e.g., Lhs -> Rhs)
 		/// </summary>

@@ -5,7 +5,7 @@ namespace CFGLib {
 	/// <summary>
 	/// This class represents a generic but concrete production
 	/// </summary>
-	public class Production : BaseProduction {
+	internal class Production : BaseProduction {
 		private Sentence _rhs;
 		
 		public override Sentence Rhs {

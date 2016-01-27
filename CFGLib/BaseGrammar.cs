@@ -89,7 +89,6 @@ namespace CFGLib {
 		/// <summary>
 		/// Returns all the sentences (with their probabilities) that can be generated up to a certain depth
 		/// </summary>
-		/// <param name="depth"></param>
 		/// <returns></returns>
 		public List<Probable<Sentence>> ProduceToDepth(int depth, int limit = int.MaxValue) {
 			var start = new Sentence { this.Start };
@@ -262,7 +261,6 @@ namespace CFGLib {
 		/// <summary>
 		/// Produces a random sentence and returns whether or not it was null
 		/// </summary>
-		/// <param name="nt"></param>
 		/// <returns></returns>
 		public bool ProduceNull(Nonterminal nt) {
 			var sentence = new Sentence { nt };
@@ -283,7 +281,6 @@ namespace CFGLib {
 		/// <summary>
 		/// Tries to estimate the probability of a nonterminal yielding null by generating a bunch randomly and counting.
 		/// </summary>
-		/// <param name="iterations"></param>
 		public double EstimateProbabilityNull(Nonterminal nt, long iterations) {
 			long nulls = 0;
 			for (int i = 0; i < iterations; i++) {

@@ -4,7 +4,7 @@ namespace CFGLib {
 	/// <summary>
 	/// This class represents a Nonterminal CNF production (e.g., X -> Y Z)
 	/// </summary>
-	public class CNFNonterminalProduction : BaseProduction {
+	internal class CNFNonterminalProduction : BaseProduction {
 		private readonly Nonterminal[] _rhs = new Nonterminal[2];
 
 		public CNFNonterminalProduction(BaseProduction production) {
