@@ -281,5 +281,22 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("a")));
 			Helpers.AssertNear(0.5, h.Cyk(Sentence.FromLetters("b")));
 		}
+
+		[TestMethod]
+		public void TestAccepts01() {
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<S> -> 'x2' <A> <A>"),
+				CFGParser.Production("<S> -> ε"),
+				CFGParser.Production("<A> -> 'x4' <S> 'x2'"),
+				CFGParser.Production("<A> -> ε"),
+			};
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			CNFGrammar h = g.ToCNF();
+
+			Assert.IsTrue(h.Accepts(Sentence.FromLetters("")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x2")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x2 x4 x2")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x2 x4 x2 x4 x2")));
+		}
 	}
 }

@@ -9,6 +9,39 @@ namespace CFGLibTest {
 	public class RandomTests {
 		[TestMethod]
 		[Ignore]
+		public void RandomAcceptanceTest() {
+			int _maxDepth = 10;
+			var _numGrammars = 500;
+			var _maxTestSentences = 100000;
+			var _maxNonterminals = 5;
+			var _maxProductions = 10;
+			var _maxProductionLength = 5;
+			var _numTerminals = 5;
+
+			var randg = new GrammarGenerator();
+			var range = Enumerable.Range(0, _numTerminals);
+			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
+
+			var rand = new Random(0);
+
+			for (int i = 0; i < _numGrammars; i++) {
+				var numProductions = rand.Next(_maxProductions) + 1;
+				var numNonterminals = rand.Next(_maxNonterminals) + 1;
+				var g = randg.NextCFG(numNonterminals, numProductions, _maxProductionLength, terminals);
+				var h = g.ToCNF();
+				Console.WriteLine(g);
+				Console.WriteLine(h);
+
+				var swps = g.ProduceToDepth(_maxDepth, _maxTestSentences);
+				foreach (var swp in swps) {
+					Assert.IsTrue(h.Accepts(swp.Value));
+				}
+				Console.WriteLine("-------------------------------");
+			}
+		}
+
+		[TestMethod]
+		[Ignore]
 		public void RandomCFGToCNFTest() {
 			int _maxDepth = 6;
 			var _numGrammars = 200;

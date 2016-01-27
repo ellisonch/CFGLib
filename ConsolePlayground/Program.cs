@@ -10,19 +10,25 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
-			var productions = new HashSet<BaseProduction> {
-				CFGParser.Production("<S> -> <A>"),
-				CFGParser.Production("<S> -> <B>"),
-				CFGParser.Production("<A> -> <B>"),
-				CFGParser.Production("<B> -> <A>"),
-				CFGParser.Production("<A> -> 'a'"),
-				CFGParser.Production("<B> -> 'b'"),
-			};
+			var rt = new CFGLibTest.RandomTests();
+			var sw = Stopwatch.StartNew();
+			rt.RandomAcceptanceTest();
+			sw.Stop();
+			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
-			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
-			CNFGrammar h = g.ToCNF(false);
-			Console.WriteLine(g);
-			Console.WriteLine(h);
+			//var productions = new HashSet<BaseProduction> {
+			//	CFGParser.Production("<S> -> <A>"),
+			//	CFGParser.Production("<S> -> <B>"),
+			//	CFGParser.Production("<A> -> <B>"),
+			//	CFGParser.Production("<B> -> <A>"),
+			//	CFGParser.Production("<A> -> 'a'"),
+			//	CFGParser.Production("<B> -> 'b'"),
+			//};
+
+			//Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			//CNFGrammar h = g.ToCNF(false);
+			//Console.WriteLine(g);
+			//Console.WriteLine(h);
 
 			// g.EstimateProbabilities(1000000);
 
