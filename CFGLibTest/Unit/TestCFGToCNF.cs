@@ -298,5 +298,22 @@ namespace CFGLibTest.Unit {
 			Assert.IsTrue(h.Accepts(Sentence.FromWords("x2 x4 x2")));
 			Assert.IsTrue(h.Accepts(Sentence.FromWords("x2 x4 x2 x4 x2")));
 		}
+
+		[TestMethod]
+		public void TestAccepts02() {
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<X_0> -> <X_0> 'x4' <X_0> 'x0'"),
+				CFGParser.Production("<X_0> -> <X_0> <X_0> 'x2' <X_0> 'x3'"),
+				CFGParser.Production("<X_0> -> <X_0> 'x1' <X_0>"),
+				CFGParser.Production("<X_0> -> <X_0> 'x1' 'x1' 'x1' 'x3'"),
+				CFGParser.Production("<X_0> -> ε"),
+			};
+			Grammar g = new Grammar(productions, Nonterminal.Of("X_0"));
+			CNFGrammar h = g.ToCNF();
+
+			Assert.IsTrue(h.Accepts(Sentence.FromLetters("")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x4 x0")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x4 x0 x4 x2 x3 x0")));
+		}
 	}
 }
