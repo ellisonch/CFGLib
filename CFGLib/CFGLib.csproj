@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseProduction.cs" />
+    <Compile Include="Production.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="CFGParser.cs" />
     <Compile Include="CFGtoCNF.cs" />
