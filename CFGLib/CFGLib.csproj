@@ -53,7 +53,7 @@
     <Compile Include="Grammar.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="BaseGrammar.cs" />
-    <Compile Include="Production.cs" />
+    <Compile Include="DefaultProduction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sentence.cs" />
     <Compile Include="Probable.cs" />
