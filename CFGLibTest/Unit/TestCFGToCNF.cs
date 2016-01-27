@@ -367,5 +367,49 @@ namespace CFGLibTest.Unit {
 			Assert.IsTrue(h.Accepts(Sentence.FromWords("x2 x0")));
 			Assert.IsTrue(h.Accepts(Sentence.FromWords("x4")));
 		}
+
+		[TestMethod]
+		public void TestAccepts05() {
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<X_2> -> <X_1> <X_0>"),
+				CFGParser.Production("<X_1> -> <X_2> <X_1> <X_3> 'x2'"),
+				CFGParser.Production("<X_3> -> <X_0> <X_0> <X_1> <X_3>"),
+				CFGParser.Production("<X_3> -> ε"),
+				CFGParser.Production("<X_2> -> <X_0> <X_1> <X_3> <X_1> <X_3>"),
+				CFGParser.Production("<X_2> -> <X_1> <X_2> <X_2> <X_0>"),
+				CFGParser.Production("<X_0> -> <X_3> 'x3'"),
+				CFGParser.Production("<X_2> -> ε"),
+				CFGParser.Production("<X_0> -> <X_2> <X_1>"),
+				CFGParser.Production("<X_2> -> <X_0> <X_1> <X_2>"),
+				CFGParser.Production("<X_1> -> <X_3> <X_3>"),
+				CFGParser.Production("<X_3> -> 'x3' 'x4'"),
+				CFGParser.Production("<X_3> -> <X_3> 'x4'"),
+				CFGParser.Production("<X_1> -> 'x0' 'x4' 'x0' <X_2> <X_0>"),
+			};
+			var g = new Grammar(productions, Nonterminal.Of("X_0"));
+			var h = g.ToCNF();
+
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x3")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x3 x4 x3")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x4 x3")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x3 x4 x4 x3")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x3 x4")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x3 x4 x3 x4")));
+		}
+
+		[TestMethod]
+		public void TestAccepts06() {
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<X_3> -> ε"),
+				CFGParser.Production("<X_2> -> ε"),
+				CFGParser.Production("<X_0> -> <X_2> <X_1>"),
+				CFGParser.Production("<X_1> -> <X_3> <X_3>"),
+			};
+			var g = new Grammar(productions, Nonterminal.Of("X_0"));
+			var h = g.ToCNF();
+
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("")));
+		}
 	}
 }
