@@ -5,14 +5,14 @@ namespace CFGLib {
 	/// <summary>
 	/// This class represents a generic but concrete production
 	/// </summary>
-	internal class Production : BaseProduction {
+	internal class DefaultProduction : Production {
 		private Sentence _rhs;
 		
 		public override Sentence Rhs {
 			get { return _rhs; }
 		}
 
-		public Production(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
+		public DefaultProduction(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
 			if (lhs == null) {
 				throw new ArgumentNullException("Lhs must be non-null");
 			}
@@ -27,8 +27,8 @@ namespace CFGLib {
 			this.Weight = weight;
 		}
 
-		internal override BaseProduction DeepClone() {
-			return new Production(this.Lhs, new Sentence(_rhs), this.Weight);
+		internal override Production DeepClone() {
+			return new DefaultProduction(this.Lhs, new Sentence(_rhs), this.Weight);
 		}
 	}
 }

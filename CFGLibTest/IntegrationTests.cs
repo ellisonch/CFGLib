@@ -9,7 +9,7 @@ namespace CFGLibTest {
 		[TestMethod]
 		public void TestIntegration01() {
 			// S -> aSa | bSb | ε
-			var productions = new List<BaseProduction> {
+			var productions = new List<Production> {
 				CFGParser.Production(@"<S> -> 'a' <S> 'a'"),
 				CFGParser.Production(@"<S> -> 'b' <S> 'b'"),
 				CFGParser.Production(@"<S> -> ε"),
@@ -41,10 +41,10 @@ namespace CFGLibTest {
 			//	Var(X_0) → Trm(a)
 			//	Var(X_2) → Trm(a)
 			//}
-			var nonterminalProductions = new List<BaseProduction> {
+			var nonterminalProductions = new List<Production> {
 				CFGParser.Production("<X_0> -> <X_0> <X_1>"),
 			};
-			var terminalProductions = new List<BaseProduction> {
+			var terminalProductions = new List<Production> {
 				CFGParser.Production("<X_2> -> 'b'"),
 				CFGParser.Production("<X_0> -> 'b'"),
 				CFGParser.Production("<X_0> -> 'a'"),

@@ -4,10 +4,10 @@ namespace CFGLib {
 	/// <summary>
 	/// This class represents a Terminal CNF production (e.g., X -> a)
 	/// </summary>
-	internal class CNFTerminalProduction : BaseProduction {
+	internal class CNFTerminalProduction : Production {
 		private readonly Terminal _rhs;
 
-		public CNFTerminalProduction(BaseProduction production) {
+		public CNFTerminalProduction(Production production) {
 			this.Lhs = production.Lhs;
 			_rhs = (Terminal)production.Rhs[0];
 			this.Weight = production.Weight;
@@ -28,7 +28,7 @@ namespace CFGLib {
 			get { return _rhs; }
 		}
 		
-		internal override BaseProduction DeepClone() {
+		internal override Production DeepClone() {
 			return new CNFTerminalProduction(this.Lhs, this.SpecificRhs, this.Weight);
 		}
 	}

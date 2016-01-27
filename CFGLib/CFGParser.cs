@@ -40,7 +40,7 @@ namespace CFGLib {
 		/// </summary>
 		/// <param name="s"></param>
 		/// <returns></returns>
-		public static BaseProduction Production(string s) {
+		public static Production Production(string s) {
 			var match = ProductionRegex.Match(s);
 			if (!match.Success) {
 				throw new Exception("Didn't find valid string");
@@ -73,7 +73,7 @@ namespace CFGLib {
 			var rhs = new Sentence(rhsList.Values);
 			var lhs = Nonterminal.Of(lhsMatch.Value);
 
-			var retval = new Production(lhs, rhs, weight);
+			var retval = new DefaultProduction(lhs, rhs, weight);
 			return retval;
 		}
 	}

@@ -17,7 +17,7 @@ namespace CFGLib {
 		private Cache<ISet<Nonterminal>> _nonterminals;
 		private Cache<ISet<Terminal>> _terminals;
 
-		public abstract IEnumerable<BaseProduction> Productions {
+		public abstract IEnumerable<Production> Productions {
 			get;
 		}
 		
@@ -75,7 +75,7 @@ namespace CFGLib {
 			this.Caches.Add(_terminals);
 		}
 
-		internal abstract IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs);
+		internal abstract IEnumerable<Production> ProductionsFrom(Nonterminal lhs);
 
 		/// <summary>
 		/// Call this after making any changes to the grammar so that cached lookup tables can be rebuilt
@@ -186,7 +186,7 @@ namespace CFGLib {
 			return results;
 		}
 		
-		protected double GetProbability(BaseProduction target) {
+		protected double GetProbability(Production target) {
 			var lhs = target.Lhs;
 			var weight = target.Weight;
 			// 9.23s calculating all
@@ -338,9 +338,9 @@ namespace CFGLib {
 			this.RemoveProductions(toRemove);
 		}
 
-		internal static List<BaseProduction> RemoveDuplicatesHelper(IEnumerable<BaseProduction> productions) {
-			var productionList = new List<BaseProduction>(productions);
-			var toRemove = new List<BaseProduction>();
+		internal static List<Production> RemoveDuplicatesHelper(IEnumerable<Production> productions) {
+			var productionList = new List<Production>(productions);
+			var toRemove = new List<Production>();
 
 			for (int i = 0; i < productionList.Count; i++) {
 				var production = productionList[i];
@@ -410,7 +410,7 @@ namespace CFGLib {
 		}
 
 		private void RemoveProductionsContainingOtherThan(ISet<Nonterminal> productiveSymbols) {
-			var toRemove = new HashSet<BaseProduction>();
+			var toRemove = new HashSet<Production>();
 			foreach (var production in this.Productions) {
 				// remove rule if LHS is nonproductive
 				if (!productiveSymbols.Contains(production.Lhs)) {
@@ -431,7 +431,7 @@ namespace CFGLib {
 			RemoveProductions(toRemove);
 		}
 
-		private bool IsProductive(BaseProduction production, HashSet<Nonterminal> productiveSymbols) {
+		private bool IsProductive(Production production, HashSet<Nonterminal> productiveSymbols) {
 			foreach (var word in production.Rhs) {
 				if (word is Terminal) {
 					continue;
@@ -444,7 +444,7 @@ namespace CFGLib {
 			return true;
 		}
 
-		internal abstract void RemoveProductions(IEnumerable<BaseProduction> toRemove);
+		internal abstract void RemoveProductions(IEnumerable<Production> toRemove);
 		
 		public override string ToString() {
 			var retval = "Grammar(" + this.Start + "){\n";

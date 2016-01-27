@@ -13,7 +13,7 @@ namespace CFGLib {
 		private List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
 		private List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
 		
-		private List<Production> _emptyProductions = new List<Production>();
+		private List<DefaultProduction> _emptyProductions = new List<DefaultProduction>();
 
 		private double EmptyProductionWeight {
 			get {
@@ -39,9 +39,9 @@ namespace CFGLib {
 		}
 
 
-		internal override IEnumerable<BaseProduction> ProductionsFrom(Nonterminal lhs) {
-			IEnumerable<BaseProduction> list1 = _ntProductionsByNonterminal.Value.LookupEnumerable(lhs);
-			IEnumerable<BaseProduction> list2 = _tProductionsByNonterminal.Value.LookupEnumerable(lhs);
+		internal override IEnumerable<Production> ProductionsFrom(Nonterminal lhs) {
+			IEnumerable<Production> list1 = _ntProductionsByNonterminal.Value.LookupEnumerable(lhs);
+			IEnumerable<Production> list2 = _tProductionsByNonterminal.Value.LookupEnumerable(lhs);
 
 			var result = list1.Concat(list2);
 			if (lhs == this.Start) {
@@ -50,15 +50,15 @@ namespace CFGLib {
 			return result;
 		}
 
-		public override IEnumerable<BaseProduction> Productions {
+		public override IEnumerable<Production> Productions {
 			get {
-				IEnumerable<BaseProduction> list1 = _nonterminalProductions;
-				IEnumerable<BaseProduction> list2 = _terminalProductions;
+				IEnumerable<Production> list1 = _nonterminalProductions;
+				IEnumerable<Production> list2 = _terminalProductions;
 				return list1.Concat(list2).Concat(_emptyProductions);
 			}
 		}
 
-		internal override void RemoveProductions(IEnumerable<BaseProduction> toRemove) {
+		internal override void RemoveProductions(IEnumerable<Production> toRemove) {
 			foreach (var production in toRemove) {
 				if (production.Lhs == this.Start && production.Rhs.Count == 0) {
 					throw new Exception("Don't handle removing empty production in CNF yet");
@@ -75,7 +75,7 @@ namespace CFGLib {
 		private CNFGrammar() {
 		}
 
-		public CNFGrammar(IEnumerable<BaseProduction> nt, IEnumerable<BaseProduction> t, double producesEmptyWeight, Nonterminal start, bool simplify = true) {
+		public CNFGrammar(IEnumerable<Production> nt, IEnumerable<Production> t, double producesEmptyWeight, Nonterminal start, bool simplify = true) {
 			_nonterminalProductions = new List<CNFNonterminalProduction>();
 			foreach (var production in nt) {
 				_nonterminalProductions.Add(new CNFNonterminalProduction(production));
@@ -85,7 +85,7 @@ namespace CFGLib {
 				_terminalProductions.Add(new CNFTerminalProduction(production));
 			}
 			if (producesEmptyWeight > 0) {
-				_emptyProductions.Add(new Production(start, new Sentence(), producesEmptyWeight));
+				_emptyProductions.Add(new DefaultProduction(start, new Sentence(), producesEmptyWeight));
 			}
 			this.Start = start;
 

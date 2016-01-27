@@ -4,10 +4,10 @@ namespace CFGLib {
 	/// <summary>
 	/// This class represents a Nonterminal CNF production (e.g., X -> Y Z)
 	/// </summary>
-	internal class CNFNonterminalProduction : BaseProduction {
+	internal class CNFNonterminalProduction : Production {
 		private readonly Nonterminal[] _rhs = new Nonterminal[2];
 
-		public CNFNonterminalProduction(BaseProduction production) {
+		public CNFNonterminalProduction(Production production) {
 			if (production.Rhs.Count != 2) {
 				throw new ArgumentException("CNFNonterminalProductions need RHSs with exactly two items");
 			}
@@ -30,7 +30,7 @@ namespace CFGLib {
 			get { return _rhs; }
 		}
 
-		internal override BaseProduction DeepClone() {
+		internal override Production DeepClone() {
 			return new CNFNonterminalProduction(this.Lhs, this.SpecificRhs[0], this.SpecificRhs[1], this.Weight);
 		}
 	}

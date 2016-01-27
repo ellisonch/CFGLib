@@ -53,12 +53,12 @@ namespace CFGLib {
 			return new CNFGrammar(nonterminalProductions, terminalProductions, producesEmptyWeight, _startSymbol, simplify);
 		}
 
-		private static ISet<BaseProduction> CloneGrammar(Grammar grammar) {
+		private static ISet<Production> CloneGrammar(Grammar grammar) {
 			return CloneProductions(grammar.Productions);
 		}
 
-		private static ISet<BaseProduction> CloneProductions(IEnumerable<BaseProduction> productions) {
-			var result = new HashSet<BaseProduction>();
+		private static ISet<Production> CloneProductions(IEnumerable<Production> productions) {
+			var result = new HashSet<Production>();
 			foreach (var production in productions) {
 				// var productions = grammar.Productions;
 				result.Add(production.DeepClone());
@@ -70,11 +70,11 @@ namespace CFGLib {
 		/// Eliminate the start symbol from right-hand sides
 		/// </summary>
 		/// <param name="productions"></param>
-		private void StepStart(ISet<BaseProduction> productions) {
+		private void StepStart(ISet<Production> productions) {
 			var fresh = GetFresh();
 			productions.Add(
 				// new Production(fresh, new Sentence { Nonterminal.Of("S") })
-				new Production(fresh, new Sentence { _grammar.Start })
+				new DefaultProduction(fresh, new Sentence { _grammar.Start })
 			);
 			_startSymbol = fresh;
 		}
@@ -83,8 +83,8 @@ namespace CFGLib {
 		/// Eliminate rules with nonsolitary terminals
 		/// </summary>
 		/// <param name="productions"></param>
-		private void StepTerm(ISet<BaseProduction> productions) {
-			var newProductions = new List<BaseProduction>();
+		private void StepTerm(ISet<Production> productions) {
+			var newProductions = new List<Production>();
 			var lookup = new Dictionary<Terminal, Nonterminal>();
 			foreach (var production in productions) {
 				if (production.Rhs.Count < 2) {
@@ -101,7 +101,7 @@ namespace CFGLib {
 						fresh = GetFresh();
 						lookup[terminal] = fresh;
 						newProductions.Add(
-							new Production(fresh, new Sentence { terminal })
+							new DefaultProduction(fresh, new Sentence { terminal })
 						);
 					}
 					production.Rhs[i] = fresh;
@@ -114,8 +114,8 @@ namespace CFGLib {
 		/// Eliminate right-hand sides with more than 2 nonterminals
 		/// </summary>
 		/// <param name="productions"></param>
-		private void StepBin(ISet<BaseProduction> productions) {
-			List<BaseProduction> finalProductions = new List<BaseProduction>();
+		private void StepBin(ISet<Production> productions) {
+			List<Production> finalProductions = new List<Production>();
 			foreach (var production in productions) {
 				if (production.Rhs.Count < 3) {
 					finalProductions.Add(production);
@@ -128,12 +128,12 @@ namespace CFGLib {
 					var left = rhs[i];
 					var newFresh = GetFresh();
 					finalProductions.Add(
-						new Production(curr, new Sentence { left, newFresh }, weight)
+						new DefaultProduction(curr, new Sentence { left, newFresh }, weight)
 					);
 					curr = newFresh;
 				}
 				finalProductions.Add(
-					new Production(curr, new Sentence { rhs[rhs.Count - 2], rhs[rhs.Count - 1] })
+					new DefaultProduction(curr, new Sentence { rhs[rhs.Count - 2], rhs[rhs.Count - 1] })
 				);
 			}
 			productions.Clear();
@@ -144,9 +144,9 @@ namespace CFGLib {
 		/// Eliminate ε-rules
 		/// </summary>
 		/// <param name="productions"></param>
-		private void StepDel(ISet<BaseProduction> productions) {
+		private void StepDel(ISet<Production> productions) {
 			var nullableProbabilities = GetNullable(productions);
-			var newRules = new List<BaseProduction>();
+			var newRules = new List<Production>();
 			foreach (var production in productions) {
 				var toAdd = Nullate(production, nullableProbabilities);
 				RemoveExtraneousNulls(toAdd);
@@ -160,7 +160,7 @@ namespace CFGLib {
 		/// Eliminate unit rules (e.g., &lt;X> -> &lt;Y>)
 		/// </summary>
 		/// <param name="productions"></param>
-		private static void StepUnit(ISet<BaseProduction> productions) {
+		private static void StepUnit(ISet<Production> productions) {
 			var previouslyDeleted = new HashSet<ValueUnitProduction>();
 			// TODO: maybe we shouldn't allow self loops?
 			RemoveSelfLoops(productions);
@@ -176,8 +176,8 @@ namespace CFGLib {
 			}
 		}
 
-		private static void RemoveSelfLoops(ISet<BaseProduction> productions) {
-			var toDelete = new List<BaseProduction>();
+		private static void RemoveSelfLoops(ISet<Production> productions) {
+			var toDelete = new List<Production>();
 			foreach (var production in productions) {
 				if (production.IsSelfLoop) {
 					toDelete.Add(production);
@@ -188,9 +188,9 @@ namespace CFGLib {
 			}			
 		}
 
-		private static bool StepUnitOnce(ISet<BaseProduction> productions, ISet<ValueUnitProduction> previouslyDeleted) {
+		private static bool StepUnitOnce(ISet<Production> productions, ISet<ValueUnitProduction> previouslyDeleted) {
 			var table = BuildLookupTable(productions);
-			var results = new HashSet<BaseProduction>(productions);
+			var results = new HashSet<Production>(productions);
 			// var result = new Dictionary<ValueUnitProduction, BaseProduction>();
 			//foreach (var production in productions) {
 			//	result[new ValueUnitProduction(production.Lhs, production.Rhs)] = production;
@@ -214,7 +214,7 @@ namespace CFGLib {
 				var sum = entries.Sum((p) => p.Weight);
 				foreach (var entry in entries) {
 					var probThisEntry = entry.Weight / sum;
-					var newProd = new Production(lhs, entry.Rhs, production.Weight * probThisEntry);
+					var newProd = new DefaultProduction(lhs, entry.Rhs, production.Weight * probThisEntry);
 
 					// TODO: these exceptions probably mess up probability
 					if (newProd.IsSelfLoop) {
@@ -261,7 +261,7 @@ namespace CFGLib {
 		}
 
 		// TODO: reused, need to pull out
-		private static ISet<Nonterminal> GetNonterminals(ISet<BaseProduction> productions) {
+		private static ISet<Nonterminal> GetNonterminals(ISet<Production> productions) {
 			var hs = new HashSet<Nonterminal>();
 			foreach (var production in productions) {
 				hs.Add(production.Lhs);
@@ -275,7 +275,7 @@ namespace CFGLib {
 			return hs;
 		}
 
-		private static Dictionary<Nonterminal, double> GetNullable2(ISet<BaseProduction> originalProductions) {
+		private static Dictionary<Nonterminal, double> GetNullable2(ISet<Production> originalProductions) {
 			var probNulls = new Dictionary<Nonterminal, string>();
 
 			var nonterminals = GetNonterminals(originalProductions).ToList();
@@ -324,9 +324,9 @@ namespace CFGLib {
 		/// </summary>
 		/// <param name="originalProductions"></param>
 		/// <returns></returns>
-		private static Dictionary<Nonterminal, double> GetNullable(ISet<BaseProduction> originalProductions) {
+		private static Dictionary<Nonterminal, double> GetNullable(ISet<Production> originalProductions) {
 			var productions = CloneProductions(originalProductions);
-			ISet<BaseProduction> newProductions = new HashSet<BaseProduction>();
+			ISet<Production> newProductions = new HashSet<Production>();
 			var nullableNonterminals = new Dictionary<Nonterminal, double>();
 			var changed = true;
 			while (changed) {
@@ -380,7 +380,7 @@ namespace CFGLib {
 		/// Remove &lt;A> -> ε unless A is the start symbol 
 		/// </summary>
 		/// <param name="productions"></param>
-		private void RemoveExtraneousNulls(List<BaseProduction> productions) {
+		private void RemoveExtraneousNulls(List<Production> productions) {
 			if (productions.Count == 0) {
 				return;
 			}
@@ -401,14 +401,14 @@ namespace CFGLib {
 		/// S -> AbB | Ab | bB | b
 		/// </summary>
 		/// <returns></returns>
-		private static List<BaseProduction> Nullate(BaseProduction originalProduction, Dictionary<Nonterminal, double> nullableProbabilities) {
-			var results = new List<BaseProduction>();
+		private static List<Production> Nullate(Production originalProduction, Dictionary<Nonterminal, double> nullableProbabilities) {
+			var results = new List<Production>();
 			results.Add(originalProduction);
 			if (originalProduction.IsEmpty) {
 				return results;
 			}
 			for (int i = originalProduction.Rhs.Count - 1; i >= 0; i--) {
-				var newResults = new List<BaseProduction>();
+				var newResults = new List<Production>();
 				foreach (var production in results) {
 					var word = production.Rhs[i];
 					var nt = word as Nonterminal;
@@ -442,14 +442,14 @@ namespace CFGLib {
 			return result;
 		}
 		
-		private static Dictionary<Nonterminal, ICollection<BaseProduction>> BuildLookupTable(ISet<BaseProduction> productions) {
-			Dictionary<Nonterminal, ICollection<BaseProduction>> table;
+		private static Dictionary<Nonterminal, ICollection<Production>> BuildLookupTable(ISet<Production> productions) {
+			Dictionary<Nonterminal, ICollection<Production>> table;
 
 			table = Helpers.BuildLookup(
 				() => productions,
 				(p) => p.Lhs,
 				(p) => p,
-				() => (ICollection<BaseProduction>)new List<BaseProduction>(),
+				() => (ICollection<Production>)new List<Production>(),
 				(l, p) => l.Add(p)
 			);
 			return table;

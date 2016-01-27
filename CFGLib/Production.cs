@@ -8,12 +8,12 @@ namespace CFGLib {
 	/// <summary>
 	/// This class represents an abstract Production
 	/// </summary>
-	public abstract class BaseProduction {
+	public abstract class Production {
 		private Nonterminal _lhs;
 		private double _weight = 1.0;
 
-		public static BaseProduction New(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
-			return new Production(lhs, rhs, weight);
+		public static Production New(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
+			return new DefaultProduction(lhs, rhs, weight);
 		}
 
 		/// <summary>
@@ -73,14 +73,14 @@ namespace CFGLib {
 		/// The Rhs is a new Sentence, so that any piece of the new Production can be changed without changing the old Production.
 		/// </summary>
 		/// <returns></returns>
-		internal abstract BaseProduction DeepClone();
+		internal abstract Production DeepClone();
 
 		/// <summary>
 		/// Checks whether the productions have the same parts
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
-		public bool ValueEquals(BaseProduction other) {
+		public bool ValueEquals(Production other) {
 			if (this.Lhs != other.Lhs) {
 				return false;
 			}

@@ -25,7 +25,7 @@ namespace CFGLib {
 			}
 			var start = RandomNonterminal(1);
 
-			var productions = new List<BaseProduction>();
+			var productions = new List<Production>();
 
 			for (int i = 0; i < numProductions; i++) {
 				productions.Add(RandomProduction(maxProductionLength, numNonterminals, terminals));
@@ -34,7 +34,7 @@ namespace CFGLib {
 			return new Grammar(productions, start);
 		}
 
-		private BaseProduction RandomProduction(int maxProductionLength, int numNonterminals, IList<Terminal> terminals) {
+		private Production RandomProduction(int maxProductionLength, int numNonterminals, IList<Terminal> terminals) {
 			var lhs = RandomNonterminal(numNonterminals);
 			var weight = 100 * _rand.NextDouble() + 1.0;
 			var productionLength = _rand.Next(maxProductionLength + 1);
@@ -47,7 +47,7 @@ namespace CFGLib {
 				}
 			}
 
-			return new Production(lhs, rhs, weight);
+			return new DefaultProduction(lhs, rhs, weight);
 		}
 
 		/// <summary>

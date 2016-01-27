@@ -8,11 +8,11 @@ namespace CFGLibTest {
 	public class RegressionTests {
 		[TestMethod]
 		public void TestHugeWeights() {
-			var ntproductions = new List<BaseProduction> {
+			var ntproductions = new List<Production> {
 				CFGParser.Production(@"<S> -> <A> <B> [3000000000]"),
 				CFGParser.Production(@"<S> -> <C> <A> [3000000000]"),
 			};
-			var tproductions = new List<BaseProduction> {
+			var tproductions = new List<Production> {
 				CFGParser.Production(@"<A> -> 'a'"),
 				CFGParser.Production(@"<B> -> 'b'"),
 				CFGParser.Production(@"<C> -> 'c'"),
@@ -26,7 +26,7 @@ namespace CFGLibTest {
 
 		[TestMethod]
 		public void TestMissingStart() {
-			var productions = new List<BaseProduction> {
+			var productions = new List<Production> {
 				CFGParser.Production(@"<X_0> -> <X_0> <X_0>"),
 				CFGParser.Production(@"<X_0> -> 'a'"),
 			};
@@ -36,7 +36,7 @@ namespace CFGLibTest {
 
 		[TestMethod]
 		public void TestFreshNames() {
-			var productions = new List<BaseProduction> {
+			var productions = new List<Production> {
 				CFGParser.Production(@"<S> -> 'a'"),
 				CFGParser.Production(@"<X_0> -> 'b'"),
 			};

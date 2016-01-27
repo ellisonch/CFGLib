@@ -133,9 +133,9 @@ namespace ConsolePlayground {
 		
 		static void Readme() {
 			// S -> aSa | bSb | ε
-			var productions = new List<BaseProduction> {
+			var productions = new List<Production> {
 			// construct productions the usual way...
-			BaseProduction.New(
+			Production.New(
 				lhs: Nonterminal.Of("S"),
 				rhs: new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") },
 				weight: 20

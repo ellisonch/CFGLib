@@ -17,7 +17,7 @@ namespace CFGLibTest.Unit {
 				{ Nonterminal.Of("B"), 0.2 }
 			};
 
-			var actualList = (List<BaseProduction>)cfgToCnf.InvokeStatic("Nullate", new object[] { production, nullableDictionary });
+			var actualList = (List<Production>)cfgToCnf.InvokeStatic("Nullate", new object[] { production, nullableDictionary });
 			var actual = new HashSet<string>(actualList.Select((p) => p.ToString()));
 			var expected = new HashSet<string> {
 				CFGParser.Production("<S> -> <A> 'b' <B> [0.4]").ToString(),
@@ -31,7 +31,7 @@ namespace CFGLibTest.Unit {
 		[TestMethod]
 		public void TestCFGToCNFBadProb01() {
 			// S -> aSa | bSb | ε
-			var productions = new List<BaseProduction> {
+			var productions = new List<Production> {
 				CFGParser.Production(@"<S> -> 'a' <S> 'a' [1]"),
 				CFGParser.Production(@"<S> -> 'b' <S> 'b' [3]"),
 				CFGParser.Production(@"<S> -> ε [4]"),
@@ -48,7 +48,7 @@ namespace CFGLibTest.Unit {
 		[TestMethod]
 		public void TestCFGToCNFBadProb02() {
 			// S -> aSa | bSb | ε
-			var productions = new List<BaseProduction> {
+			var productions = new List<Production> {
 				CFGParser.Production(@"<S> -> 'a' <X> 'a' [1]"),
 				CFGParser.Production(@"<S> -> 'c' [1]"),
 				CFGParser.Production(@"<X> -> 'b' [1]"),
@@ -65,7 +65,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestUnitProductions01() {
-			var productions = new List<BaseProduction> {
+			var productions = new List<Production> {
 				CFGParser.Production(@"<S> -> <A> [3]"),
 				CFGParser.Production(@"<S> -> <B> [1]"),
 				CFGParser.Production(@"<A> -> 'a'"),
@@ -81,7 +81,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestToCNF01() {
-			var productions = new List<BaseProduction> {
+			var productions = new List<Production> {
 				CFGParser.Production(@"<X_0> -> 'x3' <X_0> [23]"),
 				CFGParser.Production(@"<X_0> -> ε [85]"),
 			};
@@ -95,7 +95,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestToCNF02() {
-			var productions = new List<BaseProduction> {
+			var productions = new List<Production> {
 				CFGParser.Production(@"<S> -> 'a' <B> <B>"),
 				CFGParser.Production(@"<B> -> 'b'"),
 				CFGParser.Production(@"<B> -> ε"),
@@ -117,7 +117,7 @@ namespace CFGLibTest.Unit {
 		public void TestGetNullable01() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 			
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<X> -> <B> <B>"),
 				CFGParser.Production("<B> -> 'b'"),
 				CFGParser.Production("<B> -> ε"),
@@ -133,7 +133,7 @@ namespace CFGLibTest.Unit {
 		[TestMethod]
 		public void TestGetNullable02() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A> <B>"),
 				CFGParser.Production("<A> -> ε"),
 				CFGParser.Production("<B> -> 'b'"),
@@ -151,7 +151,7 @@ namespace CFGLibTest.Unit {
 		public void TestGetNullable03() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <B> <C>"),
 				CFGParser.Production("<B> -> <C>"),
 				CFGParser.Production("<B> -> 'b'"),
@@ -173,7 +173,7 @@ namespace CFGLibTest.Unit {
 		public void TestGetNullable04() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A> <A>"),
 				CFGParser.Production("<A> -> ε"),
 				CFGParser.Production("<A> -> 'a'"),
@@ -187,7 +187,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestToCNF03() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <B> <C>"),
 				CFGParser.Production("<B> -> <C>"),
 				CFGParser.Production("<B> -> 'b'"),
@@ -211,7 +211,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestToCNF04() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A> <B>"),
 				CFGParser.Production("<A> -> ε"),
 				CFGParser.Production("<B> -> 'b'"),
@@ -229,7 +229,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestCNFNoNull01() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A> <B>"),
 				CFGParser.Production("<A> -> <B>"),
 				CFGParser.Production("<A> -> 'a'"),
@@ -250,7 +250,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestCNFNoNull02() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A>"),
 				CFGParser.Production("<A> -> 'a'"),
 				CFGParser.Production("<A> -> 'b'"),
@@ -265,7 +265,7 @@ namespace CFGLibTest.Unit {
 		}
 		[TestMethod]
 		public void TestCNFNoNull03() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<S> -> <A>"),
 				CFGParser.Production("<S> -> <B>"),
 				CFGParser.Production("<A> -> <B>"),
@@ -284,7 +284,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestAccepts01() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<S> -> 'x2' <A> <A>"),
 				CFGParser.Production("<S> -> ε"),
 				CFGParser.Production("<A> -> 'x4' <S> 'x2'"),
@@ -301,7 +301,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestAccepts02() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<X_0> -> <X_0> 'x4' <X_0> 'x0'"),
 				CFGParser.Production("<X_0> -> <X_0> <X_0> 'x2' <X_0> 'x3'"),
 				CFGParser.Production("<X_0> -> <X_0> 'x1' <X_0>"),
@@ -318,7 +318,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestAccepts03() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<S> -> <S> <S> <S>"),
 				CFGParser.Production("<S> -> ε"),
 				CFGParser.Production("<S> -> 'x2' 'x0'"),
@@ -344,7 +344,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestAccepts04() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<X_2> -> <X_3> <X_1>"),
 				CFGParser.Production("<X_3> -> <X_1> <X_1>"),
 				CFGParser.Production("<X_0> -> 'x2' 'x0' <X_3> <X_2> <X_2>"),
@@ -370,7 +370,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestAccepts05() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<X_2> -> <X_1> <X_0>"),
 				CFGParser.Production("<X_1> -> <X_2> <X_1> <X_3> 'x2'"),
 				CFGParser.Production("<X_3> -> <X_0> <X_0> <X_1> <X_3>"),
@@ -400,7 +400,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestAccepts06() {
-			var productions = new HashSet<BaseProduction> {
+			var productions = new HashSet<Production> {
 				CFGParser.Production("<X_3> -> ε"),
 				CFGParser.Production("<X_2> -> ε"),
 				CFGParser.Production("<X_0> -> <X_2> <X_1>"),
