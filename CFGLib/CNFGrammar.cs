@@ -219,8 +219,9 @@ namespace CFGLib {
 		/// <param name="RToJ"></param>
 		/// <returns></returns>
 		private IEnumerable<LocalProductionList> BuildLocalCYKProductionList(Dictionary<Nonterminal, int> RToJ) {
-			var retval = new List<LocalProductionList>();
-			foreach (var production in _nonterminalProductions) {
+			var retval = new LocalProductionList[_nonterminalProductions.Count];
+			for (var i = 0; i < _nonterminalProductions.Count; i++) {
+				var production = _nonterminalProductions[i];
 				var R_A = production.Lhs;
 				var R_B = production.SpecificRhs[0];
 				var R_C = production.SpecificRhs[1];
@@ -228,7 +229,7 @@ namespace CFGLib {
 				var B = RToJ[R_B];
 				var C = RToJ[R_C];
 				var probThis = GetProbability(production);
-				retval.Add(new LocalProductionList(A, B, C, probThis));
+				retval[i] = new LocalProductionList(A, B, C, probThis);
 			}
 			return retval;
 		}
