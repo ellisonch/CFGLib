@@ -190,7 +190,11 @@ namespace CFGLib {
 
 		private static bool StepUnitOnce(ISet<BaseProduction> productions, ISet<ValueUnitProduction> previouslyDeleted) {
 			var table = BuildLookupTable(productions);
-			var result = new HashSet<BaseProduction>(productions);
+			var results = new HashSet<BaseProduction>(productions);
+			// var result = new Dictionary<ValueUnitProduction, BaseProduction>();
+			//foreach (var production in productions) {
+			//	result[new ValueUnitProduction(production.Lhs, production.Rhs)] = production;
+			//}
 			var changed = false;
 
 			foreach (var production in productions) {
@@ -204,7 +208,7 @@ namespace CFGLib {
 				}
 				// at this point we have a unit production lhs -> rhs
 				changed = true;
-				result.Remove(production);
+				results.Remove(production);
 				previouslyDeleted.Add(new ValueUnitProduction(lhs, (Nonterminal)rhs));
 				var entries = table.LookupEnumerable((Nonterminal)rhs);
 				var sum = entries.Sum((p) => p.Weight);
@@ -230,14 +234,29 @@ namespace CFGLib {
 								continue;
 							}
 						}						
-					}				
+					}
 
-					result.Add(newProd);
+					// results.Add(newProd);
+					// TODO need a structure for this to make it fast
+					bool found = false;
+					foreach (var result in results) {
+						if (result.Lhs != newProd.Lhs) {
+							continue;
+						}
+						if (result.Rhs.SequenceEqual(newProd.Rhs)) {
+							found = true;
+							result.Weight += newProd.Weight;
+							break;
+						}
+					}
+					if (!found) {
+						results.Add(newProd);
+					}
 				}
 				break;
 			}
 			productions.Clear();
-			productions.UnionWith(result);
+			productions.UnionWith(results);
 			return changed;
 		}
 
