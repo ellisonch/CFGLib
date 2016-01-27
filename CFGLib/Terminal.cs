@@ -28,7 +28,7 @@ namespace CFGLib {
 		}
 
 		public override string ToString() {
-			return string.Format("Trm({0})", _name);
+			return string.Format("'{0}'", _name);
 		}
 		
 		public override bool IsNonterminal() {
