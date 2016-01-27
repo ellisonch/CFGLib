@@ -11,7 +11,7 @@ namespace CFGLibTest {
 		[Ignore]
 		public void RandomAcceptanceTest() {
 			int _maxDepth = 10;
-			var _numGrammars = 10000;
+			var _numGrammars = 50000;
 			var _maxTestSentences = 20000;
 			var _maxNonterminals = 10;
 			var _maxProductions = 15;

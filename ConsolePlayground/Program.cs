@@ -11,17 +11,23 @@ namespace ConsolePlayground {
 	class Program {
 		static void Main(string[] args) {
 			//var productions = new HashSet<BaseProduction> {
-			//	CFGParser.Production("<X_0> -> <X_0> 'x4' <X_0> 'x0'"),
-			//	CFGParser.Production("<X_0> -> <X_0> <X_0> 'x2' <X_0> 'x3'"),
-			//	CFGParser.Production("<X_0> -> <X_0> 'x1' <X_0>"),
-			//	CFGParser.Production("<X_0> -> <X_0> 'x1' 'x1' 'x1' 'x3'"),
-			//	CFGParser.Production("<X_0> -> ε"),
+			//	CFGParser.Production("<X_3> -> ε"),
+			//	CFGParser.Production("<X_2> -> ε"),
+			//	CFGParser.Production("<X_0> -> <X_2> <X_1>"),
+			//	CFGParser.Production("<X_1> -> <X_3> <X_3>"),
 			//};
-			//Grammar g = new Grammar(productions, Nonterminal.Of("X_0"));
-			//var swps = g.ProduceToDepth(6, 10000);
-			//foreach (var swp in swps) {
-			//	Console.WriteLine(swp);
-			//}
+			//var g = new Grammar(productions, Nonterminal.Of("X_0"));
+			//Console.WriteLine(g);
+			////var swps = g.ProduceToDepth(6, 100000);
+			////foreach (var swp in swps) {
+			////	Console.WriteLine(swp);
+			////}
+			//var h = g.ToCNF();
+			//Console.WriteLine(h);
+			//Console.WriteLine(h.Accepts(Sentence.FromWords("")));
+
+			//var q = new CNFGrammar(new HashSet<BaseProduction> { }, new HashSet<BaseProduction> { }, 1, Nonterminal.Of("S"), true);
+			//Console.WriteLine(q.Accepts(Sentence.FromWords("")));
 
 			var rt = new CFGLibTest.RandomTests();
 			var sw = Stopwatch.StartNew();
