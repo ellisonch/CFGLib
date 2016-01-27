@@ -9,7 +9,11 @@ namespace CFGLib {
 	/// This class can be used to generate random grammars
 	/// </summary>
 	public class GrammarGenerator {
-		private Random _rand = new Random(0);
+		private Random _rand;
+
+		public GrammarGenerator(int seed = 0) {
+			_rand = new Random(seed);
+		}
 
 		/// <summary>
 		/// Generates a new, random generic grammar

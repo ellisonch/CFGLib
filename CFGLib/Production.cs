@@ -12,6 +12,10 @@ namespace CFGLib {
 		private Nonterminal _lhs;
 		private double _weight = 1.0;
 
+		/// <summary>
+		/// Returns a new production.
+		/// We use a New() method because this class is abstract.
+		/// </summary>
 		public static Production New(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
 			return new DefaultProduction(lhs, rhs, weight);
 		}

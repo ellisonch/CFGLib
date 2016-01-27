@@ -262,7 +262,7 @@ namespace CFGLib {
 		/// Produces a random sentence and returns whether or not it was null
 		/// </summary>
 		/// <returns></returns>
-		public bool ProduceNull(Nonterminal nt) {
+		private bool ProduceNull(Nonterminal nt) {
 			var sentence = new Sentence { nt };
 			while (sentence.Count > 0) {
 				for (int i = sentence.Count - 1; i >= 0; i--) {

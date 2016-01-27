@@ -134,7 +134,7 @@ namespace ConsolePlayground {
 		static void Readme() {
 			// S -> aSa | bSb | ε
 			var productions = new List<Production> {
-			// construct productions the usual way...
+			// construct productions by passing arguments...
 			Production.New(
 				lhs: Nonterminal.Of("S"),
 				rhs: new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") },
@@ -154,6 +154,21 @@ namespace ConsolePlayground {
 			for (int i = 0; i < 5; i++) {
 				Console.WriteLine(cfg.ProduceRandom().AsTerminals());
 			}
+
+			var sentences = cfg.ProduceToDepth(3);
+			foreach (var sentence in sentences) {
+				Console.WriteLine(sentence.Value.AsTerminals());
+			}
+
+			var gg = new GrammarGenerator(1);
+			var terminals = new List<Terminal> { Terminal.Of("a"), Terminal.Of("b") };
+			var randGram = gg.NextCFG(
+				numNonterminals: 4,
+				numProductions: 10,
+				maxProductionLength: 4,
+				terminals: terminals
+			);
+			Console.WriteLine(randGram);
 		}
 	}
 }
