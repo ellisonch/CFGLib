@@ -7,7 +7,7 @@ CFGLib is licensed using the [MIT license](LICENSE.txt).
 
 ## Examples
 CFGLib can perform a number of basic operations on context free grammars.
-If there are some operations you need, feel free to suggest them on the Issues page!
+If there are some operations you need, feel free to suggest them on the [Issues](https://github.com/ellisonch/CFGLib/issues) page!
 
 ### Representation and Acceptance
 CFGLib can be used to represent grammars and then use those grammars to parse terms:
