@@ -315,5 +315,31 @@ namespace CFGLibTest.Unit {
 			Assert.IsTrue(h.Accepts(Sentence.FromWords("x4 x0")));
 			Assert.IsTrue(h.Accepts(Sentence.FromWords("x4 x0 x4 x2 x3 x0")));
 		}
+
+		[TestMethod]
+		public void TestAccepts03() {
+			var productions = new HashSet<BaseProduction> {
+				CFGParser.Production("<S> -> <S> <S> <S>"),
+				CFGParser.Production("<S> -> ε"),
+				CFGParser.Production("<S> -> 'x2' 'x0'"),
+				CFGParser.Production("<S> -> 'x0' <S>"),
+				CFGParser.Production("<S> -> 'x4'"),
+				CFGParser.Production("<S> -> <S> 'x0' 'x4'"),
+				CFGParser.Production("<S> -> 'x3' <S> 'x3' <S> 'x0'"),
+				CFGParser.Production("<S> -> 'x2' <S> <S> <S> <S>"),
+				CFGParser.Production("<S> -> <S> <S> <S> <S> <S>"),
+				CFGParser.Production("<S> -> 'x0' <S> <S>"),
+				CFGParser.Production("<S> -> <S>"),
+				CFGParser.Production("<S> -> 'x0' <S> <S> 'x1'"),
+				CFGParser.Production("<S> -> 'x3' 'x2' 'x1'"),
+				CFGParser.Production("<S> -> 'x0' 'x0' 'x2'"),
+			};
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			CNFGrammar h = g.ToCNF();
+
+			Assert.IsTrue(h.Accepts(Sentence.FromLetters("")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x4")));
+			Assert.IsTrue(h.Accepts(Sentence.FromWords("x4 x0 x4")));
+		}
 	}
 }

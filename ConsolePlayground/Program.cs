@@ -10,6 +10,19 @@ namespace ConsolePlayground {
 	// A console app for playing around
 	class Program {
 		static void Main(string[] args) {
+			//var productions = new HashSet<BaseProduction> {
+			//	CFGParser.Production("<X_0> -> <X_0> 'x4' <X_0> 'x0'"),
+			//	CFGParser.Production("<X_0> -> <X_0> <X_0> 'x2' <X_0> 'x3'"),
+			//	CFGParser.Production("<X_0> -> <X_0> 'x1' <X_0>"),
+			//	CFGParser.Production("<X_0> -> <X_0> 'x1' 'x1' 'x1' 'x3'"),
+			//	CFGParser.Production("<X_0> -> ε"),
+			//};
+			//Grammar g = new Grammar(productions, Nonterminal.Of("X_0"));
+			//var swps = g.ProduceToDepth(6, 10000);
+			//foreach (var swp in swps) {
+			//	Console.WriteLine(swp);
+			//}
+
 			var rt = new CFGLibTest.RandomTests();
 			var sw = Stopwatch.StartNew();
 			rt.RandomAcceptanceTest();

@@ -11,10 +11,10 @@ namespace CFGLibTest {
 		[Ignore]
 		public void RandomAcceptanceTest() {
 			int _maxDepth = 10;
-			var _numGrammars = 500;
-			var _maxTestSentences = 100000;
-			var _maxNonterminals = 5;
-			var _maxProductions = 10;
+			var _numGrammars = 10000;
+			var _maxTestSentences = 20000;
+			var _maxNonterminals = 10;
+			var _maxProductions = 15;
 			var _maxProductionLength = 5;
 			var _numTerminals = 5;
 
@@ -25,18 +25,19 @@ namespace CFGLibTest {
 			var rand = new Random(0);
 
 			for (int i = 0; i < _numGrammars; i++) {
+				Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
+
 				var numProductions = rand.Next(_maxProductions) + 1;
 				var numNonterminals = rand.Next(_maxNonterminals) + 1;
 				var g = randg.NextCFG(numNonterminals, numProductions, _maxProductionLength, terminals);
-				var h = g.ToCNF();
 				Console.WriteLine(g);
+				var h = g.ToCNF();				
 				Console.WriteLine(h);
 
 				var swps = g.ProduceToDepth(_maxDepth, _maxTestSentences);
 				foreach (var swp in swps) {
 					Assert.IsTrue(h.Accepts(swp.Value));
 				}
-				Console.WriteLine("-------------------------------");
 			}
 		}
 

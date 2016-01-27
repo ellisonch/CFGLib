@@ -218,6 +218,7 @@ namespace CFGLib {
 		/// </summary>
 		/// <param name="RToJ"></param>
 		/// <returns></returns>
+		// TODO: can maybe improve this by using an array of arrays; keep a separate array for each LHS
 		private IEnumerable<LocalProductionList> BuildLocalCYKProductionList(Dictionary<Nonterminal, int> RToJ) {
 			var retval = new LocalProductionList[_nonterminalProductions.Count];
 			for (var i = 0; i < _nonterminalProductions.Count; i++) {

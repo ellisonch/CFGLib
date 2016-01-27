@@ -162,12 +162,26 @@ namespace CFGLib {
 		/// <param name="productions"></param>
 		private static void StepUnit(ISet<BaseProduction> productions) {
 			var previouslyDeleted = new HashSet<ValueUnitProduction>();
+			// TODO: maybe we shouldn't allow self loops?
+			RemoveSelfLoops(productions);
 			bool changed = true;
 			while (changed) {
 				changed = StepUnitOnce(productions, previouslyDeleted);
 			}
 		}
-		
+
+		private static void RemoveSelfLoops(ISet<BaseProduction> productions) {
+			var toDelete = new List<BaseProduction>();
+			foreach (var production in productions) {
+				if (production.IsSelfLoop) {
+					toDelete.Add(production);
+				}
+			}
+			foreach (var item in toDelete) {
+				productions.Remove(item);
+			}			
+		}
+
 		private static bool StepUnitOnce(ISet<BaseProduction> productions, ISet<ValueUnitProduction> previouslyDeleted) {
 			var table = BuildLookupTable(productions);
 			var result = new HashSet<BaseProduction>(productions);
