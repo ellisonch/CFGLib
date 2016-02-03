@@ -1,4 +1,6 @@
 ﻿using CFGLib;
+using CFGLibTest;
+using CFGLibTest.Unit;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,13 +16,38 @@ namespace ConsolePlayground {
 	/// </summary>
 	class Program {
 		static void Main(string[] args) {
-			//var productions = new HashSet<BaseProduction> {
-			//	CFGParser.Production("<X_3> -> ε"),
-			//	CFGParser.Production("<X_2> -> ε"),
-			//	CFGParser.Production("<X_0> -> <X_2> <X_1>"),
-			//	CFGParser.Production("<X_1> -> <X_3> <X_3>"),
+			//var rand = new Random(0);
+			//Experimental.TestSolver(rand);
+			// RandomTests.RandomJacobianTest();
+
+			var t = new TestCFGToCNF();
+			// t.TestToCNF01();
+			// t.TestAccepts09();
+			t.TestAccepts01();
+
+			// Experimental.Test();
+
+			//var productions = new HashSet<Production> {
+			//	CFGParser.Production("<A> -> <A> <B>"),
+			//	CFGParser.Production("<A> -> <B>"),
+			//	CFGParser.Production("<A> -> 'a'"),
+			//	CFGParser.Production("<A> -> ε"),
+			//	CFGParser.Production("<B> -> <A>"),
+			//	CFGParser.Production("<B> -> 'b'"),
+			//	CFGParser.Production("<B> -> ε"),
 			//};
-			//var g = new Grammar(productions, Nonterminal.Of("X_0"));
+			//var g = new Grammar(productions, Nonterminal.Of("A"));
+			//var probs = g.EstimateProbabilities(5000000);
+
+			//foreach (var entry in probs) {
+			//	var key = entry.Key;
+			//	var value = entry.Value;
+			//	if (key.Length <= 2) {
+			//		Console.WriteLine("{0}: {1}", key, value);
+			//	}
+			//}
+			// Console.WriteLine(g.EstimateProbabilityNull(Nonterminal.Of("A"), 100000));
+			//Console.WriteLine(g.EstimateProbabilityNull(Nonterminal.Of("B"), 10000));
 			//Console.WriteLine(g);
 			////var swps = g.ProduceToDepth(6, 100000);
 			////foreach (var swp in swps) {
@@ -35,7 +62,8 @@ namespace ConsolePlayground {
 
 			//var rt = new CFGLibTest.RandomTests();
 			//var sw = Stopwatch.StartNew();
-			//rt.RandomAcceptanceTest();
+			//// rt.RandomAcceptanceTest();
+			//rt.RandomCFGToCNFTest();
 			//sw.Stop();
 			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
@@ -64,7 +92,7 @@ namespace ConsolePlayground {
 			// CFGParser.Production("<X> -> <Y>");
 
 			// Benchmark();
-			Readme();
+			// Readme();
 			//8.7s
 
 			//var p = CFGParser.Production("<S> -> 'a' [5]");

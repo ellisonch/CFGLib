@@ -106,6 +106,7 @@ namespace CFGLib {
 				intermediate[i + 1] = next;
 				foreach (var swp in prev) {
 					if (!swp.Value.OnlyTerminals()) {
+						// TODO: goone can hit limit, return 0, and then this whole thing keeps going, really slowly
 						var steps = GoOneStep(swp, limit);
 						next.AddRange(steps);
 						count += steps.Count;
@@ -277,7 +278,7 @@ namespace CFGLib {
 			}
 			return true;
 		}
-
+		
 		/// <summary>
 		/// Tries to estimate the probability of a nonterminal yielding null by generating a bunch randomly and counting.
 		/// </summary>
@@ -294,8 +295,7 @@ namespace CFGLib {
 		/// <summary>
 		/// Tries to estimate the probability of the sentences this grammar can generate by generating a bunch randomly and counting.
 		/// </summary>
-		/// <param name="iterations"></param>
-		public void EstimateProbabilities(long iterations) {
+		public List<KeyValuePair<string, double>> EstimateProbabilities(long iterations) {
 			var dict = new Dictionary<string, long>();
 			for (int i = 0; i < iterations; i++) {
 				var key = this.ProduceRandom().AsTerminals("");
@@ -304,16 +304,16 @@ namespace CFGLib {
 				}
 				dict[key]++;
 			}
-			List<KeyValuePair<string, long>> listPairs = dict.ToList();
+			var listPairs = new List<KeyValuePair<string, double>>();
+			foreach (var entry in dict) {
+				listPairs.Add(new KeyValuePair<string, double>(entry.Key, (double)entry.Value / iterations));
+			}
+			dict.ToList();
 			listPairs.Sort((firstPair, nextPair) => {
 				return nextPair.Value.CompareTo(firstPair.Value);
 			}
 			);
-			foreach (var entry in listPairs) {
-				var key = entry.Key;
-				var value = entry.Value;
-				Console.WriteLine("{0}: {1}", key, (double)value / iterations);
-			}
+			return listPairs;
 		}
 
 		/// <summary>

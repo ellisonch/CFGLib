@@ -45,7 +45,7 @@ namespace CFGLibTest {
 		[Ignore]
 		public void RandomCFGToCNFTest() {
 			int _maxDepth = 6;
-			var _numGrammars = 200;
+			var _numGrammars = 50000;
 			var _maxTestSentences = 100000;
 			var _numNonterminals = 5;
 			var _numProductions = 6;
@@ -63,7 +63,8 @@ namespace CFGLibTest {
 			//}
 
 			for (int i = 0; i < _numGrammars; i++) {
-				var g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals);
+				Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
+				var g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals, false);
 				var h = g.ToCNF();
 				Console.WriteLine(g);
 				Console.WriteLine(h);
@@ -75,13 +76,13 @@ namespace CFGLibTest {
 					var p2 = h.Cyk(swp.Value);
 					Assert.IsTrue(p1 <= p2 || Helpers.IsNear(p1, p2));
 				}
-				Console.WriteLine("-------------------------------");
+				// Console.WriteLine("-------------------------------");
 				//foreach (var sentence in preparedSentences) {
 				//	var pg = g.C
 				//}
 			}
 		}
-
+		
 		[TestMethod]
 		[Ignore]
 		// non-simplified grammars can't really have probabilities

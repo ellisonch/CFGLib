@@ -18,12 +18,8 @@ namespace CFGLib {
 		/// <summary>
 		/// Generates a new, random generic grammar
 		/// </summary>
-		/// <param name="numNonterminals"></param>
-		/// <param name="numProductions"></param>
-		/// <param name="maxProductionLength"></param>
-		/// <param name="terminals"></param>
 		/// <returns></returns>
-		public Grammar NextCFG(int numNonterminals, int numProductions, int maxProductionLength, IList<Terminal> terminals) {
+		public Grammar NextCFG(int numNonterminals, int numProductions, int maxProductionLength, IList<Terminal> terminals, bool useNull = true) {
 			if (numNonterminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
 			}
@@ -32,16 +28,16 @@ namespace CFGLib {
 			var productions = new List<Production>();
 
 			for (int i = 0; i < numProductions; i++) {
-				productions.Add(RandomProduction(maxProductionLength, numNonterminals, terminals));
+				productions.Add(RandomProduction(maxProductionLength, numNonterminals, terminals, useNull));
 			}
 
 			return new Grammar(productions, start);
 		}
 
-		private Production RandomProduction(int maxProductionLength, int numNonterminals, IList<Terminal> terminals) {
+		private Production RandomProduction(int maxProductionLength, int numNonterminals, IList<Terminal> terminals, bool useNull = true) {
 			var lhs = RandomNonterminal(numNonterminals);
 			var weight = 100 * _rand.NextDouble() + 1.0;
-			var productionLength = _rand.Next(maxProductionLength + 1);
+			var productionLength = useNull ? _rand.Next(maxProductionLength + 1) + 0: _rand.Next(maxProductionLength + 0) + 1;
 			Sentence rhs = new Sentence();
 			for (int i = 0; i < productionLength; i++) {
 				if (_rand.Next(2) == 0) {

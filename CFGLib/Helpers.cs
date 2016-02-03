@@ -17,7 +17,6 @@ namespace CFGLib {
 			return Enumerable.Empty<T>();
 		}
 
-
 		internal static Dictionary<TKey, TValue> BuildLookup<TKey, TValue, T2, TElm>(
 			Func<IEnumerable<TElm>> getInputListOfElements,
 			Func<TElm, TKey> getKeyFromElement,

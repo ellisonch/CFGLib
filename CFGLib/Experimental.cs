@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib {
-	internal class Experimental {
+	public class Experimental {		
 		public void JunkLanguages() {
 			// S → ASA | aB
 			// A → B | S
