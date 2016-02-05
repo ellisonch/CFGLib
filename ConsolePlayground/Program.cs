@@ -24,21 +24,22 @@ namespace ConsolePlayground {
 			var tp = new TestCFGToCNFEmptyProb();
 			// t.TestToCNF01();
 			// t.TestAccepts09();
-			t.TestAccepts02();
+			// t.TestAccepts02();
 			// tp.TestGetNullable01();
-
+			tp.TestCFGToCNFBadProb01();
 			// Experimental.Test();
 
 			//var productions = new HashSet<Production> {
-			//	CFGParser.Production("<A> -> <A> <B>"),
-			//	CFGParser.Production("<A> -> <B>"),
-			//	CFGParser.Production("<A> -> 'a'"),
+			//	CFGParser.Production("<S> -> <A>"),
+			//	CFGParser.Production("<S> -> <B>"),
 			//	CFGParser.Production("<A> -> ε"),
-			//	CFGParser.Production("<B> -> <A>"),
-			//	CFGParser.Production("<B> -> 'b'"),
+			//	CFGParser.Production("<A> -> 'a'"),
+			//	CFGParser.Production("<A> -> <B>"),
 			//	CFGParser.Production("<B> -> ε"),
+			//	CFGParser.Production("<B> -> 'b'"),
+			//	CFGParser.Production("<B> -> <A>"),
 			//};
-			//var g = new Grammar(productions, Nonterminal.Of("A"));
+			//var g = new Grammar(productions, Nonterminal.Of("S"));
 			//var probs = g.EstimateProbabilities(5000000);
 
 			//foreach (var entry in probs) {

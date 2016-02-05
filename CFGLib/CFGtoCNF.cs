@@ -337,16 +337,20 @@ namespace CFGLib {
 			var productionByNt = BuildLookupTable(originalProductions);
 
 			foreach (var nt in productionByNt.Keys) {
-				results[nt] = GetProbabilityNonterminalIsNull(nt, productionByNt, 0);
+				results[nt] = GetProbabilityNonterminalIsNull(nt, productionByNt, 0, 1.0);
 			}
 
 			return results;
 		}
 
-		private static double GetProbabilityNonterminalIsNull(Nonterminal nonterminal, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal, int depth) {
+		private static double GetProbabilityNonterminalIsNull(Nonterminal nonterminal, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal, int depth, double incomingWeight) {
 			var probability = 0.0;
 			
-			if (depth >= 6) {
+			if (incomingWeight < 1e-100) {
+				return 0.0;
+			}
+
+			if (depth >= 5) {
 				return 0.0;
 			}
 
@@ -355,17 +359,16 @@ namespace CFGLib {
 				return 0.0;
 			}
 
-			double weightSum = 0.0;
+			double weightSum = productions.Sum((p) => p.Weight);
 			foreach (var production in productions) {
-				weightSum += production.Weight;
-				probability += production.Weight * GetProductionProb(production, productionsByNonterminal, depth);
+				var weight = production.Weight / weightSum;
+				probability += weight * GetProductionProb(production, productionsByNonterminal, depth, incomingWeight * weight);
 			}
-			probability /= weightSum;
 			
 			return probability;
 		}
 
-		private static double GetProductionProb(Production production, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal, int depth) {
+		private static double GetProductionProb(Production production, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal, int depth, double incomingWeight) {
 			if (production.Rhs.Count == 0) {
 				return 1.0;
 			}
@@ -377,7 +380,7 @@ namespace CFGLib {
 			var product = 1.0;
 			foreach (var word in production.Rhs) {
 				var nt = (Nonterminal)word;
-				var prob = GetProbabilityNonterminalIsNull(nt, productionsByNonterminal, depth + 1);
+				var prob = GetProbabilityNonterminalIsNull(nt, productionsByNonterminal, depth + 1, incomingWeight);
 				product *= prob;
 			}
 
