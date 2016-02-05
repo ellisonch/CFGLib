@@ -78,7 +78,7 @@ namespace CFGLibTest.Unit {
 			Assert.IsTrue(pa > 0.0);
 			Assert.IsTrue(pab > 0.0);
 			Assert.IsTrue(pabb > 0.0);
-			Helpers.IsNear(1.0, pa + pab + pabb);
+			Helpers.AssertNear(1.0, pa + pab + pabb);
 		}
 
 		[TestMethod]
@@ -91,11 +91,11 @@ namespace CFGLibTest.Unit {
 				CFGParser.Production("<B> -> ε"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable3", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 2);
-			Helpers.IsNear(0.5, result[Nonterminal.Of("B")]);
-			Helpers.IsNear(0.25, result[Nonterminal.Of("X")]);
+			Helpers.AssertNear(0.5, result[Nonterminal.Of("B")]);
+			Helpers.AssertNear(0.25, result[Nonterminal.Of("X")]);
 		}
 
 		[TestMethod]
@@ -111,8 +111,8 @@ namespace CFGLibTest.Unit {
 			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 2);
-			Helpers.IsNear(2.0 / 3.0, result[Nonterminal.Of("A")]);
-			Helpers.IsNear(0.5, result[Nonterminal.Of("A")]);
+			Helpers.AssertNear(2.0 / 3.0, result[Nonterminal.Of("A")]);
+			Helpers.AssertNear(0.5, result[Nonterminal.Of("A")]);
 		}
 
 		[TestMethod]
@@ -132,9 +132,9 @@ namespace CFGLibTest.Unit {
 			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 3);
-			Helpers.IsNear(0.25, result[Nonterminal.Of("A")]);
-			Helpers.IsNear(0.5, result[Nonterminal.Of("B")]);
-			Helpers.IsNear(0.5, result[Nonterminal.Of("C")]);
+			Helpers.AssertNear(0.25, result[Nonterminal.Of("A")]);
+			Helpers.AssertNear(0.5, result[Nonterminal.Of("B")]);
+			Helpers.AssertNear(0.5, result[Nonterminal.Of("C")]);
 		}
 
 		[TestMethod]
@@ -150,7 +150,7 @@ namespace CFGLibTest.Unit {
 			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 1);
-			Helpers.IsNear(0.381966, result[Nonterminal.Of("A")]);
+			Helpers.AssertNear(0.381966, result[Nonterminal.Of("A")]);
 		}
 
 		[TestMethod]
