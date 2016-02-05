@@ -21,9 +21,11 @@ namespace ConsolePlayground {
 			// RandomTests.RandomJacobianTest();
 
 			var t = new TestCFGToCNF();
+			var tp = new TestCFGToCNFEmptyProb();
 			// t.TestToCNF01();
 			// t.TestAccepts09();
-			t.TestAccepts01();
+			t.TestAccepts02();
+			// tp.TestGetNullable01();
 
 			// Experimental.Test();
 

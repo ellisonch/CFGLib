@@ -330,13 +330,66 @@ namespace CFGLib {
 			}
 			return hs;
 		}
-		
+
+		private static Dictionary<Nonterminal, double> GetNullable(ISet<Production> originalProductions) {
+			var results = new Dictionary<Nonterminal, double>();
+			
+			var productionByNt = BuildLookupTable(originalProductions);
+
+			foreach (var nt in productionByNt.Keys) {
+				results[nt] = GetProbabilityNonterminalIsNull(nt, productionByNt, 0);
+			}
+
+			return results;
+		}
+
+		private static double GetProbabilityNonterminalIsNull(Nonterminal nonterminal, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal, int depth) {
+			var probability = 0.0;
+			
+			if (depth >= 6) {
+				return 0.0;
+			}
+
+			ICollection<Production> productions;
+			if (!productionsByNonterminal.TryGetValue(nonterminal, out productions)) {
+				return 0.0;
+			}
+
+			double weightSum = 0.0;
+			foreach (var production in productions) {
+				weightSum += production.Weight;
+				probability += production.Weight * GetProductionProb(production, productionsByNonterminal, depth);
+			}
+			probability /= weightSum;
+			
+			return probability;
+		}
+
+		private static double GetProductionProb(Production production, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal, int depth) {
+			if (production.Rhs.Count == 0) {
+				return 1.0;
+			}
+			// if it contains a terminal, then it always is non-empty
+			if (!production.Rhs.OnlyNonterminals()) {
+				return 0.0;
+			}
+
+			var product = 1.0;
+			foreach (var word in production.Rhs) {
+				var nt = (Nonterminal)word;
+				var prob = GetProbabilityNonterminalIsNull(nt, productionsByNonterminal, depth + 1);
+				product *= prob;
+			}
+
+			return product;
+		}
+
 		/// <summary>
 		/// Returns the set of all nonterminals that derive ε (in one or many steps)
 		/// </summary>
 		/// <param name="originalProductions"></param>
 		/// <returns></returns>
-		private static Dictionary<Nonterminal, double> GetNullable(ISet<Production> originalProductions) {
+		private static Dictionary<Nonterminal, double> GetNullable4(ISet<Production> originalProductions) {
 			var productions = CloneProductions(originalProductions);
 			ISet<Production> newProductions = new HashSet<Production>();
 			var nullableNonterminals = new Dictionary<Nonterminal, double>();
@@ -433,8 +486,8 @@ namespace CFGLib {
 					without.Rhs.RemoveAt(i);
 					newResults.Add(without);
 					without.Weight *= nullableProbabilities[nt];
-					// production.Weight *= 1.0 - nullableProbabilities[nt];
-					production.Weight *= 1.0; // TODO: all wrong
+					production.Weight *= 1.0 - nullableProbabilities[nt];
+					//production.Weight *= 1.0; // TODO: all wrong
 				}
 				results.AddRange(newResults);
 			}

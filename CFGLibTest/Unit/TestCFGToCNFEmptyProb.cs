@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace CFGLibTest.Unit {
 	[TestClass]
-	[Ignore]
 	public class TestCFGToCNFEmptyProb {
 		[TestMethod]
 		public void TestNullate01() {
@@ -91,7 +90,7 @@ namespace CFGLibTest.Unit {
 				CFGParser.Production("<B> -> ε"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable3", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 2);
 			Helpers.AssertNear(0.5, result[Nonterminal.Of("B")]);
