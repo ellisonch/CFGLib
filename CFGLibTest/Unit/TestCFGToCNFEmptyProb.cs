@@ -111,7 +111,7 @@ namespace CFGLibTest.Unit {
 
 			Assert.IsTrue(result.Count == 2);
 			Helpers.AssertNear(2.0 / 3.0, result[Nonterminal.Of("A")]);
-			Helpers.AssertNear(0.5, result[Nonterminal.Of("A")]);
+			Helpers.AssertNear(0.5, result[Nonterminal.Of("B")]);
 		}
 
 		[TestMethod]
@@ -150,6 +150,29 @@ namespace CFGLibTest.Unit {
 
 			Assert.IsTrue(result.Count == 1);
 			Helpers.AssertNear(0.381966, result[Nonterminal.Of("A")]);
+		}
+
+		[TestMethod]
+		public void TestGetNullable05() {
+			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
+
+			var productions = new HashSet<Production> {
+				CFGParser.Production("<S> -> <A>"),
+				CFGParser.Production("<S> -> <B>"),
+				CFGParser.Production("<A> -> ε"),
+				CFGParser.Production("<A> -> 'a'"),
+				CFGParser.Production("<A> -> <B>"),
+				CFGParser.Production("<B> -> ε"),
+				CFGParser.Production("<B> -> 'b'"),
+				CFGParser.Production("<B> -> <A>"),
+			};
+
+			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+
+			Assert.IsTrue(result.Count == 3);
+			Helpers.AssertNear(0.5, result[Nonterminal.Of("S")]);
+			Helpers.AssertNear(0.5, result[Nonterminal.Of("A")]);
+			Helpers.AssertNear(0.5, result[Nonterminal.Of("B")]);
 		}
 
 		[TestMethod]
