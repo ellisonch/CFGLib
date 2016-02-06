@@ -13,7 +13,7 @@ namespace CFGLib {
 		private static Regex _productionRegex = null;
 
 		private static void InitRegex() {
-			var arrow = @"->";
+			var arrow = @"(?:(?:->)|→)";
 			var variablePattern = @"[a-zA-Z_][a-zA-Z0-9_]*";
 			var terminalPattern = @"[^']+";
 			var lhsPattern = string.Format(@"<(?<lhs>{0})>", variablePattern);
