@@ -87,16 +87,16 @@ namespace ConsolePlayground {
 
 			// g.EstimateProbabilities(1000000);
 
-			var t = new CFGLibTest.RandomTests();
-			var sw = Stopwatch.StartNew();
-			t.RandomCFGToCNFTest();
-			sw.Stop();
-			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+			//var t = new CFGLibTest.RandomTests();
+			//var sw = Stopwatch.StartNew();
+			//t.RandomCFGToCNFTest();
+			//sw.Stop();
+			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 			// CFGParser.Production("<X> -> <Y>");
 
 			// Benchmark();
-			// Readme();
+			Readme();
 			//8.7s
 
 			//var p = CFGParser.Production("<S> -> 'a' [5]");
@@ -166,22 +166,34 @@ namespace ConsolePlayground {
 		static void Readme() {
 			// S -> aSa | bSb | ε
 			var productions = new List<Production> {
-			// construct productions by passing arguments...
-			Production.New(
-				lhs: Nonterminal.Of("S"),
-				rhs: new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") },
-				weight: 20
-			),
-			// or from a string...
-			CFGParser.Production(@"<S> -> 'b' <S> 'b' [10]"),
-			CFGParser.Production(@"<S> -> ε [5]"),
-};
+				// construct productions by passing arguments...
+				Production.New(
+					lhs: Nonterminal.Of("S"),
+					rhs: new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") },
+					weight: 20
+				),
+				// or from a string...
+				CFGParser.Production(@"<S> -> 'b' <S> 'b' [10]"),
+				CFGParser.Production(@"<S> -> ε [5]"),
+			};
 			var cfg = new Grammar(productions, Nonterminal.Of("S"));
 			var cnf = cfg.ToCNF();
+
+			//var probs = cfg.EstimateProbabilities(1000000);
+			//foreach (var entry in probs) {
+			//	var key = entry.Key;
+			//	var value = entry.Value;
+			//	if (key.Length <= 4) {
+			//	Console.WriteLine("{0}: {1}", key, value);
+			//	}
+			//}
+
+			// Print out the new CNF grammar
+			Console.WriteLine(cnf);
 			// Does this grammar accept the string "aabb"?
-			Console.WriteLine(cnf.Accepts(Sentence.FromLetters("aabb")));
+			Console.WriteLine("aabb: {0}", cnf.Cyk(Sentence.FromLetters("aabb")));
 			// How about "abba"?
-			Console.WriteLine(cnf.Accepts(Sentence.FromLetters("abba")));
+			Console.WriteLine("abba: {0}", cnf.Cyk(Sentence.FromLetters("abba")));
 
 			for (int i = 0; i < 5; i++) {
 				Console.WriteLine(cfg.ProduceRandom().AsTerminals());

@@ -1,6 +1,6 @@
 # CFGLib 
 A C# library for (Probabilistic) Context Free Grammars (PCFGs).
-Supports conversion to Chomsky Normal Form (CNF) as well as the CYK algorithm for recognition.
+Supports probability-preserving conversion to Chomsky Normal Form (CNF) as well as the CYK algorithm for recognition.
 
 ## License
 CFGLib is licensed using the [MIT license](LICENSE.txt).
@@ -26,14 +26,31 @@ var productions = new List<Production> {
 };
 var cfg = new Grammar(productions, Nonterminal.Of("S"));
 var cnf = cfg.ToCNF();
+
+// Print out the new CNF grammar
+Console.WriteLine(cnf);
 // Does this grammar accept the string "aabb"?
-Console.WriteLine(cnf.Accepts(Sentence.FromLetters("aabb")));
+Console.WriteLine("aabb: {0}", cnf.Cyk(Sentence.FromLetters("aabb")));
 // How about "abba"?
-Console.WriteLine(cnf.Accepts(Sentence.FromLetters("abba")));
+Console.WriteLine("abba: {0}", cnf.Cyk(Sentence.FromLetters("abba")));
 ```
 ```
-False
-True
+Grammar(<X_0>){
+  6.67e-001: <S> → <X_1> <X_3> [20]
+  8.57e-001: <X_3> → <S> <X_1> [0.857142857142857]
+  3.33e-001: <S> → <X_2> <X_4> [10]
+  8.57e-001: <X_4> → <S> <X_2> [0.857142857142857]
+  5.71e-001: <X_0> → <X_1> <X_3> [0.571428571428571]
+  2.86e-001: <X_0> → <X_2> <X_4> [0.285714285714286]
+  1.43e-001: <X_3> → 'a' [0.142857142857143]
+  1.43e-001: <X_4> → 'b' [0.142857142857143]
+  1.00e+000: <X_1> → 'a' [1]
+  1.00e+000: <X_2> → 'b' [1]
+  1.43e-001: <X_0> → ε [0.142857142857143]
+}
+
+aabb: 0
+abba: 0.0233236151603499
 ```
 
 ### Explore the Grammar
@@ -98,9 +115,6 @@ Grammar(<X_0>){
 ## Caveats
 CFGLib cannot currently generate parse trees or forests.
 This is planned.
-
-Although there is code for determining the probability that a string was generated from a given CNF grammar (e.g., `cnf.CYK(Sentence.FromLetters("abba")`), converting from a generic CFG to CNF currently does not preserve weights properly.
-This is still being worked on.
 
 
 ## Other Useful Classes and Methods
