@@ -44,13 +44,15 @@ namespace CFGLibTest {
 		[TestMethod]
 		[Ignore]
 		public void RandomCFGToCNFTest() {
-			int _maxDepth = 6;
-			var _numGrammars = 50000;
-			var _maxTestSentences = 100000;
-			var _numNonterminals = 5;
-			var _numProductions = 6;
-			var _maxProductionLength = 4;
+			int _maxDepth = 7;
+			var _numGrammars = 200000;
+			var _maxGenerateThing = 100000;
+			var _maxTestSentences = 1000;
+			var _numNonterminals = 7;
+			var _numProductions = 10;
+			var _maxProductionLength = 5;
 			var _numTerminals = 5;
+			var _useNulls = true;
 
 			var randg = new GrammarGenerator();
 			var range = Enumerable.Range(0, _numTerminals);
@@ -64,17 +66,22 @@ namespace CFGLibTest {
 
 			for (int i = 0; i < _numGrammars; i++) {
 				Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
-				var g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals, false);
+				var g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals, _useNulls);
 				var h = g.ToCNF();
 				Console.WriteLine(g.ToCodeString());
 				Console.WriteLine(h.ToCodeString());
 
-				var swps = g.ProduceToDepth(_maxDepth, _maxTestSentences);
+				var swps = g.ProduceToDepth(_maxDepth, _maxGenerateThing);
+				var count = 0;
 				foreach (var swp in swps) {
+					if (count > _maxTestSentences) {
+						break;
+					}
 					// Console.WriteLine(swp);
 					var p1 = swp.Probability;
 					var p2 = h.Cyk(swp.Value);
 					Assert.IsTrue(p1 <= p2 || Helpers.IsNear(p1, p2));
+					count++;
 				}
 				// Console.WriteLine("-------------------------------");
 				//foreach (var sentence in preparedSentences) {

@@ -20,36 +20,37 @@ namespace ConsolePlayground {
 			//Experimental.TestSolver(rand);
 			// RandomTests.RandomJacobianTest();
 
-			var t = new TestCFGToCNF();
-			var tp = new TestCFGToCNFEmptyProb();
+			//var t = new TestCFGToCNF();
+			//var tp = new TestCFGToCNFEmptyProb();
+
 			// t.TestToCNF01();
 			// t.TestAccepts09();
 			// t.TestAccepts02();
 			// tp.TestGetNullable01();
-			tp.TestCFGToCNFBadProb01();
+			// tp.TestGetNullable01();
 			// Experimental.Test();
 
+
 			//var productions = new HashSet<Production> {
-			//	CFGParser.Production("<S> -> <A>"),
-			//	CFGParser.Production("<S> -> <B>"),
-			//	CFGParser.Production("<A> -> ε"),
-			//	CFGParser.Production("<A> -> 'a'"),
-			//	CFGParser.Production("<A> -> <B>"),
-			//	CFGParser.Production("<B> -> ε"),
-			//	CFGParser.Production("<B> -> 'b'"),
-			//	CFGParser.Production("<B> -> <A>"),
+			//	CFGParser.Production("<S> → <S> <S>"),
+			//	CFGParser.Production("<S> → 'x'"),
 			//};
 			//var g = new Grammar(productions, Nonterminal.Of("S"));
-			//var probs = g.EstimateProbabilities(5000000);
+			//var sentences = g.ProduceToDepth(5);
 
+			//// var probs = g.EstimateProbabilities(1000000);
+			//var probs = g.EstimateProbabilities(1000000);
 			//foreach (var entry in probs) {
 			//	var key = entry.Key;
 			//	var value = entry.Value;
-			//	if (key.Length <= 2) {
+			//	// if (key.Length <= 2) {
 			//		Console.WriteLine("{0}: {1}", key, value);
-			//	}
+			//	// }
 			//}
-			// Console.WriteLine(g.EstimateProbabilityNull(Nonterminal.Of("A"), 100000));
+			//Console.Read();
+
+
+			// Console.WriteLine(g.EstimateProbabilityNull(Nonterminal.Of("S"), 1000000));
 			//Console.WriteLine(g.EstimateProbabilityNull(Nonterminal.Of("B"), 10000));
 			//Console.WriteLine(g);
 			////var swps = g.ProduceToDepth(6, 100000);
@@ -86,11 +87,11 @@ namespace ConsolePlayground {
 
 			// g.EstimateProbabilities(1000000);
 
-			//var t = new CFGLibTest.RandomTests();
-			//var sw = Stopwatch.StartNew();
-			//t.RandomCFGToCNFTest();
-			//sw.Stop();
-			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+			var t = new CFGLibTest.RandomTests();
+			var sw = Stopwatch.StartNew();
+			t.RandomCFGToCNFTest();
+			sw.Stop();
+			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 			// CFGParser.Production("<X> -> <Y>");
 
