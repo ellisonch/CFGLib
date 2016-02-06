@@ -180,7 +180,7 @@ namespace CFGLib {
 		}
 
 		private List<Probable<Sentence>> DeepCopy(List<Probable<Sentence>> sentences) {
-			var results = new List<Probable<Sentence>>();
+			var results = new List<Probable<Sentence>>(sentences.Count);
 			foreach (var sentence in sentences) {
 				results.Add(new Probable<Sentence>(sentence.Probability, new Sentence(sentence.Value)));
 			}
