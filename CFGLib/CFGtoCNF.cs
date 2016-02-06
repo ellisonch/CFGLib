@@ -15,6 +15,7 @@ namespace CFGLib {
 		private int _freshx = 0;
 		private Nonterminal _startSymbol;
 		private bool _used = false;
+		private const double _magicStartProbability = 2.0;
 
 		private ISet<ValueUnitProduction> _unitPreviouslyDeleted = new HashSet<ValueUnitProduction>();
 
@@ -331,44 +332,69 @@ namespace CFGLib {
 			return hs;
 		}
 
+		/// <summary>
+		/// Returns a dictionary containing the probability that any particular nonterminal yields ε
+		/// </summary>
 		private static Dictionary<Nonterminal, double> GetNullable(ISet<Production> originalProductions) {
 			var results = new Dictionary<Nonterminal, double>();
-			
-			var productionByNt = BuildLookupTable(originalProductions);
 
-			foreach (var nt in productionByNt.Keys) {
-				results[nt] = GetProbabilityNonterminalIsNull(nt, productionByNt, 0, 1.0);
+			var productionByNt = BuildLookupTable(originalProductions);
+			var nonterminals = GetNonterminals(originalProductions);
+			foreach (var nt in nonterminals) {
+				ICollection<Production> productions;
+				if (!productionByNt.TryGetValue(nt, out productions)) {
+					productionByNt[nt] = new List<Production>();
+				}
 			}
+
+			var indexToNonterminal = nonterminals.ToArray();
+			var nonterminalToIndex = new Dictionary<Nonterminal, int>();
+			for (int i = 0; i < nonterminals.Count; i++) {
+				nonterminalToIndex[indexToNonterminal[i]] = i;
+			}
+
+			// seeding the estimates with a magic value
+			// this keeps all iterations behaving the same
+			var previousEstimates = Enumerable.Repeat(_magicStartProbability, indexToNonterminal.Length).ToArray();
+			var currentEstimates = new double[indexToNonterminal.Length];
+			
+			bool changed = true;
+			while (changed == true) {
+				changed = false;
+				Array.Clear(currentEstimates, 0, currentEstimates.Length);
+
+				// consider each nonterminal.  calculate a new nullable estimate based on the previous
+				for (int i = 0; i < currentEstimates.Length; i++) {
+					var nt = indexToNonterminal[i];
+
+					var productions = productionByNt[nt];
+					double weightSum = 0.0; // productions.Sum((p) => p.Weight);
+					foreach (var production in productions) {
+						var productionWeight = production.Weight;
+						weightSum += productionWeight;
+						var innerProb = GetProductionProbability(production, nonterminalToIndex, previousEstimates);
+						currentEstimates[i] += productionWeight * innerProb;
+					}
+					currentEstimates[i] /= weightSum;
+
+					if (currentEstimates[i] > previousEstimates[i]) {
+						throw new Exception("Didn't expect estimates to increase");
+					} else if (currentEstimates[i] < previousEstimates[i]) {
+						changed = true;
+					}
+				}
+				Helpers.Swap(ref previousEstimates, ref currentEstimates);
+			}
+
+			for (int i = 0; i < nonterminals.Count; i++) {
+				var nt = indexToNonterminal[i];
+				results[nt] = previousEstimates[i];
+			}			
 
 			return results;
 		}
-
-		private static double GetProbabilityNonterminalIsNull(Nonterminal nonterminal, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal, int depth, double incomingWeight) {
-			var probability = 0.0;
-			
-			if (incomingWeight < 1e-100) {
-				return 1.0;
-			}
-
-			if (depth >= 10) {
-				return 1.0;
-			}
-
-			ICollection<Production> productions;
-			if (!productionsByNonterminal.TryGetValue(nonterminal, out productions)) {
-				return 0.0;
-			}
-
-			double weightSum = productions.Sum((p) => p.Weight);
-			foreach (var production in productions) {
-				var weight = production.Weight / weightSum;
-				probability += weight * GetProductionProb(production, productionsByNonterminal, depth, incomingWeight * weight);
-			}
-			
-			return probability;
-		}
-
-		private static double GetProductionProb(Production production, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal, int depth, double incomingWeight) {
+		
+		private static double GetProductionProbability(Production production, Dictionary<Nonterminal, int> nonterminalToIndex, double[] previousEstimates) {
 			if (production.Rhs.Count == 0) {
 				return 1.0;
 			}
@@ -380,68 +406,16 @@ namespace CFGLib {
 			var product = 1.0;
 			foreach (var word in production.Rhs) {
 				var nt = (Nonterminal)word;
-				var prob = GetProbabilityNonterminalIsNull(nt, productionsByNonterminal, depth + 1, incomingWeight);
-				product *= prob;
+				var rhsIndex = nonterminalToIndex[nt];
+				var previous = previousEstimates[rhsIndex];
+				// if this is the first iteration, we assume that the previous values were 100% chance of yielding null
+				if (previous == _magicStartProbability) {
+					previous = 1.0;
+				}
+				product *= previous;
 			}
 
 			return product;
-		}
-
-		/// <summary>
-		/// Returns the set of all nonterminals that derive ε (in one or many steps)
-		/// </summary>
-		/// <param name="originalProductions"></param>
-		/// <returns></returns>
-		private static Dictionary<Nonterminal, double> GetNullable4(ISet<Production> originalProductions) {
-			var productions = CloneProductions(originalProductions);
-			ISet<Production> newProductions = new HashSet<Production>();
-			var nullableNonterminals = new Dictionary<Nonterminal, double>();
-			var changed = true;
-			while (changed) {
-				changed = false;
-				foreach (var production in productions) {
-					if (production.IsEmpty) {
-						if (!nullableNonterminals.ContainsKey(production.Lhs)) {
-							nullableNonterminals[production.Lhs] = 0.0;
-						}
-						nullableNonterminals[production.Lhs] += production.Weight;
-						changed = true;
-						continue;
-					}
-					for (int i = production.Rhs.Count - 1; i >= 0; i--) {
-						var word = production.Rhs[i];
-						var nt = word as Nonterminal;
-						if (nt == null) { continue; }
-						if (nullableNonterminals.ContainsKey(nt)) {
-							production.Rhs.RemoveAt(i);
-							changed = true;
-						}
-					}
-					newProductions.Add(production);
-				}
-				Helpers.Swap(ref productions, ref newProductions);
-				newProductions.Clear();
-			}
-
-			// our dictionary contains weights, need to convert to probabilities
-			var weightTable = Helpers.BuildLookup(
-				() => originalProductions,
-				(p) => p.Lhs,
-				(p) => p.Weight,
-				() => new Boxed<double>(0.0),
-				(o, n) => o.Value += n
-			);
-			foreach (var key in nullableNonterminals.Keys.ToList()) {
-				var weight = nullableNonterminals[key];
-				Boxed<double> boxedSum;
-				double sum = 0.0;
-				if (weightTable.TryGetValue(key, out boxedSum)) {
-					sum = boxedSum.Value;
-				}
-				nullableNonterminals[key] = weight / sum;
-			}
-
-			return nullableNonterminals;
 		}
 
 		/// <summary>
