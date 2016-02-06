@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 
 namespace CFGLibTest {
 	public static class Helpers {
-		public static void AssertNear(double expected, double actual, double factor = 0.00001) {
+		private const double _defaultTolerance = 1e-15;
+
+		public static void AssertNear(double expected, double actual, double factor = _defaultTolerance) {
 			if (!Helpers.IsNear(expected, actual, factor)) {
 				Assert.Fail(string.Format("Expected {0}, but got {1}", expected, actual));
 			}
 		}
-		public static bool IsNear(double expected, double actual, double tolerance = 1e-100) {
+		public static bool IsNear(double expected, double actual, double tolerance = _defaultTolerance) {
 			// double tolerance = Math.Abs(expected * factor);
 			double diff = Math.Abs(expected - actual);
 			if (diff <= tolerance) {
