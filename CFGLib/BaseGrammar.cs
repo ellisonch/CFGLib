@@ -200,10 +200,13 @@ namespace CFGLib {
 		}
 		
 		// TODO: need to check that this is unbiased
-		internal Sentence ProduceNonterminal(Nonterminal v) {
+		internal Sentence ProduceNonterminal(Nonterminal nt) {
 			Sentence result = null;
 
-			var productions = ProductionsFrom(v);
+			var productions = ProductionsFrom(nt);
+			if (productions.Count() == 0) {
+				throw new Exception(string.Format("Can't produce nonterminal {0}; no productions with it on LHS", nt));
+			}
 
 			var totalWeight = productions.Sum(w => w.Weight);
 			var targetValue = totalWeight * _rand.NextDouble();
