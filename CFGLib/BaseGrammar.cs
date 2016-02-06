@@ -85,7 +85,7 @@ namespace CFGLib {
 				cache.SetDirty();
 			}
 		}
-
+		
 		/// <summary>
 		/// Returns all the sentences (with their probabilities) that can be generated up to a certain depth
 		/// </summary>
@@ -106,8 +106,10 @@ namespace CFGLib {
 				intermediate[i + 1] = next;
 				foreach (var swp in prev) {
 					if (!swp.Value.OnlyTerminals()) {
-						// TODO: goone can hit limit, return 0, and then this whole thing keeps going, really slowly
 						var steps = GoOneStep(swp, limit);
+						if (steps.Count == 0) {
+							count = limit;
+						}
 						next.AddRange(steps);
 						count += steps.Count;
 					}
