@@ -23,6 +23,9 @@ namespace CFGLib {
 		public override string ToString() {
 			return string.Format("<{0}>", _name);
 		}
+		public string ToStringName() {
+			return string.Format("{0}", _name);
+		}
 
 		public override bool IsNonterminal() {
 			return true;

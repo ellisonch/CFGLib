@@ -66,8 +66,8 @@ namespace CFGLibTest {
 				Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
 				var g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals, false);
 				var h = g.ToCNF();
-				Console.WriteLine(g);
-				Console.WriteLine(h);
+				Console.WriteLine(g.ToCodeString());
+				Console.WriteLine(h.ToCodeString());
 
 				var swps = g.ProduceToDepth(_maxDepth, _maxTestSentences);
 				foreach (var swp in swps) {

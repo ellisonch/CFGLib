@@ -71,7 +71,11 @@ namespace CFGLib {
 		public override string ToString() {
 			return string.Format("{0} → {1} [{2}]", this.Lhs, this.Rhs, this.Weight);
 		}
-		
+
+		public string ToCodeString() {
+			return string.Format("{0} → {1} [{2}]", this.Lhs, this.Rhs, this.Weight.ToString("G17"));
+		}
+
 		/// <summary>
 		/// Returns a new Production with constituent pieces equivalent to this Production.
 		/// The Rhs is a new Sentence, so that any piece of the new Production can be changed without changing the old Production.
