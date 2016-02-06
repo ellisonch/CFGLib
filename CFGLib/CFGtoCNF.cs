@@ -347,11 +347,11 @@ namespace CFGLib {
 			var probability = 0.0;
 			
 			if (incomingWeight < 1e-100) {
-				return 0.0;
+				return 1.0;
 			}
 
-			if (depth >= 5) {
-				return 0.0;
+			if (depth >= 10) {
+				return 1.0;
 			}
 
 			ICollection<Production> productions;
