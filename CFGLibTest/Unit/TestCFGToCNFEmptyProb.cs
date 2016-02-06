@@ -136,7 +136,23 @@ namespace CFGLibTest.Unit {
 			var third = 1.0 / 3.0;
 
 			Helpers.AssertNear(0.5 + third * 0.5, h.Cyk(Sentence.FromLetters("")));
-			Helpers.AssertNear(0.222222, h.Cyk(Sentence.FromLetters("b")));
+			Helpers.AssertNear(third * 2.0 / 3.0, h.Cyk(Sentence.FromLetters("b")));
+		}
+
+		[TestMethod]
+		public void TestToCNF05() {
+			Grammar g = new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → 'x4' <X_4> [16.517998587115667]"),
+				CFGParser.Production("<X_4> → 'x3' [49.290950734303777]"),
+				CFGParser.Production("<X_0> → 'x4' 'x1' [23.628313965456705]")
+			}, Nonterminal.Of("X_0"));
+			CNFGrammar h = g.ToCNF();
+	
+			var first = 16.517998587115667;
+			var third = 23.628313965456705;
+			var sum = first + third;
+			Helpers.AssertNear(third / sum, h.Cyk(Sentence.FromWords("x4 x1")));
+			Helpers.AssertNear(first / sum , h.Cyk(Sentence.FromWords("x4 x3")));
 		}
 
 		[TestMethod]
@@ -208,7 +224,8 @@ namespace CFGLibTest.Unit {
 			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 1);
-			Helpers.AssertNear(0.381966, result[Nonterminal.Of("A")]);
+			var phiRecip = 2.0 / (1.0 + Math.Sqrt(5));
+			Helpers.AssertNear(1.0 - phiRecip, result[Nonterminal.Of("A")]);
 		}
 
 		[TestMethod]
