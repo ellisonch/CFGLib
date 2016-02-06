@@ -73,7 +73,7 @@ namespace CFGLib {
 		}
 
 		public string ToCodeString() {
-			return string.Format("{0} → {1} [{2}]", this.Lhs, this.Rhs, this.Weight.ToString("G17"));
+			return string.Format("{0} → {1} [{2}]", this.Lhs, this.Rhs, this.Weight.ToString("R"));
 		}
 
 		/// <summary>
