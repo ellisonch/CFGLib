@@ -86,7 +86,7 @@ namespace CFGLib {
 				cache.SetDirty();
 			}
 		}
-		
+
 		/// <summary>
 		/// Returns all the sentences (with their probabilities) that can be generated up to a certain depth
 		/// </summary>
@@ -107,7 +107,7 @@ namespace CFGLib {
 				intermediate[i + 1] = next;
 				foreach (var swp in prev) {
 					if (!swp.Value.OnlyTerminals()) {
-						var steps = GoOneStep(swp, limit);
+						var steps = GoOneStep(swp, depth - i, limit);
 						if (steps.Count == 0) {
 							count = limit;
 						}
@@ -142,7 +142,7 @@ namespace CFGLib {
 			return resultDict.Values.ToList();
 		}
 
-		private List<Probable<Sentence>> GoOneStep(Probable<Sentence> swp, int limit = int.MaxValue) {
+		private List<Probable<Sentence>> GoOneStep(Probable<Sentence> swp, int remainingDepth, int limit = int.MaxValue) {
 			var start = new Probable<Sentence>(swp.Probability, new Sentence());
 			var results = new List<Probable<Sentence>> { start };
 			foreach (var word in swp.Value) {
@@ -151,7 +151,7 @@ namespace CFGLib {
 					return new List<Probable<Sentence>>();
 				}
 				if (word.IsNonterminal()) {
-					results = StepNonterminal(results, word);
+					results = StepNonterminal(results, word, remainingDepth);
 				} else {
 					results = StepTerminal(results, word);
 				}
@@ -159,11 +159,14 @@ namespace CFGLib {
 			return results;
 		}
 
-		private List<Probable<Sentence>> StepNonterminal(List<Probable<Sentence>> results, Word word) {
+		private List<Probable<Sentence>> StepNonterminal(List<Probable<Sentence>> results, Word word, int remainingDepth) {
 			var newResults = new List<Probable<Sentence>>();
 
 			var nonterminal = (Nonterminal)word;
 			foreach (var production in ProductionsFrom(nonterminal)) {
+				if (remainingDepth == 1 && production.Rhs.ContainsNonterminal()) {
+					continue;
+				}
 				var prob = GetProbability(production);
 				var copies = DeepCopy(results);
 				foreach (var copy in copies) {
