@@ -25,13 +25,23 @@ namespace CFGLibTest {
 		}
 
 		[TestMethod]
-		public void TestMissingStart() {
+		public void TestMissingStart01() {
 			var productions = new List<Production> {
 				CFGParser.Production(@"<X_0> -> <X_0> <X_0>"),
 				CFGParser.Production(@"<X_0> -> 'a'"),
 			};
 			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
 			CNFGrammar h = g.ToCNF();
+		}
+
+		[TestMethod]
+		public void TestMissingStart02() {
+			var productions = new List<Production> {
+				CFGParser.Production(@"<X_0> -> 'a'"),
+			};
+			CNFGrammar h = new CNFGrammar(new List<Production>(), productions, 0.0, Nonterminal.Of("S"), false);
+
+			Helpers.IsNear(0.0, h.Cyk(Sentence.FromLetters("a")));
 		}
 
 		[TestMethod]

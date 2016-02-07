@@ -47,6 +47,7 @@ namespace CFGLib {
 
 			_nonterminals = Cache.Create(() => {
 				var hs = new HashSet<Nonterminal>();
+				hs.Add(Start);
 				foreach (var production in this.Productions) {
 					hs.Add(production.Lhs);
 					foreach (var word in production.Rhs) {
