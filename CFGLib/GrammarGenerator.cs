@@ -15,6 +15,10 @@ namespace CFGLib {
 			_rand = new Random(seed);
 		}
 
+		public GrammarGenerator(Random rand) {
+			_rand = rand;
+		}
+
 		/// <summary>
 		/// Generates a new, random generic grammar
 		/// </summary>
