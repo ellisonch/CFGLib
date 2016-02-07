@@ -67,17 +67,19 @@ namespace CFGLib {
 			}
 			var numNontermProductions = _rand.Next(numProductions);
 			var numTermProductions = numProductions - numNontermProductions;
-			var nt = new List<Production>();
-			var t = new List<Production>();
+			var productions = new List<Production>();
 
 			for (int i = 0; i < numNontermProductions; i++) {
-				nt.Add(NextCNFNonterminalProduction(numNonterminals));
+				productions.Add(NextCNFNonterminalProduction(numNonterminals));
 			}
 			for (int i = 0; i < numTermProductions; i++) {
 				var terminal = RandomTerminal(terminals);
-				t.Add(NextCNFTerminalProduction(numNonterminals, terminals, terminal));
+				productions.Add(NextCNFTerminalProduction(numNonterminals, terminals, terminal));
 			}
-			return new CNFGrammar(nt, t, producesEmptyWeight, start);
+
+			productions.Add(Production.New(start, new Sentence(), producesEmptyWeight));
+
+			return new CNFGrammar(productions, start);
 		}
 
 		public Production NextCNFNonterminalProduction(int numNonTerminals, Nonterminal lhs = null) {

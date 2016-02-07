@@ -100,24 +100,27 @@ namespace CFGLib {
 		private CNFGrammar() {
 		}
 
-		public CNFGrammar(IEnumerable<Production> nt, IEnumerable<Production> t, double producesEmptyWeight, Nonterminal start) {
-			_nonterminalProductions = new List<CNFNonterminalProduction>();
-			foreach (var production in nt) {
-				_nonterminalProductions.Add(new CNFNonterminalProduction(production));
-			}
-			_terminalProductions = new List<CNFTerminalProduction>();
-			foreach (var production in t) {
-				_terminalProductions.Add(new CNFTerminalProduction(production));
-			}
-			if (producesEmptyWeight > 0) {
-				_emptyProductions.Add(new DefaultProduction(start, new Sentence(), producesEmptyWeight));
-			}
+		public CNFGrammar(IEnumerable<Production> productions, Nonterminal start) {
 			this.Start = start;
 
-			// if (simplify) {
-			SimplifyWithoutInvalidate();
-			// }
+			foreach (var production in productions) {
+				if (production.Lhs == start && production.Rhs.Count == 0) {
+					if (production.Weight == 0.0) {
+						continue;
+					}
+					if (_emptyProductions.Count == 0) {
+						_emptyProductions.Add(production);
+					} else {
+						_emptyProductions.First().Weight += production.Weight;
+					}
+				} else if (production.Rhs.OnlyNonterminals()) {
+					_nonterminalProductions.Add(new CNFNonterminalProduction(production));
+				} else {
+					_terminalProductions.Add(new CNFTerminalProduction(production));
+				}
+			}
 
+			SimplifyWithoutInvalidate();
 			BuildLookups();
 			BuildHelpers();
 		}
@@ -286,7 +289,7 @@ namespace CFGLib {
 		}
 
 		public override BaseGrammar ShallowClone() {
-			var clone = new CNFGrammar(this.NonterminalProductions, this.TerminalProductions, EmptyProductionWeight, this.Start);
+			var clone = new CNFGrammar(this.Productions, this.Start);
 			return clone;
 		}
 	}

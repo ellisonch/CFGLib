@@ -8,16 +8,15 @@ namespace CFGLibTest {
 	public class RegressionTests {
 		[TestMethod]
 		public void TestHugeWeights() {
-			var ntproductions = new List<Production> {
+			var productions = new List<Production> {
 				CFGParser.Production(@"<S> -> <A> <B> [3000000000]"),
 				CFGParser.Production(@"<S> -> <C> <A> [3000000000]"),
-			};
-			var tproductions = new List<Production> {
+				CFGParser.Production(@"<S> -> ε [3000000000]"),
 				CFGParser.Production(@"<A> -> 'a'"),
 				CFGParser.Production(@"<B> -> 'b'"),
 				CFGParser.Production(@"<C> -> 'c'"),
 			};
-			var g = new CNFGrammar(ntproductions, tproductions, 3000000000, Nonterminal.Of("S"));
+			var g = new CNFGrammar(productions, Nonterminal.Of("S"));
 
 			Helpers.AssertNear(1.0 / 3.0, g.Cyk(Sentence.FromLetters("")));
 			Helpers.AssertNear(1.0 / 3.0, g.Cyk(Sentence.FromLetters("ab")));
@@ -39,7 +38,7 @@ namespace CFGLibTest {
 			var productions = new List<Production> {
 				CFGParser.Production(@"<X_0> -> 'a'"),
 			};
-			CNFGrammar h = new CNFGrammar(new List<Production>(), productions, 0.0, Nonterminal.Of("S"));
+			CNFGrammar h = new CNFGrammar(productions, Nonterminal.Of("S"));
 
 			Helpers.IsNear(0.0, h.Cyk(Sentence.FromLetters("a")));
 		}

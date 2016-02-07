@@ -41,16 +41,14 @@ namespace CFGLibTest {
 			//	Var(X_0) → Trm(a)
 			//	Var(X_2) → Trm(a)
 			//}
-			var nonterminalProductions = new List<Production> {
+			var productions = new List<Production> {
 				CFGParser.Production("<X_0> -> <X_0> <X_1>"),
-			};
-			var terminalProductions = new List<Production> {
 				CFGParser.Production("<X_2> -> 'b'"),
 				CFGParser.Production("<X_0> -> 'b'"),
 				CFGParser.Production("<X_0> -> 'a'"),
 				CFGParser.Production("<X_2> -> 'a'"),
 			};
-			var g = new CNFGrammar(nonterminalProductions, terminalProductions, 0, Nonterminal.Of("X_0"));
+			var g = new CNFGrammar(productions, Nonterminal.Of("X_0"));
 			
 			Assert.IsFalse(g.Accepts(Sentence.FromLetters("abc")));
 			Assert.IsFalse(g.Accepts(Sentence.FromLetters("ab")));
@@ -66,7 +64,7 @@ namespace CFGLibTest {
 		public void TestIntegration03() {
 			// http://www.cs.columbia.edu/~mcollins/courses/nlp2011/notes/pcfgs.pdf
 
-			var nonterminalProductions = new List<CNFNonterminalProduction> {
+			var productions = new List<Production> {
 				new CNFNonterminalProduction(
 					Nonterminal.Of("S"),
 					Nonterminal.Of("NP"), Nonterminal.Of("VP"),
@@ -96,8 +94,6 @@ namespace CFGLibTest {
 					Nonterminal.Of("PP"),
 					Nonterminal.Of("IN"), Nonterminal.Of("NP")
 				),
-			};
-			var terminalProductions = new List<CNFTerminalProduction> {
 				new CNFTerminalProduction(
 					Nonterminal.Of("Vt"),
 					Terminal.Of("saw")
@@ -137,7 +133,8 @@ namespace CFGLibTest {
 					4
 				),
 			};
-			var h = new CNFGrammar(nonterminalProductions, terminalProductions, 0, Nonterminal.Of("S"));
+
+			var h = new CNFGrammar(productions, Nonterminal.Of("S"));
 			// CNFGrammar h = g.ToCNF();
 
 			Assert.IsFalse(h.Accepts(Sentence.FromWords("saw the dog")));

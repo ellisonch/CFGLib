@@ -40,25 +40,28 @@ namespace CFGLib {
 			StepDel(productions);
 			StepUnit(productions);
 
-			var nonterminalProductions = new List<CNFNonterminalProduction>();
-			var terminalProductions = new List<CNFTerminalProduction>();
+			var resultProductions = new List<Production>();
+			//var nonterminalProductions = new List<Production>();
+			//var terminalProductions = new List<Production>();
 			var producesEmptyWeight = 0.0;
 			
 			foreach (var production in productions) {
 				if (production.Rhs.Count > 2) {
 					throw new Exception("Didn't expect more than 2");
 				} else if (production.Rhs.Count == 2) {
-					nonterminalProductions.Add(new CNFNonterminalProduction(production));
+					resultProductions.Add(new CNFNonterminalProduction(production));
 				} else if (production.Rhs.Count == 1) {
 					var rhs = production.Rhs[0];
-					terminalProductions.Add(new CNFTerminalProduction(production));
+					resultProductions.Add(new CNFTerminalProduction(production));
 				} else if (production.Rhs.Count == 0) {
 					producesEmptyWeight += production.Weight;
 						// GetGrammarFromProductionList(production, productions);
 				}
 			}
 
-			return new CNFGrammar(nonterminalProductions, terminalProductions, producesEmptyWeight, _startSymbol);
+			resultProductions.Add(Production.New(_startSymbol, new Sentence(), producesEmptyWeight));
+
+			return new CNFGrammar(resultProductions, _startSymbol);
 		}
 
 		private static ISet<Production> CloneGrammar(Grammar grammar) {

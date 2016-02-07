@@ -14,9 +14,7 @@ namespace CFGLibTest.Unit {
 		[TestMethod]
 		public void TestProduceToDepth() {
 			var g = new CNFGrammar(
-				Enumerable.Empty<CNFNonterminalProduction>(),
-				Enumerable.Empty<CNFTerminalProduction>(),
-				0,
+				Enumerable.Empty<Production>(),
 				Nonterminal.Of("S")
 			);
 			Assert.IsTrue(g.ProduceToDepth(1).Count == 0);
@@ -25,7 +23,7 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestCYK01() {
-			var nonterminalProductions = new List<CNFNonterminalProduction> {
+			var productions = new List<Production> {
 				new CNFNonterminalProduction(
 					Nonterminal.Of("S"),
 					Nonterminal.Of("X"), Nonterminal.Of("X"),
@@ -35,9 +33,7 @@ namespace CFGLibTest.Unit {
 					Nonterminal.Of("X"),
 					Nonterminal.Of("X"), Nonterminal.Of("X"),
 					2
-				)
-			};
-			var terminalProductions = new List<CNFTerminalProduction> {
+				),
 				new CNFTerminalProduction(
 					Nonterminal.Of("S"),
 					Terminal.Of("a"),
@@ -50,15 +46,8 @@ namespace CFGLibTest.Unit {
 				)
 			};
 
-			var g = new CNFGrammar(
-				nonterminalProductions,
-				terminalProductions,
-				0,
-				Nonterminal.Of("S")
-			);
-
-			// g.PrintProbabilities(5000000, 0.2);
-
+			var g = new CNFGrammar(productions, Nonterminal.Of("S"));
+			
 			Helpers.AssertNear(0.8, g.Cyk(Sentence.FromLetters("a")));
 			Helpers.AssertNear(0.128, g.Cyk(Sentence.FromLetters("aa")));
 			Helpers.AssertNear(0.04096, g.Cyk(Sentence.FromLetters("aaa")));
