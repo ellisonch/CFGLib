@@ -55,6 +55,17 @@ namespace CFGLib {
 			a = b;
 			b = temp;
 		}
+
+		public static int RemoveMany<T>(this List<T> source, IEnumerable<T> toRemove) {
+			var count = 0;
+			foreach (var thing in toRemove) {
+				var success = source.Remove(thing);
+				if (success) {
+					count++;
+				}
+			}
+			return count;
+		}
 	}
 	internal class Boxed<T> {
 		public T Value;

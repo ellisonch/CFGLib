@@ -14,9 +14,6 @@ namespace CFGLib {
 		}
 
 		public CNFTerminalProduction(Nonterminal lhs, Terminal rhs, double weight = 1.0) {
-			if (weight < 0.0) {
-				throw new ArgumentOutOfRangeException("Weights must be positive");
-			}
 			this.Lhs = lhs;
 			_rhs = rhs;
 			this.Weight = weight;

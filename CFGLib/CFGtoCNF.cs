@@ -251,7 +251,7 @@ namespace CFGLib {
 			}
 			// TODO: this case messes up probability
 			if (UnitPreviouslyDeleted(newProd)) {
-				var secondaryProductions = table[(Nonterminal)entry.Rhs[0]];
+				var secondaryProductions = table.LookupEnumerable((Nonterminal)entry.Rhs[0]);
 				var secondarySum = secondaryProductions.Sum((p) => p.Weight);
 				foreach (var secondaryProduction in secondaryProductions) {
 					var secondaryProbThisEntry = secondaryProduction.Weight / secondarySum;
@@ -451,6 +451,7 @@ namespace CFGLib {
 			}
 			for (int i = originalProduction.Rhs.Count - 1; i >= 0; i--) {
 				var newResults = new List<Production>();
+				var toRemove = new List<Production>();
 				foreach (var production in results) {
 					var word = production.Rhs[i];
 					var nt = word as Nonterminal;
@@ -461,12 +462,24 @@ namespace CFGLib {
 					// var with = production.Clone();
 					var without = production.DeepClone();
 					without.Rhs.RemoveAt(i);
-					newResults.Add(without);
-					without.Weight *= nullableProbabilities[nt];
-					production.Weight *= 1.0 - nullableProbabilities[nt];
-					//production.Weight *= 1.0; // TODO: all wrong
+					
+					var chanceNull = nullableProbabilities[nt];
+					var newWithoutWeight = without.Weight * chanceNull;
+					var newWithWeight = production.Weight * (1.0 - chanceNull);
+					
+					if (newWithoutWeight > 0.0) {
+						without.Weight = newWithoutWeight;
+						newResults.Add(without);
+					}
+					if (newWithWeight <= 0.0) {
+						toRemove.Add(production);
+					} else {
+						production.Weight = newWithWeight;
+					}
 				}
 				results.AddRange(newResults);
+				// TODO: we should just make it so that if a weight is set to 0, the production gets removed from the grammar automatically, and that operation should be fast
+				results.RemoveMany(toRemove);
 			}
 			// NullateAux(production, nullableSet, 0, result);
 
@@ -474,12 +487,12 @@ namespace CFGLib {
 				return results;
 			}
 			// Get rid of productions with zero weight
-			for (int i = results.Count - 1; i >= 0;  i--) {
-				var result = results[i];
-				if (result.Weight == 0.0) {
-					results.RemoveAt(i);
-				}
-			}
+			//for (int i = results.Count - 1; i >= 0;  i--) {
+			//	var result = results[i];
+			//	if (result.Weight == 0.0) {
+			//		results.RemoveAt(i);
+			//	}
+			//}
 			return results;
 		}
 
