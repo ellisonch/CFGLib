@@ -59,5 +59,10 @@ namespace CFGLib {
 			var conv = new CFGtoCNF(this);
 			return conv.Convert(simplify);
 		}
+
+		public override BaseGrammar ShallowClone() {
+			var clone = new Grammar(this.Productions, this.Start, false);
+			return clone;
+		}
 	}
 }

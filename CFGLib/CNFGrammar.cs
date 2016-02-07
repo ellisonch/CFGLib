@@ -260,9 +260,10 @@ namespace CFGLib {
 		public bool Accepts(Sentence s) {
 			return Cyk(s) > 0;
 		}
-		
-		//public CNFGrammar Clone() {
-		//	return new CNFGrammar(this.NonterminalProductions, this.TerminalProductions, EmptyProductionWeight, this.Start, false);
-		//}
+
+		public override BaseGrammar ShallowClone() {
+			var clone = new CNFGrammar(this.NonterminalProductions, this.TerminalProductions, EmptyProductionWeight, this.Start, false);
+			return clone;
+		}
 	}
 }

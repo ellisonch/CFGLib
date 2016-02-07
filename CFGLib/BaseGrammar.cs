@@ -450,7 +450,14 @@ namespace CFGLib {
 		}
 
 		internal abstract void RemoveProductions(IEnumerable<Production> toRemove);
-		
+
+		/// <summary>
+		/// Returns a shallow clone of this grammar.
+		/// The lists of productions etc. should be different, while the productions themselves may be the same.
+		/// The type of the grammar returned should be the same of the original.
+		/// </summary>
+		public abstract BaseGrammar ShallowClone();
+
 		public override string ToString() {
 			var retval = "Grammar(" + this.Start + "){\n";
 
