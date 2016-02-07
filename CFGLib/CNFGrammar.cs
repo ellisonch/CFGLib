@@ -188,17 +188,9 @@ namespace CFGLib {
 			var RToJ = BuildRToJ(nonterminals_R);
 
 			var P = new double[s.Count, s.Count, nonterminals_R.Count];
-			for (int i = 0; i < s.Count; i++) {
-				var a_i = (Terminal)s[i];
-				ICollection<CNFTerminalProduction> yields_a_i;
-				if (!_reverseTerminalProductions.Value.TryGetValue(a_i, out yields_a_i)) {
-					// the grammar can't possibly produce this string if it doesn't know a terminal
-					return 0.0;
-				}
-				foreach (var production in yields_a_i) {
-					var j = RToJ[production.Lhs];
-					P[0, i, j] += GetProbability(production);
-				}
+			var shouldPunt = CykFillInBase(s, P, RToJ);
+			if (shouldPunt) {
+				return 0.0;
 			}
 
 			var localProductionList = BuildLocalCYKProductionList(RToJ);
@@ -221,6 +213,22 @@ namespace CFGLib {
 			}
 			
 			return P[s.Count - 1, 0, RToJ[this.Start]];
+		}
+
+		private bool CykFillInBase(Sentence s, double[,,] P, Dictionary<Nonterminal, int> RToJ) {
+			for (int i = 0; i < s.Count; i++) {
+				var a_i = (Terminal)s[i];
+				ICollection<CNFTerminalProduction> yields_a_i;
+				if (!_reverseTerminalProductions.Value.TryGetValue(a_i, out yields_a_i)) {
+					// the grammar can't possibly produce this string if it doesn't know a terminal
+					return true;
+				}
+				foreach (var production in yields_a_i) {
+					var j = RToJ[production.Lhs];
+					P[0, i, j] += GetProbability(production);
+				}
+			}
+			return false;
 		}
 
 		private Dictionary<Nonterminal, int> BuildRToJ(ISet<Nonterminal> nonterminals_R) {
