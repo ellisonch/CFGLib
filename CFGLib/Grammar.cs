@@ -22,10 +22,13 @@ namespace CFGLib {
 			get { return _productions; }
 		}
 
-		internal override void RemoveProductions(IEnumerable<Production> toRemove) {
-			foreach (var production in toRemove) {
-				_productions.Remove(production);
-			}
+		public override void RemoveProduction(Production production) {
+			_productions.Remove(production);
+			InvalidateCaches();
+		}
+		public override void AddProduction(Production production) {
+			AddToListWithoutDuplicating(_productions, production);
+			InvalidateCaches();
 		}
 
 		public Grammar(IEnumerable<Production> productions, Nonterminal start, bool simplify = true) {

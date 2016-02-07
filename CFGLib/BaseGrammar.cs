@@ -363,6 +363,20 @@ namespace CFGLib {
 			return toRemove;
 		}
 
+		protected static void AddToListWithoutDuplicating<T>(IList<T> list, T production) where T : Production {
+			foreach (var candidate in list) {
+				if (candidate.Lhs != production.Lhs) {
+					continue;
+				}
+				if (!candidate.Rhs.SequenceEqual(production.Rhs)) {
+					continue;
+				}
+				candidate.Weight += production.Weight;
+				return;
+			}
+			list.Add(production);
+		}
+
 		protected void RemoveUnreachable() {
 			var reachableSymbols = new HashSet<Nonterminal>();
 			
@@ -449,7 +463,19 @@ namespace CFGLib {
 			return true;
 		}
 
-		internal abstract void RemoveProductions(IEnumerable<Production> toRemove);
+		public void RemoveProductions(IEnumerable<Production> productions) {
+			foreach (var production in productions) {
+				RemoveProduction(production);
+			}
+		}
+		public void AddProductions(IEnumerable<Production> productions) {
+			foreach (var production in productions) {
+				AddProduction(production);
+			}
+		}
+
+		public abstract void RemoveProduction(Production production);
+		public abstract void AddProduction(Production production);
 
 		/// <summary>
 		/// Returns a shallow clone of this grammar.

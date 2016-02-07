@@ -36,6 +36,15 @@ namespace ConsolePlayground {
 			//	CFGParser.Production("<S> → 'x'"),
 			//};
 			//var g = new Grammar(productions, Nonterminal.Of("S"));
+			//Console.WriteLine(g);
+			//g.AddProduction(CFGParser.Production("<S> → <S> <S>"));
+			//Console.WriteLine(g);
+			//var neww = CFGParser.Production("<S> → 'w'");
+			//g.AddProduction(neww);
+			//Console.WriteLine(g);
+			//g.RemoveProduction(neww);
+			//Console.WriteLine(g);
+
 			//var sentences = g.ProduceToDepth(5);
 
 			//// var probs = g.EstimateProbabilities(1000000);

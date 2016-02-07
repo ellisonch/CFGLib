@@ -13,7 +13,7 @@ namespace CFGLib {
 		private List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
 		private List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
 		
-		private List<DefaultProduction> _emptyProductions = new List<DefaultProduction>();
+		private List<Production> _emptyProductions = new List<Production>();
 
 		private double EmptyProductionWeight {
 			get {
@@ -58,18 +58,43 @@ namespace CFGLib {
 			}
 		}
 
-		internal override void RemoveProductions(IEnumerable<Production> toRemove) {
-			foreach (var production in toRemove) {
-				if (production.Lhs == this.Start && production.Rhs.Count == 0) {
-					throw new Exception("Don't handle removing empty production in CNF yet");
-				} else if (production is CNFNonterminalProduction) {
-					var ntprod = (CNFNonterminalProduction)production;
-					_nonterminalProductions.Remove(ntprod);
+		// TODO: should make sure the empty production is the actual empty production
+		// TODO: should error if the production doesn't exist
+		public override void RemoveProduction(Production production) {
+			if (production.Lhs == this.Start && production.Rhs.Count == 0) {
+				if (_emptyProductions.Count > 0) {
+					_emptyProductions.Clear();
 				} else {
-					var tprod = (CNFTerminalProduction)production;
-					_terminalProductions.Remove(tprod);
+					throw new Exception("No production to remove");
 				}
+			} else if (production is CNFNonterminalProduction) {
+				var ntprod = (CNFNonterminalProduction)production;
+				_nonterminalProductions.Remove(ntprod);
+			} else {
+				// TODO: might not actually be a terminal production
+				var tprod = (CNFTerminalProduction)production;
+				_terminalProductions.Remove(tprod);
 			}
+			InvalidateCaches();
+		}
+		public override void AddProduction(Production production) {
+			if (production.Lhs == this.Start && production.Rhs.Count == 0) {
+				if (_emptyProductions.Count > 0) {
+					_emptyProductions.First().Weight += production.Weight;
+				} else {
+					_emptyProductions.Add(production);
+				}
+			} else if (production is CNFNonterminalProduction) {
+				var ntprod = (CNFNonterminalProduction)production;
+				AddToListWithoutDuplicating(_nonterminalProductions, ntprod);
+			} else if (production is CNFTerminalProduction) {
+				var tprod = (CNFTerminalProduction)production;
+				AddToListWithoutDuplicating(_terminalProductions, tprod);
+			} else {
+				// TODO: should look into the production and see if we can convert
+				throw new Exception("You can't add that kind of production to this grammar");
+			}
+			InvalidateCaches();
 		}
 
 		private CNFGrammar() {
