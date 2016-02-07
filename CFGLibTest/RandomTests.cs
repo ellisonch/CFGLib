@@ -110,7 +110,7 @@ namespace CFGLibTest {
 			}
 
 			for (int i = 0; i < _numTrials; i++) {
-				var g = randg.NextCNF(_numNonterminals, _numProductions, terminals, false);
+				var g = randg.NextCNF(_numNonterminals, _numProductions, terminals);
 				//var h = g.Clone();
 				//h.Simplify();
 				//Console.WriteLine(g);

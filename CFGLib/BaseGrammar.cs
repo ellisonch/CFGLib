@@ -193,9 +193,6 @@ namespace CFGLib {
 		protected double GetProbability(Production target) {
 			var lhs = target.Lhs;
 			var weight = target.Weight;
-			// 9.23s calculating all
-			// 7.06 accessing target
-			// 6.4 doing none
 			var lookupTable = _weightTotalsByNonterminal.Value;
 			var boxedSum = lookupTable[lhs];
 			double weightTotal = boxedSum.Value;
@@ -331,6 +328,7 @@ namespace CFGLib {
 		}
 		
 		protected void SimplifyWithoutInvalidate() {
+			RemoveDuplicates();
 			int oldCount;
 			do {
 				oldCount = this.Productions.Count();
@@ -341,7 +339,7 @@ namespace CFGLib {
 
 		protected void RemoveDuplicates() {
 			var toRemove = BaseGrammar.RemoveDuplicatesHelper(this.Productions);
-			this.RemoveProductions(toRemove);
+			this.RemoveProductionsWithoutSimplifying(toRemove);
 		}
 
 		internal static List<Production> RemoveDuplicatesHelper(IEnumerable<Production> productions) {
@@ -448,7 +446,7 @@ namespace CFGLib {
 					}
 				}
 			}
-			RemoveProductions(toRemove);
+			RemoveProductionsWithoutSimplifying(toRemove);
 		}
 
 		private bool IsProductive(Production production, HashSet<Nonterminal> productiveSymbols) {
@@ -464,18 +462,38 @@ namespace CFGLib {
 			return true;
 		}
 
+		/// <summary>
+		/// Removes a list of productions from the grammar.
+		/// The grammar is kept simplified.
+		/// </summary>
 		public void RemoveProductions(IEnumerable<Production> productions) {
+			RemoveProductionsWithoutSimplifying(productions);
+			Simplify();
+		}
+		protected void RemoveProductionsWithoutSimplifying(IEnumerable<Production> productions) {
 			foreach (var production in productions) {
 				RemoveProduction(production);
 			}
 		}
+		/// <summary>
+		/// Adds a list of productions to the grammar.
+		/// The grammar is kept simplified.
+		/// </summary>
 		public void AddProductions(IEnumerable<Production> productions) {
 			foreach (var production in productions) {
 				AddProduction(production);
 			}
 		}
 
+		/// <summary>
+		/// Removes a single production from the grammar.
+		/// The grammar is kept simplified.
+		/// </summary>
 		public abstract void RemoveProduction(Production production);
+		/// <summary>
+		/// Adds a single production to the grammar.
+		/// The grammar is kept simplified.
+		/// </summary>
 		public abstract void AddProduction(Production production);
 
 		/// <summary>

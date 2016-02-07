@@ -20,16 +20,16 @@ namespace ConsolePlayground {
 			//Experimental.TestSolver(rand);
 			// RandomTests.RandomJacobianTest();
 
-			//var t = new TestCFGToCNF();
-			//var tp = new TestCFGToCNFEmptyProb();
+			var t = new TestCFGToCNF();
+			var tp = new TestCFGToCNFEmptyProb();
 
 			// t.TestToCNF01();
-			// t.TestAccepts09();
+			tp.TestToCNF06();
 			// t.TestAccepts02();
 			// tp.TestGetNullable01();
 			// tp.TestGetNullable01();
 			// Experimental.Test();
-
+			// Console.Read();
 
 			//var productions = new HashSet<Production> {
 			//	CFGParser.Production("<S> → <S> <S>"),
@@ -73,12 +73,12 @@ namespace ConsolePlayground {
 			//var q = new CNFGrammar(new HashSet<BaseProduction> { }, new HashSet<BaseProduction> { }, 1, Nonterminal.Of("S"), true);
 			//Console.WriteLine(q.Accepts(Sentence.FromWords("")));
 
-			//var rt = new CFGLibTest.RandomTests();
-			//var sw = Stopwatch.StartNew();
-			//// rt.RandomAcceptanceTest();
-			//rt.RandomCFGToCNFTest();
-			//sw.Stop();
-			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+			var rt = new CFGLibTest.RandomTests();
+			var sw = Stopwatch.StartNew();
+			// rt.RandomAcceptanceTest();
+			rt.RandomCFGToCNFTest();
+			sw.Stop();
+			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 			//var productions = new HashSet<BaseProduction> {
 			//	CFGParser.Production("<S> -> <A>"),

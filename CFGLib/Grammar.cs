@@ -24,21 +24,20 @@ namespace CFGLib {
 
 		public override void RemoveProduction(Production production) {
 			_productions.Remove(production);
-			InvalidateCaches();
+			Simplify();
 		}
 		public override void AddProduction(Production production) {
 			AddToListWithoutDuplicating(_productions, production);
 			InvalidateCaches();
 		}
 
-		public Grammar(IEnumerable<Production> productions, Nonterminal start, bool simplify = true) {
+		public Grammar(IEnumerable<Production> productions, Nonterminal start) {
 			_productions = new List<Production>(productions);
 			this.Start = start;
-
-			RemoveDuplicates();
-			if (simplify) {
-				SimplifyWithoutInvalidate();
-			}
+			
+			// if (simplify) {
+			SimplifyWithoutInvalidate();
+			//}
 
 			_table = Cache.Create(() => Helpers.BuildLookup(
 				() => _productions,
@@ -56,15 +55,13 @@ namespace CFGLib {
 		/// Returns a new grammar that is the CNF equivalent of this grammar.
 		/// WARNING: currently this does not always preserve probabilities!
 		/// </summary>
-		/// <param name="simplify"></param>
-		/// <returns></returns>
-		public CNFGrammar ToCNF(bool simplify = true) {
+		public CNFGrammar ToCNF() {
 			var conv = new CFGtoCNF(this);
-			return conv.Convert(simplify);
+			return conv.Convert();
 		}
 
 		public override BaseGrammar ShallowClone() {
-			var clone = new Grammar(this.Productions, this.Start, false);
+			var clone = new Grammar(this.Productions, this.Start);
 			return clone;
 		}
 	}

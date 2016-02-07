@@ -156,6 +156,17 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		public void TestToCNF06() {
+			Grammar g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → ε"),
+				CFGParser.Production("<S> → 'x' <A>")
+			}, Nonterminal.Of("S"));
+			CNFGrammar h = g.ToCNF();
+
+			Helpers.AssertNear(1.0, h.Cyk(Sentence.FromWords("")));
+		}
+
+		[TestMethod]
 		public void TestGetNullable01() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 

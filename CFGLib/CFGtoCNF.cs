@@ -27,9 +27,7 @@ namespace CFGLib {
 		/// <summary>
 		/// Actually performs the conversion and returns a new CNF grammar based on the old grammar
 		/// </summary>
-		/// <param name="simplify"></param>
-		/// <returns></returns>
-		internal CNFGrammar Convert(bool simplify) {
+		internal CNFGrammar Convert() {
 			if (_used) {
 				throw new Exception("You can only use this object once");
 			}
@@ -60,7 +58,7 @@ namespace CFGLib {
 				}
 			}
 
-			return new CNFGrammar(nonterminalProductions, terminalProductions, producesEmptyWeight, _startSymbol, simplify);
+			return new CNFGrammar(nonterminalProductions, terminalProductions, producesEmptyWeight, _startSymbol);
 		}
 
 		private static ISet<Production> CloneGrammar(Grammar grammar) {
@@ -375,7 +373,11 @@ namespace CFGLib {
 						var innerProb = GetProductionProbability(production, nonterminalToIndex, previousEstimates);
 						currentEstimates[i] += productionWeight * innerProb;
 					}
-					currentEstimates[i] /= weightSum;
+					if (weightSum == 0.0) {
+						currentEstimates[i] = 0.0;
+					} else {
+						currentEstimates[i] /= weightSum;
+					}
 
 					if (currentEstimates[i] > previousEstimates[i]) {
 						throw new Exception("Didn't expect estimates to increase");
@@ -414,7 +416,9 @@ namespace CFGLib {
 				}
 				product *= previous;
 			}
-
+			if (double.IsNaN(product)) {
+				throw new Exception("Didn't expect to get NaN probability");
+			}
 			return product;
 		}
 

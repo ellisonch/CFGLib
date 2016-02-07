@@ -37,6 +37,9 @@ namespace CFGLib {
 				if (value <= 0.0) {
 					throw new ArgumentOutOfRangeException("Weights must be positive");
 				}
+				if (double.IsNaN(value)) {
+					throw new ArgumentException("Weights need to be numbers");
+				}
 				_weight = value;
 			}
 		}

@@ -39,7 +39,7 @@ namespace CFGLibTest {
 			var productions = new List<Production> {
 				CFGParser.Production(@"<X_0> -> 'a'"),
 			};
-			CNFGrammar h = new CNFGrammar(new List<Production>(), productions, 0.0, Nonterminal.Of("S"), false);
+			CNFGrammar h = new CNFGrammar(new List<Production>(), productions, 0.0, Nonterminal.Of("S"));
 
 			Helpers.IsNear(0.0, h.Cyk(Sentence.FromLetters("a")));
 		}
@@ -50,7 +50,7 @@ namespace CFGLibTest {
 				CFGParser.Production(@"<S> -> 'a'"),
 				CFGParser.Production(@"<X_0> -> 'b'"),
 			};
-			Grammar g = new Grammar(productions, Nonterminal.Of("S"), false);
+			Grammar g = new Grammar(productions, Nonterminal.Of("S"));
 			CNFGrammar h = g.ToCNF();
 
 			Assert.IsTrue(h.Accepts(Sentence.FromLetters("a")));

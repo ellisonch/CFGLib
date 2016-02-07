@@ -100,7 +100,7 @@ namespace CFGLib {
 		private CNFGrammar() {
 		}
 
-		public CNFGrammar(IEnumerable<Production> nt, IEnumerable<Production> t, double producesEmptyWeight, Nonterminal start, bool simplify = true) {
+		public CNFGrammar(IEnumerable<Production> nt, IEnumerable<Production> t, double producesEmptyWeight, Nonterminal start) {
 			_nonterminalProductions = new List<CNFNonterminalProduction>();
 			foreach (var production in nt) {
 				_nonterminalProductions.Add(new CNFNonterminalProduction(production));
@@ -114,10 +114,9 @@ namespace CFGLib {
 			}
 			this.Start = start;
 
-			RemoveDuplicates();
-			if (simplify) {
-				SimplifyWithoutInvalidate();
-			}
+			// if (simplify) {
+			SimplifyWithoutInvalidate();
+			// }
 
 			BuildLookups();
 			BuildHelpers();
@@ -287,7 +286,7 @@ namespace CFGLib {
 		}
 
 		public override BaseGrammar ShallowClone() {
-			var clone = new CNFGrammar(this.NonterminalProductions, this.TerminalProductions, EmptyProductionWeight, this.Start, false);
+			var clone = new CNFGrammar(this.NonterminalProductions, this.TerminalProductions, EmptyProductionWeight, this.Start);
 			return clone;
 		}
 	}

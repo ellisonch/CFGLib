@@ -19,7 +19,7 @@ namespace CFGLib {
 		/// Generates a new, random generic grammar
 		/// </summary>
 		/// <returns></returns>
-		public Grammar NextCFG(int numNonterminals, int numProductions, int maxProductionLength, IList<Terminal> terminals, bool useNull = true, bool shouldSimplify = true) {
+		public Grammar NextCFG(int numNonterminals, int numProductions, int maxProductionLength, IList<Terminal> terminals, bool useNull = true) {
 			if (numNonterminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
 			}
@@ -31,7 +31,7 @@ namespace CFGLib {
 				productions.Add(RandomProduction(maxProductionLength, numNonterminals, terminals, useNull));
 			}
 
-			return new Grammar(productions, start, shouldSimplify);
+			return new Grammar(productions, start);
 		}
 
 		private Production RandomProduction(int maxProductionLength, int numNonterminals, IList<Terminal> terminals, bool useNull = true) {
@@ -53,12 +53,7 @@ namespace CFGLib {
 		/// <summary>
 		/// Generates a new, random CNF grammar
 		/// </summary>
-		/// <param name="numNonterminals"></param>
-		/// <param name="numProductions"></param>
-		/// <param name="terminals"></param>
-		/// <param name="simplify"></param>
-		/// <returns></returns>
-		public CNFGrammar NextCNF(int numNonterminals, int numProductions, IList<Terminal> terminals, bool simplify = true) {
+		public CNFGrammar NextCNF(int numNonterminals, int numProductions, IList<Terminal> terminals) {
 			if (numNonterminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
 			}
@@ -82,7 +77,7 @@ namespace CFGLib {
 				var terminal = RandomTerminal(terminals);
 				t.Add(RandomTProduction(numNonterminals, terminals, terminal));
 			}
-			return new CNFGrammar(nt, t, producesEmptyWeight, start, simplify);
+			return new CNFGrammar(nt, t, producesEmptyWeight, start);
 		}
 
 		private CNFNonterminalProduction RandomNTProduction(int numNonTerminals, Nonterminal lhs = null) {
