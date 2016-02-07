@@ -183,14 +183,10 @@ namespace CFGLib {
 				}
 				return GetProbability(_emptyProductions.First());
 			}
-			
-			List<Nonterminal> nonterminals_R = new List<Nonterminal>(GetNonterminals());
-			Dictionary<Nonterminal, int> RToJ = new Dictionary<Nonterminal, int>();
-			for (int i = 0; i < nonterminals_R.Count; i++) {
-				var R = nonterminals_R[i];
-				RToJ[R] = i;
-			}
-			
+
+			var nonterminals_R = GetNonterminals();
+			var RToJ = BuildRToJ(nonterminals_R);
+
 			var P = new double[s.Count, s.Count, nonterminals_R.Count];
 			for (int i = 0; i < s.Count; i++) {
 				var a_i = (Terminal)s[i];
@@ -223,17 +219,28 @@ namespace CFGLib {
 					}
 				}
 			}
-			// PrintP(s, P);
-
+			
 			return P[s.Count - 1, 0, RToJ[this.Start]];
 		}
 
-		private struct LocalProductionList {
+		private Dictionary<Nonterminal, int> BuildRToJ(ISet<Nonterminal> nonterminals_R) {
+			Dictionary<Nonterminal, int> RToJ = new Dictionary<Nonterminal, int>();
+			// for (int i = 0; i < nonterminals_R.Count; i++) {
+			var nonterminalIndex = 0;
+			foreach (var R in nonterminals_R) {
+				// var R = nonterminals_R[nonterminalIndex];
+				RToJ[R] = nonterminalIndex;
+				nonterminalIndex++;
+			}
+			return RToJ;
+		}
+
+		private struct LocalCYKProduction {
 			public int A;
 			public int B;
 			public int C;
 			public double Probability;
-			public LocalProductionList(int A, int B, int C, double Probability) {
+			public LocalCYKProduction(int A, int B, int C, double Probability) {
 				this.A = A;
 				this.B = B;
 				this.C = C;
@@ -246,8 +253,8 @@ namespace CFGLib {
 		/// <param name="RToJ"></param>
 		/// <returns></returns>
 		// TODO: can maybe improve this by using an array of arrays; keep a separate array for each LHS
-		private IEnumerable<LocalProductionList> BuildLocalCYKProductionList(Dictionary<Nonterminal, int> RToJ) {
-			var retval = new LocalProductionList[_nonterminalProductions.Count];
+		private IEnumerable<LocalCYKProduction> BuildLocalCYKProductionList(Dictionary<Nonterminal, int> RToJ) {
+			var retval = new LocalCYKProduction[_nonterminalProductions.Count];
 			for (var i = 0; i < _nonterminalProductions.Count; i++) {
 				var production = _nonterminalProductions[i];
 				var R_A = production.Lhs;
@@ -257,7 +264,7 @@ namespace CFGLib {
 				var B = RToJ[R_B];
 				var C = RToJ[R_C];
 				var probThis = GetProbability(production);
-				retval[i] = new LocalProductionList(A, B, C, probThis);
+				retval[i] = new LocalCYKProduction(A, B, C, probThis);
 			}
 			return retval;
 		}
