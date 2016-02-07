@@ -240,6 +240,7 @@ namespace CFGLib {
 			var sum = entries.Sum((p) => p.Weight);
 			var newProductions = new HashSet<Production>();
 			var probThisEntry = entry.Weight / sum;
+			// TODO: I've seen this create a 0 weight
 			var newProd = new DefaultProduction(production.Lhs, entry.Rhs, production.Weight * probThisEntry);
 
 			// Console.WriteLine("considering {0} and {1}", production, entry);

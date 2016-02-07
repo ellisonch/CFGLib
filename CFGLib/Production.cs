@@ -34,8 +34,8 @@ namespace CFGLib {
 		public double Weight {
 			get { return _weight; }
 			internal set {
-				if (value <= 0.0) {
-					throw new ArgumentOutOfRangeException("Weights must be positive");
+				if (value < 0.0) {
+					throw new ArgumentOutOfRangeException("Weights must be non-negative");
 				}
 				if (double.IsNaN(value)) {
 					throw new ArgumentException("Weights need to be numbers");

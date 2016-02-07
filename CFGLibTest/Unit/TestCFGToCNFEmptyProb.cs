@@ -167,6 +167,26 @@ namespace CFGLibTest.Unit {
 		}
 
 		[TestMethod]
+		public void TestToCNF07() {
+			Grammar g = new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → 'x1' 'x4' <X_2> <X_6> [48.024797111295534]"),
+				CFGParser.Production("<X_1> → <X_0> 'x0' [28.859845304796398]"),
+				CFGParser.Production("<X_4> → 'x4' 'x4' 'x4' <X_3> <X_6> [32.396577754708275]"),
+				CFGParser.Production("<X_4> → ε [46.519217869974312]"),
+				CFGParser.Production("<X_0> → 'x4' 'x0' 'x3' 'x3' [90.918005973993814]"),
+				CFGParser.Production("<X_6> → <X_4> <X_0> 'x3' <X_3> [31.319837867431264]"),
+				CFGParser.Production("<X_2> → <X_2> [72.917730323932]"),
+				CFGParser.Production("<X_3> → <X_1> [36.901735786302822]"),
+				CFGParser.Production("<X_6> → ε [40.092343899464396]"),
+				CFGParser.Production("<X_2> → 'x1' [16.801839537826293]"),
+				CFGParser.Production("<X_0> → ε [136.892430380868]")
+			}, Nonterminal.Of("X_0"));
+			CNFGrammar h = g.ToCNF();
+
+			// Helpers.AssertNear(1.0, h.Cyk(Sentence.FromWords("")));
+		}
+
+		[TestMethod]
 		public void TestGetNullable01() {
 			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 
