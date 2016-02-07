@@ -34,7 +34,7 @@ namespace CFGLib {
 			return new Grammar(productions, start);
 		}
 
-		private Production RandomProduction(int maxProductionLength, int numNonterminals, IList<Terminal> terminals, bool useNull = true) {
+		public Production RandomProduction(int maxProductionLength, int numNonterminals, IList<Terminal> terminals, bool useNull = true) {
 			var lhs = RandomNonterminal(numNonterminals);
 			var weight = 100 * _rand.NextDouble() + 1.0;
 			var productionLength = useNull ? _rand.Next(maxProductionLength + 1) + 0: _rand.Next(maxProductionLength + 0) + 1;
@@ -67,20 +67,20 @@ namespace CFGLib {
 			}
 			var numNontermProductions = _rand.Next(numProductions);
 			var numTermProductions = numProductions - numNontermProductions;
-			var nt = new List<CNFNonterminalProduction>();
-			var t = new List<CNFTerminalProduction>();
+			var nt = new List<Production>();
+			var t = new List<Production>();
 
 			for (int i = 0; i < numNontermProductions; i++) {
-				nt.Add(RandomNTProduction(numNonterminals));
+				nt.Add(NextCNFNonterminalProduction(numNonterminals));
 			}
 			for (int i = 0; i < numTermProductions; i++) {
 				var terminal = RandomTerminal(terminals);
-				t.Add(RandomTProduction(numNonterminals, terminals, terminal));
+				t.Add(NextCNFTerminalProduction(numNonterminals, terminals, terminal));
 			}
 			return new CNFGrammar(nt, t, producesEmptyWeight, start);
 		}
 
-		private CNFNonterminalProduction RandomNTProduction(int numNonTerminals, Nonterminal lhs = null) {
+		public Production NextCNFNonterminalProduction(int numNonTerminals, Nonterminal lhs = null) {
 			if (lhs == null) {
 				lhs = RandomNonterminal(numNonTerminals);
 			}
@@ -90,7 +90,7 @@ namespace CFGLib {
 			return new CNFNonterminalProduction(lhs, rhs1, rhs2);
 		}
 
-		private CNFTerminalProduction RandomTProduction(int numNonterminals, IList<Terminal> terminals, Terminal rhs = null) {
+		public Production NextCNFTerminalProduction(int numNonterminals, IList<Terminal> terminals, Terminal rhs = null) {
 			if (rhs == null) {
 				rhs = RandomTerminal(terminals);
 			}
