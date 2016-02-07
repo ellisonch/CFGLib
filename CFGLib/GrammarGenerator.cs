@@ -19,7 +19,7 @@ namespace CFGLib {
 		/// Generates a new, random generic grammar
 		/// </summary>
 		/// <returns></returns>
-		public Grammar NextCFG(int numNonterminals, int numProductions, int maxProductionLength, IList<Terminal> terminals, bool useNull = true) {
+		public Grammar NextCFG(int numNonterminals, int numProductions, int maxProductionLength, IList<Terminal> terminals, bool useNull = true, bool shouldSimplify = true) {
 			if (numNonterminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
 			}
@@ -31,7 +31,7 @@ namespace CFGLib {
 				productions.Add(RandomProduction(maxProductionLength, numNonterminals, terminals, useNull));
 			}
 
-			return new Grammar(productions, start);
+			return new Grammar(productions, start, shouldSimplify);
 		}
 
 		private Production RandomProduction(int maxProductionLength, int numNonterminals, IList<Terminal> terminals, bool useNull = true) {
