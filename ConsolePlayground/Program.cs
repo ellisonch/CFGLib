@@ -24,7 +24,7 @@ namespace ConsolePlayground {
 			var tp = new TestCFGToCNFEmptyProb();
 
 			// t.TestToCNF01();
-			tp.TestToCNF06();
+			// tp.TestToCNF06();
 			// t.TestAccepts02();
 			// tp.TestGetNullable01();
 			// tp.TestGetNullable01();
@@ -34,8 +34,26 @@ namespace ConsolePlayground {
 			//var productions = new HashSet<Production> {
 			//	CFGParser.Production("<S> → <S> <S>"),
 			//	CFGParser.Production("<S> → 'x'"),
+			//	// CFGParser.Production("<S> → ε"),
 			//};
-			//var g = new Grammar(productions, Nonterminal.Of("S"));
+			var productions = new HashSet<Production> {
+				CFGParser.Production("<Sum> → <Sum> '+' <Product>"),
+				//CFGParser.Production("<Sum> → <Sum> '-' <Product>"),
+				CFGParser.Production("<Sum> → <Product>"),
+				CFGParser.Production("<Product> → <Product> '*' <Factor>"),
+				//CFGParser.Production("<Product> → <Product> '/' <Factor>"),
+				CFGParser.Production("<Product> → <Factor>"),
+				CFGParser.Production("<Factor> → '(' <Sum> ')'"),
+				CFGParser.Production("<Factor> → <Number>"),
+				CFGParser.Production("<Number> → '0' <Number>"),
+				CFGParser.Production("<Number> → '0'"),
+			};
+			var g = new Grammar(productions, Nonterminal.Of("Sum"));
+
+
+			// g.Earley(Sentence.FromLetters("xx"));
+			g.Earley(Sentence.FromWords("0 + ( 0 * 0 + 0 )"));
+
 			//Console.WriteLine(g);
 			//g.AddProduction(CFGParser.Production("<S> → <S> <S>"));
 			//Console.WriteLine(g);
@@ -73,12 +91,39 @@ namespace ConsolePlayground {
 			//var q = new CNFGrammar(new HashSet<BaseProduction> { }, new HashSet<BaseProduction> { }, 1, Nonterminal.Of("S"), true);
 			//Console.WriteLine(q.Accepts(Sentence.FromWords("")));
 
-			var rt = new CFGLibTest.RandomTests();
-			var sw = Stopwatch.StartNew();
-			// rt.RandomAcceptanceTest();
-			rt.RandomCFGToCNFTest();
-			sw.Stop();
-			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+
+			//var productions = new HashSet<Production> {
+			//	CFGParser.Production("<S> -> <S> <S>"),
+			//	CFGParser.Production("<S> -> 'x'"),
+			//	CFGParser.Production("<S> -> ε"),
+			//};
+			//Grammar g = new Grammar(productions, Nonterminal.Of("S"));
+			//Stopwatch sw = Stopwatch.StartNew();
+			//var sentences = g.ProduceToDepth(4);
+			//foreach (var sentence in sentences) {
+			//	Console.WriteLine(sentence.Value.AsTerminals());
+			//}
+			//sw.Stop();
+			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+
+			// Comparer();
+
+			//var probs = h.EstimateProbabilities(100000);
+			//foreach (var entry in probs) {
+			//	var key = entry.Key;
+			//	var value = entry.Value;
+			//	// if (key.Length <= 2) {
+			//	Console.WriteLine("{0}: {1}", key, value);
+			//	// }
+			//}
+			// Console.Read();
+
+			//var rt = new CFGLibTest.RandomTests();
+			//var sw = Stopwatch.StartNew();
+			//// rt.RandomAcceptanceTest();
+			//rt.RandomCFGToCNFTest();
+			//sw.Stop();
+			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 			//var productions = new HashSet<BaseProduction> {
 			//	CFGParser.Production("<S> -> <A>"),
@@ -104,8 +149,10 @@ namespace ConsolePlayground {
 
 			// CFGParser.Production("<X> -> <Y>");
 
-			// Benchmark();
-			Readme();
+			//Benchmark();
+
+
+			// Readme();
 			//8.7s
 
 			//var p = CFGParser.Production("<S> -> 'a' [5]");
@@ -132,13 +179,63 @@ namespace ConsolePlayground {
 			Console.Read();
 		}
 
+		static void Compare() {
+			var productions = new List<Production> {
+				Production.New(
+					Nonterminal.Of("S"),
+					new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") }
+				),
+				Production.New(
+					Nonterminal.Of("S"),
+					new Sentence { Terminal.Of("b"), Nonterminal.Of("S"), Terminal.Of("b") }
+				),
+				Production.New(
+					Nonterminal.Of("S"),
+					new Sentence { }
+				)
+			};
+			Grammar g0 = new Grammar(productions, Nonterminal.Of("S"));
+			var g = g0.ToCNF();
+			Console.WriteLine(g.ToCodeString());
+
+			var h = new CNFGrammar(new List<Production>{
+				CFGParser.Production("<X_3> → <X_4> <X_5> [1]"),
+				CFGParser.Production("<X_0> → <X_5> <X_5> [2.2]"),
+				CFGParser.Production("<X_4> → <X_2> <X_1> [1]"),
+				CFGParser.Production("<X_4> → <X_5> <X_3> [1]"),
+				CFGParser.Production("<X_0> → <X_1> <X_1> [2.112]"),
+				CFGParser.Production("<X_2> → <X_1> <X_4> [1]"),
+				CFGParser.Production("<X_4> → <X_5> <X_5> [1.2]"),
+				CFGParser.Production("<X_0> → <X_2> <X_1> [3.2]"),
+				CFGParser.Production("<X_0> → <X_5> <X_3> [3.24]"),
+				CFGParser.Production("<X_4> → <X_1> <X_1> [1.2]"),
+				CFGParser.Production("<X_1> → 'a' [1]"),
+				CFGParser.Production("<X_5> → 'b' [1]")
+			}, Nonterminal.Of("X_0"));
+			Console.WriteLine(h.ToCodeString());
+
+			// CNFGrammar h = g.ToCNF();
+			// Console.WriteLine(h);
+
+			for (int i = 0; i < 8; i += 2) {
+				var combinations = Helpers.CombinationsWithRepetition(new List<string> { "a", "b" }, i);
+
+				foreach (var combination in combinations) {
+					var s = Sentence.FromTokens(combination);
+					var p1 = g.Cyk(s);
+					var p2 = h.Cyk(s);
+					Console.WriteLine("{0} {1} : {2}", p1.ToString("F5"), p2.ToString("F5"), s.AsTerminals());
+				}
+			}
+		}
+
 		static void Benchmark() {
 			// CFGParser.Production(@"<X> -> <X0> <X1> 'asdf as_-""fw' <Z23X>");
 			int _numNonterminals = 10;
 			int _numProductions = 100;
 			int _numTerminals = 5;
-			int _maxLength = 4;
-			int _numGrammars = 80;
+			int _maxLength = 5;
+			int _numGrammars = 300;
 
 			var range = Enumerable.Range(0, _numTerminals);
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
@@ -160,14 +257,18 @@ namespace ConsolePlayground {
 			}
 
 			var sw = Stopwatch.StartNew();
+			int count = 0;
 			foreach (var g in preparedGrammars) {
 				// Console.WriteLine(g);
+				Console.Write("{0}, ", count);
+				count++;
 				foreach (var sentence in preparedSentences) {
 					var chance = g.Cyk(sentence);
 					// Console.WriteLine("{0}: {1}", sentence, chance);
 				}
 			}
 			sw.Stop();
+			Console.WriteLine();
 			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 			Console.WriteLine("Per CYK: {0}ms", sw.Elapsed.TotalMilliseconds / (_numGrammars * preparedSentences.Count));
 		}

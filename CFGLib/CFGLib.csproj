@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Earley\Item.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="CFGParser.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sentence.cs" />
     <Compile Include="Probable.cs" />
+    <Compile Include="Earley\StateSet.cs" />
     <Compile Include="Terminal.cs" />
     <Compile Include="Nonterminal.cs" />
     <Compile Include="ValueUnitProduction.cs" />

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CFGLib.Earley;
 
 namespace CFGLib {
 	/// <summary>
@@ -20,7 +21,7 @@ namespace CFGLib {
 		public abstract IEnumerable<Production> Productions {
 			get;
 		}
-		
+
 		/// <summary>
 		/// The start symbol
 		/// </summary>
@@ -192,7 +193,7 @@ namespace CFGLib {
 			}
 			return results;
 		}
-		
+
 		protected double GetProbability(Production target) {
 			var lhs = target.Lhs;
 			var weight = target.Weight;
@@ -201,7 +202,7 @@ namespace CFGLib {
 			double weightTotal = boxedSum.Value;
 			return weight / weightTotal;
 		}
-		
+
 		// TODO: need to check that this is unbiased
 		internal Sentence ProduceNonterminal(Nonterminal nt) {
 			Sentence result = null;
@@ -227,7 +228,7 @@ namespace CFGLib {
 			Debug.Assert(result != null);
 			return result;
 		}
-		
+
 		/// <summary>
 		/// Returns a list of all the nonterminals used anywhere in the productions
 		/// </summary>
@@ -242,7 +243,7 @@ namespace CFGLib {
 		public ISet<Terminal> GetTerminals() {
 			return _terminals.Value;
 		}
-		
+
 		// TODO: MIGHT NOT TERMINATE!
 		/// <summary>
 		/// Returns a random sentence produced by this grammar.
@@ -252,7 +253,7 @@ namespace CFGLib {
 			var sentence = new Sentence { this.Start };
 			while (sentence.ContainsNonterminal()) {
 				// for (int i = 0; i < sentence.Count; i++) {
-				for (int i = sentence.Count-1; i >= 0; i--) {
+				for (int i = sentence.Count - 1; i >= 0; i--) {
 					var word = sentence[i];
 					if (!word.IsNonterminal()) {
 						continue;
@@ -284,7 +285,7 @@ namespace CFGLib {
 			}
 			return true;
 		}
-		
+
 		/// <summary>
 		/// Tries to estimate the probability of a nonterminal yielding null by generating a bunch randomly and counting.
 		/// </summary>
@@ -329,7 +330,7 @@ namespace CFGLib {
 			SimplifyWithoutInvalidate();
 			InvalidateCaches();
 		}
-		
+
 		protected void SimplifyWithoutInvalidate() {
 			RemoveDuplicates();
 			int oldCount;
@@ -381,7 +382,7 @@ namespace CFGLib {
 
 		protected void RemoveUnreachable() {
 			var reachableSymbols = new HashSet<Nonterminal>();
-			
+
 			var currReachableSymbols = new HashSet<Nonterminal> { this.Start };
 			while (currReachableSymbols.Count > 0) {
 				reachableSymbols.UnionWith(currReachableSymbols);
@@ -516,7 +517,7 @@ namespace CFGLib {
 			retval += "}\n";
 			return retval;
 		}
-		
+
 		public string ToCodeString() {
 			var productions = string.Join(",\n  ", this.Productions.Select((p) => "CFGParser.Production(\"" + p.ToCodeString() + "\")"));
 
@@ -524,5 +525,141 @@ namespace CFGLib {
 			var retval = string.Format("new Grammar(new List<Production>{{\n  {0}\n}}, {1})", productions, start);
 			return retval;
 		}
-	}
+		
+		public double Earley(Sentence s) {
+			var S = new Earley.StateSet[s.Count + 1];
+			
+			// Initialize S
+			for (int i = 0; i < S.Length; i++) {
+				S[i] = new Earley.StateSet();
+			}
+
+			// Initialize S(0)
+			foreach (var production in ProductionsFrom(Start)) {
+				var item = new Earley.Item(production, 0, 0);
+				S[0].Add(item);
+			}
+
+			// outer loop
+			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
+				var state = S[stateIndex];
+				StateSet nextState = null;
+				if (stateIndex + 1 < S.Length) {
+					nextState = S[stateIndex + 1];
+				}
+				Terminal inputTerminal = null;
+				if (stateIndex < s.Count) {
+					inputTerminal = (Terminal)s[stateIndex];
+				}
+
+				// If there are no items in the current state, we're stuck
+				if (state.Count == 0) {
+					return 0.0;
+				}
+
+				// inner loop
+				for (int itemIndex = 0; itemIndex < state.Count; itemIndex++) {
+					var item = state[itemIndex];
+					var nextWord = item.Next;
+					if (nextWord == null) {
+						Completion(S, state, item);
+					} else if (nextWord.IsNonterminal()) {
+						Prediction(state, (Nonterminal)nextWord, stateIndex);
+					} else {
+						Scan(state, nextState, item, (Terminal)nextWord, s, inputTerminal);
+					}
+
+					CheckState(S);
+				}
+			}
+
+			var successes = GetSuccesses(S, s);
+			
+			return 0.0;
+		}
+
+		private IEnumerable<Item> GetSuccesses(StateSet[] S, Sentence s) {
+			if (s.Count == 0) {
+				throw new Exception("Not handling nulls yet");
+			}
+			var successes = new List<Item>();
+			// foreach (StateSet state in S[s.Count - 1]) {
+			// for (int stateIndex = 0; stateIndex < s.Count - 1; stateIndex++) {
+			var lastState = S[s.Count];
+			foreach (Item item in lastState) {
+				if (!item.IsComplete()) {
+					continue;
+				}
+				if (item.StartPosition != 0) {
+					continue;
+				}
+				if (item.Production.Lhs != Start) {
+					continue;
+				}
+				successes.Add(item);
+			}
+			//}
+			return successes;
+		}
+
+		private void CheckState(StateSet[] S) {
+			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
+				var state = S[stateIndex];
+				foreach (var item in state) {
+					if (item.StartPosition > stateIndex) {
+						throw new Exception("Bad start position");
+					}
+					if (item.CurrentPosition > item.Production.Rhs.Count) {
+						throw new Exception("Bad current position");
+					}
+				}
+			}
+		}
+
+		private void Completion(StateSet[] S, StateSet state, Item completedItem) {
+			var Si = S[completedItem.StartPosition];
+			var toAdd = new StateSet();
+			foreach (var item in Si) {
+				if (item.Next == completedItem.Production.Lhs) {
+					toAdd.Add(item.Increment());
+				}
+			}
+			state.AddRange(toAdd);
+		}
+		private void Prediction(StateSet state, Nonterminal nonterminal, int predictionPoint) {
+			var productions = ProductionsFrom(nonterminal);
+
+			// insert, but avoid duplicates
+			foreach (var production in productions) {
+				// TODO: opportunity for StateSet feature?
+				Predicate<Item> equalityCheck = (item) => {
+					if (!item.Production.ValueEquals(production)) {
+						return false;
+					}
+					if (item.CurrentPosition != 0) {
+						return false;
+					}
+					if (item.StartPosition != predictionPoint) {
+						return false;
+					}
+					return true;
+				};
+				if (!state.Exists(equalityCheck)) {
+					state.Add(new Item(production, 0, predictionPoint));
+				}
+			}
+		}
+		private void Scan(StateSet state, StateSet nextState, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {
+			if (nextState == null) {
+				// throw new Exception("Trying to scan past the bounds of the sentence");
+				return;
+			}
+
+			// var currentInput = item.StartPosition + item.CurrentPosition;
+			// var currentTerminal = s[currentInput]; // TODO: safety
+			if (currentTerminal == terminal) {
+				nextState.Add(item.Increment());
+			}
+		}
+	}	
 }

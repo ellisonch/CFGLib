@@ -44,13 +44,13 @@ namespace CFGLibTest {
 		[TestMethod]
 		[Ignore]
 		public void RandomCFGToCNFTest() {
-			int _maxDepth = 7;
+			int _maxDepth = 8;
 			var _numGrammars = 200000;
-			var _maxGenerateThing = 100000;
+			var _maxGenerateThing = 200000;
 			var _maxTestSentences = 1000;
 			var _numNonterminals = 7;
-			var _numProductions = 10;
-			var _maxProductionLength = 5;
+			var _numProductions = 15;
+			var _maxProductionLength = 6;
 			var _numTerminals = 5;
 			var _useNulls = true;
 
@@ -67,8 +67,8 @@ namespace CFGLibTest {
 			for (int i = 0; i < _numGrammars; i++) {
 				Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
 				var g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals, _useNulls);
-				var h = g.ToCNF();
 				Console.WriteLine(g.ToCodeString());
+				var h = g.ToCNF();
 				Console.WriteLine(h.ToCodeString());
 
 				var swps = g.ProduceToDepth(_maxDepth, _maxGenerateThing);

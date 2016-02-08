@@ -83,6 +83,10 @@ namespace CFGLib {
 				return false;
 			}
 		}
+		
+		public Sentence GetRange(int index, int count) {
+			return new Sentence(_sentence.GetRange(index, count));
+		}
 
 		public void Add(Word item) {
 			_sentence.Add(item);
