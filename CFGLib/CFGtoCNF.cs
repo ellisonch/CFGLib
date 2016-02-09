@@ -15,6 +15,7 @@ namespace CFGLib {
 		private int _freshx = 0;
 		private Nonterminal _startSymbol;
 		private bool _used = false;
+		private const double _removeUnitProbabilityThreshold = 0;
 
 		private ISet<ValueUnitProduction> _unitPreviouslyDeleted = new HashSet<ValueUnitProduction>();
 
@@ -257,7 +258,7 @@ namespace CFGLib {
 				foreach (var secondaryProduction in secondaryProductions) {
 					var secondaryProbThisEntry = secondaryProduction.Weight / secondarySum;
 					var newWeight = newProd.Weight * secondaryProbThisEntry;
-					if (newWeight < 1e-100) {
+					if (newWeight <= _removeUnitProbabilityThreshold) {
 						continue;
 						// Console.WriteLine("foo");
 					}
