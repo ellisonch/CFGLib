@@ -574,14 +574,15 @@ namespace CFGLib {
 			}
 
 			var successes = GetSuccesses(S, s);
-			
-			return 0.0;
+
+			// return successes.Count != 0;
+			return successes.Count() == 0 ? 0.0 : 1.0;
 		}
 
 		private IEnumerable<Item> GetSuccesses(StateSet[] S, Sentence s) {
-			if (s.Count == 0) {
-				throw new Exception("Not handling nulls yet");
-			}
+			//if (s.Count == 0) {
+			//	throw new Exception("Not handling nulls yet");
+			//}
 			var successes = new List<Item>();
 			// foreach (StateSet state in S[s.Count - 1]) {
 			// for (int stateIndex = 0; stateIndex < s.Count - 1; stateIndex++) {
@@ -624,31 +625,40 @@ namespace CFGLib {
 					toAdd.Add(item.Increment());
 				}
 			}
-			state.AddRange(toAdd);
+			foreach (var item in toAdd) {
+				InsertWithoutDuplicating(state, item);
+			}
+			// state.AddRange(toAdd);
 		}
 		private void Prediction(StateSet state, Nonterminal nonterminal, int predictionPoint) {
 			var productions = ProductionsFrom(nonterminal);
 
 			// insert, but avoid duplicates
 			foreach (var production in productions) {
-				// TODO: opportunity for StateSet feature?
-				Predicate<Item> equalityCheck = (item) => {
-					if (!item.Production.ValueEquals(production)) {
-						return false;
-					}
-					if (item.CurrentPosition != 0) {
-						return false;
-					}
-					if (item.StartPosition != predictionPoint) {
-						return false;
-					}
-					return true;
-				};
-				if (!state.Exists(equalityCheck)) {
-					state.Add(new Item(production, 0, predictionPoint));
-				}
+				var newItem = new Item(production, 0, predictionPoint);
+				InsertWithoutDuplicating(state, newItem);
 			}
 		}
+
+		private void InsertWithoutDuplicating(StateSet state, Item newItem) {
+			// TODO: opportunity for StateSet feature?
+			Predicate<Item> equalityCheck = (item) => {
+				if (!item.Production.ValueEquals(newItem.Production)) {
+					return false;
+				}
+				if (item.CurrentPosition != newItem.CurrentPosition) {
+					return false;
+				}
+				if (item.StartPosition != newItem.StartPosition) {
+					return false;
+				}
+				return true;
+			};
+			if (!state.Exists(equalityCheck)) {
+				state.Add(newItem);
+			}
+		}
+
 		private void Scan(StateSet state, StateSet nextState, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {
 			if (nextState == null) {
 				// throw new Exception("Trying to scan past the bounds of the sentence");
@@ -658,7 +668,9 @@ namespace CFGLib {
 			// var currentInput = item.StartPosition + item.CurrentPosition;
 			// var currentTerminal = s[currentInput]; // TODO: safety
 			if (currentTerminal == terminal) {
-				nextState.Add(item.Increment());
+				var newItem = item.Increment();
+				InsertWithoutDuplicating(nextState, newItem);
+				// nextState.Add(item.Increment());
 			}
 		}
 	}	

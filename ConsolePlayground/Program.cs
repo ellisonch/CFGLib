@@ -22,10 +22,12 @@ namespace ConsolePlayground {
 
 			var t = new TestCFGToCNF();
 			var tp = new TestCFGToCNFEmptyProb();
+			var tr = new RegressionTests();
 
 			// t.TestToCNF01();
 			// tp.TestToCNF06();
 			// t.TestAccepts02();
+			tr.TestParsing01();
 			// tp.TestGetNullable01();
 			// tp.TestGetNullable01();
 			// Experimental.Test();
@@ -36,23 +38,29 @@ namespace ConsolePlayground {
 			//	CFGParser.Production("<S> → 'x'"),
 			//	// CFGParser.Production("<S> → ε"),
 			//};
-			var productions = new HashSet<Production> {
-				CFGParser.Production("<Sum> → <Sum> '+' <Product>"),
-				//CFGParser.Production("<Sum> → <Sum> '-' <Product>"),
-				CFGParser.Production("<Sum> → <Product>"),
-				CFGParser.Production("<Product> → <Product> '*' <Factor>"),
-				//CFGParser.Production("<Product> → <Product> '/' <Factor>"),
-				CFGParser.Production("<Product> → <Factor>"),
-				CFGParser.Production("<Factor> → '(' <Sum> ')'"),
-				CFGParser.Production("<Factor> → <Number>"),
-				CFGParser.Production("<Number> → '0' <Number>"),
-				CFGParser.Production("<Number> → '0'"),
-			};
-			var g = new Grammar(productions, Nonterminal.Of("Sum"));
+			//var productions = new HashSet<Production> {
+			//	CFGParser.Production("<Sum> → <Sum> '+' <Product>"),
+			//	//CFGParser.Production("<Sum> → <Sum> '-' <Product>"),
+			//	CFGParser.Production("<Sum> → <Product>"),
+			//	CFGParser.Production("<Product> → <Product> '*' <Factor>"),
+			//	//CFGParser.Production("<Product> → <Product> '/' <Factor>"),
+			//	CFGParser.Production("<Product> → <Factor>"),
+			//	CFGParser.Production("<Factor> → '(' <Sum> ')'"),
+			//	CFGParser.Production("<Factor> → <Number>"),
+			//	CFGParser.Production("<Number> → '0' <Number>"),
+			//	CFGParser.Production("<Number> → '0'"),
+			//};
+			//var productions = new HashSet<Production> {
+			//	CFGParser.Production("<A> → ε"),
+			//	CFGParser.Production("<A> → <B>"),
+			//	CFGParser.Production("<B> → <A>"),
+			//};
+			//var g = new Grammar(productions, Nonterminal.Of("A"));
 
 
 			// g.Earley(Sentence.FromLetters("xx"));
-			g.Earley(Sentence.FromWords("0 + ( 0 * 0 + 0 )"));
+			// g.Earley(Sentence.FromWords("0 + ( 0 * 0 + 0 )"));
+			// g.Earley(Sentence.FromWords(""));
 
 			//Console.WriteLine(g);
 			//g.AddProduction(CFGParser.Production("<S> → <S> <S>"));
@@ -158,12 +166,13 @@ namespace ConsolePlayground {
 			//var p = CFGParser.Production("<S> -> 'a' [5]");
 			//Console.WriteLine(p);
 
-			//var rt = new CFGLibTest.RandomTests();
-			//var sw = Stopwatch.StartNew();
-			//// rt.RandomSimplificationTest();
-			//rt.RandomCFGToCNFTest();
-			//sw.Stop();
-			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+			var rt = new CFGLibTest.RandomTests();
+			var sw = Stopwatch.StartNew();
+			// rt.RandomSimplificationTest();
+			// rt.RandomCFGToCNFTest();
+			rt.RandomParsingTest();
+			sw.Stop();
+			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 
 			//var randg = new GrammarGenerator();

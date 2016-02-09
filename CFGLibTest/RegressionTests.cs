@@ -62,5 +62,19 @@ namespace CFGLibTest {
 				CFGParser.Production(@"<X_0> -> X_0 X_0")
 			);
 		}
+
+		[TestMethod]
+		public void TestParsing01() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <X> 'x'"),
+				CFGParser.Production("<S> → ε"),
+				CFGParser.Production("<X> → <S> <S>"),
+			}, Nonterminal.Of("S"));
+			var h = g.ToCNF();
+
+			var s = Sentence.FromWords("x");
+			Assert.IsTrue(g.Earley(s) > 0.0);
+			Assert.IsTrue(h.Accepts(s));
+		}
 	}
 }
