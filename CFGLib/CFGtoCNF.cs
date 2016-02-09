@@ -33,7 +33,7 @@ namespace CFGLib {
 			}
 			_used = true;
 
-			var productions = CloneGrammar(_grammar);
+			var productions = GrammarHelpers.CloneGrammar(_grammar);
 			StepStart(productions);
 			StepTerm(productions);
 			StepBin(productions);
@@ -62,19 +62,6 @@ namespace CFGLib {
 			resultProductions.Add(Production.New(_startSymbol, new Sentence(), producesEmptyWeight));
 
 			return new CNFGrammar(resultProductions, _startSymbol);
-		}
-
-		private static ISet<Production> CloneGrammar(Grammar grammar) {
-			return CloneProductions(grammar.Productions);
-		}
-
-		private static ISet<Production> CloneProductions(IEnumerable<Production> productions) {
-			var result = new HashSet<Production>();
-			foreach (var production in productions) {
-				// var productions = grammar.Productions;
-				result.Add(production.DeepClone());
-			}
-			return result;
 		}
 
 		/// <summary>

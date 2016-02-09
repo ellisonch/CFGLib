@@ -8,6 +8,19 @@ namespace CFGLib {
 	internal class GrammarHelpers {
 		private const double _magicStartProbability = 2.0;
 
+		public static ISet<Production> CloneGrammar(Grammar grammar) {
+			return CloneProductions(grammar.Productions);
+		}
+
+		private static ISet<Production> CloneProductions(IEnumerable<Production> productions) {
+			var result = new HashSet<Production>();
+			foreach (var production in productions) {
+				// var productions = grammar.Productions;
+				result.Add(production.DeepClone());
+			}
+			return result;
+		}
+
 		// TODO: should probably use this for BaseGrammar.GetNonterminals()
 		private static ISet<Nonterminal> GetNonterminals(ISet<Production> productions) {
 			var hs = new HashSet<Nonterminal>();
@@ -49,6 +62,14 @@ namespace CFGLib {
 			var previousEstimates = Enumerable.Repeat(_magicStartProbability, indexToNonterminal.Length).ToArray();
 			var currentEstimates = new double[indexToNonterminal.Length];
 
+			// figure out which nonterminals are definitely not nullable, and go ahead and set them that way
+			var nullableNonterminals = GetNullableNonterminals(originalProductions);
+			foreach (var nt in nonterminals) {
+				if (!nullableNonterminals.Contains(nt)) {
+					previousEstimates[nonterminalToIndex[nt]] = 0.0;
+				}
+			}
+
 			bool changed = true;
 			while (changed == true) {
 				changed = false;
@@ -71,7 +92,7 @@ namespace CFGLib {
 					} else {
 						currentEstimates[i] /= weightSum;
 					}
-
+					
 					if (currentEstimates[i] > previousEstimates[i]) {
 						throw new Exception("Didn't expect estimates to increase");
 					} else if (currentEstimates[i] < previousEstimates[i]) {
@@ -88,6 +109,60 @@ namespace CFGLib {
 
 			return results;
 		}
+
+		private static ISet<Nonterminal> GetNullableNonterminals(ISet<Production> originalProductions) {
+			var productions = CloneProductions(originalProductions);
+			ISet<Production> newProductions = new HashSet<Production>();
+			var nullableNonterminals = new HashSet<Nonterminal>();
+			var changed = true;
+			while (changed) {
+				changed = false;
+				foreach (var production in productions) {
+					if (production.IsEmpty) {
+						nullableNonterminals.Add(production.Lhs);
+						changed = true;
+						continue;
+					}
+					if (production.Rhs.OnlyTerminals()) {
+						continue;
+					}
+					for (int i = production.Rhs.Count - 1; i >= 0; i--) {
+						var word = production.Rhs[i];
+						if (nullableNonterminals.Contains(word)) {
+							production.Rhs.RemoveAt(i);
+							changed = true;
+						}
+					}
+					newProductions.Add(production);
+				}
+				var oldProductions = productions;
+				productions = newProductions;
+				newProductions = oldProductions;
+				newProductions.Clear();
+			}
+			return nullableNonterminals;
+		}
+
+		// TODO: slow
+		//private static ISet<Nonterminal> GetReachesTerminal(ISet<Production> originalProductions) {
+
+		//	var reachesTerminal = new HashSet<Nonterminal>();
+		//	var oldCount = -1;
+		//	while (oldCount != reachesTerminal.Count) {
+		//		oldCount = reachesTerminal.Count;
+		//		foreach (var production in originalProductions) {
+		//			if (!production.Rhs.OnlyNonterminals()) {
+		//				reachesTerminal.Add(production.Lhs);
+		//			}
+		//			foreach (var nt in production.Rhs) {
+		//				if (reachesTerminal.Contains(nt)) {
+		//					reachesTerminal.Add(production.Lhs);
+		//				}
+		//			}
+		//		}
+		//	}
+		//	return reachesTerminal;
+		//}
 
 		private static double GetProductionProbability(Production production, Dictionary<Nonterminal, int> nonterminalToIndex, double[] previousEstimates) {
 			if (production.Rhs.Count == 0) {
