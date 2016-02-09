@@ -93,13 +93,12 @@ namespace CFGLibTest {
 
 		[TestMethod]
 		[Ignore]
-		public void RandomParsingTest() {
+		public void RandomParsingTest(int _numGrammars = 10000) {
 			// CFGParser.Production(@"<X> -> <X0> <X1> 'asdf as_-""fw' <Z23X>");
 			int _numNonterminals = 10;
 			int _numProductions = 20;
 			int _numTerminals = 5;
 			int _maxLength = 6;
-			int _numGrammars = 5000;
 			int _maxProductionLength = 8;
 
 			var range = Enumerable.Range(0, _numTerminals);
@@ -119,7 +118,13 @@ namespace CFGLibTest {
 			Console.WriteLine("Preparing grammars");
 			for (int i = 0; i < _numGrammars; i++) {
 				// var g = randg.NextCNF(_numNonterminals, _numProductions, terminals);
-				var g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals, true);
+				Grammar g = null;
+				while (g == null) {
+					g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals, true);
+					if (g.Productions.Count() == 0) {
+						g = null;
+					}
+				}
 				var h = g.ToCNF();
 				// Console.WriteLine(g);
 				// g.PrintProbabilities(2, 3);
@@ -151,8 +156,8 @@ namespace CFGLibTest {
 			}
 			sw.Stop();
 			Console.WriteLine();
-			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
-			Console.WriteLine("Per CYK: {0}ms", sw.Elapsed.TotalMilliseconds / (_numGrammars * preparedSentences.Count));
+			Console.WriteLine("inner Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+			// Console.WriteLine("Per CYK: {0}ms", sw.Elapsed.TotalMilliseconds / (_numGrammars * preparedSentences.Count));
 		}
 
 		[TestMethod]

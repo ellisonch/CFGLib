@@ -17,7 +17,7 @@ namespace CFGLib {
 		private Cache<Dictionary<Nonterminal, Boxed<double>>> _weightTotalsByNonterminal;
 		private Cache<ISet<Nonterminal>> _nonterminals;
 		private Cache<ISet<Terminal>> _terminals;
-
+		private Cache<Dictionary<Nonterminal, double>> _nullableDict;
 		public abstract IEnumerable<Production> Productions {
 			get;
 		}
@@ -33,6 +33,12 @@ namespace CFGLib {
 		protected List<IDirtyable> Caches {
 			get {
 				return _caches;
+			}
+		}
+
+		protected Dictionary<Nonterminal, double> NullableProbabilities {
+			get {
+				return _nullableDict.Value;
 			}
 		}
 
@@ -75,6 +81,9 @@ namespace CFGLib {
 				return (ISet<Terminal>)hs;
 			});
 			this.Caches.Add(_terminals);
+
+			_nullableDict = Cache.Create(() => GrammarHelpers.GetNullable(new HashSet<Production>(Productions)));
+			this.Caches.Add(_nullableDict);
 		}
 
 		internal abstract IEnumerable<Production> ProductionsFrom(Nonterminal lhs);
@@ -528,7 +537,7 @@ namespace CFGLib {
 		
 		public double Earley(Sentence s) {
 			var S = new Earley.StateSet[s.Count + 1];
-			var nullableDict = GrammarHelpers.GetNullable(new HashSet<Production>(Productions));
+			// var nullableDict = GrammarHelpers.GetNullable(new HashSet<Production>(Productions));
 
 			// Initialize S
 			for (int i = 0; i < S.Length; i++) {
@@ -565,7 +574,7 @@ namespace CFGLib {
 					if (nextWord == null) {
 						Completion(S, state, item);
 					} else if (nextWord.IsNonterminal()) {
-						Prediction(state, (Nonterminal)nextWord, stateIndex, item, nullableDict);
+						Prediction(state, (Nonterminal)nextWord, stateIndex, item);
 					} else {
 						Scan(state, nextState, item, (Terminal)nextWord, s, inputTerminal);
 					}
@@ -615,7 +624,7 @@ namespace CFGLib {
 			}
 			// state.AddRange(toAdd);
 		}
-		private void Prediction(StateSet state, Nonterminal nonterminal, int predictionPoint, Item item, Dictionary<Nonterminal, double> nullableDict) {
+		private void Prediction(StateSet state, Nonterminal nonterminal, int predictionPoint, Item item) {
 			var productions = ProductionsFrom(nonterminal);
 
 			// insert, but avoid duplicates
@@ -626,7 +635,7 @@ namespace CFGLib {
 
 			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon.
 			// This is due to Aycock and Horspool's "Practical Earley Parsing" (2002)
-			if (nullableDict[nonterminal] > 0.0) {
+			if (NullableProbabilities[nonterminal] > 0.0) {
 				var newItem = item.Increment();
 				InsertWithoutDuplicating(state, newItem);
 			}

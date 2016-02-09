@@ -170,7 +170,7 @@ namespace ConsolePlayground {
 			var sw = Stopwatch.StartNew();
 			// rt.RandomSimplificationTest();
 			// rt.RandomCFGToCNFTest();
-			rt.RandomParsingTest();
+			rt.RandomParsingTest(10);
 			sw.Stop();
 			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
