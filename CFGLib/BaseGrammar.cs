@@ -528,7 +528,8 @@ namespace CFGLib {
 		
 		public double Earley(Sentence s) {
 			var S = new Earley.StateSet[s.Count + 1];
-			
+			var nullableDict = GrammarHelpers.GetNullable(new HashSet<Production>(Productions));
+
 			// Initialize S
 			for (int i = 0; i < S.Length; i++) {
 				S[i] = new Earley.StateSet();
@@ -564,7 +565,7 @@ namespace CFGLib {
 					if (nextWord == null) {
 						Completion(S, state, item);
 					} else if (nextWord.IsNonterminal()) {
-						Prediction(state, (Nonterminal)nextWord, stateIndex);
+						Prediction(state, (Nonterminal)nextWord, stateIndex, item, nullableDict);
 					} else {
 						Scan(state, nextState, item, (Terminal)nextWord, s, inputTerminal);
 					}
@@ -630,12 +631,19 @@ namespace CFGLib {
 			}
 			// state.AddRange(toAdd);
 		}
-		private void Prediction(StateSet state, Nonterminal nonterminal, int predictionPoint) {
+		private void Prediction(StateSet state, Nonterminal nonterminal, int predictionPoint, Item item, Dictionary<Nonterminal, double> nullableDict) {
 			var productions = ProductionsFrom(nonterminal);
 
 			// insert, but avoid duplicates
 			foreach (var production in productions) {
 				var newItem = new Item(production, 0, predictionPoint);
+				InsertWithoutDuplicating(state, newItem);
+			}
+
+			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon.
+			// This is due to Aycock and Horspool's "Practical Earley Parsing" (2002)
+			if (nullableDict[nonterminal] > 0.0) {
+				var newItem = item.Increment();
 				InsertWithoutDuplicating(state, newItem);
 			}
 		}

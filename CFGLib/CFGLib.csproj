@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Earley\Item.cs" />
+    <Compile Include="GrammarHelpers.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="CFGParser.cs" />

@@ -7,17 +7,18 @@ using System.Linq;
 namespace CFGLibTest.Unit {
 	[TestClass]
 	public class TestCFGToCNFEmptyProb {
+		PrivateType nullableClass = new PrivateType(typeof(GrammarHelpers));
+
 		[TestMethod]
 		public void TestNullate01() {
-			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
-
+			PrivateType nullateClass = new PrivateType(typeof(CFGtoCNF));
 			var production = CFGParser.Production("<S> -> <A> 'b' <B> [1]");
 			var nullableDictionary = new Dictionary<Nonterminal, double> {
 				{ Nonterminal.Of("A"), 0.5 },
 				{ Nonterminal.Of("B"), 0.2 }
 			};
 
-			var actualList = (List<Production>)cfgToCnf.InvokeStatic("Nullate", new object[] { production, nullableDictionary });
+			var actualList = (List<Production>)nullateClass.InvokeStatic("Nullate", new object[] { production, nullableDictionary });
 			var actual = new HashSet<string>(actualList.Select((p) => p.ToString()));
 			var expected = new HashSet<string> {
 				CFGParser.Production("<S> -> <A> 'b' <B> [0.4]").ToString(),
@@ -188,15 +189,13 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestGetNullable01() {
-			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
-
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<X> -> <B> <B>"),
 				CFGParser.Production("<B> -> 'b'"),
 				CFGParser.Production("<B> -> ε"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)nullableClass.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 2);
 			Helpers.AssertNear(0.5, result[Nonterminal.Of("B")]);
@@ -205,7 +204,6 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestGetNullable02() {
-			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A> <B>"),
 				CFGParser.Production("<A> -> ε"),
@@ -213,7 +211,7 @@ namespace CFGLibTest.Unit {
 				CFGParser.Production("<B> -> ε"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)nullableClass.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 2);
 			Helpers.AssertNear(2.0 / 3.0, result[Nonterminal.Of("A")]);
@@ -222,8 +220,6 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestGetNullable03() {
-			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
-
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <B> <C>"),
 				CFGParser.Production("<B> -> <C>"),
@@ -234,7 +230,7 @@ namespace CFGLibTest.Unit {
 				CFGParser.Production("<C> -> ε"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)nullableClass.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 3);
 			Helpers.AssertNear(0.25, result[Nonterminal.Of("A")]);
@@ -244,15 +240,13 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestGetNullable04() {
-			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
-
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<A> -> <A> <A>"),
 				CFGParser.Production("<A> -> ε"),
 				CFGParser.Production("<A> -> 'a'"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)nullableClass.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 1);
 			var phiRecip = 2.0 / (1.0 + Math.Sqrt(5));
@@ -261,8 +255,6 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestGetNullable05() {
-			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
-
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<S> -> <A>"),
 				CFGParser.Production("<S> -> <B>"),
@@ -274,7 +266,7 @@ namespace CFGLibTest.Unit {
 				CFGParser.Production("<B> -> <A>"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)nullableClass.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 3);
 			Helpers.AssertNear(0.5, result[Nonterminal.Of("S")]);
@@ -284,14 +276,12 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestGetNullable06() {
-			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
-
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<S> -> ε"),
 				CFGParser.Production("<S> -> <S> <S> <S>"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)nullableClass.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 1);
 			Helpers.AssertNear(1, result[Nonterminal.Of("S")]);
@@ -299,14 +289,12 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestGetNullable07() {
-			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
-
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<S> -> 'x'"),
 				CFGParser.Production("<S> -> <S> <S> <S>"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)nullableClass.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 1);
 			Helpers.AssertNear(0, result[Nonterminal.Of("S")]);
@@ -314,15 +302,13 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestGetNullable08() {
-			PrivateType cfgToCnf = new PrivateType(typeof(CFGtoCNF));
-
 			var productions = new HashSet<Production> {
 				CFGParser.Production("<S> -> 'x'"),
 				CFGParser.Production("<S> -> ε"),
 				CFGParser.Production("<S> -> <S> <S> <S>"),
 			};
 
-			var result = (Dictionary<Nonterminal, double>)cfgToCnf.InvokeStatic("GetNullable", new object[] { productions });
+			var result = (Dictionary<Nonterminal, double>)nullableClass.InvokeStatic("GetNullable", new object[] { productions });
 
 			Assert.IsTrue(result.Count == 1);
 			Helpers.AssertNear(0.34729635533386069770343325353862959, result[Nonterminal.Of("S")]);
