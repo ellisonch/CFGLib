@@ -569,8 +569,6 @@ namespace CFGLib {
 					} else {
 						Scan(state, nextState, item, (Terminal)nextWord, s, inputTerminal);
 					}
-
-					CheckState(S);
 				}
 			}
 
@@ -602,20 +600,6 @@ namespace CFGLib {
 			}
 			//}
 			return successes;
-		}
-
-		private void CheckState(StateSet[] S) {
-			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
-				var state = S[stateIndex];
-				foreach (var item in state) {
-					if (item.StartPosition > stateIndex) {
-						throw new Exception("Bad start position");
-					}
-					if (item.CurrentPosition > item.Production.Rhs.Count) {
-						throw new Exception("Bad current position");
-					}
-				}
-			}
 		}
 
 		private void Completion(StateSet[] S, StateSet state, Item completedItem) {
