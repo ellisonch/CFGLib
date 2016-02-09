@@ -96,7 +96,7 @@ namespace CFGLibTest {
 		public void RandomParsingTest() {
 			// CFGParser.Production(@"<X> -> <X0> <X1> 'asdf as_-""fw' <Z23X>");
 			int _numNonterminals = 10;
-			int _numProductions = 15;
+			int _numProductions = 20;
 			int _numTerminals = 5;
 			int _maxLength = 6;
 			int _numGrammars = 5000;
