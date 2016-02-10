@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.EarleyNS {
+namespace CFGLib.Parsers.Earley {
 	internal class Item {
 		public readonly Production Production;
 		public readonly int CurrentPosition; // where the dot is

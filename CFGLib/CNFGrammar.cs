@@ -171,7 +171,7 @@ namespace CFGLib {
 		}
 
 		public double Cyk(Sentence s) {
-			var cyk = new CYKNS.Cyk(this);
+			var cyk = new Parsers.CYK.CykParser(this);
 			return cyk.GetProbability(s);
 		}
 

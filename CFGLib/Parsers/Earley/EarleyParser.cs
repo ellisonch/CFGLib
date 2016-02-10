@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.EarleyNS {
-	internal class Earley {
+namespace CFGLib.Parsers.Earley {
+	internal class EarleyParser {
 		private readonly BaseGrammar _grammar;
-		public Earley(BaseGrammar grammar) {
+		public EarleyParser(BaseGrammar grammar) {
 			_grammar = grammar;
 		}
 

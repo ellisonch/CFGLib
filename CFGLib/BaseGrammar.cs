@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CFGLib.EarleyNS;
 
 namespace CFGLib {
 	/// <summary>
@@ -536,7 +535,7 @@ namespace CFGLib {
 		}
 		
 		public double Earley(Sentence s) {
-			var earley = new Earley(this);
+			var earley = new Parsers.Earley.EarleyParser(this);
 			return earley.GetProbability(s);
 		}	
 	}	

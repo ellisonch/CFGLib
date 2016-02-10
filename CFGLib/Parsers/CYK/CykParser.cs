@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.CYKNS {
-	internal class Cyk {
+namespace CFGLib.Parsers.CYK {
+	internal class CykParser {
 		private readonly CNFGrammar _grammar;
 
-		public Cyk(CNFGrammar grammar) {
+		public CykParser(CNFGrammar grammar) {
 			_grammar = grammar;
 		}
 

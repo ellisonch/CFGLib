@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.CYKNS {
+namespace CFGLib.Parsers.CYK {
 	internal struct LocalCykProduction {
 		public int A;
 		public int B;

@@ -42,10 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CYK\Cyk.cs" />
-    <Compile Include="CYK\LocalCykProduction.cs" />
-    <Compile Include="Earley\Earley.cs" />
-    <Compile Include="Earley\Item.cs" />
+    <Compile Include="Parsers\CYK\CykParser.cs" />
+    <Compile Include="Parsers\CYK\LocalCykProduction.cs" />
+    <Compile Include="Parsers\Earley\EarleyParser.cs" />
+    <Compile Include="Parsers\Earley\Item.cs" />
     <Compile Include="GrammarHelpers.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="Cache.cs" />
@@ -62,7 +62,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sentence.cs" />
     <Compile Include="Probable.cs" />
-    <Compile Include="Earley\StateSet.cs" />
+    <Compile Include="Parsers\Earley\StateSet.cs" />
     <Compile Include="Terminal.cs" />
     <Compile Include="Nonterminal.cs" />
     <Compile Include="ValueUnitProduction.cs" />
