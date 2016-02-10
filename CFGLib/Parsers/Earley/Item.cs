@@ -18,6 +18,9 @@ namespace CFGLib.Parsers.Earley {
 		// used only in the tree reconstruction phase
 		public int EndPosition;
 
+		public readonly List<PredecessorPointer> Predecessors;
+		public readonly List<ReductionPointer> Reductions;
+
 		public Word Next {
 			get {
 				if (CurrentPosition >= Production.Rhs.Count) {
@@ -32,6 +35,8 @@ namespace CFGLib.Parsers.Earley {
 			CurrentPosition = currentPosition;
 			StartPosition = startPosition;
 			EndPosition = endPosition;
+			Predecessors = new List<PredecessorPointer>();
+			Reductions = new List<ReductionPointer>();
 		}
 		public override string ToString() {
 			var beforeDot = Production.Rhs.GetRange(0, CurrentPosition);
@@ -52,6 +57,16 @@ namespace CFGLib.Parsers.Earley {
 
 		internal bool IsComplete() {
 			return this.Next == null;
+		}
+
+		internal void AddPredecessor(int label, Item item) {
+			var predp = new PredecessorPointer(label, item);
+			Predecessors.Add(predp);
+		}
+
+		internal void AddReduction(int label, Item item) {
+			var reductionp = new ReductionPointer(label, item);
+			Reductions.Add(reductionp);
 		}
 	}
 }

@@ -48,9 +48,19 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			var successes = GetSuccesses(S, s);
-			var trees = CollectTrees(S, s, successes);
+			foreach (var success in successes) {
+				PrintTree(success);
+			}
+			// var trees = CollectTrees(S, s, successes);
 
 			return successes.Count() == 0 ? 0.0 : 1.0;
+		}
+
+		private void PrintTree(Item item, string padding = "") {
+			Console.WriteLine("{0}{1}", padding, item);
+			foreach (var child in item.Reductions) {
+				PrintTree(child.Item, padding + "  ");
+			}
 		}
 
 		private static StateSet[] FreshS(int length) {
@@ -66,6 +76,8 @@ namespace CFGLib.Parsers.Earley {
 
 		private object CollectTrees(StateSet[] S, Sentence s, IEnumerable<Item> successes) {
 			var reversedS = FreshS(S.Length);
+			// make stateIndex correspond to item.StartPosition instead of item.EndPosition
+			// also, throw away incomplete items
 			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
 				var state = S[stateIndex];
 				foreach (var item in state) {
@@ -75,6 +87,14 @@ namespace CFGLib.Parsers.Earley {
 					reversedS[item.StartPosition].Add(item);
 				}
 			}
+
+			// var pg = new ParseGraph(reversedS, s);
+
+
+			//foreach (var success in successes) {
+			//	// pg.DFS(success);
+			//	scottSec4(reversedS, success)
+			//}
 
 			return null;
 		}
@@ -102,9 +122,16 @@ namespace CFGLib.Parsers.Earley {
 			var Si = S[completedItem.StartPosition];
 			var toAdd = new StateSet();
 			foreach (var item in Si) {
-				if (item.Next == completedItem.Production.Lhs) {
-					toAdd.Add(item.Increment());
+				// make sure it's the same nonterminal
+				if (item.Next != completedItem.Production.Lhs) {
+					continue;
 				}
+				var newItem = item.Increment();
+				newItem.AddReduction(completedItem.StartPosition, completedItem);
+				if (item.CurrentPosition != 0) {
+					newItem.AddPredecessor(completedItem.StartPosition, item);
+				}
+				toAdd.Add(newItem);
 			}
 			foreach (var item in toAdd) {
 				InsertWithoutDuplicating(state, stateIndex, item);
@@ -144,8 +171,13 @@ namespace CFGLib.Parsers.Earley {
 				}
 				return true;
 			};
-			if (!state.Exists(equalityCheck)) {
+
+			var existingItem = state.Find(equalityCheck);
+			if (existingItem == null) {
 				state.Add(newItem);
+			} else {
+				existingItem.Predecessors.AddRange(newItem.Predecessors);
+				existingItem.Reductions.AddRange(newItem.Reductions);
 			}
 		}
 
@@ -158,10 +190,13 @@ namespace CFGLib.Parsers.Earley {
 			} else {
 				return;
 			}
-			
+
 			if (currentTerminal == terminal) {
 				var newItem = item.Increment();
-				InsertWithoutDuplicating(nextState, stateIndex + 1, newItem);
+				if (item.CurrentPosition != 0) {
+					newItem.AddPredecessor(stateIndex - 1, newItem);
+				}
+				InsertWithoutDuplicating(nextState, stateIndex + 1, newItem);		
 			}
 		}
 	}

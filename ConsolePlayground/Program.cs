@@ -33,9 +33,17 @@ namespace ConsolePlayground {
 			// Experimental.Test();
 			// Console.Read();
 
+			var productions = new HashSet<Production> {
+				CFGParser.Production("<S> → <S> <S>"),
+				CFGParser.Production("<S> → 'b'"),
+				// CFGParser.Production("<S> → ε"),
+			};
 			//var productions = new HashSet<Production> {
-			//	CFGParser.Production("<S> → <S> <S>"),
-			//	CFGParser.Production("<S> → 'x'"),
+			//	CFGParser.Production("<S> → <S> <T>"),
+			//	CFGParser.Production("<S> → 'a'"),
+			//	CFGParser.Production("<B> → ε"),
+			//	CFGParser.Production("<T> → 'a' <B>"),
+			//	CFGParser.Production("<T> → 'a'"),
 			//	// CFGParser.Production("<S> → ε"),
 			//};
 			//var productions = new HashSet<Production> {
@@ -55,10 +63,11 @@ namespace ConsolePlayground {
 			//	CFGParser.Production("<A> → <B>"),
 			//	CFGParser.Production("<B> → <A>"),
 			//};
-			//var g = new Grammar(productions, Nonterminal.Of("A"));
+			var g = new Grammar(productions, Nonterminal.Of("S"));
 
 
-			// g.Earley(Sentence.FromLetters("xx"));
+			// g.Earley(Sentence.FromLetters("aa"));
+			g.Earley(Sentence.FromLetters("bbb"));
 			// g.Earley(Sentence.FromWords("0 + ( 0 * 0 + 0 )"));
 			// g.Earley(Sentence.FromWords(""));
 
