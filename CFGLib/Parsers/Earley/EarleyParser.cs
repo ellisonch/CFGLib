@@ -13,7 +13,6 @@ namespace CFGLib.Parsers.Earley {
 
 		public override double GetProbability(Sentence s) {
 			var S = new StateSet[s.Count + 1];
-			// var nullableDict = GrammarHelpers.GetNullable(new HashSet<Production>(Productions));
 
 			// Initialize S
 			for (int i = 0; i < S.Length; i++) {
@@ -58,18 +57,12 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			var successes = GetSuccesses(S, s);
-
-			// return successes.Count != 0;
+			
 			return successes.Count() == 0 ? 0.0 : 1.0;
 		}
 
 		private IEnumerable<Item> GetSuccesses(StateSet[] S, Sentence s) {
-			//if (s.Count == 0) {
-			//	throw new Exception("Not handling nulls yet");
-			//}
 			var successes = new List<Item>();
-			// foreach (StateSet state in S[s.Count - 1]) {
-			// for (int stateIndex = 0; stateIndex < s.Count - 1; stateIndex++) {
 			var lastState = S[s.Count];
 			foreach (Item item in lastState) {
 				if (!item.IsComplete()) {
@@ -83,7 +76,6 @@ namespace CFGLib.Parsers.Earley {
 				}
 				successes.Add(item);
 			}
-			//}
 			return successes;
 		}
 
@@ -98,7 +90,6 @@ namespace CFGLib.Parsers.Earley {
 			foreach (var item in toAdd) {
 				InsertWithoutDuplicating(state, item);
 			}
-			// state.AddRange(toAdd);
 		}
 		private void Prediction(StateSet state, Nonterminal nonterminal, int predictionPoint, Item item) {
 			var productions = _grammar.ProductionsFrom(nonterminal);
@@ -138,16 +129,12 @@ namespace CFGLib.Parsers.Earley {
 
 		private void Scan(StateSet state, StateSet nextState, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {
 			if (nextState == null) {
-				// throw new Exception("Trying to scan past the bounds of the sentence");
 				return;
 			}
-
-			// var currentInput = item.StartPosition + item.CurrentPosition;
-			// var currentTerminal = s[currentInput]; // TODO: safety
+			
 			if (currentTerminal == terminal) {
 				var newItem = item.Increment();
 				InsertWithoutDuplicating(nextState, newItem);
-				// nextState.Add(item.Increment());
 			}
 		}
 	}
