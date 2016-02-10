@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.CYK {
-	internal class CykParser {
+	internal class CykParser : Parser {
 		private readonly CNFGrammar _grammar;
 
 		public CykParser(CNFGrammar grammar) {
@@ -34,7 +34,7 @@ namespace CFGLib.Parsers.CYK {
 		/// </summary>
 		/// <param name="s"></param>
 		/// <returns></returns>
-		public double GetProbability(Sentence s) {
+		public override double GetProbability(Sentence s) {
 			if (s.Count == 0) {
 				return _grammar.ProbabilityNull;
 			}

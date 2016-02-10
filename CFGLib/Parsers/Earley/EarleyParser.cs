@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
-	internal class EarleyParser {
+	internal class EarleyParser : Parser {
 		private readonly BaseGrammar _grammar;
 		public EarleyParser(BaseGrammar grammar) {
 			_grammar = grammar;
 		}
 
-		public double GetProbability(Sentence s) {
+		public override double GetProbability(Sentence s) {
 			var S = new StateSet[s.Count + 1];
 			// var nullableDict = GrammarHelpers.GetNullable(new HashSet<Production>(Productions));
 
