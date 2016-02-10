@@ -12,26 +12,17 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public override double GetProbability(Sentence s) {
-			var S = new StateSet[s.Count + 1];
-
-			// Initialize S
-			for (int i = 0; i < S.Length; i++) {
-				S[i] = new StateSet();
-			}
+			StateSet[] S = FreshS(s.Count + 1);
 
 			// Initialize S(0)
 			foreach (var production in _grammar.ProductionsFrom(_grammar.Start)) {
-				var item = new Item(production, 0, 0);
+				var item = new Item(production, 0, 0, 0);
 				S[0].Add(item);
 			}
 
 			// outer loop
 			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
 				var state = S[stateIndex];
-				StateSet nextState = null;
-				if (stateIndex + 1 < S.Length) {
-					nextState = S[stateIndex + 1];
-				}
 				Terminal inputTerminal = null;
 				if (stateIndex < s.Count) {
 					inputTerminal = (Terminal)s[stateIndex];
@@ -47,18 +38,45 @@ namespace CFGLib.Parsers.Earley {
 					var item = state[itemIndex];
 					var nextWord = item.Next;
 					if (nextWord == null) {
-						Completion(S, state, item);
+						Completion(S, stateIndex, item);
 					} else if (nextWord.IsNonterminal()) {
-						Prediction(state, (Nonterminal)nextWord, stateIndex, item);
+						Prediction(S, stateIndex, (Nonterminal)nextWord, item);
 					} else {
-						Scan(state, nextState, item, (Terminal)nextWord, s, inputTerminal);
+						Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
 					}
 				}
 			}
 
 			var successes = GetSuccesses(S, s);
-			
+			var trees = CollectTrees(S, s, successes);
+
 			return successes.Count() == 0 ? 0.0 : 1.0;
+		}
+
+		private static StateSet[] FreshS(int length) {
+			var S = new StateSet[length];
+
+			// Initialize S
+			for (int i = 0; i < S.Length; i++) {
+				S[i] = new StateSet();
+			}
+
+			return S;
+		}
+
+		private object CollectTrees(StateSet[] S, Sentence s, IEnumerable<Item> successes) {
+			var reversedS = FreshS(S.Length);
+			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
+				var state = S[stateIndex];
+				foreach (var item in state) {
+					if (!item.IsComplete()) {
+						continue;
+					}
+					reversedS[item.StartPosition].Add(item);
+				}
+			}
+
+			return null;
 		}
 
 		private IEnumerable<Item> GetSuccesses(StateSet[] S, Sentence s) {
@@ -79,7 +97,8 @@ namespace CFGLib.Parsers.Earley {
 			return successes;
 		}
 
-		private void Completion(StateSet[] S, StateSet state, Item completedItem) {
+		private void Completion(StateSet[] S, int stateIndex, Item completedItem) {
+			var state = S[stateIndex];
 			var Si = S[completedItem.StartPosition];
 			var toAdd = new StateSet();
 			foreach (var item in Si) {
@@ -88,27 +107,30 @@ namespace CFGLib.Parsers.Earley {
 				}
 			}
 			foreach (var item in toAdd) {
-				InsertWithoutDuplicating(state, item);
+				InsertWithoutDuplicating(state, stateIndex, item);
 			}
 		}
-		private void Prediction(StateSet state, Nonterminal nonterminal, int predictionPoint, Item item) {
+		private void Prediction(StateSet[] S, int stateIndex, Nonterminal nonterminal, Item item) {
+			var state = S[stateIndex];
 			var productions = _grammar.ProductionsFrom(nonterminal);
 
 			// insert, but avoid duplicates
 			foreach (var production in productions) {
-				var newItem = new Item(production, 0, predictionPoint);
-				InsertWithoutDuplicating(state, newItem);
+				var newItem = new Item(production, 0, stateIndex, stateIndex);
+				InsertWithoutDuplicating(state, stateIndex, newItem);
 			}
 
 			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon.
 			// This is due to Aycock and Horspool's "Practical Earley Parsing" (2002)
 			if (_grammar.NullableProbabilities[nonterminal] > 0.0) {
 				var newItem = item.Increment();
-				InsertWithoutDuplicating(state, newItem);
+				InsertWithoutDuplicating(state, stateIndex, newItem);
 			}
 		}
 
-		private void InsertWithoutDuplicating(StateSet state, Item newItem) {
+		private void InsertWithoutDuplicating(StateSet state, int stateIndex, Item newItem) {
+			// the endPosition should always equal the stateIndex of the state it resides in
+			newItem.EndPosition = stateIndex; 
 			// TODO: opportunity for StateSet feature?
 			Predicate<Item> equalityCheck = (item) => {
 				if (!item.Production.ValueEquals(newItem.Production)) {
@@ -127,14 +149,19 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private void Scan(StateSet state, StateSet nextState, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {
-			if (nextState == null) {
+		private void Scan(StateSet[] S, int stateIndex, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {
+			var state = S[stateIndex];
+
+			StateSet nextState = null;
+			if (stateIndex + 1 < S.Length) {
+				nextState = S[stateIndex + 1];
+			} else {
 				return;
 			}
 			
 			if (currentTerminal == terminal) {
 				var newItem = item.Increment();
-				InsertWithoutDuplicating(nextState, newItem);
+				InsertWithoutDuplicating(nextState, stateIndex + 1, newItem);
 			}
 		}
 	}
