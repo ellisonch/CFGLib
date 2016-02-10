@@ -42,6 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CYK\Cyk.cs" />
+    <Compile Include="CYK\LocalCykProduction.cs" />
+    <Compile Include="Earley\Earley.cs" />
     <Compile Include="Earley\Item.cs" />
     <Compile Include="GrammarHelpers.cs" />
     <Compile Include="Production.cs" />

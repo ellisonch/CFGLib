@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Earley {
+namespace CFGLib.EarleyNS {
 	internal class StateSet : List<Item> {
 	}
 }
