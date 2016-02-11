@@ -5,6 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
+
+	/*
+	Inspired by
+	 * Elizabeth Scott's 2008 paper "SPPF-Style Parsing From Earley Recognisers" (http://dx.doi.org/10.1016/j.entcs.2008.03.044) [ES2008]
+	 * John Aycock and Nigel Horspool's 2002 paper "Practical Earley Parsing" [AH2002]
+	 * Loup Vaillant's tutorial (http://loup-vaillant.fr/tutorials/earley-parsing/)
+	*/
+
 	internal class EarleyParser : Parser {
 		private readonly BaseGrammar _grammar;
 		public EarleyParser(BaseGrammar grammar) {
@@ -85,6 +93,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+		// [Sec 4, ES2008]
 		private void BuildTree(Dictionary<InteriorNode, InteriorNode> nodes, HashSet<Item> processed, InteriorNode node, Item item) {
 			// item.Processed = true;
 			processed.Add(item);
@@ -261,8 +270,7 @@ namespace CFGLib.Parsers.Earley {
 				InsertWithoutDuplicating(state, stateIndex, newItem);
 			}
 
-			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon.
-			// This is due to Aycock and Horspool's "Practical Earley Parsing" (2002)
+			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon. [AH2002]
 			if (_grammar.NullableProbabilities[nonterminal] > 0.0) {
 				var newItem = item.Increment();
 				InsertWithoutDuplicating(state, stateIndex, newItem);
