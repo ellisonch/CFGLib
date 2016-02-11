@@ -21,7 +21,7 @@ namespace CFGLib.Parsers.Earley {
 		public readonly List<PredecessorPointer> Predecessors;
 		public readonly List<ReductionPointer> Reductions;
 
-		public bool Processed = false;
+		// public bool Processed = false;
 
 		public Word PrevWord {
 			get {

@@ -26,7 +26,7 @@ namespace ConsolePlayground {
 
 			// t.TestToCNF01();
 			// tp.TestToCNF06();
-			t.TestAccepts01();
+			// t.TestAccepts01();
 			// tr.TestParsing01();
 			// tp.TestGetNullable01();
 			// tp.TestGetNullable01();

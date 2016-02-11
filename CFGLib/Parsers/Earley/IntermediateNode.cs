@@ -6,17 +6,30 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class IntermediateNode : InteriorNode {
-		public Item Item;
+		public readonly Item Item;
+
+		// these two are used just for figuring out equality
+		private readonly Production _production;
+		private readonly int _currentPosition;
 
 		public IntermediateNode(Item item, int startPosition, int endPosition) : base(startPosition, endPosition) {
 			Item = item;
+
+			// these two are used just for figuring out equality
+			_production = item.Production;
+			_currentPosition = item.CurrentPosition;
 		}
 
 		//public IntermediateNode(Item item) : this(item, item.StartPosition, item.EndPosition) {
 		//}
 
 		public override int GetHashCode() {
-			return new { StartPosition, EndPosition, Item }.GetHashCode();
+			return new {
+				StartPosition,
+				EndPosition,
+				_production,
+				_currentPosition
+			}.GetHashCode();
 		}
 
 		public override bool Equals(Object other) {
@@ -34,7 +47,10 @@ namespace CFGLib.Parsers.Earley {
 			if (EndPosition != localOther.EndPosition) {
 				return false;
 			}
-			if (Item != localOther.Item) {
+			if (_production != localOther._production) {
+				return false;
+			}
+			if (_currentPosition != localOther._currentPosition) {
 				return false;
 			}
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class SymbolNode : InteriorNode {
-		public Word Symbol;
+		public readonly Word Symbol;
 
 		public SymbolNode(Word symbol, int start, int end) : base(start, end) {
 			Symbol = symbol;

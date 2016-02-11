@@ -50,10 +50,13 @@ namespace CFGLib.Parsers.Earley {
 			var successes = GetSuccesses(S, s);
 			foreach (var success in successes) {
 				PrintTree(success);
+				Console.WriteLine("");
+				var allItems = GetItems(success);
 				var node = new SymbolNode(success);
-				var nodes = new HashSet<InteriorNode>();
-				nodes.Add(node);
-				BuildTree(nodes, node, success);
+				var nodes = new Dictionary<InteriorNode, InteriorNode>();
+				var processed = new HashSet<Item>();
+				nodes[node] = node;
+				BuildTree(nodes, processed, node, success);
 				PrintForest(node);
 			}
 			// var trees = CollectTrees(S, s, successes);
@@ -83,8 +86,9 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private void BuildTree(HashSet<InteriorNode> nodes, InteriorNode node, Item item) {
-			item.Processed = true;
+		private void BuildTree(Dictionary<InteriorNode, InteriorNode> nodes, HashSet<Item> processed, InteriorNode node, Item item) {
+			// item.Processed = true;
+			processed.Add(item);
 
 			if (item.Production.Rhs.Count == 0) {
 				throw new Exception("");
@@ -96,23 +100,21 @@ namespace CFGLib.Parsers.Earley {
 				if (prevWord.IsTerminal()) {
 					var a = (Terminal)prevWord;
 					var i = node.EndPosition;
-					var v = new SymbolNode(a, i - 1, i);
-					nodes.Add(v);
+					var v = NewOrExistingNode(nodes, new SymbolNode(a, i - 1, i));
 					node.AddFamily(new Family(v));
 				} else {
 					var C = (Nonterminal)prevWord;
 					var j = node.StartPosition;
 					var i = node.EndPosition;
-					var v = new SymbolNode(C, j, i);
-					nodes.Add(v);
+					var v = NewOrExistingNode(nodes, new SymbolNode(C, j, i));
 					node.AddFamily(new Family(v));
 					foreach (var reduction in item.Reductions) {
 						if (reduction.Label != j) {
 							continue;
 						}
 						var q = reduction.Item;
-						if (!q.Processed) {
-							BuildTree(nodes, v, q);
+						if (!processed.Contains(q)) {
+							BuildTree(nodes, processed, v, q);
 						}
 					}
 				}
@@ -130,20 +132,18 @@ namespace CFGLib.Parsers.Earley {
 					var q = reduction.Item;
 					var j = node.StartPosition;
 					var i = node.EndPosition;
-					var v = new SymbolNode(C, l, i);
-					nodes.Add(v);
-					if (!q.Processed) {
-						BuildTree(nodes, v, q);
+					var v = NewOrExistingNode(nodes, new SymbolNode(C, l, i));
+					if (!processed.Contains(q)) {
+						BuildTree(nodes, processed, v, q);
 					}
-					var w = new IntermediateNode(item.Decrement(), j, l);
-					nodes.Add(w);
+					var w = NewOrExistingNode(nodes, new IntermediateNode(item.Decrement(), j, l));
 					foreach (var predecessor in item.Predecessors) {
 						if (predecessor.Label != l) {
 							continue;
 						}
 						var pPrime = predecessor.Item;
-						if (!pPrime.Processed) {
-							BuildTree(nodes, w, pPrime);
+						if (!processed.Contains(pPrime)) {
+							BuildTree(nodes, processed, w, pPrime);
 						}
 					}
 					node.AddFamily(new Family(w, v));
@@ -151,11 +151,35 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+		private T NewOrExistingNode<T>(Dictionary<InteriorNode, InteriorNode> nodes, T node) where T : InteriorNode {
+			InteriorNode existingNode;
+			if (!nodes.TryGetValue(node, out existingNode)) {
+				existingNode = node;
+				nodes[node] = node;
+			}
+			node = (T)existingNode;
+			return node;
+		}
+
 		private void PrintTree(Item item, string padding = "") {
 			Console.WriteLine("{0}{1}", padding, item);
 			foreach (var child in item.Reductions) {
 				PrintTree(child.Item, padding + "  ");
 			}
+		}
+
+		private HashSet<Item> GetItems(Item item, HashSet<Item> items = null) {
+			if (items == null) {
+				items = new HashSet<Item>();
+			}
+			items.Add(item);
+			foreach (var pred in item.Predecessors) {
+				GetItems(pred.Item, items);
+			}
+			foreach (var red in item.Reductions) {
+				GetItems(red.Item, items);
+			}
+			return items;
 		}
 
 		private static StateSet[] FreshS(int length) {
