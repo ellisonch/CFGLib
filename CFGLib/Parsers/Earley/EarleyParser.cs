@@ -51,7 +51,6 @@ namespace CFGLib.Parsers.Earley {
 			foreach (var success in successes) {
 				PrintTree(success);
 				Console.WriteLine("");
-				var allItems = GetItems(success);
 				var node = new SymbolNode(success);
 				var nodes = new Dictionary<InteriorNode, InteriorNode>();
 				var processed = new HashSet<Item>();
@@ -119,12 +118,22 @@ namespace CFGLib.Parsers.Earley {
 					}
 				}
 			} else if (item.PrevWord.IsTerminal()) {
-				throw new Exception("");
-				//if there is no SPPF node v labelled (a, i − 1, i) create one
-				//if there is no SPPF node w labelled (A::= α ′ · aβ, j, i − 1) create one
-				//for each target p ′ of a predecessor pointer labelled i − 1 from p {
-				//					if p ′ is not marked as processed Buildtree(w, p ′ ) }
-				//				if u does not have a family(w, v) add the family(w, v) to u
+				var a = (Terminal)item.PrevWord;
+				var j = node.StartPosition;
+				var i = node.EndPosition;
+				var v = NewOrExistingNode(nodes, new SymbolNode(a, i - 1, i));
+				var w = NewOrExistingNode(nodes, new IntermediateNode(item.Decrement(), j, i - 1));
+				foreach (var predecessor in item.Predecessors) {
+					if (predecessor.Label != i - 1) {
+						continue;
+					}
+					var pPrime = predecessor.Item;
+					if (!processed.Contains(pPrime)) {
+						BuildTree(nodes, processed, w, pPrime);
+					}
+				}
+
+				node.AddFamily(new Family(w, v));
 			} else {
 				var C = (Nonterminal)item.PrevWord;
 				foreach (var reduction in item.Reductions) {
@@ -166,20 +175,6 @@ namespace CFGLib.Parsers.Earley {
 			foreach (var child in item.Reductions) {
 				PrintTree(child.Item, padding + "  ");
 			}
-		}
-
-		private HashSet<Item> GetItems(Item item, HashSet<Item> items = null) {
-			if (items == null) {
-				items = new HashSet<Item>();
-			}
-			items.Add(item);
-			foreach (var pred in item.Predecessors) {
-				GetItems(pred.Item, items);
-			}
-			foreach (var red in item.Reductions) {
-				GetItems(red.Item, items);
-			}
-			return items;
 		}
 
 		private static StateSet[] FreshS(int length) {

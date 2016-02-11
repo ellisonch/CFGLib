@@ -68,7 +68,7 @@ namespace ConsolePlayground {
 
 			// g.Earley(Sentence.FromLetters("aa"));
 			g.Earley(Sentence.FromLetters("bbb"));
-			Console.Read();
+			// Console.Read();
 			// g.Earley(Sentence.FromWords("0 + ( 0 * 0 + 0 )"));
 			// g.Earley(Sentence.FromWords(""));
 
