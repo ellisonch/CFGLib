@@ -36,7 +36,7 @@ namespace CFGLib.Parsers.Earley {
 				// inner loop
 				for (int itemIndex = 0; itemIndex < state.Count; itemIndex++) {
 					var item = state[itemIndex];
-					var nextWord = item.Next;
+					var nextWord = item.NextWord;
 					if (nextWord == null) {
 						Completion(S, stateIndex, item);
 					} else if (nextWord.IsNonterminal()) {
@@ -50,10 +50,105 @@ namespace CFGLib.Parsers.Earley {
 			var successes = GetSuccesses(S, s);
 			foreach (var success in successes) {
 				PrintTree(success);
+				var node = new SymbolNode(success);
+				var nodes = new HashSet<InteriorNode>();
+				nodes.Add(node);
+				BuildTree(nodes, node, success);
+				PrintForest(node);
 			}
 			// var trees = CollectTrees(S, s, successes);
 
 			return successes.Count() == 0 ? 0.0 : 1.0;
+		}
+
+		private void PrintForest(InteriorNode node, string padding = "") {
+			Console.WriteLine("{0}{1}", padding, node);
+			//if (node.Families.Count == 2) {
+			//	Console.WriteLine("{0}There are two alternatives:");
+			//}
+			var l = node.Families.ToList();
+			if (l.Count == 2) {
+				Console.WriteLine("{0}Alternative 1", padding);
+				foreach (var member in l[0].Members) {
+					PrintForest(member, padding + "  ");
+				}
+				Console.WriteLine("{0}Alternative 2", padding);
+				foreach (var member in l[1].Members) {
+					PrintForest(member, padding + "  ");
+				}
+			} else if (l.Count == 1) {
+				foreach (var member in l[0].Members) {
+					PrintForest(member, padding + "  ");
+				}
+			}
+		}
+
+		private void BuildTree(HashSet<InteriorNode> nodes, InteriorNode node, Item item) {
+			item.Processed = true;
+
+			if (item.Production.Rhs.Count == 0) {
+				throw new Exception("");
+				//if there is no SPPF node v labelled (A, i, i)
+				//create one with child node ϵ
+				//if u does not have a family(v) then add the family (v)to u
+			} else if (item.CurrentPosition == 1) {
+				var prevWord = item.PrevWord;
+				if (prevWord.IsTerminal()) {
+					var a = (Terminal)prevWord;
+					var i = node.EndPosition;
+					var v = new SymbolNode(a, i - 1, i);
+					nodes.Add(v);
+					node.AddFamily(new Family(v));
+				} else {
+					var C = (Nonterminal)prevWord;
+					var j = node.StartPosition;
+					var i = node.EndPosition;
+					var v = new SymbolNode(C, j, i);
+					nodes.Add(v);
+					node.AddFamily(new Family(v));
+					foreach (var reduction in item.Reductions) {
+						if (reduction.Label != j) {
+							continue;
+						}
+						var q = reduction.Item;
+						if (!q.Processed) {
+							BuildTree(nodes, v, q);
+						}
+					}
+				}
+			} else if (item.PrevWord.IsTerminal()) {
+				throw new Exception("");
+				//if there is no SPPF node v labelled (a, i − 1, i) create one
+				//if there is no SPPF node w labelled (A::= α ′ · aβ, j, i − 1) create one
+				//for each target p ′ of a predecessor pointer labelled i − 1 from p {
+				//					if p ′ is not marked as processed Buildtree(w, p ′ ) }
+				//				if u does not have a family(w, v) add the family(w, v) to u
+			} else {
+				var C = (Nonterminal)item.PrevWord;
+				foreach (var reduction in item.Reductions) {
+					var l = reduction.Label;
+					var q = reduction.Item;
+					var j = node.StartPosition;
+					var i = node.EndPosition;
+					var v = new SymbolNode(C, l, i);
+					nodes.Add(v);
+					if (!q.Processed) {
+						BuildTree(nodes, v, q);
+					}
+					var w = new IntermediateNode(item.Decrement(), j, l);
+					nodes.Add(w);
+					foreach (var predecessor in item.Predecessors) {
+						if (predecessor.Label != l) {
+							continue;
+						}
+						var pPrime = predecessor.Item;
+						if (!pPrime.Processed) {
+							BuildTree(nodes, w, pPrime);
+						}
+					}
+					node.AddFamily(new Family(w, v));
+				}
+			}
 		}
 
 		private void PrintTree(Item item, string padding = "") {
@@ -123,7 +218,7 @@ namespace CFGLib.Parsers.Earley {
 			var toAdd = new StateSet();
 			foreach (var item in Si) {
 				// make sure it's the same nonterminal
-				if (item.Next != completedItem.Production.Lhs) {
+				if (item.NextWord != completedItem.Production.Lhs) {
 					continue;
 				}
 				var newItem = item.Increment();

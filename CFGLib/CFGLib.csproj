@@ -44,13 +44,16 @@
   <ItemGroup>
     <Compile Include="Parsers\CYK\CykParser.cs" />
     <Compile Include="Parsers\CYK\LocalCykProduction.cs" />
+    <Compile Include="Parsers\Earley\Family.cs" />
+    <Compile Include="Parsers\Earley\IntermediateNode.cs" />
+    <Compile Include="Parsers\Earley\SymbolNode.cs" />
     <Compile Include="Parsers\Earley\EarleyParser.cs" />
+    <Compile Include="Parsers\Earley\InteriorNode.cs" />
     <Compile Include="Parsers\Earley\Item.cs" />
     <Compile Include="GrammarHelpers.cs" />
     <Compile Include="Parsers\Earley\ParseGraph.cs" />
     <Compile Include="Parsers\Earley\PredecessorPointer.cs" />
     <Compile Include="Parsers\Earley\ReductionPointer.cs" />
-    <Compile Include="Parsers\Earley\SppfNode.cs" />
     <Compile Include="Parsers\Parser.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="Cache.cs" />

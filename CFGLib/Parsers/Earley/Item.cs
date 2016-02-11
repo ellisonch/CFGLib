@@ -21,7 +21,20 @@ namespace CFGLib.Parsers.Earley {
 		public readonly List<PredecessorPointer> Predecessors;
 		public readonly List<ReductionPointer> Reductions;
 
-		public Word Next {
+		public bool Processed = false;
+
+		public Word PrevWord {
+			get {
+				if (CurrentPosition - 1 < 0) {
+					return null;
+				}
+				if (Production.Rhs.Count == 0) {
+					return null;
+				}
+				return Production.Rhs[CurrentPosition - 1];
+			}
+		}
+		public Word NextWord {
 			get {
 				if (CurrentPosition >= Production.Rhs.Count) {
 					return null;
@@ -31,6 +44,12 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public Item(Production production, int currentPosition, int startPosition, int endPosition) {
+			if (currentPosition < 0) {
+				throw new ArgumentOutOfRangeException();
+			}
+			if (startPosition < 0) {
+				throw new ArgumentOutOfRangeException();
+			}
 			Production = production;
 			CurrentPosition = currentPosition;
 			StartPosition = startPosition;
@@ -38,7 +57,8 @@ namespace CFGLib.Parsers.Earley {
 			Predecessors = new List<PredecessorPointer>();
 			Reductions = new List<ReductionPointer>();
 		}
-		public override string ToString() {
+
+		internal string ProductionToString() {
 			var beforeDot = Production.Rhs.GetRange(0, CurrentPosition);
 			var beforeDotString = beforeDot.Count == 0 ? "" : beforeDot.ToString();
 			var afterDot = Production.Rhs.GetRange(CurrentPosition, Production.Rhs.Count - CurrentPosition);
@@ -47,16 +67,25 @@ namespace CFGLib.Parsers.Earley {
 				beforeDotString = "ε";
 			}
 
-			return string.Format("{0} → {1} o {2}[{3}] ({4}--{5})", Production.Lhs, beforeDotString, afterDotString, Production.Weight, StartPosition, EndPosition);
+			return string.Format("{0} → {1} o {2}", Production.Lhs, beforeDotString, afterDotString);
+		}
+
+		public override string ToString() {
+			return string.Format("{0}[{1}] ({2}--{3})", this.ProductionToString(), Production.Weight, StartPosition, EndPosition);
 		}
 
 		internal Item Increment() {
 			var copy = new Item(Production, CurrentPosition + 1, StartPosition, EndPosition);
 			return copy;
 		}
+		
+		internal Item Decrement() {
+			var copy = new Item(Production, CurrentPosition - 1, StartPosition, EndPosition);
+			return copy;
+		}
 
 		internal bool IsComplete() {
-			return this.Next == null;
+			return this.NextWord == null;
 		}
 
 		internal void AddPredecessor(int label, Item item) {
