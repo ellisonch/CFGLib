@@ -5,16 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
-	internal abstract class InteriorNode {
+	internal abstract class InteriorNode : Node {
 		public int StartPosition;
 		public int EndPosition;
-		public HashSet<Family> Families;
 
 		protected InteriorNode(int startPosition, int endPosition) {
 			StartPosition = startPosition;
 			EndPosition = endPosition;
-			// Family = new HashSet<InteriorNode>(new NodeComparer());
-			Families = new HashSet<Family>();
 		}
 
 		internal void AddFamily(Family family) {

@@ -44,8 +44,10 @@
   <ItemGroup>
     <Compile Include="Parsers\CYK\CykParser.cs" />
     <Compile Include="Parsers\CYK\LocalCykProduction.cs" />
+    <Compile Include="Parsers\Earley\EpsilonNode.cs" />
     <Compile Include="Parsers\Earley\Family.cs" />
     <Compile Include="Parsers\Earley\IntermediateNode.cs" />
+    <Compile Include="Parsers\Earley\Node.cs" />
     <Compile Include="Parsers\Earley\SymbolNode.cs" />
     <Compile Include="Parsers\Earley\EarleyParser.cs" />
     <Compile Include="Parsers\Earley\InteriorNode.cs" />

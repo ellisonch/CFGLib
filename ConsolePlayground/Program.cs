@@ -33,11 +33,24 @@ namespace ConsolePlayground {
 			// Experimental.Test();
 			// Console.Read();
 
+			//var productions = new HashSet<Production> {
+			//	// CFGParser.Production("<S> → <S> <S> 'b' <S>"),
+			//	CFGParser.Production("<S> → <S> <S>"),
+			//	CFGParser.Production("<S> → 'b'"),
+			//	//CFGParser.Production("<S> → ε"),
+			//};
+
 			var productions = new HashSet<Production> {
-				CFGParser.Production("<S> → <S> <S>"),
-				CFGParser.Production("<S> → 'b'"),
-				// CFGParser.Production("<S> → ε"),
+				CFGParser.Production("<S> → <A> <T>"),
+				CFGParser.Production("<S> → 'a' <T>"),
+				CFGParser.Production("<A> → 'a'"),
+				CFGParser.Production("<A> → <B> <A>"),
+				CFGParser.Production("<B> → ε"),
+				CFGParser.Production("<T> → 'b' 'b' 'b'"),
 			};
+			var g = new Grammar(productions, Nonterminal.Of("S"));
+			g.Earley(Sentence.FromLetters("abbb"));
+
 			//var productions = new HashSet<Production> {
 			//	CFGParser.Production("<S> → <S> <T>"),
 			//	CFGParser.Production("<S> → 'a'"),
@@ -63,11 +76,13 @@ namespace ConsolePlayground {
 			//	CFGParser.Production("<A> → <B>"),
 			//	CFGParser.Production("<B> → <A>"),
 			//};
-			var g = new Grammar(productions, Nonterminal.Of("S"));
+
 
 
 			// g.Earley(Sentence.FromLetters("aa"));
-			g.Earley(Sentence.FromLetters("bbb"));
+			// g.Earley(Sentence.FromLetters("bbbb"));
+			// g.Earley(Sentence.FromLetters("bbb"));
+			// g.Earley(Sentence.FromLetters("b"));
 			// Console.Read();
 			// g.Earley(Sentence.FromWords("0 + ( 0 * 0 + 0 )"));
 			// g.Earley(Sentence.FromWords(""));
@@ -180,7 +195,8 @@ namespace ConsolePlayground {
 			var sw = Stopwatch.StartNew();
 			// rt.RandomSimplificationTest();
 			// rt.RandomCFGToCNFTest();
-			rt.RandomParsingTest(10);
+			// rt.RandomParsingTest(10);
+			rt.RandomParsingTest(10000);
 			sw.Stop();
 			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 

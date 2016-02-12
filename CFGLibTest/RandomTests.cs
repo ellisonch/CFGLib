@@ -105,8 +105,9 @@ namespace CFGLibTest {
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
 			Console.WriteLine("Preparing sentences");
 			var preparedSentences = new List<Sentence>();
-			for (int length = 1; length <= _maxLength; length++) {
-				foreach (var target in CFGLibTest.Helpers.CombinationsWithRepetition(terminals, length)) {
+			for (int length = 0; length <= _maxLength; length++) {
+				var combinations = CFGLibTest.Helpers.CombinationsWithRepetition(terminals, length);
+				foreach (var target in combinations) {
 					var sentence = new Sentence(target);
 					preparedSentences.Add(sentence);
 				}

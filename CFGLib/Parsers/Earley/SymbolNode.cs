@@ -12,8 +12,8 @@ namespace CFGLib.Parsers.Earley {
 			Symbol = symbol;
 		}
 
-		public SymbolNode(Item item) : this(item.Production.Lhs, item.StartPosition, item.EndPosition) {
-		}
+		//public SymbolNode(Item item) : this(item.Production.Lhs, item.StartPosition, item.EndPosition) {
+		//}
 
 		public override int GetHashCode() {
 			return new { StartPosition, EndPosition, Symbol }.GetHashCode();

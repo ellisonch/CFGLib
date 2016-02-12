@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class Family {
-		private readonly List<InteriorNode> _nodes = new List<InteriorNode>();
-		public IEnumerable<InteriorNode> Members {
+		private readonly List<Node> _nodes = new List<Node>();
+		public IEnumerable<Node> Members {
 			get {
 				return _nodes;
 			}
 		}
-
-		public Family(InteriorNode node1) {
+		
+		public Family(Node node1) {
 			_nodes.Add(node1);
 		}
 		public Family(InteriorNode node1, InteriorNode node2) {

@@ -9,7 +9,7 @@ namespace CFGLib.Parsers.Earley {
 	/*
 	Inspired by
 	 * Elizabeth Scott's 2008 paper "SPPF-Style Parsing From Earley Recognisers" (http://dx.doi.org/10.1016/j.entcs.2008.03.044) [ES2008]
-	 * John Aycock and Nigel Horspool's 2002 paper "Practical Earley Parsing" [AH2002]
+	 * John Aycock and Nigel Horspool's 2002 paper "Practical Earley Parsing" (http://dx.doi.org/10.1093/comjnl/45.6.620) [AH2002]
 	 * Loup Vaillant's tutorial (http://loup-vaillant.fr/tutorials/earley-parsing/)
 	*/
 
@@ -56,53 +56,57 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			var successes = GetSuccesses(S, s);
-			foreach (var success in successes) {
-				PrintTree(success);
-				Console.WriteLine("");
-				var node = new SymbolNode(success);
-				var nodes = new Dictionary<InteriorNode, InteriorNode>();
-				var processed = new HashSet<Item>();
-				nodes[node] = node;
-				BuildTree(nodes, processed, node, success);
-				PrintForest(node);
-			}
+
+			var sppf = ConstructSPPF(successes, s);
+			PrintForest(sppf);
+
 			// var trees = CollectTrees(S, s, successes);
 
 			return successes.Count() == 0 ? 0.0 : 1.0;
 		}
 
-		private void PrintForest(InteriorNode node, string padding = "") {
+		private Node ConstructSPPF(IList<Item> successes, Sentence s) {
+			var root = new SymbolNode(_grammar.Start, 0, s.Count);
+			var processed = new HashSet<Item>();
+			var nodes = new Dictionary<Node, Node>();
+			nodes[root] = root;
+
+			foreach (var success in successes) {
+				BuildTree(nodes, processed, root, success);
+			}
+
+			return root;
+		}
+
+		private void PrintForest(Node node, string padding = "") {
 			Console.WriteLine("{0}{1}", padding, node);
-			//if (node.Families.Count == 2) {
-			//	Console.WriteLine("{0}There are two alternatives:");
-			//}
+			
 			var l = node.Families.ToList();
-			if (l.Count == 2) {
-				Console.WriteLine("{0}Alternative 1", padding);
-				foreach (var member in l[0].Members) {
-					PrintForest(member, padding + "  ");
+			for (int i = 0; i < l.Count; i++) {
+				var alternative = l[i];
+				if (l.Count > 1) {
+					Console.WriteLine("{0}Alternative {1}", padding, i);
 				}
-				Console.WriteLine("{0}Alternative 2", padding);
-				foreach (var member in l[1].Members) {
-					PrintForest(member, padding + "  ");
-				}
-			} else if (l.Count == 1) {
-				foreach (var member in l[0].Members) {
+				foreach (var member in l[i].Members) {
 					PrintForest(member, padding + "  ");
 				}
 			}
 		}
 
 		// [Sec 4, ES2008]
-		private void BuildTree(Dictionary<InteriorNode, InteriorNode> nodes, HashSet<Item> processed, InteriorNode node, Item item) {
+		private void BuildTree(Dictionary<Node, Node> nodes, HashSet<Item> processed, InteriorNode node, Item item) {
 			// item.Processed = true;
 			processed.Add(item);
 
 			if (item.Production.Rhs.Count == 0) {
-				throw new Exception("");
+				var i = node.EndPosition;
+				var v = NewOrExistingNode(nodes, new SymbolNode(item.Production.Lhs, i, i));
 				//if there is no SPPF node v labelled (A, i, i)
 				//create one with child node ϵ
-				//if u does not have a family(v) then add the family (v)to u
+				v.AddFamily(new Family(EpsilonNode.Node));
+				// basically, SymbolNodes with no children have empty children
+
+				node.AddFamily(new Family(v));
 			} else if (item.CurrentPosition == 1) {
 				var prevWord = item.PrevWord;
 				if (prevWord.IsTerminal()) {
@@ -169,8 +173,8 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private T NewOrExistingNode<T>(Dictionary<InteriorNode, InteriorNode> nodes, T node) where T : InteriorNode {
-			InteriorNode existingNode;
+		private T NewOrExistingNode<T>(Dictionary<Node, Node> nodes, T node) where T : Node {
+			Node existingNode;
 			if (!nodes.TryGetValue(node, out existingNode)) {
 				existingNode = node;
 				nodes[node] = node;
@@ -179,12 +183,12 @@ namespace CFGLib.Parsers.Earley {
 			return node;
 		}
 
-		private void PrintTree(Item item, string padding = "") {
-			Console.WriteLine("{0}{1}", padding, item);
-			foreach (var child in item.Reductions) {
-				PrintTree(child.Item, padding + "  ");
-			}
-		}
+		//private void PrintTree(Item item, string padding = "") {
+		//	Console.WriteLine("{0}{1}", padding, item);
+		//	foreach (var child in item.Reductions) {
+		//		PrintTree(child.Item, padding + "  ");
+		//	}
+		//}
 
 		private static StateSet[] FreshS(int length) {
 			var S = new StateSet[length];
@@ -222,7 +226,7 @@ namespace CFGLib.Parsers.Earley {
 			return null;
 		}
 
-		private IEnumerable<Item> GetSuccesses(StateSet[] S, Sentence s) {
+		private IList<Item> GetSuccesses(StateSet[] S, Sentence s) {
 			var successes = new List<Item>();
 			var lastState = S[s.Count];
 			foreach (Item item in lastState) {
@@ -302,7 +306,7 @@ namespace CFGLib.Parsers.Earley {
 				existingItem.Reductions.AddRange(newItem.Reductions);
 			}
 		}
-
+		
 		private void Scan(StateSet[] S, int stateIndex, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {
 			var state = S[stateIndex];
 
@@ -316,7 +320,7 @@ namespace CFGLib.Parsers.Earley {
 			if (currentTerminal == terminal) {
 				var newItem = item.Increment();
 				if (item.CurrentPosition != 0) {
-					newItem.AddPredecessor(stateIndex - 1, newItem);
+					newItem.AddPredecessor(stateIndex, item);
 				}
 				InsertWithoutDuplicating(nextState, stateIndex + 1, newItem);		
 			}
