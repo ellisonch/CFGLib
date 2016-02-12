@@ -15,7 +15,7 @@ namespace CFGLib {
 		private int _freshx = 0;
 		private Nonterminal _startSymbol;
 		private bool _used = false;
-		private const double _removeUnitProbabilityThreshold = 0;
+		private const double _removeUnitProbabilityThreshold = 1e-300;
 
 		private ISet<ValueUnitProduction> _unitPreviouslyDeleted = new HashSet<ValueUnitProduction>();
 
@@ -231,7 +231,8 @@ namespace CFGLib {
 			var newProductions = new HashSet<Production>();
 			var probThisEntry = entry.Weight / sum;
 			// TODO: I've seen this create a 0 weight
-			var newProd = new DefaultProduction(production.Lhs, entry.Rhs, production.Weight * probThisEntry);
+			var newProdWeight = production.Weight * probThisEntry;
+			var newProd = new DefaultProduction(production.Lhs, entry.Rhs, newProdWeight);
 
 			// Console.WriteLine("considering {0} and {1}", production, entry);
 

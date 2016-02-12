@@ -22,6 +22,24 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear(0.75, h.Cyk(Sentence.FromLetters("a")));
 			Helpers.AssertNear(0.25, h.Cyk(Sentence.FromLetters("b")));
 		}
+		
+		[TestMethod]
+		public void TestUnitProductions02() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<X_5> → 'x0' [22.103242747999378]"),
+				CFGParser.Production("<X_5> → <X_4> <X_2> 'x3' 'x3' <X_5> 'x4' <X_5> [13.799233343824387]"),
+				CFGParser.Production("<X_7> → 'x1' <X_0> 'x3' <X_9> 'x1' 'x0' <X_9> <X_5> [95.444187448566865]"),
+				CFGParser.Production("<X_7> → ε [92.294680857702474]"),
+				CFGParser.Production("<X_2> → <X_9> <X_4> [67.541615066370753]"),
+				CFGParser.Production("<X_9> → <X_0> <X_7> 'x3' <X_4> 'x2' 'x1' 'x3' [36.206671634319555]"),
+				CFGParser.Production("<X_0> → <X_4> [41.7635276861319]"),
+				CFGParser.Production("<X_4> → <X_0> [85.572940545423393]"),
+				CFGParser.Production("<X_4> → <X_9> 'x2' 'x1' <X_9> 'x2' 'x0' [19.93626149694261]"),
+				CFGParser.Production("<X_0> → 'x3' [13.794410955530783]"),
+				CFGParser.Production("<X_9> → ε [86.73295911109679]")
+			}, Nonterminal.Of("X_0"));
+			var h = g.ToCNF();
+		}
 
 		[TestMethod]
 		public void TestCNFNoNull01() {

@@ -125,6 +125,8 @@ namespace CFGLibTest {
 						g = null;
 					}
 				}
+				Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
+				Console.WriteLine(g.ToCodeString());
 				var h = g.ToCNF();
 				// Console.WriteLine(g);
 				// g.PrintProbabilities(2, 3);
@@ -141,6 +143,7 @@ namespace CFGLibTest {
 				Console.WriteLine(g.ToCodeString());
 				// Console.Write("{0}, ", count);
 				count++;
+				var accepts = 0;
 				foreach (var sentence in preparedSentences) {
 					//var p1 = g.Cyk(sentence);
 					//var p1 = h.Cyk(sentence);
@@ -151,8 +154,12 @@ namespace CFGLibTest {
 					if (accepts1 != accepts2) {
 						throw new Exception("Didn't match");
 					}
+					if (accepts1) {
+						accepts++;
+					}
 					// Console.WriteLine("{0}: {1}", sentence, chance);
 				}
+				Console.WriteLine("Accepted {0} / {1}", accepts, preparedGrammars.Count);
 			}
 			sw.Stop();
 			Console.WriteLine();
