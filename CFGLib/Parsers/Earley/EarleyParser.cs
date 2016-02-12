@@ -58,7 +58,7 @@ namespace CFGLib.Parsers.Earley {
 			var successes = GetSuccesses(S, s);
 
 			var sppf = ConstructSPPF(successes, s);
-			// PrintForest(sppf);
+			PrintForest(sppf);
 
 			// var trees = CollectTrees(S, s, successes);
 
@@ -78,8 +78,17 @@ namespace CFGLib.Parsers.Earley {
 			return root;
 		}
 
-		private void PrintForest(Node node, string padding = "") {
+		private void PrintForest(Node node, string padding = "", HashSet<Node> seen = null) {
+			if (seen == null) {
+				seen = new HashSet<Node>();
+			}
 			Console.WriteLine("{0}{1}", padding, node);
+
+			if (node.Families.Count > 0 && seen.Contains(node)) {
+				Console.WriteLine("{0}Already seen this node!", padding);
+				return;
+			}
+			seen.Add(node);
 			
 			var l = node.Families.ToList();
 			for (int i = 0; i < l.Count; i++) {
@@ -88,7 +97,7 @@ namespace CFGLib.Parsers.Earley {
 					Console.WriteLine("{0}Alternative {1}", padding, i);
 				}
 				foreach (var member in l[i].Members) {
-					PrintForest(member, padding + "  ");
+					PrintForest(member, padding + "  ", new HashSet<Node>(seen));
 				}
 			}
 		}
