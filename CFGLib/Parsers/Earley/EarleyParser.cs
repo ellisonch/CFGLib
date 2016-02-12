@@ -58,9 +58,9 @@ namespace CFGLib.Parsers.Earley {
 			var successes = GetSuccesses(S, s);
 
 			var sppf = ConstructSPPF(successes, s);
-			// PrintForest(sppf);
-			// Console.WriteLine("---------------------------------");
-			// PrintDerivations(sppf);
+			PrintForest(sppf);
+			Console.WriteLine("---------------------------------");
+			PrintDerivations(sppf);
 			// var trees = CollectTrees(S, s, successes);
 
 			return successes.Count() == 0 ? 0.0 : 1.0;
@@ -101,6 +101,86 @@ namespace CFGLib.Parsers.Earley {
 					PrintForest(member, padding + "  ", new HashSet<Node>(seen));
 				}
 			}
+		}
+
+		// TODO use visitor
+		private void PrintDerivations(Node node, string padding = "", HashSet<Node> seen = null) {
+			if (seen == null) {
+				seen = new HashSet<Node>();
+			}
+			Console.WriteLine("{0}{1}", padding, node);
+			if (node.Families.Count > 0 && seen.Contains(node)) {
+				Console.WriteLine("{0}Already seen this node!", padding);
+				return;
+			}
+			seen.Add(node);
+
+			var l = node.Families.ToList();
+			for (int i = 0; i < l.Count; i++) {
+				var alternative = l[i];
+				if (l.Count > 1) {
+					Console.WriteLine("{0}Alternative {1}", padding, i);
+				}
+				var members = l[i].Members;
+				if (members.Count == 0) {
+					Console.WriteLine("{0}Don't handle 0 case", padding);
+					continue;
+				} else if (members.Count == 1) {
+					Console.WriteLine("{0}Don't handle 1 case", padding);
+					continue;
+				} else if (members.Count == 2) {
+					var left = members[0];
+					var right = members[1];
+
+					if (!(left is IntermediateNode)) {
+						Console.WriteLine("{0}Left isn't intermediate", padding);
+						throw new Exception();
+					}
+					if (!(right is SymbolNode)) {
+						Console.WriteLine("{0}Right isn't symbol", padding);
+						throw new Exception();
+					}
+
+					PrintDerivations(left, padding + "  ", new HashSet<Node>(seen));
+					PrintDerivations(right, padding + "  ", new HashSet<Node>(seen));
+				} else {
+					throw new Exception("Should only be 0--2 children");
+				}
+			}
+
+			//Nonterminal thisNonterminal = null;
+			//var nodeType = node.GetType();
+			//if (nodeType.IsAssignableFrom(typeof(IntermediateNode))) {
+			//	Console.WriteLine("{0}Derivation{2}: {1}", padding, node, parentNonterminal);
+			//} else if (nodeType.IsAssignableFrom(typeof(SymbolNode))) {
+			//	Console.WriteLine("{0}Symbol{2}: {1}", padding, node, parentNonterminal);
+			//	var word = ((SymbolNode)node).Symbol;
+			//	if (word is Nonterminal) {
+			//		thisNonterminal = (Nonterminal)word;
+			//	} else {
+			//		//if (parentNonterminal != null) {
+			//		//	Console.WriteLine("{0} {1} -> {2}", padding, parentNonterminal, word);
+			//		//}
+			//	}
+			//} else if (nodeType.IsAssignableFrom(typeof(EpsilonNode))) {
+			//	Console.WriteLine("{0}Epsilon{2}: {1}", padding, node, parentNonterminal);
+			//} else {
+			//	throw new Exception();
+			//}
+
+			//if (node.Families.Count > 0 && seen.Contains(node)) {
+			//	Console.WriteLine("{0}Already seen this node!", padding);
+			//	return;
+			//}
+			//seen.Add(node);
+
+
+
+			//Console.WriteLine("{0}{1}", padding, node);
+
+
+
+
 		}
 
 		// [Sec 4, ES2008]

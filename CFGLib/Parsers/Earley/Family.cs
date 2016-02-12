@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Earley {
 	internal class Family {
 		private readonly List<Node> _nodes = new List<Node>();
-		public IEnumerable<Node> Members {
+		public IList<Node> Members {
 			get {
 				return _nodes;
 			}
