@@ -22,9 +22,9 @@ namespace CFGLib {
 			get { return _productions; }
 		}
 
-		public override void RemoveProduction(Production production) {
+		protected override void RemoveProductionWithoutSimplifying(Production production) {
 			_productions.Remove(production);
-			Simplify();
+			InvalidateCaches();
 		}
 		public override void AddProduction(Production production) {
 			AddToListWithoutDuplicating(_productions, production);

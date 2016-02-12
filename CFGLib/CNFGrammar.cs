@@ -76,7 +76,7 @@ namespace CFGLib {
 
 		// TODO: should make sure the empty production is the actual empty production
 		// TODO: should error if the production doesn't exist
-		public override void RemoveProduction(Production production) {
+		protected override void RemoveProductionWithoutSimplifying(Production production) {
 			if (production.Lhs == this.Start && production.Rhs.Count == 0) {
 				if (_emptyProductions.Count > 0) {
 					_emptyProductions.Clear();

@@ -484,7 +484,7 @@ namespace CFGLib {
 		}
 		protected void RemoveProductionsWithoutSimplifying(IEnumerable<Production> productions) {
 			foreach (var production in productions) {
-				RemoveProduction(production);
+				RemoveProductionWithoutSimplifying(production);
 			}
 		}
 		/// <summary>
@@ -501,7 +501,12 @@ namespace CFGLib {
 		/// Removes a single production from the grammar.
 		/// The grammar is kept simplified.
 		/// </summary>
-		public abstract void RemoveProduction(Production production);
+		// public abstract void RemoveProduction(Production production);
+		public void RemoveProduction(Production production) {
+			RemoveProductionWithoutSimplifying(production);
+			Simplify();
+		}
+		protected abstract void RemoveProductionWithoutSimplifying(Production production);
 		/// <summary>
 		/// Adds a single production to the grammar.
 		/// The grammar is kept simplified.

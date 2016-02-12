@@ -126,8 +126,8 @@ namespace CFGLibTest {
 						g = null;
 					}
 				}
-				Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
-				Console.WriteLine(g.ToCodeString());
+				// Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
+				// Console.WriteLine(g.ToCodeString());
 				var h = g.ToCNF();
 				// Console.WriteLine(g);
 				// g.PrintProbabilities(2, 3);
@@ -160,7 +160,7 @@ namespace CFGLibTest {
 					}
 					// Console.WriteLine("{0}: {1}", sentence, chance);
 				}
-				Console.WriteLine("Accepted {0} / {1}", accepts, preparedGrammars.Count);
+				Console.WriteLine("Accepted {0} / {1}", accepts, preparedSentences.Count);
 			}
 			sw.Stop();
 			Console.WriteLine();
