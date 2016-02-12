@@ -58,8 +58,9 @@ namespace CFGLib.Parsers.Earley {
 			var successes = GetSuccesses(S, s);
 
 			var sppf = ConstructSPPF(successes, s);
-			PrintForest(sppf);
-
+			// PrintForest(sppf);
+			// Console.WriteLine("---------------------------------");
+			// PrintDerivations(sppf);
 			// var trees = CollectTrees(S, s, successes);
 
 			return successes.Count() == 0 ? 0.0 : 1.0;
