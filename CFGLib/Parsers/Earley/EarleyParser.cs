@@ -58,7 +58,7 @@ namespace CFGLib.Parsers.Earley {
 			var successes = GetSuccesses(S, s);
 
 			var sppf = ConstructSPPF(successes, s);
-			PrintForest(sppf);
+			// PrintForest(sppf);
 
 			// var trees = CollectTrees(S, s, successes);
 
@@ -106,7 +106,7 @@ namespace CFGLib.Parsers.Earley {
 				v.AddFamily(new Family(EpsilonNode.Node));
 				// basically, SymbolNodes with no children have empty children
 
-				node.AddFamily(new Family(v));
+				// node.AddFamily(new Family(v));
 			} else if (item.CurrentPosition == 1) {
 				var prevWord = item.PrevWord;
 				if (prevWord.IsTerminal()) {

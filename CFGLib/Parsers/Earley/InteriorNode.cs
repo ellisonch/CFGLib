@@ -15,6 +15,11 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		internal void AddFamily(Family family) {
+			//foreach (var member in family.Members) {
+			//	if (member == this) {
+			//		throw new Exception("");
+			//	}
+			//}
 			Families.Add(family);
 		}
 
