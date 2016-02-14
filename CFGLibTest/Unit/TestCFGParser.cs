@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CFGLib;
+using System.Collections.Generic;
 
 namespace CFGLibTest.Unit {
 	[TestClass]
@@ -48,6 +49,25 @@ namespace CFGLibTest.Unit {
 			Assert.IsFalse(p1.ValueEquals(prodp(1.0)));
 
 			Assert.IsTrue(p3.ValueEquals(prodp(0.5)));
+		}
+
+
+		[TestMethod]
+		// TODO: add case
+		public void TestWeirdSppf01() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → <X_2> <X_6> [84.663251941866818]"),
+				CFGParser.Production("<X_5> → ε [58.744849453561407]"),
+				CFGParser.Production("<X_6> → 'x0' [14.931547298064245]"),
+				CFGParser.Production("<X_1> → <X_4> 'x3' 'x2' [8.0317742447516771]"),
+				CFGParser.Production("<X_2> → <X_6> [31.352648361750251]"),
+				CFGParser.Production("<X_5> → 'x2' [70.697925527439423]"),
+				CFGParser.Production("<X_4> → ε [95.484905709738328]"),
+				CFGParser.Production("<X_2> → <X_2> [1]"),
+				CFGParser.Production("<X_2> → <X_1> <X_5> <X_5> <X_1> 'x2' <X_5> <X_0> [76.400903250743127]")
+			}, Nonterminal.Of("X_0"));
+
+			Assert.IsTrue(g.Earley(Sentence.FromWords("x0 x0")) > 0);
 		}
 	}
 }

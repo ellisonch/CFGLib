@@ -23,9 +23,9 @@ namespace ConsolePlayground {
 			var t = new TestCFGToCNF();
 			var tp = new TestCFGToCNFEmptyProb();
 			var tr = new RegressionTests();
+			var testp = new TestCFGParser();
 
-
-			t.TestUnitProductions02();
+			testp.TestWeirdSppf01();
 			// t.TestToCNF01();
 			// tp.TestToCNF06();
 			// t.TestAccepts01();
@@ -33,6 +33,7 @@ namespace ConsolePlayground {
 			// tp.TestGetNullable01();
 			// tp.TestGetNullable01();
 			// Experimental.Test();
+
 			// Console.Read();
 
 			//var productions = new HashSet<Production> {
@@ -198,7 +199,7 @@ namespace ConsolePlayground {
 			// rt.RandomSimplificationTest();
 			// rt.RandomCFGToCNFTest();
 			// rt.RandomParsingTest(10);
-			rt.RandomParsingTest(100000);
+			rt.RandomParsingTest(1000);
 			sw.Stop();
 			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
