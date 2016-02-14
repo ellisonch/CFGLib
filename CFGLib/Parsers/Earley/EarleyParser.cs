@@ -56,11 +56,12 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			var successes = GetSuccesses(S, s);
-
-			var sppf = ConstructSPPF(successes, s);
-			PrintForest(sppf);
-			Console.WriteLine("---------------------------------");
-			PrintDerivations(sppf);
+			if (successes.Count > 0) {
+				var sppf = ConstructSPPF(successes, s);
+				PrintForest(sppf);
+				Console.WriteLine("---------------------------------");
+				PrintDerivations(sppf);
+			}
 			// var trees = CollectTrees(S, s, successes);
 
 			return successes.Count() == 0 ? 0.0 : 1.0;
@@ -132,7 +133,8 @@ namespace CFGLib.Parsers.Earley {
 				if (symbolChild.Symbol.IsNonterminal()) {
 					Console.WriteLine("{0}  Nonterminal Symbol Child", padding);
 					if (parent is SymbolNode) {
-						Console.WriteLine("{0}  APPLY {1} -> {2}", padding, parentSymbol, symbolChild.Symbol);
+						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
+						Console.WriteLine("{0}  APPLY {1}", padding, production);
 					} else {
 						//if (parentSymbol != symbolChild.Symbol) {
 						//	throw new Exception("Symbols don't match");
@@ -141,7 +143,8 @@ namespace CFGLib.Parsers.Earley {
 					PrintDerivations(symbolChild, padding + "  ", new HashSet<Node>(seen));					
 				} else {
 					if (parentSymbol.IsNonterminal()) {
-						Console.WriteLine("{0}  APPLY {1} -> {2}", padding, parentSymbol, symbolChild.Symbol);
+						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
+						Console.WriteLine("{0}  APPLY {1}", padding, production);
 					} else {
 						Console.WriteLine("{0}  Terminal Symbol Child", padding);
 					}
@@ -149,9 +152,8 @@ namespace CFGLib.Parsers.Earley {
 			} else if (child is IntermediateNode) {
 				throw new Exception("Don't handle intermediate");
 			} else if (child is EpsilonNode) {
-				Console.WriteLine("{0}  APPLY {1} -> Epsilon", padding, parentSymbol);
-				// Console.WriteLine("{0}  Epsilon", padding);
-				// Console.WriteLine("{0}APPLY {1} -> epsilon", padding, node.);
+				var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence());
+				Console.WriteLine("{0}  APPLY {1}", padding, production);
 			}
 		}
 

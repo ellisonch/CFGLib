@@ -514,6 +514,21 @@ namespace CFGLib {
 		public abstract void AddProduction(Production production);
 
 		/// <summary>
+		/// Tries to find a production lhs -> rhs in the grammar, and returns it if found.
+		/// Returns null if no such production is found.
+		/// </summary>
+		// TODO: Inefficient
+		public Production FindProduction(Nonterminal lhs, Sentence rhs) {
+			var productions = ProductionsFrom(lhs);
+			foreach (var production in productions) {
+				if (production.Rhs.SequenceEqual(rhs)) {
+					return production;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
 		/// Returns a shallow clone of this grammar.
 		/// The lists of productions etc. should be different, while the productions themselves may be the same.
 		/// The type of the grammar returned should be the same of the original.
