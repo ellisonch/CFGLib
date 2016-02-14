@@ -48,10 +48,10 @@ namespace ConsolePlayground {
 				CFGParser.Production("<A> → 'a'"),
 				CFGParser.Production("<A> → <B> <A>"),
 				CFGParser.Production("<B> → ε"),
-				CFGParser.Production("<T> → 'b' 'b' 'b'"),
+				CFGParser.Production("<T> → 'b' 'b' 'b' 'b'"),
 			};
 			var g = new Grammar(productions, Nonterminal.Of("S"));
-			g.Earley(Sentence.FromLetters("abbb"));
+			g.Earley(Sentence.FromLetters("abbbb"));
 
 			//var productions = new HashSet<Production> {
 			//	CFGParser.Production("<S> → <S> <T>"),

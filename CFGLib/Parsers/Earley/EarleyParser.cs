@@ -104,9 +104,13 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// TODO use visitor
-		private void PrintDerivations(Node node, string padding = "", HashSet<Node> seen = null) {
+		private void PrintDerivations(Node node, bool firstProd = false, string padding = "", HashSet<Node> seen = null) {
 			if (seen == null) {
 				seen = new HashSet<Node>();
+			}
+			if (firstProd) {
+				var intermediateNode = (IntermediateNode)node;
+				Console.WriteLine("{0}APPLY {1}", padding, intermediateNode.Item.Production);
 			}
 			Console.WriteLine("{0}{1}", padding, node);
 			if (node.Families.Count > 0 && seen.Contains(node)) {
@@ -121,11 +125,27 @@ namespace CFGLib.Parsers.Earley {
 				if (l.Count > 1) {
 					Console.WriteLine("{0}Alternative {1}", padding, i);
 				}
+
 				var members = l[i].Members;
 				if (members.Count == 0) {
 					Console.WriteLine("{0}Don't handle 0 case", padding);
 					continue;
 				} else if (members.Count == 1) {
+					var child = members[0];
+					if (child is SymbolNode) {
+						var symbolChild = (SymbolNode)child;
+						if (symbolChild.Symbol.IsNonterminal()) {
+							Console.WriteLine("{0}  Nonterminal Symbol Child", padding);
+							PrintDerivations(symbolChild, false, padding + "  ", new HashSet<Node>(seen));
+						} else {
+							Console.WriteLine("{0}  Terminal Symbol Child", padding);
+						}
+					} else if (child is IntermediateNode) {
+						throw new Exception("Don't handle intermediate");
+					} else if (child is EpsilonNode) {
+						Console.WriteLine("{0}  Epsilon", padding);
+						// Console.WriteLine("{0}APPLY {1} -> epsilon", padding, node.);
+					}
 					Console.WriteLine("{0}Don't handle 1 case", padding);
 					continue;
 				} else if (members.Count == 2) {
@@ -141,46 +161,27 @@ namespace CFGLib.Parsers.Earley {
 						throw new Exception();
 					}
 
-					PrintDerivations(left, padding + "  ", new HashSet<Node>(seen));
-					PrintDerivations(right, padding + "  ", new HashSet<Node>(seen));
+					if (node is SymbolNode) {
+						PrintDerivations((IntermediateNode)left, true, padding + "  ", new HashSet<Node>(seen));
+						PrintDerivations(right, false, padding + "  ", new HashSet<Node>(seen));
+					} else if (node is IntermediateNode) {
+						var thisNode = (IntermediateNode)node;
+						var first = false;
+						if (thisNode.Item.CurrentPosition == 1) {
+							first = true;
+						}
+
+						PrintDerivations((IntermediateNode)left, first, padding + "  ", new HashSet<Node>(seen));
+						PrintDerivations(right, false, padding + "  ", new HashSet<Node>(seen));
+					} else {
+						throw new Exception();
+					}
+					
+
 				} else {
 					throw new Exception("Should only be 0--2 children");
 				}
 			}
-
-			//Nonterminal thisNonterminal = null;
-			//var nodeType = node.GetType();
-			//if (nodeType.IsAssignableFrom(typeof(IntermediateNode))) {
-			//	Console.WriteLine("{0}Derivation{2}: {1}", padding, node, parentNonterminal);
-			//} else if (nodeType.IsAssignableFrom(typeof(SymbolNode))) {
-			//	Console.WriteLine("{0}Symbol{2}: {1}", padding, node, parentNonterminal);
-			//	var word = ((SymbolNode)node).Symbol;
-			//	if (word is Nonterminal) {
-			//		thisNonterminal = (Nonterminal)word;
-			//	} else {
-			//		//if (parentNonterminal != null) {
-			//		//	Console.WriteLine("{0} {1} -> {2}", padding, parentNonterminal, word);
-			//		//}
-			//	}
-			//} else if (nodeType.IsAssignableFrom(typeof(EpsilonNode))) {
-			//	Console.WriteLine("{0}Epsilon{2}: {1}", padding, node, parentNonterminal);
-			//} else {
-			//	throw new Exception();
-			//}
-
-			//if (node.Families.Count > 0 && seen.Contains(node)) {
-			//	Console.WriteLine("{0}Already seen this node!", padding);
-			//	return;
-			//}
-			//seen.Add(node);
-
-
-
-			//Console.WriteLine("{0}{1}", padding, node);
-
-
-
-
 		}
 
 		// [Sec 4, ES2008]
