@@ -136,5 +136,50 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear(p1, p2);
 		}
 
+		[TestMethod]
+		public void TestWeirdSppf07() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<A> → <B>"),
+				CFGParser.Production("<B> → <C>"),
+				CFGParser.Production("<C> → <B>"),
+				CFGParser.Production("<B> → <A>"),
+				CFGParser.Production("<B> → 'x'"),
+			}, Nonterminal.Of("A"));
+			var s = Sentence.FromWords("x");
+			var p1 = g.ToCNF().Cyk(s);
+			var p2 = g.Earley(s);
+			Helpers.AssertNear(p1, p2);
+		}
+
+		[TestMethod]
+		public void TestWeirdSppf08() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <A> 'b'"),
+				CFGParser.Production("<S> → <AB>"),
+				CFGParser.Production("<A> → 'a'"),
+				CFGParser.Production("<AB> → 'a' 'b'"),
+			}, Nonterminal.Of("S"));
+			var s = Sentence.FromWords("a b");
+			var p1 = g.ToCNF().Cyk(s);
+			var p2 = g.Earley(s);
+			Helpers.AssertNear(p1, p2);
+		}
+
+		[TestMethod]
+		public void TestWeirdSppf09() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <A> 'b'"),
+				CFGParser.Production("<S> → <AB>"),
+				CFGParser.Production("<S> → <ABPrime>"),
+				CFGParser.Production("<A> → 'a'"),
+				CFGParser.Production("<AB> → 'a' 'b'"),
+				CFGParser.Production("<ABPrime> → 'a' 'b'"),
+			}, Nonterminal.Of("S"));
+			var s = Sentence.FromWords("a b");
+			var p1 = g.ToCNF().Cyk(s);
+			var p2 = g.Earley(s);
+			Helpers.AssertNear(p1, p2);
+		}
+
 	}
 }

@@ -54,5 +54,17 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear(0.016384, g.Cyk(Sentence.FromLetters("aaaa")));
 			Helpers.AssertNear(0.007340032, g.Cyk(Sentence.FromLetters("aaaaa")));
 		}
+
+		[TestMethod]
+		public void TestDisjointProbability() {
+			var l = new double[] { 0.2, 0.3, 0.4 };
+			var dp = CFGLib.Helpers.DisjointProbability(l);
+
+			var truedp = (0.2 + 0.3 + 0.4)
+				- (0.2 * 0.3) - (0.2 * 0.4) - (0.3 * 0.4)
+				+ (0.2 * 0.3 * 0.4);
+
+			Helpers.AssertNear(truedp, dp);
+		}
 	}
 }

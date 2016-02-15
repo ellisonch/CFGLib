@@ -60,14 +60,200 @@ namespace CFGLib.Parsers.Earley {
 				var sppf = ConstructSPPF(successes, s);
 				PrintForest(sppf);
 				Console.WriteLine("---------------------------------");
-				var chance = PrintDerivations(sppf, new HashSet<Node>());
-				return chance;
+				//var chance = PrintDerivations(sppf, new HashSet<Node>());
+				//return chance;
+				var prob = CalculateProbability(sppf);
+				return prob;
 			}
 			// var trees = CollectTrees(S, s, successes);
 
 			return 0.0;
 		}
-		
+
+		private double CalculateProbability(SymbolNode sppf) {
+			var nodes = GetAllNodes(sppf);
+
+			var indexToNode = nodes.ToArray();
+			var nodeToIndex = new Dictionary<Node, int>();
+			for (int i = 0; i < indexToNode.Length; i++) {
+				nodeToIndex[indexToNode[i]] = i;
+			}
+
+			var previousEstimates = Enumerable.Repeat(1.0, indexToNode.Length).ToArray();
+			var currentEstimates = new double[indexToNode.Length];
+
+			for (var i = 0; i < indexToNode.Length; i++) {
+				Console.WriteLine("{0,-30}: {1}", indexToNode[i], previousEstimates[i]);
+			}
+
+			bool changed = true;
+			while (changed == true) {
+				changed = false;
+				
+				Array.Clear(currentEstimates, 0, currentEstimates.Length);
+
+				for (var i = 0; i < indexToNode.Length; i++) {
+					var node = indexToNode[i];
+					var estimate = StepProbability(node, nodeToIndex, previousEstimates);
+					currentEstimates[i] = estimate;
+
+					if (currentEstimates[i] > previousEstimates[i]) {
+						// throw new Exception("Didn't expect estimates to increase");
+					} else if (currentEstimates[i] < previousEstimates[i]) {
+						changed = true;
+					}
+				}
+				
+				Console.WriteLine("--------------------------");
+				for (var i = 0; i < indexToNode.Length; i++) {
+					Console.WriteLine("{0,-30}: {1}", indexToNode[i], currentEstimates[i]);
+				}
+				for (var i = 0; i < indexToNode.Length; i++) {
+					if (currentEstimates[i] > previousEstimates[i]) {
+						throw new Exception("Didn't expect estimates to increase");
+					}
+				}
+
+				Helpers.Swap(ref previousEstimates, ref currentEstimates);
+			}
+
+			return currentEstimates[nodeToIndex[sppf]];
+		}
+
+		private double StepProbability(Node node, Dictionary<Node, int> nodeToIndex, double[] previousEstimates) {
+			// var prevProb = previousEstimates[nodeToIndex[node]];
+			var newProb = 1.0;
+
+			if (node is IntermediateNode) {
+				var intermediateNode = (IntermediateNode)node;
+				var item = intermediateNode.Item;
+				// if this is the first time encountering this particular intermediate node, we need to apply a production
+				if (item.CurrentPosition == item.Production.Rhs.Count - 1) {
+					var prob = _grammar.GetProbability(item.Production);
+					newProb *= prob;
+				}
+			}
+			
+			var l = node.Families.ToList();
+			
+			var familyProbs = new double[l.Count];
+			for (int i = 0; i < l.Count; i++) {
+				var alternative = l[i];
+				if (l.Count > 1) {
+					// Console.WriteLine("{0}Alternative {1}", padding, i);
+				}
+
+				var members = l[i].Members;
+				if (members.Count == 1) {
+					var child = members[0];
+
+					familyProbs[i] = StepProbabilityChild(node, child, nodeToIndex, previousEstimates);
+				} else if (members.Count == 2) {
+					var left = members[0];
+					var right = members[1];
+
+					familyProbs[i] = StepProbabilityChild(node, left, right, nodeToIndex, previousEstimates);
+				} else {
+					throw new Exception("Should only be 1--2 children");
+				}
+			}
+			// var result = newProb * Helpers.DisjointProbability(familyProbs);
+			var result = newProb * familyProbs.Sum();
+
+			return result;
+		}
+
+
+		private double StepProbabilityChild(Node parent, Node child, Dictionary<Node, int> nodeToIndex, double[] previousEstimates) {
+			Word parentSymbol = null;
+			if (parent is SymbolNode) {
+				var symbolParent = (SymbolNode)parent;
+				parentSymbol = symbolParent.Symbol;
+			} else {
+				var intermediateParent = (IntermediateNode)parent;
+				if (intermediateParent.Item.CurrentPosition != 1) {
+					throw new Exception("Expected to be at beginning of item");
+				}
+				parentSymbol = intermediateParent.Item.Production.Rhs[0];
+			}
+			// Console.WriteLine("{0}  Parent symbol = {1}", padding, parentSymbol);
+
+			if (child is SymbolNode) {
+				var symbolChild = (SymbolNode)child;
+				if (symbolChild.Symbol.IsNonterminal()) {
+					var updatedProb = 1.0;
+					// Console.WriteLine("{0}  Nonterminal Symbol Child", padding);
+					if (parent is SymbolNode) {
+						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
+						// Console.WriteLine("{0}  APPLY {1}", padding, production);
+						var prob = _grammar.GetProbability(production);
+						updatedProb *= prob;
+					} else {
+
+					}
+					var previousChildProb = previousEstimates[nodeToIndex[symbolChild]];
+					return updatedProb * previousChildProb;
+					// return updatedProb * PrintDerivations(symbolChild, seen, padding + "  ", probability * updatedProb);
+				} else {
+					if (parentSymbol.IsNonterminal()) {
+						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
+						// Console.WriteLine("{0}  APPLY {1}", padding, production);
+						return _grammar.GetProbability(production);
+					} else {
+						// this is like parent = x o x  with child x
+						return 1.0;
+					}
+				}
+			} else if (child is IntermediateNode) {
+				throw new Exception("Don't handle intermediate");
+			} else if (child is EpsilonNode) {
+				var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence());
+				// Console.WriteLine("{0}  APPLY {1}", padding, production);
+				return _grammar.GetProbability(production);
+			}
+			throw new Exception();
+		}
+
+		private double StepProbabilityChild(Node node, Node left, Node right, Dictionary<Node, int> nodeToIndex, double[] previousEstimates) {
+			if (!(left is IntermediateNode)) {
+				// Console.WriteLine("{0}Left isn't intermediate", padding);
+				throw new Exception();
+			}
+			if (!(right is SymbolNode)) {
+				// Console.WriteLine("{0}Right isn't symbol", padding);
+				throw new Exception();
+			}
+
+			// var prob1 = PrintDerivations(left, seen, padding + "  ", probability);
+			// var prob2 = PrintDerivations(right, seen, padding + "  ", probability);
+			var prob1 = previousEstimates[nodeToIndex[left]];
+			var prob2 = previousEstimates[nodeToIndex[right]];
+
+			return prob1 * prob2;
+		}
+
+		private static HashSet<Node> GetAllNodes(SymbolNode sppf) {
+			var nodes = new HashSet<Node>();
+			var stack = new Stack<Node>();
+
+			stack.Push(sppf);
+			while (stack.Count > 0) {
+				var node = stack.Pop();
+				if (nodes.Contains(node)) {
+					continue;
+				}
+				nodes.Add(node);
+
+				foreach (var family in node.Families) {
+					foreach (var child in family.Members) {
+						stack.Push(child);
+					}
+				}
+			}
+
+			return nodes;
+		}
+
 		// TODO use visitor
 		private double PrintDerivations(Node node, HashSet<Node> seen, string padding = "", double probability = 1.0) {
 			var runningProb = probability;

@@ -25,7 +25,9 @@ namespace ConsolePlayground {
 			var tr = new RegressionTests();
 			var testp = new TestCFGParser();
 
-			testp.TestWeirdSppf06();
+			testp.TestWeirdSppf08();
+			// testp.TestWeirdSppf06();
+			// testp.TestWeirdSppf07();
 			// t.TestToCNF01();
 			// tp.TestToCNF06();
 			// t.TestAccepts01();

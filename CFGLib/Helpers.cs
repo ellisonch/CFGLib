@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("CFGLibTest")]
 namespace CFGLib {
 	internal static class Helpers {
 		public static IEnumerable<T> LookupEnumerable<TKey, T>(
@@ -65,6 +66,53 @@ namespace CFGLib {
 				}
 			}
 			return count;
+		}
+
+		// Used with permission from Jared Parsons
+		// http://stackoverflow.com/questions/1210295/how-can-i-add-an-item-to-a-ienumerablet-collection
+		public static IEnumerable<T> Append<T>(this IEnumerable<T> e, T value) {
+			foreach (var cur in e) {
+				yield return cur;
+			}
+			yield return value;
+		}
+
+		// based on http://stackoverflow.com/questions/25824376/combinations-with-repetitions-c-sharp
+		// used with permission from Carsten König
+		public static IEnumerable<IEnumerable<T>> CombinationsWithoutRepetition<T>(IEnumerable<T> input, int length) {
+			if (length == 0) {
+				yield return Enumerable.Empty<T>();
+			} else {
+				int count = 0;
+				foreach (var i in input) {
+					count++;
+					var recurse = CombinationsWithoutRepetition(input.Skip(count), length - 1);
+					foreach (var c in recurse) {
+						yield return c.Append(i);
+					}
+				}
+			}
+		}
+
+		// all 1 at a time - all 2 at a time + all 3 at a time - all 4 at a time...
+		// assumes all events are independent, so we can multiply groups
+		public static double DisjointProbability(IList<double> probs) {
+			double sign = 1.0;
+			var result = 0.0;
+
+			if (probs.Count == 0) {
+				return 1.0;
+			}
+
+			for (int i = 1; i <= probs.Count; i++) {
+				foreach (var combination in Helpers.CombinationsWithoutRepetition(probs, i)) {
+					var product = combination.Aggregate(sign, (p, q) => p * q);
+					result += product;
+				}
+				sign *= -1;
+			}
+
+			return result;
 		}
 	}
 	internal class Boxed<T> {
