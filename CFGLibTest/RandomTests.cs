@@ -95,11 +95,11 @@ namespace CFGLibTest {
 		[Ignore]
 		public void RandomParsingTest(int _numGrammars = 10000) {
 			// CFGParser.Production(@"<X> -> <X0> <X1> 'asdf as_-""fw' <Z23X>");
-			int _numNonterminals = 10;
-			int _numProductions = 20;
-			int _numTerminals = 5;
+			int _numNonterminals = 4;
+			int _numProductions = 5;
+			int _numTerminals = 3;
 			int _maxLength = 6;
-			int _maxProductionLength = 8;
+			int _maxProductionLength = 4;
 
 			var range = Enumerable.Range(0, _numTerminals);
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
@@ -150,11 +150,14 @@ namespace CFGLibTest {
 					//var p1 = h.Cyk(sentence);
 					var p1 = g.Earley(sentence);
 					var p2 = h.Cyk(sentence);
-					var accepts1 = p1 > 0;
-					var accepts2 = p2 > 0;
-					if (accepts1 != accepts2) {
-						throw new Exception("Didn't match");
+					if (!Helpers.IsNear(p2, p1)) {
+						throw new Exception();
 					}
+					var accepts1 = p1 > 0;
+					//var accepts2 = p2 > 0;
+					//if (accepts1 != accepts2) {
+					//	throw new Exception("Didn't match");
+					//}
 					if (accepts1) {
 						accepts++;
 					}
