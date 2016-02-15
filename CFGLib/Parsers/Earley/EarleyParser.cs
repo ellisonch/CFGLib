@@ -58,6 +58,7 @@ namespace CFGLib.Parsers.Earley {
 			var successes = GetSuccesses(S, s);
 			if (successes.Count > 0) {
 				var sppf = ConstructSPPF(successes, s);
+				AnnotateWithProductions(sppf);
 				PrintForest(sppf);
 				Console.WriteLine("---------------------------------");
 				//var chance = PrintDerivations(sppf, new HashSet<Node>());
@@ -390,6 +391,118 @@ namespace CFGLib.Parsers.Earley {
 
 			return prob1 * prob2;
 		}
+
+
+
+
+
+#region annotate
+
+		private void AnnotateWithProductions(Node node, HashSet<Node> seen = null) {
+			if (seen == null) {
+				seen = new HashSet<Node>();
+			}
+			if (seen.Contains(node)) {
+				return;
+			}
+			seen.Add(node);
+
+			if (node is IntermediateNode) {
+				var intermediateNode = (IntermediateNode)node;
+				var production = intermediateNode.Item.Production;
+				if (intermediateNode.Item.CurrentPosition == production.Rhs.Count - 1) {
+					node.Productions.Add(production);
+				}
+			}
+			
+			var l = node.Families.ToList();
+			if (node.ChildProductions == null) {
+				node.ChildProductions = new List<Production>[l.Count];
+			}
+			for (int i = 0; i < l.Count; i++) {
+				var alternative = l[i];
+				List<Production> childrenProductions;
+
+				var members = l[i].Members;
+				if (members.Count == 1) {
+					var child = members[0];
+
+					childrenProductions = AnnotateWithProductionsChildren(node, new HashSet<Node>(seen), child);
+				} else if (members.Count == 2) {
+					var left = members[0];
+					var right = members[1];
+
+					childrenProductions = AnnotateWithProductionsChildren(node, new HashSet<Node>(seen), left, right);
+				} else {
+					throw new Exception("Should only be 0--2 children");
+				}
+				node.ChildProductions[i] = childrenProductions;
+			}
+		}
+		
+		private List<Production> AnnotateWithProductionsChildren(Node parent, HashSet<Node> seen, Node child) {
+			var childProductions = new List<Production>();
+
+			Word parentSymbol = null;
+			if (parent is SymbolNode) {
+				var symbolParent = (SymbolNode)parent;
+				parentSymbol = symbolParent.Symbol;
+			} else {
+				var intermediateParent = (IntermediateNode)parent;
+				if (intermediateParent.Item.CurrentPosition != 1) {
+					throw new Exception("Expected to be at beginning of item");
+				}
+				parentSymbol = intermediateParent.Item.Production.Rhs[0];
+			}
+
+			if (child is SymbolNode) {
+				var symbolChild = (SymbolNode)child;
+				if (symbolChild.Symbol.IsNonterminal()) {
+					if (parent is SymbolNode) {
+						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
+						childProductions.Add(production);
+					}
+					AnnotateWithProductions(symbolChild, seen);
+					return childProductions;
+				} else {
+					if (parentSymbol.IsNonterminal()) {
+						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
+						childProductions.Add(production);
+						return childProductions;
+					} else {
+						// this is like parent = x o x  with child x
+						return childProductions;
+					}
+				}
+			} else if (child is IntermediateNode) {
+				throw new Exception("Don't handle intermediate");
+			} else if (child is EpsilonNode) {
+				var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence());
+				childProductions.Add(production);
+				return childProductions;
+			}
+			throw new Exception();
+			// return 0.0;
+		}
+
+		private List<Production> AnnotateWithProductionsChildren(Node parent, HashSet<Node> seen, Node left, Node right) {
+			if (!(left is IntermediateNode)) {
+				throw new Exception();
+			}
+			if (!(right is SymbolNode)) {
+				throw new Exception();
+			}
+
+			AnnotateWithProductions(left, seen);
+			AnnotateWithProductions(right, seen);
+
+			return new List<Production>();
+		}
+#endregion annotate
+
+
+
+
 
 		private SymbolNode ConstructSPPF(IList<Item> successes, Sentence s) {
 			var root = new SymbolNode(_grammar.Start, 0, s.Count);

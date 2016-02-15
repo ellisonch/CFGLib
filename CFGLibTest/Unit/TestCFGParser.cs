@@ -181,5 +181,20 @@ namespace CFGLibTest.Unit {
 			Helpers.AssertNear(p1, p2);
 		}
 
+		[TestMethod]
+		public void TestWeirdSppf10() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <A> 'b'"),
+				CFGParser.Production("<S> → <B>"),
+				CFGParser.Production("<A> → <B>"),
+				CFGParser.Production("<B> → <A> 'b'"),
+				CFGParser.Production("<A> → ε"),
+			}, Nonterminal.Of("S"));
+			var s = Sentence.FromWords("b b");
+			var p1 = g.ToCNF().Cyk(s);
+			var p2 = g.Earley(s);
+			Helpers.AssertNear(p1, p2);
+		}
+
 	}
 }

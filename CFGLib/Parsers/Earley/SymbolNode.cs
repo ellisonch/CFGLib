@@ -41,7 +41,7 @@ namespace CFGLib.Parsers.Earley {
 			return true;
 		}
 		public override string ToString() {
-			return string.Format("({0}, {1}, {2})", Symbol, StartPosition, EndPosition);
+			return string.Format("({0}, {1}, {2}){3}", Symbol, StartPosition, EndPosition, ProductionsToString());
 		}
 	}
 }

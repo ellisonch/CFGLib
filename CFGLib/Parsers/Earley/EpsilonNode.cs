@@ -17,7 +17,7 @@ namespace CFGLib.Parsers.Earley {
 
 		}
 		public override string ToString() {
-			return "(ε)";
+			return string.Format("(ε){0}", ProductionsToString());
 		}
 	}
 }
