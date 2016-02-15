@@ -25,7 +25,7 @@ namespace ConsolePlayground {
 			var tr = new RegressionTests();
 			var testp = new TestCFGParser();
 
-			testp.TestWeirdSppf10();
+			// testp.TestWeirdSppf10();
 			// testp.TestWeirdSppf06();
 			// testp.TestWeirdSppf07();
 			// t.TestToCNF01();
@@ -68,7 +68,7 @@ namespace ConsolePlayground {
 			Console.WriteLine("Ear = {0}, CYK = {1}", g.Earley(s), h.Cyk(s));
 			// g.Earley(Sentence.FromLetters("bbb"));
 
-			Console.Read();
+			// Console.Read();
 
 			//var productions = new HashSet<Production> {
 			//	CFGParser.Production("<S> → <S> <T>"),

@@ -63,8 +63,8 @@ namespace CFGLib.Parsers.Earley {
 				Console.WriteLine("---------------------------------");
 				//var chance = PrintDerivations(sppf, new HashSet<Node>());
 				//return chance;
-				var prob = CalculateProbability(sppf);
-				return prob;
+				// var prob = CalculateProbability(sppf);
+				// return prob;
 			}
 			// var trees = CollectTrees(S, s, successes);
 
@@ -397,8 +397,7 @@ namespace CFGLib.Parsers.Earley {
 
 
 #region annotate
-
-		private void AnnotateWithProductions(Node node, HashSet<Node> seen = null) {
+		private void AnnotateWithProductions(Node node, HashSet<Node> seen = null, Node parent = null, int place = 0) {
 			if (seen == null) {
 				seen = new HashSet<Node>();
 			}
@@ -411,38 +410,34 @@ namespace CFGLib.Parsers.Earley {
 				var intermediateNode = (IntermediateNode)node;
 				var production = intermediateNode.Item.Production;
 				if (intermediateNode.Item.CurrentPosition == production.Rhs.Count - 1) {
-					node.Productions.Add(production);
+					parent.AddChild(place, production);
 				}
 			}
 			
 			var l = node.Families.ToList();
 			if (node.ChildProductions == null) {
-				node.ChildProductions = new List<Production>[l.Count];
+				node.ChildProductions = new Production[l.Count];
 			}
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
-				List<Production> childrenProductions;
 
 				var members = l[i].Members;
 				if (members.Count == 1) {
 					var child = members[0];
 
-					childrenProductions = AnnotateWithProductionsChildren(node, new HashSet<Node>(seen), child);
+					AnnotateWithProductionsChildren(node, seen, child, i);
 				} else if (members.Count == 2) {
 					var left = members[0];
 					var right = members[1];
 
-					childrenProductions = AnnotateWithProductionsChildren(node, new HashSet<Node>(seen), left, right);
+					AnnotateWithProductionsChildren(node, seen, left, right, i);
 				} else {
 					throw new Exception("Should only be 0--2 children");
 				}
-				node.ChildProductions[i] = childrenProductions;
 			}
 		}
 		
-		private List<Production> AnnotateWithProductionsChildren(Node parent, HashSet<Node> seen, Node child) {
-			var childProductions = new List<Production>();
-
+		private void AnnotateWithProductionsChildren(Node parent, HashSet<Node> seen, Node child, int place) {
 			Word parentSymbol = null;
 			if (parent is SymbolNode) {
 				var symbolParent = (SymbolNode)parent;
@@ -460,32 +455,32 @@ namespace CFGLib.Parsers.Earley {
 				if (symbolChild.Symbol.IsNonterminal()) {
 					if (parent is SymbolNode) {
 						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
-						childProductions.Add(production);
+						parent.AddChild(place, production);
 					}
-					AnnotateWithProductions(symbolChild, seen);
-					return childProductions;
+					AnnotateWithProductions(symbolChild, seen, parent, place);
+					return;
 				} else {
 					if (parentSymbol.IsNonterminal()) {
 						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
-						childProductions.Add(production);
-						return childProductions;
+						parent.AddChild(place, production);
+						return;
 					} else {
 						// this is like parent = x o x  with child x
-						return childProductions;
+						return;
 					}
 				}
 			} else if (child is IntermediateNode) {
 				throw new Exception("Don't handle intermediate");
 			} else if (child is EpsilonNode) {
 				var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence());
-				childProductions.Add(production);
-				return childProductions;
+				parent.AddChild(place, production);
+				return;
 			}
 			throw new Exception();
 			// return 0.0;
 		}
 
-		private List<Production> AnnotateWithProductionsChildren(Node parent, HashSet<Node> seen, Node left, Node right) {
+		private void AnnotateWithProductionsChildren(Node parent, HashSet<Node> seen, Node left, Node right, int place) {
 			if (!(left is IntermediateNode)) {
 				throw new Exception();
 			}
@@ -493,10 +488,8 @@ namespace CFGLib.Parsers.Earley {
 				throw new Exception();
 			}
 
-			AnnotateWithProductions(left, seen);
-			AnnotateWithProductions(right, seen);
-
-			return new List<Production>();
+			AnnotateWithProductions(left, seen, parent, place);
+			AnnotateWithProductions(right, seen, parent, place);
 		}
 #endregion annotate
 
@@ -536,7 +529,7 @@ namespace CFGLib.Parsers.Earley {
 					Console.WriteLine("{0}Alternative {1}", padding, i);
 				}
 				foreach (var member in l[i].Members) {
-					PrintForest(member, padding + "  ", new HashSet<Node>(seen));
+					PrintForest(member, padding + "  ", seen);
 				}
 			}
 		}
