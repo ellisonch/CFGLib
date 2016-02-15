@@ -94,5 +94,19 @@ namespace CFGLibTest.Unit {
 			var p2 = g.Earley(s);
 			Helpers.AssertNear(p1, p2);
 		}
+
+		[TestMethod]
+		public void TestWeirdSppf04() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → <X_2> 'x2' 'x0'"),
+				CFGParser.Production("<X_2> → <X_0>"),
+				CFGParser.Production("<X_0> → 'x1'"),
+				CFGParser.Production("<X_2> → 'q'")
+			}, Nonterminal.Of("X_0"));
+			var s = Sentence.FromWords("x1 x2 x0 x2 x0");
+			var p1 = g.ToCNF().Cyk(s);
+			var p2 = g.Earley(s);
+			Helpers.AssertNear(p1, p2);
+		}
 	}
 }

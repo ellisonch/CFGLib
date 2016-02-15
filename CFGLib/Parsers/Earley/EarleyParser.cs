@@ -71,6 +71,7 @@ namespace CFGLib.Parsers.Earley {
 		// TODO use visitor
 		private double PrintDerivations(Node node, string padding = "", double probability = 1.0) {
 			var runningProb = probability;
+			var resultProb = 1.0;
 
 			if (probability <= 1e-300) {
 				return 0.0;
@@ -84,6 +85,7 @@ namespace CFGLib.Parsers.Earley {
 					Console.WriteLine("{0}APPLY {1}", padding, intermediateNode.Item.Production);
 					var prob = _grammar.GetProbability(intermediateNode.Item.Production);
 					runningProb *= prob;
+					resultProb *= prob;
 				}
 			}
 
@@ -92,7 +94,7 @@ namespace CFGLib.Parsers.Earley {
 			var l = node.Families.ToList();
 
 			if (l.Count == 0) {
-				return runningProb;
+				return 1.0;
 			}
 
 			for (int i = 0; i < l.Count; i++) {
@@ -103,22 +105,25 @@ namespace CFGLib.Parsers.Earley {
 
 				var members = l[i].Members;
 				if (members.Count == 0) {
-					sumProb += PrintDerivationsChildren(node, padding, probability);
+					sumProb += PrintDerivationsChildren(node, padding, runningProb);
 				} else if (members.Count == 1) {
 					var child = members[0];
 
-					sumProb += PrintDerivationsChildren(node, child, padding, probability);
+					sumProb += PrintDerivationsChildren(node, child, padding, runningProb);
 				} else if (members.Count == 2) {
 					var left = members[0];
 					var right = members[1];
 
-					sumProb += PrintDerivationsChildren(node, left, right, padding, probability);
+					sumProb += PrintDerivationsChildren(node, left, right, padding, runningProb);
 				} else {
 					throw new Exception("Should only be 0--2 children");
 				}
 			}
-			var result = runningProb * sumProb;
+			var result = resultProb * sumProb;
 			Console.WriteLine("{0}Returning prob={1}", padding, result);
+			//if (result > probability) {
+			//	throw new Exception("Prob should shrink");
+			//}
 			return result;
 		}
 
@@ -146,16 +151,17 @@ namespace CFGLib.Parsers.Earley {
 			if (child is SymbolNode) {
 				var symbolChild = (SymbolNode)child;
 				if (symbolChild.Symbol.IsNonterminal()) {
+					var updatedProb = 1.0;
 					Console.WriteLine("{0}  Nonterminal Symbol Child", padding);
 					if (parent is SymbolNode) {
 						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
 						Console.WriteLine("{0}  APPLY {1}", padding, production);
 						var prob = _grammar.GetProbability(production);
-						probability *= prob;
+						updatedProb *= prob;
 					} else {
 						
 					}
-					return PrintDerivations(symbolChild, padding + "  ", probability);
+					return updatedProb * PrintDerivations(symbolChild, padding + "  ", probability * updatedProb);
 				} else {
 					if (parentSymbol.IsNonterminal()) {
 						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
