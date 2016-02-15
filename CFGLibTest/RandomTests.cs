@@ -153,6 +153,7 @@ namespace CFGLibTest {
 					if (!Helpers.IsNear(p2, p1)) {
 						throw new Exception();
 					}
+
 					var accepts1 = p1 > 0;
 					//var accepts2 = p2 > 0;
 					//if (accepts1 != accepts2) {

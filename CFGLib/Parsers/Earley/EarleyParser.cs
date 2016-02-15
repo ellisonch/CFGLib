@@ -60,7 +60,7 @@ namespace CFGLib.Parsers.Earley {
 				var sppf = ConstructSPPF(successes, s);
 				PrintForest(sppf);
 				Console.WriteLine("---------------------------------");
-				var chance = PrintDerivations(sppf);
+				var chance = PrintDerivations(sppf, new HashSet<Node>());
 				return chance;
 			}
 			// var trees = CollectTrees(S, s, successes);
@@ -69,15 +69,21 @@ namespace CFGLib.Parsers.Earley {
 		}
 		
 		// TODO use visitor
-		private double PrintDerivations(Node node, string padding = "", double probability = 1.0) {
+		private double PrintDerivations(Node node, HashSet<Node> seen, string padding = "", double probability = 1.0) {
 			var runningProb = probability;
 			var resultProb = 1.0;
 
 			if (probability <= 1e-300) {
 				return 0.0;
 			}
-			
+
 			Console.WriteLine("{0}{1} (Incoming prob={2})", padding, node, probability);
+			if (seen.Contains(node)) {
+				Console.WriteLine("{0}Already seen", padding);
+				return 0.0;
+			}
+			seen.Add(node);
+
 
 			if (node is IntermediateNode) {
 				var intermediateNode = (IntermediateNode)node;
@@ -105,16 +111,16 @@ namespace CFGLib.Parsers.Earley {
 
 				var members = l[i].Members;
 				if (members.Count == 0) {
-					sumProb += PrintDerivationsChildren(node, padding, runningProb);
+					sumProb += PrintDerivationsChildren(node, new HashSet<Node>(seen), padding, runningProb);
 				} else if (members.Count == 1) {
 					var child = members[0];
 
-					sumProb += PrintDerivationsChildren(node, child, padding, runningProb);
+					sumProb += PrintDerivationsChildren(node, new HashSet<Node>(seen), child, padding, runningProb);
 				} else if (members.Count == 2) {
 					var left = members[0];
 					var right = members[1];
 
-					sumProb += PrintDerivationsChildren(node, left, right, padding, runningProb);
+					sumProb += PrintDerivationsChildren(node, new HashSet<Node>(seen), left, right, padding, runningProb);
 				} else {
 					throw new Exception("Should only be 0--2 children");
 				}
@@ -127,13 +133,13 @@ namespace CFGLib.Parsers.Earley {
 			return result;
 		}
 
-		private double PrintDerivationsChildren(Node parent, string padding, double probability) {
+		private double PrintDerivationsChildren(Node parent, HashSet<Node> seen, string padding, double probability) {
 			Console.WriteLine("{0}Don't handle 0 case", padding);
 			throw new Exception();
 			// return 0.0;
 		}
 
-		private double PrintDerivationsChildren(Node parent, Node child, string padding, double probability) {
+		private double PrintDerivationsChildren(Node parent, HashSet<Node> seen, Node child, string padding, double probability) {
 
 			Word parentSymbol = null;
 			if (parent is SymbolNode) {
@@ -161,7 +167,7 @@ namespace CFGLib.Parsers.Earley {
 					} else {
 						
 					}
-					return updatedProb * PrintDerivations(symbolChild, padding + "  ", probability * updatedProb);
+					return updatedProb * PrintDerivations(symbolChild, seen, padding + "  ", probability * updatedProb);
 				} else {
 					if (parentSymbol.IsNonterminal()) {
 						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
@@ -183,7 +189,7 @@ namespace CFGLib.Parsers.Earley {
 			// return 0.0;
 		}
 
-		private double PrintDerivationsChildren(Node parent, Node left, Node right, string padding, double probability) {
+		private double PrintDerivationsChildren(Node parent, HashSet<Node> seen, Node left, Node right, string padding, double probability) {
 			if (!(left is IntermediateNode)) {
 				Console.WriteLine("{0}Left isn't intermediate", padding);
 				throw new Exception();
@@ -193,8 +199,8 @@ namespace CFGLib.Parsers.Earley {
 				throw new Exception();
 			}
 
-			var prob1 = PrintDerivations(left, padding + "  ", probability);
-			var prob2 = PrintDerivations(right, padding + "  ", probability);
+			var prob1 = PrintDerivations(left, seen, padding + "  ", probability);
+			var prob2 = PrintDerivations(right, seen, padding + "  ", probability);
 
 			return prob1 * prob2;
 		}
