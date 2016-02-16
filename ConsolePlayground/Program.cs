@@ -25,7 +25,7 @@ namespace ConsolePlayground {
 			var tr = new RegressionTests();
 			var testp = new TestCFGParser();
 
-			testp.TestWeirdSppf11();
+			testp.TestWeirdSppf13();
 			// testp.TestWeirdSppf06();
 			// testp.TestWeirdSppf07();
 			// t.TestToCNF01();
@@ -38,29 +38,20 @@ namespace ConsolePlayground {
 
 			// Console.Read();
 
-			//var productions = new HashSet<Production> {
-			//	// CFGParser.Production("<S> → <S> <S> 'b' <S>"),
-			//	CFGParser.Production("<S> → <S> <S>"),
-			//	CFGParser.Production("<S> → 'b'"),
-			//	//CFGParser.Production("<S> → ε"),
-			//	//CFGParser.Production("<S> → <A> <B> <C>"),
-			//	//CFGParser.Production("<A> → 'a'"),
-			//	//CFGParser.Production("<A> → 'x'"),
-			//	//CFGParser.Production("<B> → 'b'"),
-			//	//CFGParser.Production("<B> → 'x'"),
-			//	//CFGParser.Production("<C> → 'c'"),
-			//	//CFGParser.Production("<C> → 'x'"),
-			//};
-
-			////var productions = new HashSet<Production> {
-			////	CFGParser.Production("<S> → <A> <T>"),
-			////	CFGParser.Production("<S> → 'a' <T>"),
-			////	CFGParser.Production("<A> → 'a'"),
-			////	CFGParser.Production("<A> → <B> <A>"),
-			////	CFGParser.Production("<B> → ε"),
-			////	CFGParser.Production("<T> → 'b' 'b' 'b' 'b'"),
-			////};
-			//var g = new Grammar(productions, Nonterminal.Of("S"));
+			
+			//var g = new Grammar(new List<Production>{
+			//	CFGParser.Production("<S> → <A>"),
+			//	CFGParser.Production("<A> → <S> 'x' <S>"),
+			//	CFGParser.Production("<A> → ε")
+			//}, Nonterminal.Of("S"));
+			//var probs = g.EstimateProbabilities(100000);
+			//foreach (var entry in probs) {
+			//	var key = entry.Key;
+			//	var value = entry.Value;
+			//	if (key.Length <= 1) {
+			//	Console.WriteLine("{0}: {1}", key, value);
+			//	}
+			//}
 			//var h = g.ToCNF();
 			//Sentence s;
 

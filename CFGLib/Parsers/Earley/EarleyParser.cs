@@ -15,13 +15,16 @@ namespace CFGLib.Parsers.Earley {
 
 	internal class EarleyParser : Parser {
 		private readonly BaseGrammar _grammar;
+
+		private Sentence _s; // TODO don't leave this in
+
 		public EarleyParser(BaseGrammar grammar) {
 			_grammar = grammar;
 		}
 
 		public override double GetProbability(Sentence s) {
 			StateSet[] S = FreshS(s.Count + 1);
-
+			_s = s;
 			// Initialize S(0)
 			foreach (var production in _grammar.ProductionsFrom(_grammar.Start)) {
 				var item = new Item(production, 0, 0, 0);
@@ -129,26 +132,42 @@ namespace CFGLib.Parsers.Earley {
 			//if (node.ChildProductions.Length == 2 && node.ChildProductions.All((p) => p == null)) {
 			//	return 1.0;
 			//}
+			Console.WriteLine("------------------");
+			if (node is InteriorNode) {
+				var n = (InteriorNode)node;
+				Console.WriteLine("what's the chance that {0} --> {1}", node, _s.GetRange(n.StartPosition, n.EndPosition - n.StartPosition));
+			}
+
 			var l = node.Families.ToList();
 			var familyProbs = new double[l.Count];
-			Console.WriteLine("------------------");
+			
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
 
-				Console.WriteLine(node);
-				Console.WriteLine(string.Join(", ", l[i].Members));
+				//Console.WriteLine(node);
+				//Console.WriteLine(string.Join(", ", l[i].Members));
 				var production = node.ChildProductions[i];
 				var prob = 1.0;
 				if (production != null) {
 					prob = _grammar.GetProbability(production);
 				}
 
-				var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]);
+				var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]).ToList();
 
 				var childrenProb = childrenProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
-				Console.WriteLine(string.Join(", ", childrenProbs));
+				// Console.WriteLine(string.Join(", ", childrenProbs));
 
 				familyProbs[i] = prob * childrenProb;
+
+				for (var childi = 0; childi < childrenProbs.Count; childi++) {
+					Console.WriteLine("Given that {0} rewrites at p={1}", l[i].Members[childi], childrenProbs[childi]);
+				}
+
+				var xxx = familyProbs.Sum();
+				// var familyProb = familyProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
+				if (xxx > 1) {
+				}
+
 			}
 			// var result = newProb * Helpers.DisjointProbability(familyProbs);
 			var familyProb = familyProbs.Sum();
@@ -160,6 +179,8 @@ namespace CFGLib.Parsers.Earley {
 
 			}
 			var result = familyProb;
+
+			Console.WriteLine("Conclusion: p={0}", result);
 
 			return result;
 		}
