@@ -111,7 +111,8 @@ namespace CFGLib.Parsers.Earley {
 				}
 				for (var i = 0; i < indexToNode.Length; i++) {
 					if (currentEstimates[i] > previousEstimates[i]) {
-						throw new Exception("Didn't expect estimates to increase");
+						return 0.0;
+						// throw new Exception("Didn't expect estimates to increase");
 					}
 				}
 
@@ -125,24 +126,35 @@ namespace CFGLib.Parsers.Earley {
 			if (node.Families.Count == 0) {
 				return 1.0;
 			}
+			//if (node.ChildProductions.Length == 2 && node.ChildProductions.All((p) => p == null)) {
+			//	return 1.0;
+			//}
 			var l = node.Families.ToList();
 			var familyProbs = new double[l.Count];
+			Console.WriteLine("------------------");
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
 
+				Console.WriteLine(node);
+				Console.WriteLine(string.Join(", ", l[i].Members));
 				var production = node.ChildProductions[i];
-				var prob = production == null ? 1.0 : _grammar.GetProbability(production);
+				var prob = 1.0;
+				if (production != null) {
+					prob = _grammar.GetProbability(production);
+				}
 
 				var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]);
 
 				var childrenProb = childrenProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
+				Console.WriteLine(string.Join(", ", childrenProbs));
 
 				familyProbs[i] = prob * childrenProb;
 			}
 			// var result = newProb * Helpers.DisjointProbability(familyProbs);
 			var familyProb = familyProbs.Sum();
+			// var familyProb = familyProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
 			if (familyProb > 1) {
-
+				familyProb = 1.0;
 			}
 			if (familyProb == 0) {
 
@@ -173,147 +185,6 @@ namespace CFGLib.Parsers.Earley {
 
 			return nodes;
 		}
-
-		// TODO use visitor
-		private double PrintDerivations(Node node, HashSet<Node> seen, string padding = "", double probability = 1.0) {
-			var runningProb = probability;
-			var resultProb = 1.0;
-
-			if (probability <= 1e-300) {
-				return 0.0;
-			}
-
-			Console.WriteLine("{0}{1} (Incoming prob={2})", padding, node, probability);
-			if (seen.Contains(node)) {
-				Console.WriteLine("{0}Already seen", padding);
-				return 0.0;
-			}
-			seen.Add(node);
-
-
-			if (node is IntermediateNode) {
-				var intermediateNode = (IntermediateNode)node;
-				if (intermediateNode.Item.CurrentPosition == intermediateNode.Item.Production.Rhs.Count - 1) {
-					Console.WriteLine("{0}APPLY {1}", padding, intermediateNode.Item.Production);
-					var prob = _grammar.GetProbability(intermediateNode.Item.Production);
-					runningProb *= prob;
-					resultProb *= prob;
-				}
-			}
-
-
-			var sumProb = 0.0;
-			var l = node.Families.ToList();
-
-			if (l.Count == 0) {
-				return 1.0;
-			}
-
-			for (int i = 0; i < l.Count; i++) {
-				var alternative = l[i];
-				if (l.Count > 1) {
-					Console.WriteLine("{0}Alternative {1}", padding, i);
-				}
-
-				var members = l[i].Members;
-				if (members.Count == 0) {
-					sumProb += PrintDerivationsChildren(node, new HashSet<Node>(seen), padding, runningProb);
-				} else if (members.Count == 1) {
-					var child = members[0];
-
-					sumProb += PrintDerivationsChildren(node, new HashSet<Node>(seen), child, padding, runningProb);
-				} else if (members.Count == 2) {
-					var left = members[0];
-					var right = members[1];
-
-					sumProb += PrintDerivationsChildren(node, new HashSet<Node>(seen), left, right, padding, runningProb);
-				} else {
-					throw new Exception("Should only be 0--2 children");
-				}
-			}
-			var result = resultProb * sumProb;
-			Console.WriteLine("{0}Returning prob={1}", padding, result);
-			//if (result > probability) {
-			//	throw new Exception("Prob should shrink");
-			//}
-			return result;
-		}
-
-		private double PrintDerivationsChildren(Node parent, HashSet<Node> seen, string padding, double probability) {
-			Console.WriteLine("{0}Don't handle 0 case", padding);
-			throw new Exception();
-			// return 0.0;
-		}
-
-		private double PrintDerivationsChildren(Node parent, HashSet<Node> seen, Node child, string padding, double probability) {
-
-			Word parentSymbol = null;
-			if (parent is SymbolNode) {
-				var symbolParent = (SymbolNode)parent;
-				parentSymbol = symbolParent.Symbol;
-			} else {
-				var intermediateParent = (IntermediateNode)parent;
-				if (intermediateParent.Item.CurrentPosition != 1) {
-					throw new Exception("Expected to be at beginning of item");
-				}
-				parentSymbol = intermediateParent.Item.Production.Rhs[0];
-			}
-			Console.WriteLine("{0}  Parent symbol = {1}", padding, parentSymbol);
-
-			if (child is SymbolNode) {
-				var symbolChild = (SymbolNode)child;
-				if (symbolChild.Symbol.IsNonterminal()) {
-					var updatedProb = 1.0;
-					Console.WriteLine("{0}  Nonterminal Symbol Child", padding);
-					if (parent is SymbolNode) {
-						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
-						Console.WriteLine("{0}  APPLY {1}", padding, production);
-						var prob = _grammar.GetProbability(production);
-						updatedProb *= prob;
-					} else {
-						
-					}
-					return updatedProb * PrintDerivations(symbolChild, seen, padding + "  ", probability * updatedProb);
-				} else {
-					if (parentSymbol.IsNonterminal()) {
-						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
-						Console.WriteLine("{0}  APPLY {1}", padding, production);
-						return _grammar.GetProbability(production);
-					} else {
-						// this is like parent = x o x  with child x
-						return 1.0;
-					}
-				}
-			} else if (child is IntermediateNode) {
-				throw new Exception("Don't handle intermediate");
-			} else if (child is EpsilonNode) {
-				var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence());
-				Console.WriteLine("{0}  APPLY {1}", padding, production);
-				return _grammar.GetProbability(production);
-			}
-			throw new Exception();
-			// return 0.0;
-		}
-
-		private double PrintDerivationsChildren(Node parent, HashSet<Node> seen, Node left, Node right, string padding, double probability) {
-			if (!(left is IntermediateNode)) {
-				Console.WriteLine("{0}Left isn't intermediate", padding);
-				throw new Exception();
-			}
-			if (!(right is SymbolNode)) {
-				Console.WriteLine("{0}Right isn't symbol", padding);
-				throw new Exception();
-			}
-
-			var prob1 = PrintDerivations(left, seen, padding + "  ", probability);
-			var prob2 = PrintDerivations(right, seen, padding + "  ", probability);
-
-			return prob1 * prob2;
-		}
-
-
-
-
 
 #region annotate
 		private void AnnotateWithProductions(Node node, HashSet<Node> seen = null, Node parent = null, int place = 0) {
@@ -433,7 +304,13 @@ namespace CFGLib.Parsers.Earley {
 			if (seen == null) {
 				seen = new HashSet<Node>();
 			}
-			Console.WriteLine("{0}{1}", padding, node);
+
+			var star = "";
+			if (node.ChildProductions != null && node.ChildProductions.Length == 2 && node.ChildProductions.All((p) => p == null)) {
+				star = "***";
+			}
+
+			Console.WriteLine("{0}{1}{2}", padding, node, star);
 
 			if (node.Families.Count > 0 && seen.Contains(node)) {
 				Console.WriteLine("{0}Already seen this node!", padding);

@@ -25,7 +25,7 @@ namespace ConsolePlayground {
 			var tr = new RegressionTests();
 			var testp = new TestCFGParser();
 
-			// testp.TestWeirdSppf10();
+			testp.TestWeirdSppf11();
 			// testp.TestWeirdSppf06();
 			// testp.TestWeirdSppf07();
 			// t.TestToCNF01();
@@ -38,35 +38,35 @@ namespace ConsolePlayground {
 
 			// Console.Read();
 
-			var productions = new HashSet<Production> {
-				// CFGParser.Production("<S> → <S> <S> 'b' <S>"),
-				CFGParser.Production("<S> → <S> <S>"),
-				CFGParser.Production("<S> → 'b'"),
-				//CFGParser.Production("<S> → ε"),
-				//CFGParser.Production("<S> → <A> <B> <C>"),
-				//CFGParser.Production("<A> → 'a'"),
-				//CFGParser.Production("<A> → 'x'"),
-				//CFGParser.Production("<B> → 'b'"),
-				//CFGParser.Production("<B> → 'x'"),
-				//CFGParser.Production("<C> → 'c'"),
-				//CFGParser.Production("<C> → 'x'"),
-			};
-
 			//var productions = new HashSet<Production> {
-			//	CFGParser.Production("<S> → <A> <T>"),
-			//	CFGParser.Production("<S> → 'a' <T>"),
-			//	CFGParser.Production("<A> → 'a'"),
-			//	CFGParser.Production("<A> → <B> <A>"),
-			//	CFGParser.Production("<B> → ε"),
-			//	CFGParser.Production("<T> → 'b' 'b' 'b' 'b'"),
+			//	// CFGParser.Production("<S> → <S> <S> 'b' <S>"),
+			//	CFGParser.Production("<S> → <S> <S>"),
+			//	CFGParser.Production("<S> → 'b'"),
+			//	//CFGParser.Production("<S> → ε"),
+			//	//CFGParser.Production("<S> → <A> <B> <C>"),
+			//	//CFGParser.Production("<A> → 'a'"),
+			//	//CFGParser.Production("<A> → 'x'"),
+			//	//CFGParser.Production("<B> → 'b'"),
+			//	//CFGParser.Production("<B> → 'x'"),
+			//	//CFGParser.Production("<C> → 'c'"),
+			//	//CFGParser.Production("<C> → 'x'"),
 			//};
-			var g = new Grammar(productions, Nonterminal.Of("S"));
-			var h = g.ToCNF();
-			Sentence s;
 
-			s = Sentence.FromLetters("bb");
-			Console.WriteLine("Ear = {0}, CYK = {1}", g.Earley(s), h.Cyk(s));
-			// g.Earley(Sentence.FromLetters("bbb"));
+			////var productions = new HashSet<Production> {
+			////	CFGParser.Production("<S> → <A> <T>"),
+			////	CFGParser.Production("<S> → 'a' <T>"),
+			////	CFGParser.Production("<A> → 'a'"),
+			////	CFGParser.Production("<A> → <B> <A>"),
+			////	CFGParser.Production("<B> → ε"),
+			////	CFGParser.Production("<T> → 'b' 'b' 'b' 'b'"),
+			////};
+			//var g = new Grammar(productions, Nonterminal.Of("S"));
+			//var h = g.ToCNF();
+			//Sentence s;
+
+			//s = Sentence.FromLetters("bb");
+			//Console.WriteLine("Ear = {0}, CYK = {1}", g.Earley(s), h.Cyk(s));
+			//// g.Earley(Sentence.FromLetters("bbb"));
 
 			// Console.Read();
 

@@ -151,9 +151,14 @@ namespace CFGLibTest {
 					var p1 = g.Earley(sentence);
 					var p2 = h.Cyk(sentence);
 
-					//if (!Helpers.IsNear(p2, p1)) {
-					//	throw new Exception();
-					//}
+					if (!Helpers.IsNear(p2, p1)) {
+						Console.WriteLine("Offending grammar:");
+						Console.WriteLine(g.ToCodeString());
+						Console.WriteLine("Offending sentence:");
+						Console.WriteLine(sentence);
+
+						throw new Exception();
+					}
 
 					var accepts1 = p1 > 0;
 					var accepts2 = p2 > 0;

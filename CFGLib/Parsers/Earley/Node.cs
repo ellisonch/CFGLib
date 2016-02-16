@@ -13,16 +13,19 @@ namespace CFGLib.Parsers.Earley {
 			string retval = "";
 
 			if (ChildProductions != null && ChildProductions.Length > 0) {
-				retval += "  |  ";
-
 				var childrenStrings = new List<string>();
 				var children = "";
 				for (int i = 0; i < ChildProductions.Length; i++) {
-					childrenStrings.Add(string.Format("[{0}]={1}", i, ChildProductions[i]));
+					var child = ChildProductions[i];
+					if (child != null) {
+						childrenStrings.Add(string.Format("[{0}]={1}", i, child.ToStringNoWeight()));
+					}
 				}
-				children = string.Join(", ", childrenStrings);
-
-				retval += children;
+				if (childrenStrings.Count > 0) {
+					children = string.Join(", ", childrenStrings);
+					retval += "  |  ";
+					retval += children;
+				}
 			}
 
 			return retval;

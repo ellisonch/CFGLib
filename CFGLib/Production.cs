@@ -74,6 +74,9 @@ namespace CFGLib {
 		public override string ToString() {
 			return string.Format("{0} → {1} [{2}]", this.Lhs, this.Rhs, this.Weight);
 		}
+		public string ToStringNoWeight() {
+			return string.Format("{0} → {1}", this.Lhs, this.Rhs);
+		}
 
 		public string ToCodeString() {
 			return string.Format("{0} → {1} [{2}]", this.Lhs, this.Rhs, this.Weight.ToString("R"));
