@@ -203,6 +203,9 @@ namespace CFGLib {
 		}
 
 		internal double GetProbability(Production target) {
+			if (target == null) {
+				throw new ArgumentNullException("Need non-null production");
+			}
 			var lhs = target.Lhs;
 			var weight = target.Weight;
 			var lookupTable = _weightTotalsByNonterminal.Value;
