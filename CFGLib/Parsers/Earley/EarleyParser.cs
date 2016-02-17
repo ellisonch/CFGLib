@@ -77,23 +77,43 @@ namespace CFGLib.Parsers.Earley {
 
 			var successes = GetSuccesses(S, s);
 			if (successes.Count > 0) {
-				var sppf = ConstructSPPF(successes, s);
-				AnnotateWithProductions(sppf);
-				PrintForest(sppf);
-				Console.WriteLine("---------------------------------");
-				//var chance = PrintDerivations(sppf, new HashSet<Node>());
-				//return chance;
-				var nodeProbs = new Dictionary<Node, double>();
-				var prob = CalculateProbability(sppf, nodeProbs);
-				Console.WriteLine("=================================");
-				PrintForest(sppf, nodeProbs);
-				Console.WriteLine("=================================");
-				PrintDebugForest(sppf, nodeProbs);
-				return prob;
+				return ProcessSuccess(s, successes);
+				// return ProcessSuccessDebug(s, successes);
 			}
 			// var trees = CollectTrees(S, s, successes);
 
 			return 0.0;
+		}
+
+
+		private double ProcessSuccess(Sentence s, IList<Item> successes) {
+			var sppf = ConstructSPPF(successes, s);
+			AnnotateWithProductions(sppf);
+			//PrintForest(sppf);
+			//Console.WriteLine("---------------------------------");
+			var nodeProbs = new Dictionary<Node, double>();
+			var prob = CalculateProbability(sppf, nodeProbs);
+			//Console.WriteLine("=================================");
+			//PrintForest(sppf, nodeProbs);
+			//Console.WriteLine("=================================");
+			//PrintDebugForest(sppf, nodeProbs);
+			return prob;
+		}
+
+		private double ProcessSuccessDebug(Sentence s, IList<Item> successes) {
+			var sppf = ConstructSPPF(successes, s);
+			AnnotateWithProductions(sppf);
+			PrintForest(sppf);
+			Console.WriteLine("---------------------------------");
+			//var chance = PrintDerivations(sppf, new HashSet<Node>());
+			//return chance;
+			var nodeProbs = new Dictionary<Node, double>();
+			var prob = CalculateProbability(sppf, nodeProbs);
+			Console.WriteLine("=================================");
+			PrintForest(sppf, nodeProbs);
+			Console.WriteLine("=================================");
+			PrintDebugForest(sppf, nodeProbs);
+			return prob;
 		}
 
 		private double CalculateProbability(SymbolNode sppf, Dictionary<Node, double> nodeProbs) {
@@ -354,9 +374,9 @@ namespace CFGLib.Parsers.Earley {
 				BuildTree(nodes, processed, root, success);
 			}
 
-			foreach (var node in nodes.Keys) {
-				Console.WriteLine(node);
-			}
+			//foreach (var node in nodes.Keys) {
+			//	Console.WriteLine(node);
+			//}
 
 			return root;
 		}
