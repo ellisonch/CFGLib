@@ -40,6 +40,27 @@ namespace CFGLib.Parsers.Earley {
 
 			return true;
 		}
+
+		internal override Sppf ToSppf(Sentence s, Dictionary<Node, Sppf> dict = null) {
+			if (Symbol.IsTerminal()) {
+				return null;
+			}
+			if (dict == null) {
+				dict = new Dictionary<Node, Sppf>();
+			}
+			var nonterminal = (Nonterminal)Symbol;
+			List<Children> families = new List<Children>();
+			// foreach (var family in this.Families) {
+			for (int i = 0; i < FamiliesList.Count; i++) {
+				var family = FamiliesList[i];
+				var sppfList = family.Members.Select((l) => l.ToSppf(s));
+				var sppfChildren = new Children(ChildProductions[i], sppfList);
+				families.Add(sppfChildren);
+			}
+			
+			return new Sppf(nonterminal, s.GetRange(StartPosition, EndPosition - StartPosition), families);
+		}
+
 		public override string ToString() {
 			return string.Format("({0}, {1}, {2}){3}", Symbol, StartPosition, EndPosition, ProductionsToString());
 		}

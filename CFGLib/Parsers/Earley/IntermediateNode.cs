@@ -57,6 +57,27 @@ namespace CFGLib.Parsers.Earley {
 			return true;
 		}
 
+		internal override Sppf ToSppf(Sentence s, Dictionary<Node, Sppf> dict = null) {
+			if (Item.CurrentPosition == 0) {
+				throw new Exception();
+			}
+			if (dict == null) {
+				dict = new Dictionary<Node, Sppf>();
+			}
+
+			List<Children> families = new List<Children>();
+			// foreach (var family in this.Families) {
+			var familiesList = FamiliesList;
+			for (int i = 0; i < familiesList.Count; i++) {
+				var family = familiesList[i];
+				var sppfList = family.Members.Select((l) => l.ToSppf(s));
+				var sppfChildren = new Children(this.ChildProductions[i], sppfList);
+				families.Add(sppfChildren);
+			}
+
+			return new Sppf(null, s.GetRange(StartPosition, EndPosition - StartPosition), families);
+		}
+
 		public override string ToString() {
 			return string.Format("({0}, {1}, {2}){3}", Item.ProductionToString(), StartPosition, EndPosition, ProductionsToString());
 		}

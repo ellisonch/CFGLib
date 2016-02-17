@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Earley {
 	internal abstract class Node {
 		public readonly HashSet<Family> Families = new HashSet<Family>();
+
+		// An ordered version of the hash
+		public List<Family> FamiliesList { get; internal set; }
+
 		public Production[] ChildProductions;
 
 		public string ProductionsToString() {
@@ -39,5 +43,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 			ChildProductions[i] = production;
 		}
+
+		internal abstract Sppf ToSppf(Sentence s, Dictionary<Node, Sppf> dict = null);
 	}
 }

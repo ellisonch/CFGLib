@@ -21,6 +21,48 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public override double GetProbability(Sentence s) {
+			// GetForest(s);
+
+			var S = ComputeState(s);
+			if (S == null) {
+				return 0.0;
+			}
+
+			var successes = GetSuccesses(S, s);
+			if (successes.Count > 0) {
+				var sppf = ConstructInternalSppf(successes, s);
+				AnnotateWithProductions(sppf);
+				var nodeProbs = new Dictionary<Node, double>();
+				var prob = CalculateProbability(sppf, nodeProbs);
+				return prob;
+			}
+
+			return 0.0;
+		}
+
+		public Sppf GetForest(Sentence s) {
+			var S = ComputeState(s);
+			if (S == null) {
+				return null;
+			}
+
+			var successes = GetSuccesses(S, s);
+			if (successes.Count > 0) {
+				var internalSppf = ConstructInternalSppf(successes, s);
+				AnnotateWithProductions(internalSppf);
+				var nodeProbs = new Dictionary<Node, double>();
+				var prob = CalculateProbability(internalSppf, nodeProbs);
+				PrintForest(internalSppf, nodeProbs);
+				PrintDebugForest(internalSppf, s, nodeProbs);
+
+				var sppf = internalSppf.ToSppf(s);
+				return sppf;
+			}
+
+			return null;
+		}
+
+		private StateSet[] ComputeState(Sentence s) {
 			StateSet[] S = FreshS(s.Count + 1);
 
 			// Initialize S(0)
@@ -39,7 +81,7 @@ namespace CFGLib.Parsers.Earley {
 
 				// If there are no items in the current state, we're stuck
 				if (state.Count == 0) {
-					return 0.0;
+					return null;
 				}
 
 				// completion
@@ -54,7 +96,7 @@ namespace CFGLib.Parsers.Earley {
 							// if item is new, we definitely want to run completion
 							if (itemIndex >= startIndex) {
 								Completion(S, stateIndex, item);
-							// otherwise, we want to run only when we may have added a matching element to an existing completed item
+								// otherwise, we want to run only when we may have added a matching element to an existing completed item
 							} else if (item.StartPosition == stateIndex) {
 								Completion(S, stateIndex, item);
 							}
@@ -81,46 +123,7 @@ namespace CFGLib.Parsers.Earley {
 					}
 				}
 			}
-
-			var successes = GetSuccesses(S, s);
-			if (successes.Count > 0) {
-				return ProcessSuccess(s, successes);
-				// return ProcessSuccessDebug(s, successes);
-			}
-			// var trees = CollectTrees(S, s, successes);
-
-			return 0.0;
-		}
-
-
-		private double ProcessSuccess(Sentence s, IList<Item> successes) {
-			var sppf = ConstructSPPF(successes, s);
-			AnnotateWithProductions(sppf);
-			//PrintForest(sppf);
-			//Console.WriteLine("---------------------------------");
-			var nodeProbs = new Dictionary<Node, double>();
-			var prob = CalculateProbability(sppf, nodeProbs);
-			//Console.WriteLine("=================================");
-			//PrintForest(sppf, nodeProbs);
-			//Console.WriteLine("=================================");
-			//PrintDebugForest(sppf, nodeProbs);
-			return prob;
-		}
-
-		private double ProcessSuccessDebug(Sentence s, IList<Item> successes) {
-			var sppf = ConstructSPPF(successes, s);
-			AnnotateWithProductions(sppf);
-			PrintForest(sppf);
-			Console.WriteLine("---------------------------------");
-			//var chance = PrintDerivations(sppf, new HashSet<Node>());
-			//return chance;
-			var nodeProbs = new Dictionary<Node, double>();
-			var prob = CalculateProbability(sppf, nodeProbs);
-			Console.WriteLine("=================================");
-			PrintForest(sppf, nodeProbs);
-			Console.WriteLine("=================================");
-			PrintDebugForest(sppf, s, nodeProbs);
-			return prob;
+			return S;
 		}
 
 		private double CalculateProbability(SymbolNode sppf, Dictionary<Node, double> nodeProbs) {
@@ -177,11 +180,8 @@ namespace CFGLib.Parsers.Earley {
 				return 1.0;
 			}
 
-			var l = node.Families.ToList();
+			var l = node.FamiliesList;
 			var familyProbs = new double[l.Count];
-			if (node.ChildProductions.Length > 1) {
-
-			}
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
 				
@@ -255,6 +255,7 @@ namespace CFGLib.Parsers.Earley {
 			seen.Add(node);
 
 			var l = node.Families.ToList();
+			node.FamiliesList = l;
 			if (node.ChildProductions == null) {
 				node.ChildProductions = new Production[l.Count];
 			}
@@ -332,7 +333,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 #endregion annotate
 
-		private SymbolNode ConstructSPPF(IList<Item> successes, Sentence s) {
+		private SymbolNode ConstructInternalSppf(IList<Item> successes, Sentence s) {
 			var root = new SymbolNode(_grammar.Start, 0, s.Count);
 			var processed = new HashSet<Item>();
 			var nodes = new Dictionary<Node, Node>();
@@ -367,8 +368,14 @@ namespace CFGLib.Parsers.Earley {
 				return;
 			}
 			seen.Add(node);
+
+			List<Family> l;
+			if (node.FamiliesList != null) {
+				l = node.FamiliesList;
+			} else {
+				l = node.Families.ToList();
+			}
 			
-			var l = node.Families.ToList();
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
 				if (l.Count > 1) {
@@ -416,7 +423,10 @@ namespace CFGLib.Parsers.Earley {
 			}
 			seen.Add(node);
 
-			var l = node.Families.ToList();
+			if (node.Families.Count == 0) {
+				return;
+			}
+			var l = node.FamiliesList;
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
 				if (l.Count > 1) {

@@ -25,7 +25,7 @@ namespace ConsolePlayground {
 			var tr = new RegressionTests();
 			var testp = new TestParsing();
 
-			// testp.TestParsing14();
+			testp.TestParsing01();
 			// testp.TestWeirdSppf06();
 			// testp.TestWeirdSppf07();
 			// t.TestToCNF01();
@@ -206,7 +206,7 @@ namespace ConsolePlayground {
 			// rt.RandomSimplificationTest();
 			// rt.RandomCFGToCNFTest();
 			// rt.RandomParsingTest(10);
-			rt.RandomParsingTest(10000);
+			rt.RandomParsingTest(10);
 			sw.Stop();
 			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 

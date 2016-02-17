@@ -16,6 +16,11 @@ namespace CFGLib.Parsers.Earley {
 		private EpsilonNode() {
 
 		}
+
+		internal override Sppf ToSppf(Sentence s, Dictionary<Node, Sppf> dict = null) {
+			return null;
+		}
+
 		public override string ToString() {
 			return string.Format("(ε){0}", ProductionsToString());
 		}
