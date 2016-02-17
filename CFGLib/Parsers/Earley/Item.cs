@@ -18,6 +18,7 @@ namespace CFGLib.Parsers.Earley {
 		// used only in the tree reconstruction phase
 		public int EndPosition;
 
+		// TODO: maybe should keep these out of the item and therefore avoid the messy equality stuff
 		public readonly List<PredecessorPointer> Predecessors;
 		public readonly List<ReductionPointer> Reductions;
 
@@ -96,6 +97,44 @@ namespace CFGLib.Parsers.Earley {
 		internal void AddReduction(int label, Item item) {
 			var reductionp = new ReductionPointer(label, item);
 			Reductions.Add(reductionp);
+		}
+	}
+
+	internal class ItemComparer : IEqualityComparer<Item> {
+		public bool Equals(Item x, Item y) {
+			if (x == null && y == null) {
+				return true;
+			}
+			if (x == null) {
+				return false;
+			}
+			if (y == null) {
+				return false;
+			}
+			
+			if (x.Production != y.Production) {
+				return false;
+			}
+			if (x.CurrentPosition != y.CurrentPosition) {
+				return false;
+			}
+			if (x.StartPosition != y.StartPosition) {
+				return false;
+			}
+			if (x.EndPosition != y.EndPosition) {
+				return false;
+			}
+
+			return true;
+		}
+
+		public int GetHashCode(Item obj) {
+			return new {
+				obj.Production,
+				obj.CurrentPosition,
+				obj.StartPosition,
+				obj.EndPosition,
+			}.GetHashCode();
 		}
 	}
 }

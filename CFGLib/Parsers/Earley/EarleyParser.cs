@@ -638,7 +638,7 @@ namespace CFGLib.Parsers.Earley {
 				toAdd.Add(newItem);
 			}
 			foreach (var item in toAdd) {
-				InsertWithoutDuplicating(state, stateIndex, item);
+				state.InsertWithoutDuplicating(stateIndex, item);
 			}
 		}
 		private void Prediction(StateSet[] S, int stateIndex, Nonterminal nonterminal, Item item) {
@@ -648,7 +648,7 @@ namespace CFGLib.Parsers.Earley {
 			// insert, but avoid duplicates
 			foreach (var production in productions) {
 				var newItem = new Item(production, 0, stateIndex, stateIndex);
-				InsertWithoutDuplicating(state, stateIndex, newItem);
+				state.InsertWithoutDuplicating(stateIndex, newItem);
 			}
 
 			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon. [AH2002]
@@ -671,31 +671,6 @@ namespace CFGLib.Parsers.Earley {
 			throw new Exception("No epsilon found");
 		}
 
-		private void InsertWithoutDuplicating(StateSet state, int stateIndex, Item newItem) {
-			// the endPosition should always equal the stateIndex of the state it resides in
-			newItem.EndPosition = stateIndex; 
-			// TODO: opportunity for StateSet feature?
-			Predicate<Item> equalityCheck = (item) => {
-				if (!item.Production.ValueEquals(newItem.Production)) {
-					return false;
-				}
-				if (item.CurrentPosition != newItem.CurrentPosition) {
-					return false;
-				}
-				if (item.StartPosition != newItem.StartPosition) {
-					return false;
-				}
-				return true;
-			};
-
-			var existingItem = state.Find(equalityCheck);
-			if (existingItem == null) {
-				state.Add(newItem);
-			} else {
-				existingItem.Predecessors.AddRange(newItem.Predecessors);
-				existingItem.Reductions.AddRange(newItem.Reductions);
-			}
-		}
 		
 		private void Scan(StateSet[] S, int stateIndex, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {
 			var state = S[stateIndex];
@@ -712,7 +687,7 @@ namespace CFGLib.Parsers.Earley {
 				if (item.CurrentPosition != 0) {
 					newItem.AddPredecessor(stateIndex, item);
 				}
-				InsertWithoutDuplicating(nextState, stateIndex + 1, newItem);		
+				nextState.InsertWithoutDuplicating(stateIndex + 1, newItem);		
 			}
 		}
 	}
