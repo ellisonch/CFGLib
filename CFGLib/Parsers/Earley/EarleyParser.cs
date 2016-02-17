@@ -15,16 +15,14 @@ namespace CFGLib.Parsers.Earley {
 
 	internal class EarleyParser : Parser {
 		private readonly BaseGrammar _grammar;
-
-		private Sentence _s; // TODO don't leave this in
-
+		
 		public EarleyParser(BaseGrammar grammar) {
 			_grammar = grammar;
 		}
 
 		public override double GetProbability(Sentence s) {
 			StateSet[] S = FreshS(s.Count + 1);
-			_s = s;
+
 			// Initialize S(0)
 			foreach (var production in _grammar.ProductionsFrom(_grammar.Start)) {
 				var item = new Item(production, 0, 0, 0);
@@ -121,7 +119,7 @@ namespace CFGLib.Parsers.Earley {
 			Console.WriteLine("=================================");
 			PrintForest(sppf, nodeProbs);
 			Console.WriteLine("=================================");
-			PrintDebugForest(sppf, nodeProbs);
+			PrintDebugForest(sppf, s, nodeProbs);
 			return prob;
 		}
 
@@ -382,7 +380,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private void PrintDebugForest(Node node, Dictionary<Node, double> nodeProbs = null, string padding = "", HashSet<Node> seen = null) {
+		private void PrintDebugForest(Node node, Sentence s, Dictionary<Node, double> nodeProbs = null, string padding = "", HashSet<Node> seen = null) {
 			if (seen == null) {
 				seen = new HashSet<Node>();
 			}
@@ -407,7 +405,7 @@ namespace CFGLib.Parsers.Earley {
 			string rhs = "";
 			if (node is InteriorNode) {
 				var interior = (InteriorNode)node;
-				rhs = _s.GetRange(interior.StartPosition, interior.EndPosition - interior.StartPosition).ToString();
+				rhs = s.GetRange(interior.StartPosition, interior.EndPosition - interior.StartPosition).ToString();
 			}
 
 			Console.WriteLine("{0}{1} --> {2} [{4}]\t{3}", padding, lhs, rhs, nodeProb, node.ProductionsToString());
@@ -425,7 +423,7 @@ namespace CFGLib.Parsers.Earley {
 					Console.WriteLine("{0}Alternative {1}", padding, i);
 				}
 				foreach (var member in l[i].Members) {
-					PrintDebugForest(member, nodeProbs, padding + "  ", seen);
+					PrintDebugForest(member, s, nodeProbs, padding + "  ", seen);
 				}
 			}
 		}
