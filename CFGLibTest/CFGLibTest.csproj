@@ -55,8 +55,8 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="RegressionTests.cs" />
     <Compile Include="RandomTests.cs" />
-    <Compile Include="IntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestParsing.cs" />
     <Compile Include="Unit\TestCFGToCNFEmptyProb.cs" />
     <Compile Include="Unit\TestCFGToCNF.cs" />
     <Compile Include="Unit\TestCFGParser.cs" />
