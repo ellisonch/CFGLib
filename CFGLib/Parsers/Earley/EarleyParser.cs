@@ -66,7 +66,12 @@ namespace CFGLib.Parsers.Earley {
 				Console.WriteLine("---------------------------------");
 				//var chance = PrintDerivations(sppf, new HashSet<Node>());
 				//return chance;
-				var prob = CalculateProbability(sppf);
+				var nodeProbs = new Dictionary<Node, double>();
+				var prob = CalculateProbability(sppf, nodeProbs);
+
+				PrintForest(sppf, nodeProbs);
+
+				PrintDebugForest(sppf, nodeProbs);
 				return prob;
 			}
 			// var trees = CollectTrees(S, s, successes);
@@ -74,7 +79,7 @@ namespace CFGLib.Parsers.Earley {
 			return 0.0;
 		}
 
-		private double CalculateProbability(SymbolNode sppf) {
+		private double CalculateProbability(SymbolNode sppf, Dictionary<Node, double> nodeProbs) {
 			var nodes = GetAllNodes(sppf);
 
 			var indexToNode = nodes.ToArray();
@@ -122,6 +127,10 @@ namespace CFGLib.Parsers.Earley {
 				Helpers.Swap(ref previousEstimates, ref currentEstimates);
 			}
 
+			for (var i = 0; i < indexToNode.Length; i++) {
+				nodeProbs[indexToNode[i]] = currentEstimates[i];
+			}
+
 			return currentEstimates[nodeToIndex[sppf]];
 		}
 
@@ -140,17 +149,15 @@ namespace CFGLib.Parsers.Earley {
 
 			var l = node.Families.ToList();
 			var familyProbs = new double[l.Count];
-			
+			if (node.ChildProductions.Length > 1) {
+
+			}
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
 
 				//Console.WriteLine(node);
 				//Console.WriteLine(string.Join(", ", l[i].Members));
-				var production = node.ChildProductions[i];
-				var prob = 1.0;
-				if (production != null) {
-					prob = _grammar.GetProbability(production);
-				}
+				double prob = GetChildProb(node, i);
 
 				var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]).ToList();
 
@@ -185,6 +192,16 @@ namespace CFGLib.Parsers.Earley {
 			return result;
 		}
 
+		private double GetChildProb(Node node, int i) {
+			var production = node.ChildProductions[i];
+			var prob = 1.0;
+			if (production != null) {
+				prob = _grammar.GetProbability(production);
+			}
+
+			return prob;
+		}
+
 		private static HashSet<Node> GetAllNodes(SymbolNode sppf) {
 			var nodes = new HashSet<Node>();
 			var stack = new Stack<Node>();
@@ -212,10 +229,6 @@ namespace CFGLib.Parsers.Earley {
 			if (seen == null) {
 				seen = new HashSet<Node>();
 			}
-			if (seen.Contains(node)) {
-				return;
-			}
-			seen.Add(node);
 
 			if (node is IntermediateNode) {
 				var intermediateNode = (IntermediateNode)node;
@@ -225,6 +238,11 @@ namespace CFGLib.Parsers.Earley {
 				}
 			}
 			
+			if (seen.Contains(node)) {
+				return;
+			}
+			seen.Add(node);
+
 			var l = node.Families.ToList();
 			if (node.ChildProductions == null) {
 				node.ChildProductions = new Production[l.Count];
@@ -321,7 +339,7 @@ namespace CFGLib.Parsers.Earley {
 			return root;
 		}
 
-		private void PrintForest(Node node, string padding = "", HashSet<Node> seen = null) {
+		private void PrintForest(Node node, Dictionary<Node, double> nodeProbs = null, string padding = "", HashSet<Node> seen = null) {
 			if (seen == null) {
 				seen = new HashSet<Node>();
 			}
@@ -331,7 +349,12 @@ namespace CFGLib.Parsers.Earley {
 				star = "***";
 			}
 
-			Console.WriteLine("{0}{1}{2}", padding, node, star);
+			var nodeProb = "";
+			if (nodeProbs != null) {
+				nodeProb = " p=" + nodeProbs[node];
+			}
+
+			Console.WriteLine("{0}{1}{2}{3}", padding, node, star, nodeProb);
 
 			if (node.Families.Count > 0 && seen.Contains(node)) {
 				Console.WriteLine("{0}Already seen this node!", padding);
@@ -346,7 +369,61 @@ namespace CFGLib.Parsers.Earley {
 					Console.WriteLine("{0}Alternative {1}", padding, i);
 				}
 				foreach (var member in l[i].Members) {
-					PrintForest(member, padding + "  ", seen);
+					PrintForest(member, nodeProbs, padding + "  ", seen);
+				}
+			}
+		}
+
+		private void PrintDebugForest(Node node, Dictionary<Node, double> nodeProbs = null, string padding = "", HashSet<Node> seen = null) {
+			if (seen == null) {
+				seen = new HashSet<Node>();
+			}
+
+			//var star = "";
+			//if (node.ChildProductions != null && node.ChildProductions.Length == 2 && node.ChildProductions.All((p) => p == null)) {
+			//	star = "***";
+			//}
+
+			double? nodeProb = null;
+			if (nodeProbs != null) {
+				nodeProb = nodeProbs[node];
+			}
+
+			string lhs = "";
+			if (node is SymbolNode) {
+				var symbol = (SymbolNode)node;
+				lhs = symbol.Symbol.ToString();
+			} else if (node is IntermediateNode) {
+				var inter = (IntermediateNode)node;
+				lhs = inter.Item.ProductionToString();
+			} else if (node is EpsilonNode) {
+				lhs = "ε";
+			} else {
+				throw new Exception();
+			}
+			string rhs = "";
+			if (node is InteriorNode) {
+				var interior = (InteriorNode)node;
+				rhs = _s.GetRange(interior.StartPosition, interior.EndPosition - interior.StartPosition).ToString();
+			}
+			
+
+			Console.WriteLine("{0}{1} --> {2} [{4}]\t{3}", padding, lhs, rhs, nodeProb, node.ProductionsToString());
+
+			if (node.Families.Count > 0 && seen.Contains(node)) {
+				Console.WriteLine("{0}Already seen this node!", padding);
+				return;
+			}
+			seen.Add(node);
+
+			var l = node.Families.ToList();
+			for (int i = 0; i < l.Count; i++) {
+				var alternative = l[i];
+				if (l.Count > 1) {
+					Console.WriteLine("{0}Alternative {1}", padding, i);
+				}
+				foreach (var member in l[i].Members) {
+					PrintDebugForest(member, nodeProbs, padding + "  ", seen);
 				}
 			}
 		}

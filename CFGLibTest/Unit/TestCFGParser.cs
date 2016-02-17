@@ -228,7 +228,8 @@ namespace CFGLibTest.Unit {
 		public void TestWeirdSppf13() {
 			var g = new Grammar(new List<Production>{
 				CFGParser.Production("<S> → <A>"),
-				CFGParser.Production("<A> → <S> 'x' <S>"),
+				CFGParser.Production("<A> → <A> 'x' <A>"),
+				// CFGParser.Production("<A> → 'x' <A> 'x'"),
 				CFGParser.Production("<A> → ε")
 			}, Nonterminal.Of("S"));
 			var s = Sentence.FromWords("x x");
