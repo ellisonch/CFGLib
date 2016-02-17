@@ -94,18 +94,23 @@ namespace CFGLibTest {
 		[TestMethod]
 		[Ignore]
 		public void RandomParsingTest(int _numGrammars = 10000) {
-			// CFGParser.Production(@"<X> -> <X0> <X1> 'asdf as_-""fw' <Z23X>");
-			int _numNonterminals = 4;
-			int _numProductions = 5;
-			int _numTerminals = 3;
-			int _maxLength = 6;
-			int _maxProductionLength = 4;
+			//int _numNonterminals = 4;
+			//int _numProductions = 5;
+			//int _numTerminals = 3;
+			//int _maxInputLength = 6;
+			//int _maxProductionLength = 4;
+
+			int _numNonterminals = 10;
+			int _numProductions = 30;
+			int _numTerminals = 5;
+			int _maxInputLength = 6;
+			int _maxProductionLength = 8;
 
 			var range = Enumerable.Range(0, _numTerminals);
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
 			Console.WriteLine("Preparing sentences");
 			var preparedSentences = new List<Sentence>();
-			for (int length = 0; length <= _maxLength; length++) {
+			for (int length = 0; length <= _maxInputLength; length++) {
 				var combinations = CFGLibTest.Helpers.CombinationsWithRepetition(terminals, length);
 				foreach (var target in combinations) {
 					var sentence = new Sentence(target);
