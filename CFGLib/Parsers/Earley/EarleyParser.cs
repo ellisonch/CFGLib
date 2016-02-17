@@ -175,14 +175,6 @@ namespace CFGLib.Parsers.Earley {
 			if (node.Families.Count == 0) {
 				return 1.0;
 			}
-			//if (node.ChildProductions.Length == 2 && node.ChildProductions.All((p) => p == null)) {
-			//	return 1.0;
-			//}
-			//Console.WriteLine("------------------");
-			//if (node is InteriorNode) {
-			//	var n = (InteriorNode)node;
-			//	Console.WriteLine("what's the chance that {0} --> {1}", node, _s.GetRange(n.StartPosition, n.EndPosition - n.StartPosition));
-			//}
 
 			var l = node.Families.ToList();
 			var familyProbs = new double[l.Count];
@@ -191,31 +183,16 @@ namespace CFGLib.Parsers.Earley {
 			}
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
-
-				//Console.WriteLine(node);
-				//Console.WriteLine(string.Join(", ", l[i].Members));
+				
 				double prob = GetChildProb(node, i);
 
 				var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]).ToList();
 
 				var childrenProb = childrenProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
-				// Console.WriteLine(string.Join(", ", childrenProbs));
 
 				familyProbs[i] = prob * childrenProb;
-
-				//for (var childi = 0; childi < childrenProbs.Count; childi++) {
-				//	Console.WriteLine("Given that {0} rewrites at p={1}", l[i].Members[childi], childrenProbs[childi]);
-				//}
-
-				var xxx = familyProbs.Sum();
-				// var familyProb = familyProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
-				if (xxx > 1) {
-				}
-
 			}
-			// var result = newProb * Helpers.DisjointProbability(familyProbs);
 			var familyProb = familyProbs.Sum();
-			// var familyProb = familyProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
 			if (familyProb > 1) {
 				familyProb = 1.0;
 			}
@@ -223,8 +200,6 @@ namespace CFGLib.Parsers.Earley {
 
 			}
 			var result = familyProb;
-
-			// Console.WriteLine("Conclusion: p={0}", result);
 
 			return result;
 		}
@@ -343,7 +318,6 @@ namespace CFGLib.Parsers.Earley {
 				return;
 			}
 			throw new Exception();
-			// return 0.0;
 		}
 
 		private void AnnotateWithProductionsChildren(Node parent, HashSet<Node> seen, Node left, Node right, int place) {
@@ -359,24 +333,16 @@ namespace CFGLib.Parsers.Earley {
 		}
 #endregion annotate
 
-
-
-
-
+		
 		private SymbolNode ConstructSPPF(IList<Item> successes, Sentence s) {
 			var root = new SymbolNode(_grammar.Start, 0, s.Count);
 			var processed = new HashSet<Item>();
 			var nodes = new Dictionary<Node, Node>();
 			nodes[root] = root;
-
-
+			
 			foreach (var success in successes) {
 				BuildTree(nodes, processed, root, success);
 			}
-
-			//foreach (var node in nodes.Keys) {
-			//	Console.WriteLine(node);
-			//}
 
 			return root;
 		}
@@ -420,12 +386,7 @@ namespace CFGLib.Parsers.Earley {
 			if (seen == null) {
 				seen = new HashSet<Node>();
 			}
-
-			//var star = "";
-			//if (node.ChildProductions != null && node.ChildProductions.Length == 2 && node.ChildProductions.All((p) => p == null)) {
-			//	star = "***";
-			//}
-
+			
 			double? nodeProb = null;
 			if (nodeProbs != null) {
 				nodeProb = nodeProbs[node];
@@ -448,7 +409,6 @@ namespace CFGLib.Parsers.Earley {
 				var interior = (InteriorNode)node;
 				rhs = _s.GetRange(interior.StartPosition, interior.EndPosition - interior.StartPosition).ToString();
 			}
-			
 
 			Console.WriteLine("{0}{1} --> {2} [{4}]\t{3}", padding, lhs, rhs, nodeProb, node.ProductionsToString());
 
@@ -482,8 +442,6 @@ namespace CFGLib.Parsers.Earley {
 				//create one with child node ϵ
 				v.AddFamily(new Family(EpsilonNode.Node));
 				// basically, SymbolNodes with no children have empty children
-
-				// node.AddFamily(new Family(v));
 			} else if (item.CurrentPosition == 1) {
 				var prevWord = item.PrevWord;
 				if (prevWord.IsTerminal()) {
@@ -560,13 +518,6 @@ namespace CFGLib.Parsers.Earley {
 			return node;
 		}
 
-		//private void PrintTree(Item item, string padding = "") {
-		//	Console.WriteLine("{0}{1}", padding, item);
-		//	foreach (var child in item.Reductions) {
-		//		PrintTree(child.Item, padding + "  ");
-		//	}
-		//}
-
 		private static StateSet[] FreshS(int length) {
 			var S = new StateSet[length];
 
@@ -576,31 +527,6 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			return S;
-		}
-
-		private object CollectTrees(StateSet[] S, Sentence s, IEnumerable<Item> successes) {
-			var reversedS = FreshS(S.Length);
-			// make stateIndex correspond to item.StartPosition instead of item.EndPosition
-			// also, throw away incomplete items
-			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
-				var state = S[stateIndex];
-				foreach (var item in state) {
-					if (!item.IsComplete()) {
-						continue;
-					}
-					reversedS[item.StartPosition].Add(item);
-				}
-			}
-
-			// var pg = new ParseGraph(reversedS, s);
-
-
-			//foreach (var success in successes) {
-			//	// pg.DFS(success);
-			//	scottSec4(reversedS, success)
-			//}
-
-			return null;
 		}
 
 		private IList<Item> GetSuccesses(StateSet[] S, Sentence s) {
@@ -659,18 +585,6 @@ namespace CFGLib.Parsers.Earley {
 			//	InsertWithoutDuplicating(state, stateIndex, newItem);
 			//}
 		}
-
-		private Item FindEpsilon(StateSet stateSet, Nonterminal nonterminal) {
-			foreach (var item in stateSet) {
-				if (item.Production.Lhs == nonterminal 
-					&& item.Production.Rhs.Count == 0
-					) {
-					return item;
-				}
-			}
-			throw new Exception("No epsilon found");
-		}
-
 		
 		private void Scan(StateSet[] S, int stateIndex, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {
 			var state = S[stateIndex];
