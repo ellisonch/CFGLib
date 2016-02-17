@@ -50,6 +50,7 @@ namespace CFGLib.Parsers.Earley {
 			if (!_hash.TryGetValue(item, out existingItem)) {
 				this.AddUnsafe(item);
 			} else {
+				// TODO: we're adding duplicate predecessors and reductions because we're rerunning the same completions twice
 				existingItem.Predecessors.AddRange(item.Predecessors);
 				existingItem.Reductions.AddRange(item.Reductions);
 			}

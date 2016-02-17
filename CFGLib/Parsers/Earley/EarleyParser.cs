@@ -53,7 +53,13 @@ namespace CFGLib.Parsers.Earley {
 						var item = state[itemIndex];
 						var nextWord = item.NextWord;
 						if (nextWord == null) {
-							Completion(S, stateIndex, item);
+							// if item is new, we definitely want to run completion
+							if (itemIndex >= startIndex) {
+								Completion(S, stateIndex, item);
+							// otherwise, we want to run only when we may have added a matching element to an existing completed item
+							} else if (item.StartPosition == stateIndex) {
+								Completion(S, stateIndex, item);
+							}
 						} else if (nextWord.IsNonterminal()) {
 							if (itemIndex >= startIndex) {
 								Prediction(S, stateIndex, (Nonterminal)nextWord, item);
