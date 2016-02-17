@@ -47,6 +47,7 @@ namespace CFGLib.Parsers.Earley {
 				// completion
 				var prevStateCount = 0;
 				while (prevStateCount != state.Count) {
+					var startIndex = prevStateCount;
 					prevStateCount = state.Count;
 					for (int itemIndex = 0; itemIndex < state.Count; itemIndex++) {
 						var item = state[itemIndex];
@@ -54,7 +55,9 @@ namespace CFGLib.Parsers.Earley {
 						if (nextWord == null) {
 							Completion(S, stateIndex, item);
 						} else if (nextWord.IsNonterminal()) {
-							Prediction(S, stateIndex, (Nonterminal)nextWord, item);
+							if (itemIndex >= startIndex) {
+								Prediction(S, stateIndex, (Nonterminal)nextWord, item);
+							}
 						} else {
 							// Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
 						}
