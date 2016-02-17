@@ -141,11 +141,11 @@ namespace CFGLib.Parsers.Earley {
 			//if (node.ChildProductions.Length == 2 && node.ChildProductions.All((p) => p == null)) {
 			//	return 1.0;
 			//}
-			Console.WriteLine("------------------");
-			if (node is InteriorNode) {
-				var n = (InteriorNode)node;
-				Console.WriteLine("what's the chance that {0} --> {1}", node, _s.GetRange(n.StartPosition, n.EndPosition - n.StartPosition));
-			}
+			//Console.WriteLine("------------------");
+			//if (node is InteriorNode) {
+			//	var n = (InteriorNode)node;
+			//	Console.WriteLine("what's the chance that {0} --> {1}", node, _s.GetRange(n.StartPosition, n.EndPosition - n.StartPosition));
+			//}
 
 			var l = node.Families.ToList();
 			var familyProbs = new double[l.Count];
@@ -166,9 +166,9 @@ namespace CFGLib.Parsers.Earley {
 
 				familyProbs[i] = prob * childrenProb;
 
-				for (var childi = 0; childi < childrenProbs.Count; childi++) {
-					Console.WriteLine("Given that {0} rewrites at p={1}", l[i].Members[childi], childrenProbs[childi]);
-				}
+				//for (var childi = 0; childi < childrenProbs.Count; childi++) {
+				//	Console.WriteLine("Given that {0} rewrites at p={1}", l[i].Members[childi], childrenProbs[childi]);
+				//}
 
 				var xxx = familyProbs.Sum();
 				// var familyProb = familyProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
@@ -187,7 +187,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 			var result = familyProb;
 
-			Console.WriteLine("Conclusion: p={0}", result);
+			// Console.WriteLine("Conclusion: p={0}", result);
 
 			return result;
 		}
