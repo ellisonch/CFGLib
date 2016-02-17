@@ -44,14 +44,31 @@ namespace CFGLib.Parsers.Earley {
 					return 0.0;
 				}
 
-				// inner loop
+				// completion
+				var prevStateCount = 0;
+				while (prevStateCount != state.Count) {
+					prevStateCount = state.Count;
+					for (int itemIndex = 0; itemIndex < state.Count; itemIndex++) {
+						var item = state[itemIndex];
+						var nextWord = item.NextWord;
+						if (nextWord == null) {
+							Completion(S, stateIndex, item);
+						} else if (nextWord.IsNonterminal()) {
+							Prediction(S, stateIndex, (Nonterminal)nextWord, item);
+						} else {
+							// Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
+						}
+					}
+				}
+
+				// initialization
 				for (int itemIndex = 0; itemIndex < state.Count; itemIndex++) {
 					var item = state[itemIndex];
 					var nextWord = item.NextWord;
 					if (nextWord == null) {
-						Completion(S, stateIndex, item);
+						//Completion(S, stateIndex, item);
 					} else if (nextWord.IsNonterminal()) {
-						Prediction(S, stateIndex, (Nonterminal)nextWord, item);
+						//Prediction(S, stateIndex, (Nonterminal)nextWord, item);
 					} else {
 						Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
 					}
@@ -91,9 +108,9 @@ namespace CFGLib.Parsers.Earley {
 			var previousEstimates = Enumerable.Repeat(1.0, indexToNode.Length).ToArray();
 			var currentEstimates = new double[indexToNode.Length];
 
-			for (var i = 0; i < indexToNode.Length; i++) {
-				Console.WriteLine("{0,-40}: {1}", indexToNode[i], previousEstimates[i]);
-			}
+			//for (var i = 0; i < indexToNode.Length; i++) {
+			//	Console.WriteLine("{0,-40}: {1}", indexToNode[i], previousEstimates[i]);
+			//}
 
 			bool changed = true;
 			while (changed == true) {
@@ -113,10 +130,10 @@ namespace CFGLib.Parsers.Earley {
 					}
 				}
 				
-				Console.WriteLine("--------------------------");
-				for (var i = 0; i < indexToNode.Length; i++) {
-					Console.WriteLine("{0,-40}: {1}", indexToNode[i], currentEstimates[i]);
-				}
+				//Console.WriteLine("--------------------------");
+				//for (var i = 0; i < indexToNode.Length; i++) {
+				//	Console.WriteLine("{0,-40}: {1}", indexToNode[i], currentEstimates[i]);
+				//}
 				for (var i = 0; i < indexToNode.Length; i++) {
 					if (currentEstimates[i] > previousEstimates[i]) {
 						return 0.0;
@@ -615,11 +632,12 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon. [AH2002]
-			if (_grammar.NullableProbabilities[nonterminal] > 0.0) {
-				var newItem = item.Increment();
-				// TODO: supposed to add pointers here, but don't know what to add
-				InsertWithoutDuplicating(state, stateIndex, newItem);
-			}
+			// Except this trick won't work for us, since we want probabilities and the full parse tree
+			//if (_grammar.NullableProbabilities[nonterminal] > 0.0) {
+			//	var newItem = item.Increment();
+			//	// TODO: supposed to add pointers here, but don't know what to add
+			//	InsertWithoutDuplicating(state, stateIndex, newItem);
+			//}
 		}
 
 		private Item FindEpsilon(StateSet stateSet, Nonterminal nonterminal) {
