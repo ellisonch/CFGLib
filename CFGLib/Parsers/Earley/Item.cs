@@ -129,12 +129,21 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public int GetHashCode(Item obj) {
-			return new {
-				obj.Production,
-				obj.CurrentPosition,
-				obj.StartPosition,
-				obj.EndPosition,
-			}.GetHashCode();
+			//return new {
+			//	obj.Production,
+			//	obj.CurrentPosition,
+			//	obj.StartPosition,
+			//	obj.EndPosition,
+			//}.GetHashCode();
+
+			// based on http://stackoverflow.com/a/263416/2877032
+			unchecked {
+				int hash = 17;
+				hash = hash * 23 + obj.Production.GetHashCode();
+				hash = hash * 23 + obj.CurrentPosition.GetHashCode();
+				hash = hash * 23 + obj.StartPosition.GetHashCode();
+				return hash;
+			}
 		}
 	}
 }
