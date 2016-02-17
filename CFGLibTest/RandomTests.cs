@@ -90,9 +90,7 @@ namespace CFGLibTest {
 				//}
 			}
 		}
-
-		[TestMethod]
-		[Ignore]
+		
 		public void RandomParsingTest(int _numGrammars = 10000) {
 			//int _numNonterminals = 4;
 			//int _numProductions = 5;
