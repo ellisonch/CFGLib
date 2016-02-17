@@ -153,7 +153,7 @@ namespace CFGLib.Parsers.Earley {
 					currentEstimates[i] = estimate;
 
 					if (currentEstimates[i] > previousEstimates[i]) {
-						// throw new Exception("Didn't expect estimates to increase");
+						throw new Exception("Didn't expect estimates to increase");
 					} else if (currentEstimates[i] < previousEstimates[i]) {
 						changed = true;
 					}
@@ -163,12 +163,6 @@ namespace CFGLib.Parsers.Earley {
 				//for (var i = 0; i < indexToNode.Length; i++) {
 				//	Console.WriteLine("{0,-40}: {1}", indexToNode[i], currentEstimates[i]);
 				//}
-				for (var i = 0; i < indexToNode.Length; i++) {
-					if (currentEstimates[i] > previousEstimates[i]) {
-						return 0.0;
-						// throw new Exception("Didn't expect estimates to increase");
-					}
-				}
 
 				Helpers.Swap(ref previousEstimates, ref currentEstimates);
 			}
@@ -204,9 +198,6 @@ namespace CFGLib.Parsers.Earley {
 			var familyProb = familyProbs.Sum();
 			if (familyProb > 1) {
 				familyProb = 1.0;
-			}
-			if (familyProb == 0) {
-
 			}
 			var result = familyProb;
 
@@ -245,7 +236,8 @@ namespace CFGLib.Parsers.Earley {
 			return nodes;
 		}
 
-#region annotate
+		#region annotate
+		//TODO this is so horribly terrible. There's got to be a better way of thinking about this structure
 		private void AnnotateWithProductions(Node node, HashSet<Node> seen = null, Node parent = null, int place = 0) {
 			if (seen == null) {
 				seen = new HashSet<Node>();
@@ -342,7 +334,6 @@ namespace CFGLib.Parsers.Earley {
 		}
 #endregion annotate
 
-		
 		private SymbolNode ConstructSPPF(IList<Item> successes, Sentence s) {
 			var root = new SymbolNode(_grammar.Start, 0, s.Count);
 			var processed = new HashSet<Item>();
