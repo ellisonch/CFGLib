@@ -68,9 +68,9 @@ namespace CFGLib.Parsers.Earley {
 				//return chance;
 				var nodeProbs = new Dictionary<Node, double>();
 				var prob = CalculateProbability(sppf, nodeProbs);
-
+				Console.WriteLine("=================================");
 				PrintForest(sppf, nodeProbs);
-
+				Console.WriteLine("=================================");
 				PrintDebugForest(sppf, nodeProbs);
 				return prob;
 			}
@@ -332,8 +332,13 @@ namespace CFGLib.Parsers.Earley {
 			var nodes = new Dictionary<Node, Node>();
 			nodes[root] = root;
 
+
 			foreach (var success in successes) {
 				BuildTree(nodes, processed, root, success);
+			}
+
+			foreach (var node in nodes.Keys) {
+				Console.WriteLine(node);
 			}
 
 			return root;
@@ -612,8 +617,20 @@ namespace CFGLib.Parsers.Earley {
 			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon. [AH2002]
 			if (_grammar.NullableProbabilities[nonterminal] > 0.0) {
 				var newItem = item.Increment();
+				// TODO: supposed to add pointers here, but don't know what to add
 				InsertWithoutDuplicating(state, stateIndex, newItem);
 			}
+		}
+
+		private Item FindEpsilon(StateSet stateSet, Nonterminal nonterminal) {
+			foreach (var item in stateSet) {
+				if (item.Production.Lhs == nonterminal 
+					&& item.Production.Rhs.Count == 0
+					) {
+					return item;
+				}
+			}
+			throw new Exception("No epsilon found");
 		}
 
 		private void InsertWithoutDuplicating(StateSet state, int stateIndex, Item newItem) {
