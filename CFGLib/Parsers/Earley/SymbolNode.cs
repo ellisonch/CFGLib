@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CFGLib.Parsers.Forests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,17 +49,26 @@ namespace CFGLib.Parsers.Earley {
 			if (dict == null) {
 				dict = new Dictionary<Node, Sppf>();
 			}
+
+			Sppf previouslySeenSppf;
+			if (dict.TryGetValue(this, out previouslySeenSppf)) {
+				return previouslySeenSppf;
+			}
+
 			var nonterminal = (Nonterminal)Symbol;
-			List<Children> families = new List<Children>();
+			var sppf = new Sppf(nonterminal, s.GetRange(StartPosition, EndPosition - StartPosition));
+			dict[this] = sppf;
+
+			// List<Children> families = new List<Children>();
 			// foreach (var family in this.Families) {
 			for (int i = 0; i < FamiliesList.Count; i++) {
 				var family = FamiliesList[i];
-				var sppfList = family.Members.Select((l) => l.ToSppf(s));
+				var sppfList = family.Members.Select((l) => l.ToSppf(s, dict));
 				var sppfChildren = new Children(ChildProductions[i], sppfList);
-				families.Add(sppfChildren);
+				sppf.Families.Add(sppfChildren);
 			}
-			
-			return new Sppf(nonterminal, s.GetRange(StartPosition, EndPosition - StartPosition), families);
+
+			return sppf;
 		}
 
 		public override string ToString() {

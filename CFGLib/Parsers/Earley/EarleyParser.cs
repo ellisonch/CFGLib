@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CFGLib.Parsers.Forests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace CFGLib.Parsers.Earley {
 	 * Loup Vaillant's tutorial (http://loup-vaillant.fr/tutorials/earley-parsing/)
 	*/
 
-	internal class EarleyParser : Parser {
+	public class EarleyParser : Parser {
 		private readonly BaseGrammar _grammar;
 		
 		public EarleyParser(BaseGrammar grammar) {
@@ -40,7 +41,7 @@ namespace CFGLib.Parsers.Earley {
 			return 0.0;
 		}
 
-		public Sppf GetForest(Sentence s) {
+		public override Sppf GetParseForest(Sentence s) {
 			var S = ComputeState(s);
 			if (S == null) {
 				return null;

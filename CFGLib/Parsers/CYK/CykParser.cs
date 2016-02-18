@@ -1,15 +1,20 @@
-﻿using System;
+﻿using CFGLib.Parsers.Forests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.CYK {
-	internal class CykParser : Parser {
+	public class CykParser : Parser {
 		private readonly CNFGrammar _grammar;
 
 		public CykParser(CNFGrammar grammar) {
 			_grammar = grammar;
+		}
+
+		public override Sppf GetParseForest(Sentence s) {
+			throw new NotImplementedException();
 		}
 
 		// https://en.wikipedia.org/wiki/CYK_algorithm
