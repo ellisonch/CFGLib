@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers {
 	public abstract class Parser {
-		public abstract double GetProbability(Sentence s);
+		public abstract double ParseGetProbability(Sentence s);
 		public bool Accepts(Sentence s) {
-			return GetProbability(s) > 0.0;
+			return ParseGetProbability(s) > 0.0;
 		}
-		public abstract Sppf GetParseForest(Sentence s);
+		public abstract Sppf ParseGetForest(Sentence s);
 	}
 }

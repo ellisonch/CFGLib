@@ -1,4 +1,6 @@
 ﻿using CFGLib;
+using CFGLib.Parsers.CYK;
+using CFGLib.Parsers.Earley;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -11,9 +13,12 @@ namespace CFGLibTest {
 	public class TestParsing {
 		private static void ExecuteTest(Grammar g, List<Sentence> sentences) {
 			CNFGrammar h = g.ToCNF();
+			var earley = new EarleyParser(g);
+			var cyk = new CykParser(h);
+
 			foreach (var sentence in sentences) {
-				var p1 = h.Cyk(sentence);
-				var p2 = g.Earley(sentence);
+				var p1 = cyk.ParseGetProbability(sentence);
+				var p2 = earley.ParseGetProbability(sentence);
 				Helpers.AssertNear(p1, p2);
 			}
 		}

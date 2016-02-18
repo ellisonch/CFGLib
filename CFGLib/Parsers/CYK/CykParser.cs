@@ -13,7 +13,7 @@ namespace CFGLib.Parsers.CYK {
 			_grammar = grammar;
 		}
 
-		public override Sppf GetParseForest(Sentence s) {
+		public override Sppf ParseGetForest(Sentence s) {
 			throw new NotImplementedException();
 		}
 
@@ -39,7 +39,7 @@ namespace CFGLib.Parsers.CYK {
 		/// </summary>
 		/// <param name="s"></param>
 		/// <returns></returns>
-		public override double GetProbability(Sentence s) {
+		public override double ParseGetProbability(Sentence s) {
 			if (s.Count == 0) {
 				return _grammar.ProbabilityNull;
 			}

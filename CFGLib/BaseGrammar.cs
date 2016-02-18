@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CFGLib.Parsers.Forests;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -556,10 +557,14 @@ namespace CFGLib {
 			var retval = string.Format("new Grammar(new List<Production>{{\n  {0}\n}}, {1})", productions, start);
 			return retval;
 		}
-		
-		public double Earley(Sentence s) {
+
+		public double ParseGetProbability(Sentence s) {
 			var earley = new Parsers.Earley.EarleyParser(this);
-			return earley.GetProbability(s);
-		}	
+			return earley.ParseGetProbability(s);
+		}
+		public Sppf ParseGetForest(Sentence s) {
+			var earley = new Parsers.Earley.EarleyParser(this);
+			return earley.ParseGetForest(s);
+		}
 	}	
 }

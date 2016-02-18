@@ -172,7 +172,7 @@ namespace CFGLib {
 
 		public double Cyk(Sentence s) {
 			var cyk = new Parsers.CYK.CykParser(this);
-			return cyk.GetProbability(s);
+			return cyk.ParseGetProbability(s);
 		}
 
 		/// <summary>

@@ -48,7 +48,7 @@ namespace ConsolePlayground {
 			}, Nonterminal.Of("X_0"));
 
 			var ep = new EarleyParser(g);
-			var sppf = ep.GetParseForest(Sentence.FromWords("x2 x1"));
+			var sppf = ep.ParseGetForest(Sentence.FromWords("x2 x1"));
 			Console.WriteLine();
 			Console.WriteLine(sppf);
 			// Console.WriteLine(sppf.ToStringHelper("", new HashSet<Sppf>()));

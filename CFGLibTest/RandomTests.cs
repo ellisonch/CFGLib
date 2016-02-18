@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using CFGLib;
 using System.Linq;
 using System.Diagnostics;
+using CFGLib.Parsers.Earley;
+using CFGLib.Parsers.CYK;
 
 namespace CFGLibTest {
 	[TestClass]
@@ -143,6 +145,8 @@ namespace CFGLibTest {
 			for (int grammarIndex = 0; grammarIndex < preparedGrammars.Count; grammarIndex++) {
 				var g = preparedGrammars[grammarIndex];
 				var h = preparedGrammarsCNF[grammarIndex];
+				var earley = new EarleyParser(g);
+				var cyk = new CykParser(h);
 				Console.WriteLine("---------------{0}/{1}---------------", grammarIndex.ToString("D5"), _numGrammars.ToString("D5"));
 				Console.WriteLine(g.ToCodeString());
 				// Console.Write("{0}, ", count);
@@ -151,8 +155,8 @@ namespace CFGLibTest {
 				foreach (var sentence in preparedSentences) {
 					//var p1 = g.Cyk(sentence);
 					//var p1 = h.Cyk(sentence);
-					var p1 = g.Earley(sentence);
-					var p2 = h.Cyk(sentence);
+					var p1 = earley.ParseGetProbability(sentence);
+					var p2 = cyk.ParseGetProbability(sentence);
 
 					if (!Helpers.IsNear(p2, p1)) {
 						Console.WriteLine("Offending grammar:");

@@ -21,7 +21,7 @@ namespace CFGLib.Parsers.Earley {
 			_grammar = grammar;
 		}
 
-		public override double GetProbability(Sentence s) {
+		public override double ParseGetProbability(Sentence s) {
 			var successes = ComputeSuccesses(s);
 			if (successes.Count == 0) {
 				return 0.0;
@@ -35,7 +35,7 @@ namespace CFGLib.Parsers.Earley {
 			return prob;
 		}
 
-		public override Sppf GetParseForest(Sentence s) {
+		public override Sppf ParseGetForest(Sentence s) {
 			var successes = ComputeSuccesses(s);
 			if (successes.Count == 0) {
 				return null;
