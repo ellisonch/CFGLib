@@ -22,45 +22,42 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public override double GetProbability(Sentence s) {
-			// GetForest(s);
-
-			var S = ComputeState(s);
-			if (S == null) {
+			var successes = ComputeSuccesses(s);
+			if (successes.Count == 0) {
 				return 0.0;
 			}
 
-			var successes = GetSuccesses(S, s);
-			if (successes.Count > 0) {
-				var sppf = ConstructInternalSppf(successes, s);
-				AnnotateWithProductions(sppf);
-				var nodeProbs = new Dictionary<Node, double>();
-				var prob = CalculateProbability(sppf, nodeProbs);
-				return prob;
-			}
+			var sppf = ConstructInternalSppf(successes, s);
+			AnnotateWithProductions(sppf);
 
-			return 0.0;
+			var nodeProbs = new Dictionary<Node, double>();
+			var prob = CalculateProbability(sppf, nodeProbs);
+			return prob;
 		}
 
 		public override Sppf GetParseForest(Sentence s) {
-			var S = ComputeState(s);
-			if (S == null) {
+			var successes = ComputeSuccesses(s);
+			if (successes.Count == 0) {
 				return null;
 			}
 
-			var successes = GetSuccesses(S, s);
-			if (successes.Count > 0) {
-				var internalSppf = ConstructInternalSppf(successes, s);
-				AnnotateWithProductions(internalSppf);
-				var nodeProbs = new Dictionary<Node, double>();
-				var prob = CalculateProbability(internalSppf, nodeProbs);
-				PrintForest(internalSppf, nodeProbs);
-				PrintDebugForest(internalSppf, s, nodeProbs);
+			var internalSppf = ConstructInternalSppf(successes, s);
+			AnnotateWithProductions(internalSppf);
 
-				var sppf = internalSppf.ToSppf(s);
-				return sppf;
+			//PrintForest(internalSppf, nodeProbs);
+			//PrintDebugForest(internalSppf, s, nodeProbs);
+
+			var sppf = internalSppf.ToSppf(s);
+			return sppf;
+		}
+
+		private IList<Item> ComputeSuccesses(Sentence s) {
+			var S = ComputeState(s);
+			if (S == null) {
+				return new List<Item>();
 			}
 
-			return null;
+			return GetSuccesses(S, s);
 		}
 
 		private StateSet[] ComputeState(Sentence s) {
