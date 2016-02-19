@@ -6,18 +6,36 @@ using System.Threading.Tasks;
 
 namespace CFGLib {
 	/// <summary>
-	/// This class represents an abstract Production
+	/// This class represents a Production
 	/// </summary>
-	public abstract class Production {
+	public class Production {
 		private Nonterminal _lhs;
 		private double _weight = 1.0;
-
+		private Sentence _rhs;
+		
+		/// <summary>
+		/// Legacy
+		/// </summary>
+		public static Production New(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
+			return new Production(lhs, rhs, weight);
+		}
 		/// <summary>
 		/// Returns a new production.
 		/// We use a New() method because this class is abstract.
 		/// </summary>
-		public static Production New(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
-			return new DefaultProduction(lhs, rhs, weight);
+		public Production(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
+			if (lhs == null) {
+				throw new ArgumentNullException("Lhs must be non-null");
+			}
+			if (rhs == null) {
+				throw new ArgumentNullException("Rhs must be non-null");
+			}
+			if (weight < 0.0) {
+				throw new ArgumentOutOfRangeException("Weights must be positive");
+			}
+			this.Lhs = lhs;
+			_rhs = rhs;
+			this.Weight = weight;
 		}
 
 		/// <summary>
@@ -26,6 +44,13 @@ namespace CFGLib {
 		public Nonterminal Lhs {
 			get { return _lhs; }
 			protected set { _lhs = value; }
+		}
+
+		/// <summary>
+		/// The right-hand side of the Production (e.g., Lhs -> Rhs)
+		/// </summary>
+		public Sentence Rhs {
+			get { return _rhs; }
 		}
 
 		/// <summary>
@@ -42,13 +67,6 @@ namespace CFGLib {
 				}
 				_weight = value;
 			}
-		}
-
-		/// <summary>
-		/// The right-hand side of the Production (e.g., Lhs -> Rhs)
-		/// </summary>
-		public abstract Sentence Rhs {
-			get;
 		}
 
 		/// <summary>
@@ -98,14 +116,13 @@ namespace CFGLib {
 		/// Returns a new Production with constituent pieces equivalent to this Production.
 		/// The Rhs is a new Sentence, so that any piece of the new Production can be changed without changing the old Production.
 		/// </summary>
-		/// <returns></returns>
-		internal abstract Production DeepClone();
+		internal Production DeepClone() {
+			return Production.New(this.Lhs, new Sentence(_rhs), this.Weight);
+		}
 
 		/// <summary>
 		/// Checks whether the productions have the same parts
 		/// </summary>
-		/// <param name="other"></param>
-		/// <returns></returns>
 		public bool ValueEquals(Production other) {
 			if (this.Lhs != other.Lhs) {
 				return false;

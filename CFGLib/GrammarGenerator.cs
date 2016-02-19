@@ -51,7 +51,7 @@ namespace CFGLib {
 				}
 			}
 
-			return new DefaultProduction(lhs, rhs, weight);
+			return Production.New(lhs, rhs, weight);
 		}
 
 		/// <summary>

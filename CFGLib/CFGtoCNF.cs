@@ -72,7 +72,7 @@ namespace CFGLib {
 			var fresh = GetFresh();
 			productions.Add(
 				// new Production(fresh, new Sentence { Nonterminal.Of("S") })
-				new DefaultProduction(fresh, new Sentence { _grammar.Start })
+				Production.New(fresh, new Sentence { _grammar.Start })
 			);
 			_startSymbol = fresh;
 		}
@@ -99,7 +99,7 @@ namespace CFGLib {
 						fresh = GetFresh();
 						lookup[terminal] = fresh;
 						newProductions.Add(
-							new DefaultProduction(fresh, new Sentence { terminal })
+							Production.New(fresh, new Sentence { terminal })
 						);
 					}
 					production.Rhs[i] = fresh;
@@ -126,12 +126,12 @@ namespace CFGLib {
 					var left = rhs[i];
 					var newFresh = GetFresh();
 					finalProductions.Add(
-						new DefaultProduction(curr, new Sentence { left, newFresh }, weight)
+						Production.New(curr, new Sentence { left, newFresh }, weight)
 					);
 					curr = newFresh;
 				}
 				finalProductions.Add(
-					new DefaultProduction(curr, new Sentence { rhs[rhs.Count - 2], rhs[rhs.Count - 1] })
+					Production.New(curr, new Sentence { rhs[rhs.Count - 2], rhs[rhs.Count - 1] })
 				);
 			}
 			productions.Clear();
@@ -232,7 +232,7 @@ namespace CFGLib {
 			var probThisEntry = entry.Weight / sum;
 			// TODO: I've seen this create a 0 weight
 			var newProdWeight = production.Weight * probThisEntry;
-			var newProd = new DefaultProduction(production.Lhs, entry.Rhs, newProdWeight);
+			var newProd = Production.New(production.Lhs, entry.Rhs, newProdWeight);
 
 			// Console.WriteLine("considering {0} and {1}", production, entry);
 
@@ -250,7 +250,7 @@ namespace CFGLib {
 						continue;
 						// Console.WriteLine("foo");
 					}
-					var newnewProd = new DefaultProduction(production.Lhs, secondaryProduction.Rhs, newWeight);
+					var newnewProd = Production.New(production.Lhs, secondaryProduction.Rhs, newWeight);
 					if (UnitPreviouslyDeleted(newnewProd)) {
 						// Console.WriteLine("foo");
 					}
