@@ -37,6 +37,7 @@ namespace CFGLib {
 		private Cache<Dictionary<Terminal, ICollection<Production>>> _reverseTerminalProductions;
 		private Cache<Dictionary<Nonterminal, ICollection<Production>>> _ntProductionsByNonterminal;
 		private Cache<Dictionary<Nonterminal, ICollection<Production>>> _tProductionsByNonterminal;
+		private Cache<Dictionary<Nonterminal, ICollection<Production>>> _productionsFrom;
 
 		internal ICollection<Production> ProductionsProductingTerminal(Terminal terminal) {
 			ICollection<Production> result;
@@ -56,14 +57,7 @@ namespace CFGLib {
 
 
 		internal override IEnumerable<Production> ProductionsFrom(Nonterminal lhs) {
-			IEnumerable<Production> list1 = _ntProductionsByNonterminal.Value.LookupEnumerable(lhs);
-			IEnumerable<Production> list2 = _tProductionsByNonterminal.Value.LookupEnumerable(lhs);
-
-			var result = list1.Concat(list2);
-			if (lhs == this.Start) {
-				result = result.Concat(_emptyProductions);
-			}
-			return result;
+			return _productionsFrom.Value.LookupEnumerable(lhs);
 		}
 
 		public override IEnumerable<Production> Productions {
@@ -168,6 +162,15 @@ namespace CFGLib {
 				(x, y) => x.Add(y)
 			));
 			this.Caches.Add(_tProductionsByNonterminal);
+
+			_productionsFrom = Cache.Create(() => Helpers.BuildLookup(
+				() => _terminalProductions.Concat(_nonterminalProductions).Concat(_emptyProductions),
+				(p) => p.Lhs,
+				(p) => p,
+				() => (ICollection<Production>)new HashSet<Production>(),
+				(x, y) => x.Add(y)
+			));
+			this.Caches.Add(_productionsFrom);
 		}
 
 		public double Cyk(Sentence s) {
