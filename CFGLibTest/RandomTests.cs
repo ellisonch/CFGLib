@@ -93,19 +93,14 @@ namespace CFGLibTest {
 			}
 		}
 		
-		public void RandomParsingTest(int _numGrammars = 10000) {
-			//int _numNonterminals = 4;
-			//int _numProductions = 5;
-			//int _numTerminals = 3;
-			//int _maxInputLength = 6;
-			//int _maxProductionLength = 4;
-
-			int _numNonterminals = 10;
-			int _numProductions = 30;
-			int _numTerminals = 5;
-			int _maxInputLength = 6;
-			int _maxProductionLength = 8;
-
+		public void RandomParsingTest(
+			int _numGrammars = 10000,
+			int _numNonterminals = 10,
+			int _numTerminals = 5,
+			int _numProductions = 30,
+			int _maxProductionLength = 8,
+			int _maxInputLength = 6
+		) {			
 			var range = Enumerable.Range(0, _numTerminals);
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
 			Console.WriteLine("Preparing sentences");
@@ -145,7 +140,8 @@ namespace CFGLibTest {
 			for (int grammarIndex = 0; grammarIndex < preparedGrammars.Count; grammarIndex++) {
 				var g = preparedGrammars[grammarIndex];
 				var h = preparedGrammarsCNF[grammarIndex];
-				var earley = new EarleyParser(g);
+				// var earley = new EarleyParser(g);
+				var earley = new EarleyParser(h);
 				var cyk = new CykParser(h);
 				Console.WriteLine("---------------{0}/{1}---------------", grammarIndex.ToString("D5"), _numGrammars.ToString("D5"));
 				Console.WriteLine(g.ToCodeString());
@@ -155,24 +151,24 @@ namespace CFGLibTest {
 				foreach (var sentence in preparedSentences) {
 					//var p1 = g.Cyk(sentence);
 					//var p1 = h.Cyk(sentence);
-					var p1 = earley.ParseGetProbability(sentence);
+					// var p1 = earley.ParseGetProbability(sentence);
 					var p2 = cyk.ParseGetProbability(sentence);
 
-					if (!Helpers.IsNear(p2, p1)) {
-						Console.WriteLine("Offending grammar:");
-						Console.WriteLine(g.ToCodeString());
-						Console.WriteLine("Offending sentence:");
-						Console.WriteLine(sentence);
+					//if (!Helpers.IsNear(p2, p1)) {
+					//	Console.WriteLine("Offending grammar:");
+					//	Console.WriteLine(g.ToCodeString());
+					//	Console.WriteLine("Offending sentence:");
+					//	Console.WriteLine(sentence);
 
-						throw new Exception();
-					}
+					//	throw new Exception();
+					//}
 
-					var accepts1 = p1 > 0;
+					// var accepts1 = p1 > 0;
 					var accepts2 = p2 > 0;
 					//if (accepts1 != accepts2) {
 					//	throw new Exception("Didn't match");
 					//}
-					if (accepts1) {
+					if (accepts2) {
 						accepts++;
 					}
 					// Console.WriteLine("{0}: {1}", sentence, chance);

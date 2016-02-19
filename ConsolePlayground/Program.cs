@@ -34,19 +34,19 @@ namespace ConsolePlayground {
 
 			// Console.Read();
 
-			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<X_0> → <X_1>"),
-				CFGParser.Production("<X_1> → ε"),
-				CFGParser.Production("<X_1> → 'x2' <X_0> <X_0> 'x1'"),
-				CFGParser.Production("<X_1> → <X_0>"),
-			}, Nonterminal.Of("X_0"));
+			//var g = new Grammar(new List<Production>{
+			//	CFGParser.Production("<X_0> → <X_1>"),
+			//	CFGParser.Production("<X_1> → ε"),
+			//	CFGParser.Production("<X_1> → 'x2' <X_0> <X_0> 'x1'"),
+			//	CFGParser.Production("<X_1> → <X_0>"),
+			//}, Nonterminal.Of("X_0"));
 
-			var ep = new EarleyParser(g);
-			var sppf = ep.ParseGetForest(Sentence.FromWords("x2 x1"));
-			Console.WriteLine();
-			Console.WriteLine(sppf);
-			// Console.WriteLine(sppf.ToStringHelper("", new HashSet<Sppf>()));
-			Console.WriteLine();
+			//var ep = new EarleyParser(g);
+			//var sppf = ep.ParseGetForest(Sentence.FromWords("x2 x1"));
+			//Console.WriteLine();
+			//Console.WriteLine(sppf);
+			//// Console.WriteLine(sppf.ToStringHelper("", new HashSet<Sppf>()));
+			//Console.WriteLine();
 
 			// Readme.Do();
 
@@ -58,7 +58,8 @@ namespace ConsolePlayground {
 			// rt.RandomSimplificationTest();
 			// rt.RandomCFGToCNFTest();
 			// rt.RandomParsingTest(10);
-			rt.RandomParsingTest(10);
+			rt.RandomParsingTest(100, 4, 3, 5, 4, 6);
+			rt.RandomParsingTest(10, 10, 5, 30, 8, 6);
 			sw.Stop();
 			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
