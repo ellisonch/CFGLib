@@ -24,24 +24,24 @@ namespace CFGLibTest.Unit {
 		[TestMethod]
 		public void TestCYK01() {
 			var productions = new List<Production> {
-				new CNFNonterminalProduction(
+				Production.New(
 					Nonterminal.Of("S"),
-					Nonterminal.Of("X"), Nonterminal.Of("X"),
+					new Sentence { Nonterminal.Of("X"), Nonterminal.Of("X") },
 					2
 				),
-				new CNFNonterminalProduction(
+				Production.New(
 					Nonterminal.Of("X"),
-					Nonterminal.Of("X"), Nonterminal.Of("X"),
+					new Sentence { Nonterminal.Of("X"), Nonterminal.Of("X") },
 					2
 				),
-				new CNFTerminalProduction(
+				Production.New(
 					Nonterminal.Of("S"),
-					Terminal.Of("a"),
+					new Sentence { Terminal.Of("a") },
 					8
 				),
-				new CNFTerminalProduction(
+				Production.New(
 					Nonterminal.Of("X"),
-					Terminal.Of("a"),
+					new Sentence { Terminal.Of("a") },
 					8
 				)
 			};

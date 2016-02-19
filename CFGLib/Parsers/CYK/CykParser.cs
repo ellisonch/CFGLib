@@ -106,16 +106,14 @@ namespace CFGLib.Parsers.CYK {
 		/// <summary>
 		/// Returns a representation of the nt productions that is efficient for CYK
 		/// </summary>
-		/// <param name="RToJ"></param>
-		/// <returns></returns>
 		// TODO: can maybe improve this by using an array of arrays; keep a separate array for each LHS
 		private IEnumerable<LocalCykProduction> BuildLocalCYKProductionList(Dictionary<Nonterminal, int> RToJ) {
 			var retval = new LocalCykProduction[_grammar.NonterminalProductions.Count];
 			for (var i = 0; i < _grammar.NonterminalProductions.Count; i++) {
 				var production = _grammar.NonterminalProductions[i];
 				var R_A = production.Lhs;
-				var R_B = production.SpecificRhs[0];
-				var R_C = production.SpecificRhs[1];
+				var R_B = (Nonterminal)production.Rhs[0];
+				var R_C = (Nonterminal)production.Rhs[1];
 				var A = RToJ[R_A];
 				var B = RToJ[R_B];
 				var C = RToJ[R_C];

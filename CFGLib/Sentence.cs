@@ -181,6 +181,15 @@ namespace CFGLib {
 			return false;
 		}
 
+		public bool ContainsTerminal() {
+			foreach (var c in this) {
+				if (c.IsTerminal()) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public static ISet<Terminal> GetAllTerminals(IEnumerable<Sentence> sentences) {
 			var terminals = new HashSet<Terminal>();
 			foreach (var sentence in sentences) {

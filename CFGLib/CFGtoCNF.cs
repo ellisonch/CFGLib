@@ -49,10 +49,10 @@ namespace CFGLib {
 				if (production.Rhs.Count > 2) {
 					throw new Exception("Didn't expect more than 2");
 				} else if (production.Rhs.Count == 2) {
-					resultProductions.Add(new CNFNonterminalProduction(production));
+					resultProductions.Add(production);
 				} else if (production.Rhs.Count == 1) {
 					var rhs = production.Rhs[0];
-					resultProductions.Add(new CNFTerminalProduction(production));
+					resultProductions.Add(production);
 				} else if (production.Rhs.Count == 0) {
 					producesEmptyWeight += production.Weight;
 						// GetGrammarFromProductionList(production, productions);

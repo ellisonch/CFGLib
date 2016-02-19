@@ -10,8 +10,8 @@ namespace CFGLib {
 	/// Represents a concrete (probabilistic) context free grammar in Chomsky normal form (CNF)
 	/// </summary>
 	public class CNFGrammar : BaseGrammar {
-		private List<CNFNonterminalProduction> _nonterminalProductions = new List<CNFNonterminalProduction>();
-		private List<CNFTerminalProduction> _terminalProductions = new List<CNFTerminalProduction>();
+		private List<Production> _nonterminalProductions = new List<Production>();
+		private List<Production> _terminalProductions = new List<Production>();
 		
 		private List<Production> _emptyProductions = new List<Production>();
 
@@ -34,23 +34,23 @@ namespace CFGLib {
 			}
 		}
 
-		private Cache<Dictionary<Terminal, ICollection<CNFTerminalProduction>>> _reverseTerminalProductions;
-		private Cache<Dictionary<Nonterminal, ICollection<CNFNonterminalProduction>>> _ntProductionsByNonterminal;
-		private Cache<Dictionary<Nonterminal, ICollection<CNFTerminalProduction>>> _tProductionsByNonterminal;
+		private Cache<Dictionary<Terminal, ICollection<Production>>> _reverseTerminalProductions;
+		private Cache<Dictionary<Nonterminal, ICollection<Production>>> _ntProductionsByNonterminal;
+		private Cache<Dictionary<Nonterminal, ICollection<Production>>> _tProductionsByNonterminal;
 
-		internal ICollection<CNFTerminalProduction> ProductionsProductingTerminal(Terminal terminal) {
-			ICollection<CNFTerminalProduction> result;
+		internal ICollection<Production> ProductionsProductingTerminal(Terminal terminal) {
+			ICollection<Production> result;
 			if (!_reverseTerminalProductions.Value.TryGetValue(terminal, out result)) {
-				result = new Collection<CNFTerminalProduction>();
+				result = new Collection<Production>();
 			}
 			return result;				
 		}
 		
-		internal List<CNFNonterminalProduction> NonterminalProductions {
+		internal List<Production> NonterminalProductions {
 			get { return _nonterminalProductions; }
 		}
 
-		private List<CNFTerminalProduction> TerminalProductions {
+		private List<Production> TerminalProductions {
 			get { return _terminalProductions; }
 		}
 
@@ -83,12 +83,12 @@ namespace CFGLib {
 				} else {
 					throw new Exception("No production to remove");
 				}
-			} else if (production is CNFNonterminalProduction) {
-				var ntprod = (CNFNonterminalProduction)production;
+			} else if (production.IsCnfNonterminal) {
+				var ntprod = production;
 				_nonterminalProductions.Remove(ntprod);
 			} else {
 				// TODO: might not actually be a terminal production
-				var tprod = (CNFTerminalProduction)production;
+				var tprod = production;
 				_terminalProductions.Remove(tprod);
 			}
 			InvalidateCaches();
@@ -100,11 +100,11 @@ namespace CFGLib {
 				} else {
 					_emptyProductions.Add(production);
 				}
-			} else if (production is CNFNonterminalProduction) {
-				var ntprod = (CNFNonterminalProduction)production;
+			} else if (production.IsCnfNonterminal) {
+				var ntprod = production;
 				AddToListWithoutDuplicating(_nonterminalProductions, ntprod);
-			} else if (production is CNFTerminalProduction) {
-				var tprod = (CNFTerminalProduction)production;
+			} else if (production.IsCnfTerminal) {
+				var tprod = production;
 				AddToListWithoutDuplicating(_terminalProductions, tprod);
 			} else {
 				// TODO: should look into the production and see if we can convert
@@ -129,10 +129,10 @@ namespace CFGLib {
 					} else {
 						_emptyProductions.First().Weight += production.Weight;
 					}
-				} else if (production.Rhs.OnlyNonterminals()) {
-					_nonterminalProductions.Add(new CNFNonterminalProduction(production));
+				} else if (production.IsCnfNonterminal) {
+					_nonterminalProductions.Add(production);
 				} else {
-					_terminalProductions.Add(new CNFTerminalProduction(production));
+					_terminalProductions.Add(production);
 				}
 			}
 
@@ -144,9 +144,9 @@ namespace CFGLib {
 		private void BuildLookups() {
 			_reverseTerminalProductions = Cache.Create(() => Helpers.BuildLookup(
 				() => _terminalProductions,
-				(p) => p.SpecificRhs,
+				(p) => (Terminal)p.Rhs[0],
 				(p) => p,
-				() => (ICollection<CNFTerminalProduction>)new HashSet<CNFTerminalProduction>(),
+				() => (ICollection<Production>)new HashSet<Production>(),
 				(x, y) => x.Add(y)
 			));
 			this.Caches.Add(_reverseTerminalProductions);
@@ -155,7 +155,7 @@ namespace CFGLib {
 				() => _nonterminalProductions,
 				(p) => p.Lhs,
 				(p) => p,
-				() => (ICollection<CNFNonterminalProduction>)new HashSet<CNFNonterminalProduction>(),
+				() => (ICollection<Production>)new HashSet<Production>(),
 				(x, y) => x.Add(y)
 			));
 			this.Caches.Add(_ntProductionsByNonterminal);
@@ -164,7 +164,7 @@ namespace CFGLib {
 				() => _terminalProductions,
 				(p) => p.Lhs,
 				(p) => p,
-				() => (ICollection<CNFTerminalProduction>)new HashSet<CNFTerminalProduction>(),
+				() => (ICollection<Production>)new HashSet<Production>(),
 				(x, y) => x.Add(y)
 			));
 			this.Caches.Add(_tProductionsByNonterminal);

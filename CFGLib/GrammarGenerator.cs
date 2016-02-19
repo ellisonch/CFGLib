@@ -93,7 +93,7 @@ namespace CFGLib {
 			var rhs1 = RandomNonterminal(numNonTerminals, false);
 			var rhs2 = RandomNonterminal(numNonTerminals, false);
 
-			return new CNFNonterminalProduction(lhs, rhs1, rhs2);
+			return Production.New(lhs, new Sentence { rhs1, rhs2 });
 		}
 
 		public Production NextCNFTerminalProduction(int numNonterminals, IList<Terminal> terminals, Terminal rhs = null) {
@@ -102,7 +102,7 @@ namespace CFGLib {
 			}
 			var lhs = RandomNonterminal(numNonterminals);
 
-			return new CNFTerminalProduction(lhs, rhs);
+			return Production.New(lhs, new Sentence { rhs });
 		}
 
 		private Nonterminal RandomNonterminal(int numNonterminals, bool allowStart = true) {

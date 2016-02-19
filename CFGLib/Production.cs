@@ -71,6 +71,18 @@ namespace CFGLib {
 			get { return this.Rhs.Count == 0; }
 		}
 
+		public bool IsCnfNonterminal {
+			get {
+				return Rhs.Count == 2 && Rhs[0].IsNonterminal() && Rhs[1].IsNonterminal();
+			}
+		}
+
+		public bool IsCnfTerminal {
+			get {
+				return Rhs.Count == 1 && Rhs[0].IsTerminal();
+			}
+		}
+
 		public override string ToString() {
 			return string.Format("{0} → {1} [{2}]", this.Lhs, this.Rhs, this.Weight);
 		}

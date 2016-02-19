@@ -119,32 +119,32 @@ namespace CFGLibTest {
 			Console.WriteLine("Preparing grammars");
 			for (int i = 0; i < _numGrammars; i++) {
 				// var g = randg.NextCNF(_numNonterminals, _numProductions, terminals);
-				Grammar g = null;
-				while (g == null) {
-					g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals, true);
-					if (g.Productions.Count() == 0) {
-						g = null;
+				CNFGrammar h = null;
+				while (h == null) {
+					h = randg.NextCNF(_numNonterminals, _numProductions, terminals);
+					if (h.Productions.Count() == 0) {
+						h = null;
 					}
 				}
 				// Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
 				// Console.WriteLine(g.ToCodeString());
-				var h = g.ToCNF();
+				// var h = g.ToCNF();
 				// Console.WriteLine(g);
 				// g.PrintProbabilities(2, 3);
-				preparedGrammars.Add(g);
+				// preparedGrammars.Add(g);
 				preparedGrammarsCNF.Add(h);
 			}
 
 			var sw = Stopwatch.StartNew();
 			int count = 0;
-			for (int grammarIndex = 0; grammarIndex < preparedGrammars.Count; grammarIndex++) {
-				var g = preparedGrammars[grammarIndex];
+			for (int grammarIndex = 0; grammarIndex < preparedGrammarsCNF.Count; grammarIndex++) {
+				//var g = preparedGrammars[grammarIndex];
 				var h = preparedGrammarsCNF[grammarIndex];
 				// var earley = new EarleyParser(g);
-				var earley = new EarleyParser(h);
+				// var earley = new EarleyParser(h);
 				var cyk = new CykParser(h);
 				Console.WriteLine("---------------{0}/{1}---------------", grammarIndex.ToString("D5"), _numGrammars.ToString("D5"));
-				Console.WriteLine(g.ToCodeString());
+				Console.WriteLine(h.ToCodeString());
 				// Console.Write("{0}, ", count);
 				count++;
 				var accepts = 0;
