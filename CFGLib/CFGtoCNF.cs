@@ -90,7 +90,7 @@ namespace CFGLib {
 				}
 				for (int i = 0; i < production.Rhs.Count; i++) {
 					var word = production.Rhs[i];
-					if (word.IsNonterminal()) {
+					if (word.IsNonterminal) {
 						continue;
 					}
 					Terminal terminal = (Terminal)word;
@@ -194,7 +194,7 @@ namespace CFGLib {
 					continue;
 				}
 				var rhs = production.Rhs[0];
-				if (rhs.IsTerminal()) {
+				if (rhs.IsTerminal) {
 					continue;
 				}
 				// at this point we have a unit production lhs -> rhs
@@ -266,7 +266,7 @@ namespace CFGLib {
 
 		private bool UnitPreviouslyDeleted(Production newProd) {
 			if (newProd.Rhs.Count == 1) {
-				if (newProd.Rhs[0].IsNonterminal()) {
+				if (newProd.Rhs[0].IsNonterminal) {
 					var vup = new ValueUnitProduction(newProd.Lhs, (Nonterminal)newProd.Rhs[0]);
 					if (_unitPreviouslyDeleted.Contains(vup)) {
 						//// we're trying to add vup.Lhs -> vup.Rhs
@@ -288,6 +288,7 @@ namespace CFGLib {
 		}
 
 		// TODO need a structure for this to make it fast
+		// TODO it's markedly slow on big grammars
 		private static void MergeProductions(ISet<Production> results, ISet<Production> b) {
 			foreach (var newProd in b) {
 				bool found = false;

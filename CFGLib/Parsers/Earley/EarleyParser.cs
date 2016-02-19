@@ -98,7 +98,7 @@ namespace CFGLib.Parsers.Earley {
 							} else if (item.StartPosition == stateIndex) {
 								Completion(S, stateIndex, item);
 							}
-						} else if (nextWord.IsNonterminal()) {
+						} else if (nextWord.IsNonterminal) {
 							if (itemIndex >= startIndex) {
 								Prediction(S, stateIndex, (Nonterminal)nextWord, item);
 							}
@@ -114,7 +114,7 @@ namespace CFGLib.Parsers.Earley {
 					var nextWord = item.NextWord;
 					if (nextWord == null) {
 						//Completion(S, stateIndex, item);
-					} else if (nextWord.IsNonterminal()) {
+					} else if (nextWord.IsNonterminal) {
 						//Prediction(S, stateIndex, (Nonterminal)nextWord, item);
 					} else {
 						Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
@@ -291,7 +291,7 @@ namespace CFGLib.Parsers.Earley {
 
 			if (child is SymbolNode) {
 				var symbolChild = (SymbolNode)child;
-				if (symbolChild.Symbol.IsNonterminal()) {
+				if (symbolChild.Symbol.IsNonterminal) {
 					if (parent is SymbolNode) {
 						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
 						parent.AddChild(place, production);
@@ -299,7 +299,7 @@ namespace CFGLib.Parsers.Earley {
 					AnnotateWithProductions(symbolChild, seen, parent, place);
 					return;
 				} else {
-					if (parentSymbol.IsNonterminal()) {
+					if (parentSymbol.IsNonterminal) {
 						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
 						parent.AddChild(place, production);
 						return;
@@ -450,7 +450,7 @@ namespace CFGLib.Parsers.Earley {
 				// basically, SymbolNodes with no children have empty children
 			} else if (item.CurrentPosition == 1) {
 				var prevWord = item.PrevWord;
-				if (prevWord.IsTerminal()) {
+				if (prevWord.IsTerminal) {
 					var a = (Terminal)prevWord;
 					var i = node.EndPosition;
 					var v = NewOrExistingNode(nodes, new SymbolNode(a, i - 1, i));
@@ -471,7 +471,7 @@ namespace CFGLib.Parsers.Earley {
 						}
 					}
 				}
-			} else if (item.PrevWord.IsTerminal()) {
+			} else if (item.PrevWord.IsTerminal) {
 				var a = (Terminal)item.PrevWord;
 				var j = node.StartPosition;
 				var i = node.EndPosition;

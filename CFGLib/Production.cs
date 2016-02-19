@@ -91,13 +91,13 @@ namespace CFGLib {
 
 		public bool IsCnfNonterminal {
 			get {
-				return Rhs.Count == 2 && Rhs[0].IsNonterminal() && Rhs[1].IsNonterminal();
+				return Rhs.Count == 2 && Rhs[0].IsNonterminal && Rhs[1].IsNonterminal;
 			}
 		}
 
 		public bool IsCnfTerminal {
 			get {
-				return Rhs.Count == 1 && Rhs[0].IsTerminal();
+				return Rhs.Count == 1 && Rhs[0].IsTerminal;
 			}
 		}
 

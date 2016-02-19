@@ -86,7 +86,7 @@ namespace CFGLib.Parsers.Earley {
 
 				var word = goal.Item.Production.Rhs[goal.ItemOffset];
 				ParseGoal? nextGoal = null;
-				if (word.IsNonterminal()) {
+				if (word.IsNonterminal) {
 					var nonterminal = (Nonterminal)word;
 					var candidates = FindMatching(goal.SentenceOffset, nonterminal);
 					foreach (var candidate in candidates) {

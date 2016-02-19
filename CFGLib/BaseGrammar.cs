@@ -160,7 +160,7 @@ namespace CFGLib {
 					// have to return empty here, since we don't have complete sentences
 					return new List<Probable<Sentence>>();
 				}
-				if (word.IsNonterminal()) {
+				if (word.IsNonterminal) {
 					results = StepNonterminal(results, word, remainingDepth);
 				} else {
 					results = StepTerminal(results, word);
@@ -267,7 +267,7 @@ namespace CFGLib {
 				// for (int i = 0; i < sentence.Count; i++) {
 				for (int i = sentence.Count - 1; i >= 0; i--) {
 					var word = sentence[i];
-					if (!word.IsNonterminal()) {
+					if (!word.IsNonterminal) {
 						continue;
 					}
 					var newStuff = ProduceNonterminal((Nonterminal)word);

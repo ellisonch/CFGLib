@@ -142,7 +142,7 @@ namespace CFGLib {
 
 		public bool OnlyTerminals() {
 			foreach (var word in _sentence) {
-				if (word.IsNonterminal()) {
+				if (word.IsNonterminal) {
 					return false;
 				}
 			}
@@ -150,7 +150,7 @@ namespace CFGLib {
 		}
 		public bool OnlyNonterminals() {
 			foreach (var word in _sentence) {
-				if (word.IsTerminal()) {
+				if (word.IsTerminal) {
 					return false;
 				}
 			}
@@ -174,7 +174,7 @@ namespace CFGLib {
 		
 		public bool ContainsNonterminal() {
 			foreach (var c in this) {
-				if (c.IsNonterminal()) {
+				if (c.IsNonterminal) {
 					return true;
 				}
 			}
@@ -183,7 +183,7 @@ namespace CFGLib {
 
 		public bool ContainsTerminal() {
 			foreach (var c in this) {
-				if (c.IsTerminal()) {
+				if (c.IsTerminal) {
 					return true;
 				}
 			}
@@ -194,7 +194,7 @@ namespace CFGLib {
 			var terminals = new HashSet<Terminal>();
 			foreach (var sentence in sentences) {
 				foreach (var word in sentence) {
-					if (!word.IsNonterminal()) {
+					if (!word.IsNonterminal) {
 						terminals.Add((Terminal)word);
 					}
 				}

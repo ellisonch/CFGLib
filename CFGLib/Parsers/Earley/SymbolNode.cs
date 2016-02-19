@@ -43,7 +43,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		internal override Sppf ToSppf(Sentence s, Dictionary<Node, Sppf> dict = null) {
-			if (Symbol.IsTerminal()) {
+			if (Symbol.IsTerminal) {
 				return null;
 			}
 			if (dict == null) {

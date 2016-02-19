@@ -31,8 +31,8 @@ namespace CFGLib {
 			return string.Format("'{0}'", _name);
 		}
 		
-		public override bool IsNonterminal() {
-			return false;
+		public override bool IsNonterminal {
+			get { return false; }
 		}
 	}
 }
