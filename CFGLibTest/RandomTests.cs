@@ -114,60 +114,60 @@ namespace CFGLibTest {
 			}
 
 			var randg = new GrammarGenerator();
-			var preparedGrammars = new List<Grammar>();
-			var preparedGrammarsCNF = new List<CNFGrammar>();
+			var preparedGrammars = new List<Grammar>(_numGrammars);
+			var preparedGrammarsCNF = new List<CNFGrammar>(_numGrammars);
 			Console.WriteLine("Preparing grammars");
 			for (int i = 0; i < _numGrammars; i++) {
-				// var g = randg.NextCNF(_numNonterminals, _numProductions, terminals);
-				CNFGrammar h = null;
-				while (h == null) {
-					h = randg.NextCNF(_numNonterminals, _numProductions, terminals);
-					if (h.Productions.Count() == 0) {
-						h = null;
+				Grammar g = null;
+				while (g == null) {
+					// g = randg.NextCNF(_numNonterminals, _numProductions, terminals);
+					g = randg.NextCFG(_numNonterminals, _numProductions, _maxProductionLength, terminals, true);
+					if (g.Productions.Count() == 0) {
+						g = null;
 					}
 				}
 				// Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
 				// Console.WriteLine(g.ToCodeString());
-				// var h = g.ToCNF();
+				var h = g.ToCNF();
 				// Console.WriteLine(g);
 				// g.PrintProbabilities(2, 3);
-				// preparedGrammars.Add(g);
+				preparedGrammars.Add(g);
 				preparedGrammarsCNF.Add(h);
 			}
 
 			var sw = Stopwatch.StartNew();
 			int count = 0;
-			for (int grammarIndex = 0; grammarIndex < preparedGrammarsCNF.Count; grammarIndex++) {
-				//var g = preparedGrammars[grammarIndex];
+			for (int grammarIndex = 0; grammarIndex < _numGrammars; grammarIndex++) {
+				var g = preparedGrammars[grammarIndex];
 				var h = preparedGrammarsCNF[grammarIndex];
 				// var earley = new EarleyParser(g);
-				// var earley = new EarleyParser(h);
+				var earley = new EarleyParser(h);
 				var cyk = new CykParser(h);
 				Console.WriteLine("---------------{0}/{1}---------------", grammarIndex.ToString("D5"), _numGrammars.ToString("D5"));
-				Console.WriteLine(h.ToCodeString());
+				// Console.WriteLine(g.ToCodeString());
 				// Console.Write("{0}, ", count);
 				count++;
 				var accepts = 0;
 				foreach (var sentence in preparedSentences) {
 					//var p1 = g.Cyk(sentence);
 					//var p1 = h.Cyk(sentence);
-					// var p1 = earley.ParseGetProbability(sentence);
+					var p1 = earley.ParseGetProbability(sentence);
 					var p2 = cyk.ParseGetProbability(sentence);
 
-					//if (!Helpers.IsNear(p2, p1)) {
-					//	Console.WriteLine("Offending grammar:");
-					//	Console.WriteLine(g.ToCodeString());
-					//	Console.WriteLine("Offending sentence:");
-					//	Console.WriteLine(sentence);
+					if (!Helpers.IsNear(p2, p1)) {
+						Console.WriteLine("Offending grammar:");
+						Console.WriteLine(g.ToCodeString());
+						Console.WriteLine("Offending sentence:");
+						Console.WriteLine(sentence);
 
-					//	throw new Exception();
-					//}
+						throw new Exception();
+					}
 
-					// var accepts1 = p1 > 0;
+					var accepts1 = p1 > 0;
 					var accepts2 = p2 > 0;
-					//if (accepts1 != accepts2) {
-					//	throw new Exception("Didn't match");
-					//}
+					if (accepts1 != accepts2) {
+						throw new Exception("Didn't match");
+					}
 					if (accepts2) {
 						accepts++;
 					}
