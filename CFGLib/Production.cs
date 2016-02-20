@@ -30,6 +30,15 @@ namespace CFGLib {
 			if (rhs == null) {
 				throw new ArgumentNullException("Rhs must be non-null");
 			}
+			if (double.IsNaN(weight)) {
+				throw new ArgumentException("Weight should be a number");
+			}
+			if (double.IsPositiveInfinity(weight)) {
+				throw new ArgumentException("Weight should be a number");
+			}
+			if (double.IsNegativeInfinity(weight)) {
+				throw new ArgumentException("Weight should be a number");
+			}
 			if (weight < 0.0) {
 				throw new ArgumentOutOfRangeException("Weights must be positive");
 			}

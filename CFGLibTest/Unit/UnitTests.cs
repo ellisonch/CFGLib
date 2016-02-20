@@ -66,5 +66,12 @@ namespace CFGLibTest.Unit {
 
 			Helpers.AssertNear(truedp, dp);
 		}
+
+		[TestMethod]
+		public void TestBadProduction() {
+			Helpers.AssertThrows<ArgumentException>(() => Production.New(Nonterminal.Of("S"), new Sentence(), double.PositiveInfinity));
+			Helpers.AssertThrows<ArgumentException>(() => Production.New(Nonterminal.Of("S"), new Sentence(), double.NegativeInfinity));
+			Helpers.AssertThrows<ArgumentException>(() => Production.New(Nonterminal.Of("S"), new Sentence(), double.NaN));
+		}
 	}
 }
