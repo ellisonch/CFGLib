@@ -8,6 +8,7 @@ namespace CFGLib.Parsers.Earley {
 	internal class StateSet {
 		List<Item> _list = new List<Item>();
 		Dictionary<Item, Item> _hash = new Dictionary<Item, Item>(new ItemComparer());
+		HashSet<Nonterminal> _alreadyPredicted = new HashSet<Nonterminal>();
 		public List<Item> _magicItems = new List<Item>();
 
 
@@ -43,11 +44,17 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+
+		public void Insert(int stateIndex, Item item) {
+			// the endPosition should always equal the stateIndex of the state it resides in
+			item.EndPosition = stateIndex;
+
+			this.AddUnsafe(item);
+		}
 		public void InsertWithoutDuplicating(int stateIndex, Item item) {
 			// the endPosition should always equal the stateIndex of the state it resides in
 			item.EndPosition = stateIndex;
 
-			// var existingItem = _list.Find(equalityCheck);
 			Item existingItem = null;
 			if (!_hash.TryGetValue(item, out existingItem)) {
 				this.AddUnsafe(item);
@@ -65,6 +72,12 @@ namespace CFGLib.Parsers.Earley {
 				retval += "\n";
 			}
 			return retval;
+		}
+
+		internal bool PredictedAlreadyAndSet(Nonterminal nonterminal) {
+			var predicted = _alreadyPredicted.Contains(nonterminal);
+			_alreadyPredicted.Add(nonterminal);
+			return predicted;
 		}
 	}
 }

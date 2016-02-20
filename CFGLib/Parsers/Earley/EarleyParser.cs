@@ -582,14 +582,22 @@ namespace CFGLib.Parsers.Earley {
 		}
 		private void Prediction(StateSet[] S, int stateIndex, Nonterminal nonterminal, Item item) {
 			var state = S[stateIndex];
-			var productions = _grammar.ProductionsFrom(nonterminal);
+			// check if we've already predicted this nonterminal in this state, if so, don't
+			// this optimization may not always be faster, but should help when there are lots of productions or high ambiguity
+			if (!state.PredictedAlreadyAndSet(nonterminal)) {
+				var productions = _grammar.ProductionsFrom(nonterminal);
 
-			// insert, but avoid duplicates
-			foreach (var production in productions) {
-				var newItem = new Item(production, 0, stateIndex, stateIndex);
-				state.InsertWithoutDuplicating(stateIndex, newItem);
+				// insert, but avoid duplicates
+				foreach (var production in productions) {
+					var newItem = new Item(production, 0, stateIndex, stateIndex);
+					// state.InsertWithoutDuplicating(stateIndex, newItem);
+					// with the above optimization,
+					// prediction can never introduce a duplicate item
+					// its current marker is always 0, while completion
+					// and scan generate items with nonzero current markers
+					state.Insert(stateIndex, newItem);
+				}
 			}
-			
 			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon. [AH2002]
 			// Except this trick only works easily when we don't want the full parse tree
 			// we save items generated this way to use in completion later
