@@ -30,18 +30,6 @@ namespace CFGLib {
 			if (rhs == null) {
 				throw new ArgumentNullException("Rhs must be non-null");
 			}
-			if (double.IsNaN(weight)) {
-				throw new ArgumentException("Weight should be a number");
-			}
-			if (double.IsPositiveInfinity(weight)) {
-				throw new ArgumentException("Weight should be a number");
-			}
-			if (double.IsNegativeInfinity(weight)) {
-				throw new ArgumentException("Weight should be a number");
-			}
-			if (weight < 0.0) {
-				throw new ArgumentOutOfRangeException("Weights must be positive");
-			}
 			this.Lhs = lhs;
 			_rhs = rhs;
 			this.Weight = weight;
@@ -68,11 +56,17 @@ namespace CFGLib {
 		public double Weight {
 			get { return _weight; }
 			internal set {
-				if (value < 0.0) {
-					throw new ArgumentOutOfRangeException("Weights must be non-negative");
-				}
 				if (double.IsNaN(value)) {
-					throw new ArgumentException("Weights need to be numbers");
+					throw new ArgumentException("Weight should be a number");
+				}
+				if (double.IsPositiveInfinity(value)) {
+					throw new ArgumentException("Weight should be a number");
+				}
+				if (double.IsNegativeInfinity(value)) {
+					throw new ArgumentException("Weight should be a number");
+				}
+				if (value < 0.0) {
+					throw new ArgumentOutOfRangeException("Weights should be positive");
 				}
 				_weight = value;
 			}
