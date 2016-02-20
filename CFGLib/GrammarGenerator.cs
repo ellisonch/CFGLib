@@ -57,16 +57,18 @@ namespace CFGLib {
 		/// <summary>
 		/// Generates a new, random CNF grammar
 		/// </summary>
-		public CNFGrammar NextCNF(int numNonterminals, int numProductions, IList<Terminal> terminals) {
+		public CNFGrammar NextCNF(int numNonterminals, int numProductions, IList<Terminal> terminals, bool useNull = true) {
 			if (numNonterminals < 1) {
 				throw new ArgumentOutOfRangeException("Need at least one nonterminal");
 			}
 			var start = RandomNonterminal(1);
 			double producesEmptyWeight = 0.0;
-			if (numProductions > 0) {
-				if (_rand.Next(2) == 1) {
-					producesEmptyWeight = 100 * _rand.NextDouble();
-					numProductions--;
+			if (useNull) {
+				if (numProductions > 0) {
+					if (_rand.Next(2) == 1) {
+						producesEmptyWeight = 100 * _rand.NextDouble();
+						numProductions--;
+					}
 				}
 			}
 			var numNontermProductions = _rand.Next(numProductions);
