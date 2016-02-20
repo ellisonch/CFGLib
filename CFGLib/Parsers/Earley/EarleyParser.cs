@@ -16,7 +16,7 @@ namespace CFGLib.Parsers.Earley {
 
 	public class EarleyParser : Parser {
 		private readonly BaseGrammar _grammar;
-		
+
 		public EarleyParser(BaseGrammar grammar) {
 			_grammar = grammar;
 		}
@@ -32,6 +32,10 @@ namespace CFGLib.Parsers.Earley {
 
 			var nodeProbs = new Dictionary<Node, double>();
 			var prob = CalculateProbability(sppf, nodeProbs);
+
+			//PrintForest(sppf, nodeProbs);
+			//PrintDebugForest(sppf, s, nodeProbs);
+
 			return prob;
 		}
 
@@ -43,7 +47,7 @@ namespace CFGLib.Parsers.Earley {
 
 			var internalSppf = ConstructInternalSppf(successes, s);
 			AnnotateWithProductions(internalSppf);
-
+			
 			//PrintForest(internalSppf, nodeProbs);
 			//PrintDebugForest(internalSppf, s, nodeProbs);
 
@@ -59,7 +63,6 @@ namespace CFGLib.Parsers.Earley {
 
 			return GetSuccesses(S, s);
 		}
-
 		private StateSet[] ComputeState(Sentence s) {
 			StateSet[] S = FreshS(s.Count + 1);
 
@@ -71,57 +74,54 @@ namespace CFGLib.Parsers.Earley {
 
 			// outer loop
 			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
-				var state = S[stateIndex];
-				Terminal inputTerminal = null;
-				if (stateIndex < s.Count) {
-					inputTerminal = (Terminal)s[stateIndex];
-				}
+				var stateprob = S[stateIndex];
 
 				// If there are no items in the current state, we're stuck
-				if (state.Count == 0) {
+				if (stateprob.Count == 0) {
 					return null;
 				}
 
-				// completion
-				var prevStateCount = 0;
-				while (prevStateCount != state.Count) {
-					var startIndex = prevStateCount;
-					prevStateCount = state.Count;
-					for (int itemIndex = 0; itemIndex < state.Count; itemIndex++) {
-						var item = state[itemIndex];
-						var nextWord = item.NextWord;
-						if (nextWord == null) {
-							// if item is new, we definitely want to run completion
-							if (itemIndex >= startIndex) {
-								Completion(S, stateIndex, item);
-								// otherwise, we want to run only when we may have added a matching element to an existing completed item
-							} else if (item.StartPosition == stateIndex) {
-								Completion(S, stateIndex, item);
-							}
-						} else if (nextWord.IsNonterminal) {
-							if (itemIndex >= startIndex) {
-								Prediction(S, stateIndex, (Nonterminal)nextWord, item);
-							}
-						} else {
-							// Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
+				StepState(S, s, stateIndex, stateprob);
+			}
+			
+			// for those items we added magically, make sure they get treated by completion
+			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
+				foreach (var p in S[stateIndex]._magicItems) {
+					foreach (var t in S[stateIndex]) {
+						if (t.StartPosition != stateIndex) {
+							continue;
 						}
-					}
-				}
-
-				// initialization
-				for (int itemIndex = 0; itemIndex < state.Count; itemIndex++) {
-					var item = state[itemIndex];
-					var nextWord = item.NextWord;
-					if (nextWord == null) {
-						//Completion(S, stateIndex, item);
-					} else if (nextWord.IsNonterminal) {
-						//Prediction(S, stateIndex, (Nonterminal)nextWord, item);
-					} else {
-						Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
+						if (t.Production.Lhs != p.PrevWord) {
+							continue;
+						}
+						if (!t.IsComplete()) {
+							continue;
+						}
+						p.AddReduction(stateIndex, t);
 					}
 				}
 			}
 			return S;
+		}
+
+		private void StepState(StateSet[] S, Sentence s, int stateIndex, StateSet state) {
+			Terminal inputTerminal = null;
+			if (stateIndex < s.Count) {
+				inputTerminal = (Terminal)s[stateIndex];
+			}
+
+			// completion + initialization
+			for (int itemIndex = 0; itemIndex < state.Count; itemIndex++) {
+				var item = state[itemIndex];
+				var nextWord = item.NextWord;
+				if (nextWord == null) {
+					Completion(S, stateIndex, item);
+				} else if (nextWord.IsNonterminal) {
+					Prediction(S, stateIndex, (Nonterminal)nextWord, item);
+				} else {
+					Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
+				}
+			}
 		}
 
 		private double CalculateProbability(SymbolNode sppf, Dictionary<Node, double> nodeProbs) {
@@ -438,7 +438,6 @@ namespace CFGLib.Parsers.Earley {
 
 		// [Sec 4, ES2008]
 		private void BuildTree(Dictionary<Node, Node> nodes, HashSet<Item> processed, InteriorNode node, Item item) {
-			// item.Processed = true;
 			processed.Add(item);
 
 			if (item.Production.Rhs.Count == 0) {
@@ -562,6 +561,14 @@ namespace CFGLib.Parsers.Earley {
 				if (item.NextWord != completedItem.Production.Lhs) {
 					continue;
 				}
+				// for some reason, making sure it's the same prefix (tau) breaks everything.
+				// this seems like a bug in [ES2008]
+				// make sure it's the same prefix
+				//var tau1 = completedItem.Production.Rhs.GetRange(0, completedItem.CurrentPosition);
+				//var tau2 = item.Production.Rhs.GetRange(0, item.CurrentPosition);
+				//if (!tau1.SequenceEqual(tau2)) {
+				//	continue;
+				//}
 				var newItem = item.Increment();
 				newItem.AddReduction(completedItem.StartPosition, completedItem);
 				if (item.CurrentPosition != 0) {
@@ -582,14 +589,19 @@ namespace CFGLib.Parsers.Earley {
 				var newItem = new Item(production, 0, stateIndex, stateIndex);
 				state.InsertWithoutDuplicating(stateIndex, newItem);
 			}
-
+			
 			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon. [AH2002]
-			// Except this trick won't work for us, since we want probabilities and the full parse tree
-			//if (_grammar.NullableProbabilities[nonterminal] > 0.0) {
-			//	var newItem = item.Increment();
-			//	// TODO: supposed to add pointers here, but don't know what to add
-			//	InsertWithoutDuplicating(state, stateIndex, newItem);
-			//}
+			// Except this trick only works easily when we don't want the full parse tree
+			// we save items generated this way to use in completion later
+			var probabilityNull = _grammar.NullableProbabilities[nonterminal];
+			if (probabilityNull > 0.0) {
+				var newItem = item.Increment();
+				state._magicItems.Add(newItem);
+				if (item.CurrentPosition != 0) {
+					newItem.AddPredecessor(stateIndex, item);
+				}
+				state.InsertWithoutDuplicating(stateIndex, newItem);
+			}
 		}
 		
 		private void Scan(StateSet[] S, int stateIndex, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {

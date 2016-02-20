@@ -57,7 +57,7 @@ namespace ConsolePlayground {
 			var sw = Stopwatch.StartNew();
 			rt.RandomParsingTest(500, 4, 3, 5, 4, 6);
 			rt.RandomParsingTest(10, 10, 5, 30, 8, 6);
-			rt.RandomParsingTest(1, 10, 5, 1000, 8, 6);
+			// rt.RandomParsingTest(1, 10, 5, 1000, 8, 6);
 			sw.Stop();
 			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 

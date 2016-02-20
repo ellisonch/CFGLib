@@ -138,19 +138,19 @@ namespace CFGLibTest {
 			var sw = Stopwatch.StartNew();
 			int count = 0;
 			for (int grammarIndex = 0; grammarIndex < _numGrammars; grammarIndex++) {
+				Console.WriteLine("---------------{0}/{1}---------------", grammarIndex.ToString("D5"), _numGrammars.ToString("D5"));
+
 				var g = preparedGrammars[grammarIndex];
 				var h = preparedGrammarsCNF[grammarIndex];
-				// var earley = new EarleyParser(g);
+
 				var earley = new EarleyParser(h);
 				var cyk = new CykParser(h);
-				Console.WriteLine("---------------{0}/{1}---------------", grammarIndex.ToString("D5"), _numGrammars.ToString("D5"));
+				
 				// Console.WriteLine(g.ToCodeString());
 				// Console.Write("{0}, ", count);
 				count++;
 				var accepts = 0;
 				foreach (var sentence in preparedSentences) {
-					//var p1 = g.Cyk(sentence);
-					//var p1 = h.Cyk(sentence);
 					var p1 = earley.ParseGetProbability(sentence);
 					var p2 = cyk.ParseGetProbability(sentence);
 
@@ -165,13 +165,10 @@ namespace CFGLibTest {
 
 					var accepts1 = p1 > 0;
 					var accepts2 = p2 > 0;
-					if (accepts1 != accepts2) {
-						throw new Exception("Didn't match");
-					}
+
 					if (accepts2) {
 						accepts++;
 					}
-					// Console.WriteLine("{0}: {1}", sentence, chance);
 				}
 				Console.WriteLine("Accepted {0} / {1}", accepts, preparedSentences.Count);
 			}

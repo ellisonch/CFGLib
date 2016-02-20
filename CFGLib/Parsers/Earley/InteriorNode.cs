@@ -23,6 +23,13 @@ namespace CFGLib.Parsers.Earley {
 			Families.Add(family);
 		}
 
+		//internal void SetFamily(Family family) {
+		//	if (Families.Count > 0) {
+		//		throw new Exception();
+		//	}
+		//	Families.Add(family);
+		//}
+
 		//internal abstract bool ValueEquals(InteriorNode other);
 		//internal abstract int GetValueHashCode();
 	}

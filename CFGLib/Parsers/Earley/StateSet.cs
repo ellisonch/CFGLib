@@ -8,7 +8,9 @@ namespace CFGLib.Parsers.Earley {
 	internal class StateSet {
 		List<Item> _list = new List<Item>();
 		Dictionary<Item, Item> _hash = new Dictionary<Item, Item>(new ItemComparer());
-		
+		public List<Item> _magicItems = new List<Item>();
+
+
 		public List<Item>.Enumerator GetEnumerator() {
 			return _list.GetEnumerator();
 		}
@@ -54,6 +56,15 @@ namespace CFGLib.Parsers.Earley {
 				existingItem.Predecessors.AddRange(item.Predecessors);
 				existingItem.Reductions.AddRange(item.Reductions);
 			}
+		}
+
+		public override string ToString() {
+			var retval = "";
+			foreach (var item in _list) {
+				retval += item.ToString();
+				retval += "\n";
+			}
+			return retval;
 		}
 	}
 }

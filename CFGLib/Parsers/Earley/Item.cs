@@ -21,7 +21,7 @@ namespace CFGLib.Parsers.Earley {
 		// TODO: maybe should keep these out of the item and therefore avoid the messy equality stuff
 		public readonly List<PredecessorPointer> Predecessors;
 		public readonly List<ReductionPointer> Reductions;
-
+		
 		// public bool Processed = false;
 
 		public Word PrevWord {
@@ -43,6 +43,7 @@ namespace CFGLib.Parsers.Earley {
 				return Production.Rhs[CurrentPosition];
 			}
 		}
+
 
 		public Item(Production production, int currentPosition, int startPosition, int endPosition) {
 			if (currentPosition < 0) {
