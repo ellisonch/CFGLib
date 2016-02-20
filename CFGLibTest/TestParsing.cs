@@ -309,5 +309,36 @@ namespace CFGLibTest {
 
 			ExecuteTest(g, sentences);
 		}
+
+		[TestMethod]
+		public void TestParsing19() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → <X_2> 'x2' 'x0' [89.380999392075935]"),
+				CFGParser.Production("<X_2> → <X_0> [54.4160114142187]"),
+				CFGParser.Production("<X_0> → 'x1' [73.603592962307658]"),
+				CFGParser.Production("<X_2> → 'x2' 'x2' 'x1' <X_2> [72.673047343116735]")
+			}, Nonterminal.Of("X_0"));
+
+			var sentences = new List<Sentence>();
+			sentences.Add(Sentence.FromWords("x1"));
+
+			ExecuteTest(g, sentences);
+		}
+
+		[TestMethod]
+		public void TestParsing20() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → 'x1' <X_1> <X_1> 'x1'"),
+				CFGParser.Production("<X_1> → ε"),
+				CFGParser.Production("<X_1> → 'x2' <X_2> <X_0> <X_2>"),
+				CFGParser.Production("<X_2> → 'x1' <X_2>"),
+				CFGParser.Production("<X_2> → ε")
+			}, Nonterminal.Of("X_0"));
+
+			var sentences = new List<Sentence>();
+			sentences.Add(Sentence.FromWords("x1 x2 x1 x1 x1"));
+
+			ExecuteTest(g, sentences);
+		}
 	}
 }

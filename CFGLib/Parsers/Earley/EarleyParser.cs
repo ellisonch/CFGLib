@@ -555,7 +555,7 @@ namespace CFGLib.Parsers.Earley {
 		private void Completion(StateSet[] S, int stateIndex, Item completedItem) {
 			var state = S[stateIndex];
 			var Si = S[completedItem.StartPosition];
-			var toAdd = new StateSet();
+			var toAdd = new List<Item>();
 			foreach (var item in Si) {
 				// make sure it's the same nonterminal
 				if (item.NextWord != completedItem.Production.Lhs) {

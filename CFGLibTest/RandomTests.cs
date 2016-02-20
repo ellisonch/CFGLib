@@ -143,7 +143,7 @@ namespace CFGLibTest {
 				var g = preparedGrammars[grammarIndex];
 				var h = preparedGrammarsCNF[grammarIndex];
 
-				var earley = new EarleyParser(h);
+				var earley = new EarleyParser(g);
 				var cyk = new CykParser(h);
 				
 				// Console.WriteLine(g.ToCodeString());
@@ -151,23 +151,21 @@ namespace CFGLibTest {
 				count++;
 				var accepts = 0;
 				foreach (var sentence in preparedSentences) {
-					var p1 = earley.ParseGetProbability(sentence);
-					var p2 = cyk.ParseGetProbability(sentence);
+					try {
+						var p1 = earley.ParseGetProbability(sentence);
+						var p2 = cyk.ParseGetProbability(sentence);
+						if (!Helpers.IsNear(p2, p1)) {
+							throw new Exception();
+						}
+						var accepts1 = p1 > 0;
+						var accepts2 = p2 > 0;
 
-					if (!Helpers.IsNear(p2, p1)) {
-						Console.WriteLine("Offending grammar:");
-						Console.WriteLine(g.ToCodeString());
-						Console.WriteLine("Offending sentence:");
-						Console.WriteLine(sentence);
-
-						throw new Exception();
-					}
-
-					var accepts1 = p1 > 0;
-					var accepts2 = p2 > 0;
-
-					if (accepts2) {
-						accepts++;
+						if (accepts2) {
+							accepts++;
+						}
+					} catch (Exception) {
+						Report(g, sentence);
+						throw;
 					}
 				}
 				Console.WriteLine("Accepted {0} / {1}", accepts, preparedSentences.Count);
@@ -176,6 +174,13 @@ namespace CFGLibTest {
 			Console.WriteLine();
 			Console.WriteLine("inner Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 			// Console.WriteLine("Per CYK: {0}ms", sw.Elapsed.TotalMilliseconds / (_numGrammars * preparedSentences.Count));
+		}
+
+		private static void Report(Grammar g, Sentence sentence) {
+			Console.WriteLine("Offending grammar:");
+			Console.WriteLine(g.ToCodeString());
+			Console.WriteLine("Offending sentence:");
+			Console.WriteLine(sentence);
 		}
 
 		[TestMethod]
