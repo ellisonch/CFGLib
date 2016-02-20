@@ -51,18 +51,20 @@ namespace CFGLib.Parsers.Earley {
 
 			this.AddUnsafe(item);
 		}
-		public void InsertWithoutDuplicating(int stateIndex, Item item) {
+		public Item InsertWithoutDuplicating(int stateIndex, Item item) {
 			// the endPosition should always equal the stateIndex of the state it resides in
 			item.EndPosition = stateIndex;
 
 			Item existingItem = null;
 			if (!_hash.TryGetValue(item, out existingItem)) {
 				this.AddUnsafe(item);
-			} else {
-				// TODO: we're adding duplicate predecessors and reductions because we're rerunning the same completions twice
-				existingItem.Predecessors.AddRange(item.Predecessors);
-				existingItem.Reductions.AddRange(item.Reductions);
+				return item;
 			}
+			// TODO: we're adding duplicate predecessors and reductions because we're rerunning the same completions twice
+			existingItem.Predecessors.UnionWith(item.Predecessors);
+			existingItem.Reductions.UnionWith(item.Reductions);
+
+			return existingItem;
 		}
 
 		public override string ToString() {

@@ -101,6 +101,20 @@ namespace CFGLib.Parsers.Earley {
 					}
 				}
 			}
+
+			//for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
+			//	var stateprob = S[stateIndex];
+
+			//	// If there are no items in the current state, we're stuck
+			//	if (stateprob.Count == 0) {
+			//		return null;
+			//	}
+
+			//	StepStateCheck(S, s, stateIndex, stateprob);
+			//}
+			//StepStateCheck(S, s, 0, S[0]);
+			// StepStateCheck(S, s, 1, S[1]);
+
 			return S;
 		}
 
@@ -122,6 +136,40 @@ namespace CFGLib.Parsers.Earley {
 					Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
 				}
 			}
+		}
+
+
+		private void StepStateCheck(StateSet[] S, Sentence s, int stateIndex, StateSet state) {
+			Terminal inputTerminal = null;
+			if (stateIndex < s.Count) {
+				inputTerminal = (Terminal)s[stateIndex];
+			}
+
+			// completion + initialization
+			//var prevStateCount = 0;
+			//while (prevStateCount != state.Count) {
+			//	var startIndex = prevStateCount;
+			//	prevStateCount = state.Count;
+
+			var prevCount = state.Count;
+			
+			for (int itemIndex = 2; itemIndex <= 2; itemIndex++) {
+				var item = state[itemIndex];
+				var nextWord = item.NextWord;
+				if (nextWord == null) {
+					Completion(S, stateIndex, item);
+				} else if (nextWord.IsNonterminal) {
+					//Prediction(S, stateIndex, (Nonterminal)nextWord, item);
+				} else {
+					//Scan(S, stateIndex, item, (Terminal)nextWord, s, inputTerminal);
+				}
+			}
+
+			if (prevCount != state.Count) {
+				throw new Exception();
+			}
+
+			//}
 		}
 
 		private double CalculateProbability(SymbolNode sppf, Dictionary<Node, double> nodeProbs) {
@@ -604,11 +652,11 @@ namespace CFGLib.Parsers.Earley {
 			var probabilityNull = _grammar.NullableProbabilities[nonterminal];
 			if (probabilityNull > 0.0) {
 				var newItem = item.Increment();
-				state._magicItems.Add(newItem);
 				if (item.CurrentPosition != 0) {
 					newItem.AddPredecessor(stateIndex, item);
 				}
-				state.InsertWithoutDuplicating(stateIndex, newItem);
+				var actualNewItem = state.InsertWithoutDuplicating(stateIndex, newItem);
+				state._magicItems.Add(actualNewItem);
 			}
 		}
 		

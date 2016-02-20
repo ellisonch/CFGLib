@@ -19,8 +19,8 @@ namespace CFGLib.Parsers.Earley {
 		public int EndPosition;
 
 		// TODO: maybe should keep these out of the item and therefore avoid the messy equality stuff
-		public readonly List<PredecessorPointer> Predecessors;
-		public readonly List<ReductionPointer> Reductions;
+		public readonly HashSet<Pointer> Predecessors;
+		public readonly HashSet<Pointer> Reductions;
 		
 		// public bool Processed = false;
 
@@ -56,8 +56,8 @@ namespace CFGLib.Parsers.Earley {
 			CurrentPosition = currentPosition;
 			StartPosition = startPosition;
 			EndPosition = endPosition;
-			Predecessors = new List<PredecessorPointer>();
-			Reductions = new List<ReductionPointer>();
+			Predecessors = new HashSet<Pointer>();
+			Reductions = new HashSet<Pointer>();
 		}
 
 		internal string ProductionToString() {
@@ -91,12 +91,12 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		internal void AddPredecessor(int label, Item item) {
-			var predp = new PredecessorPointer(label, item);
+			var predp = new Pointer(label, item);
 			Predecessors.Add(predp);
 		}
 
 		internal void AddReduction(int label, Item item) {
-			var reductionp = new ReductionPointer(label, item);
+			var reductionp = new Pointer(label, item);
 			Reductions.Add(reductionp);
 		}
 	}

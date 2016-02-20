@@ -56,8 +56,7 @@
     <Compile Include="Parsers\Earley\Item.cs" />
     <Compile Include="GrammarHelpers.cs" />
     <Compile Include="Parsers\Earley\ParseGraph.cs" />
-    <Compile Include="Parsers\Earley\PredecessorPointer.cs" />
-    <Compile Include="Parsers\Earley\ReductionPointer.cs" />
+    <Compile Include="Parsers\Earley\Pointer.cs" />
     <Compile Include="Parsers\Parser.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="Cache.cs" />

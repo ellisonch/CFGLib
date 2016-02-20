@@ -328,15 +328,13 @@ namespace CFGLibTest {
 		[TestMethod]
 		public void TestParsing20() {
 			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<X_0> → 'x1' <X_1> <X_1> 'x1'"),
-				CFGParser.Production("<X_1> → ε"),
-				CFGParser.Production("<X_1> → 'x2' <X_2> <X_0> <X_2>"),
-				CFGParser.Production("<X_2> → 'x1' <X_2>"),
-				CFGParser.Production("<X_2> → ε")
-			}, Nonterminal.Of("X_0"));
+				CFGParser.Production("<S> → <A> <A>"),
+				CFGParser.Production("<A> → 'a' <A>"),
+				CFGParser.Production("<A> → ε")
+			}, Nonterminal.Of("S"));
 
 			var sentences = new List<Sentence>();
-			sentences.Add(Sentence.FromWords("x1 x2 x1 x1 x1"));
+			sentences.Add(Sentence.FromWords("a"));
 
 			ExecuteTest(g, sentences);
 		}
