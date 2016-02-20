@@ -99,7 +99,8 @@ namespace CFGLibTest {
 			int _numTerminals = 5,
 			int _numProductions = 30,
 			int _maxProductionLength = 8,
-			int _maxInputLength = 6
+			int _maxInputLength = 6,
+			int seed = 0
 		) {			
 			var range = Enumerable.Range(0, _numTerminals);
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
@@ -113,7 +114,7 @@ namespace CFGLibTest {
 				}
 			}
 
-			var randg = new GrammarGenerator();
+			var randg = new GrammarGenerator(seed);
 			var preparedGrammars = new List<Grammar>(_numGrammars);
 			var preparedGrammarsCNF = new List<CNFGrammar>(_numGrammars);
 			Console.WriteLine("Preparing grammars");

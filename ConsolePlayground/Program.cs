@@ -58,7 +58,7 @@ namespace ConsolePlayground {
 
 			var rt = new CFGLibTest.RandomTests();
 			var sw = Stopwatch.StartNew();
-			rt.RandomParsingTest(50000, 4, 3, 5, 4, 6);
+			rt.RandomParsingTest(50000, 4, 3, 5, 4, 6, 1);
 			rt.RandomParsingTest(500, 10, 5, 30, 8, 6);
 			rt.RandomParsingTest(1, 10, 5, 50, 8, 6);
 			sw.Stop();
