@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CFGLibTest {
 	public static class Helpers {
-		private const double _defaultTolerance = 1e-15;
+		private const double _defaultTolerance = 1e-13;
 
 		public static void AssertNear(double expected, double actual, double factor = _defaultTolerance) {
 			if (!Helpers.IsNear(expected, actual, factor)) {

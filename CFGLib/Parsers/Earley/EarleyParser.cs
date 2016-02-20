@@ -16,6 +16,7 @@ namespace CFGLib.Parsers.Earley {
 
 	public class EarleyParser : Parser {
 		private readonly BaseGrammar _grammar;
+		private readonly double _probabilityChangePercentage = 1e-15;
 
 		public EarleyParser(BaseGrammar grammar) {
 			_grammar = grammar;
@@ -34,6 +35,7 @@ namespace CFGLib.Parsers.Earley {
 			var prob = CalculateProbability(sppf, nodeProbs);
 
 			//PrintForest(sppf, nodeProbs);
+			//Console.WriteLine();
 			//PrintDebugForest(sppf, s, nodeProbs);
 
 			return prob;
@@ -47,8 +49,9 @@ namespace CFGLib.Parsers.Earley {
 
 			var internalSppf = ConstructInternalSppf(successes, s);
 			AnnotateWithProductions(internalSppf);
-			
+
 			//PrintForest(internalSppf, nodeProbs);
+			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);
 
 			var sppf = internalSppf.ToSppf(s);
@@ -202,7 +205,11 @@ namespace CFGLib.Parsers.Earley {
 					if (currentEstimates[i] > previousEstimates[i]) {
 						throw new Exception("Didn't expect estimates to increase");
 					} else if (currentEstimates[i] < previousEstimates[i]) {
-						changed = true;
+						var diff = previousEstimates[i] - currentEstimates[i];
+						var tolerance = _probabilityChangePercentage * previousEstimates[i];
+						if (diff > _probabilityChangePercentage) {
+							changed = true;
+						}
 					}
 				}
 				

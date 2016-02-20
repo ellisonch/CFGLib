@@ -338,5 +338,34 @@ namespace CFGLibTest {
 
 			ExecuteTest(g, sentences);
 		}
+
+		// really crummy probability problem.  the calculation doesn't sum up to 1.0, and so it doesn't fixpoint at 1.0
+		[TestMethod]
+		public void TestParsing21() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → ε [45.90244483803513]"),
+				CFGParser.Production("<S> → <S> <S> [83.928846908234448]"),
+			}, Nonterminal.Of("S"));
+
+			var sentences = new List<Sentence>();
+			sentences.Add(Sentence.FromWords(""));
+
+			ExecuteTest(g, sentences);
+		}
+
+		[TestMethod]
+		public void TestParsing22() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → <X_1> 'x2' [6.6639601037204077]"),
+				CFGParser.Production("<X_1> → 'x0' 'x2' 'x2' [90.202239638754278]"),
+				CFGParser.Production("<X_0> → <X_0> [74.838852799422511]"),
+				CFGParser.Production("<X_1> → 'x1' [41.753055941664172]")
+			}, Nonterminal.Of("X_0"));
+
+			var sentences = new List<Sentence>();
+			sentences.Add(Sentence.FromWords("x1 x2"));
+
+			ExecuteTest(g, sentences);
+		}
 	}
 }

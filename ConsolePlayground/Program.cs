@@ -28,10 +28,10 @@ namespace ConsolePlayground {
 			var tr = new RegressionTests();
 			var testp = new TestParsing();
 
-			testp.TestParsing20();
+			testp.TestParsing21();
 			// testp.TestWeirdSppf06();
 			// testp.TestWeirdSppf07();
-
+			
 			// Console.Read();
 
 			//var g = new Grammar(new List<Production>{
@@ -58,8 +58,8 @@ namespace ConsolePlayground {
 
 			var rt = new CFGLibTest.RandomTests();
 			var sw = Stopwatch.StartNew();
-			rt.RandomParsingTest(500, 4, 3, 5, 4, 6);
-			rt.RandomParsingTest(5, 10, 5, 30, 8, 6);
+			rt.RandomParsingTest(50000, 4, 3, 5, 4, 6);
+			rt.RandomParsingTest(500, 10, 5, 30, 8, 6);
 			rt.RandomParsingTest(1, 10, 5, 50, 8, 6);
 			sw.Stop();
 			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
