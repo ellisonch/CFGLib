@@ -35,11 +35,14 @@ namespace ConsolePlayground {
 			// Console.Read();
 
 			//var g = new Grammar(new List<Production>{
-			//	CFGParser.Production("<X_0> → <X_1>"),
-			//	CFGParser.Production("<X_1> → ε"),
-			//	CFGParser.Production("<X_1> → 'x2' <X_0> <X_0> 'x1'"),
-			//	CFGParser.Production("<X_1> → <X_0>"),
-			//}, Nonterminal.Of("X_0"));
+			//	CFGParser.Production("<S> → <A> <A>"),
+			//	CFGParser.Production("<A> → 'a' <A>"),
+			//	CFGParser.Production("<A> → ε")
+			//}, Nonterminal.Of("S"));
+			//var ests = g.EstimateProbabilities(10000);
+			//foreach (var est in ests) {
+			//	Console.WriteLine("{0}: {1}", est.Key, est.Value);
+			//}
 
 			//var ep = new EarleyParser(g);
 			//var sppf = ep.ParseGetForest(Sentence.FromWords("x2 x1"));
