@@ -45,15 +45,11 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 
-		public void Insert(int stateIndex, Item item) {
-			// the endPosition should always equal the stateIndex of the state it resides in
-			item.EndPosition = stateIndex;
+		public void Insert(Item item) {
 
 			this.AddUnsafe(item);
 		}
-		public Item InsertWithoutDuplicating(int stateIndex, Item item) {
-			// the endPosition should always equal the stateIndex of the state it resides in
-			item.EndPosition = stateIndex;
+		public Item InsertWithoutDuplicating(Item item) {
 
 			Item existingItem = null;
 			if (!_hash.TryGetValue(item, out existingItem)) {

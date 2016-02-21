@@ -12,11 +12,7 @@ namespace CFGLib.Parsers.Earley {
 		public readonly int CurrentPosition;
 
 		// where this production starts matching in relation to the input string
-		public int StartPosition;
-
-		// where this production finishes matching in relation to the input string
-		// used only in the tree reconstruction phase
-		public int EndPosition;
+		public readonly int StartPosition;
 
 		// TODO: maybe should keep these out of the item and therefore avoid the messy equality stuff
 		public readonly HashSet<Pointer> Predecessors;
@@ -45,7 +41,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 
-		public Item(Production production, int currentPosition, int startPosition, int endPosition) {
+		public Item(Production production, int currentPosition, int startPosition) {
 			if (currentPosition < 0) {
 				throw new ArgumentOutOfRangeException();
 			}
@@ -55,7 +51,6 @@ namespace CFGLib.Parsers.Earley {
 			Production = production;
 			CurrentPosition = currentPosition;
 			StartPosition = startPosition;
-			EndPosition = endPosition;
 			Predecessors = new HashSet<Pointer>();
 			Reductions = new HashSet<Pointer>();
 		}
@@ -73,16 +68,16 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public override string ToString() {
-			return string.Format("{0}[{1}] ({2}--{3})", this.ProductionToString(), Production.Weight, StartPosition, EndPosition);
+			return string.Format("{0}[{1}] ({2})", this.ProductionToString(), Production.Weight, StartPosition);
 		}
 
 		internal Item Increment() {
-			var copy = new Item(Production, CurrentPosition + 1, StartPosition, EndPosition);
+			var copy = new Item(Production, CurrentPosition + 1, StartPosition);
 			return copy;
 		}
 		
 		internal Item Decrement() {
-			var copy = new Item(Production, CurrentPosition - 1, StartPosition, EndPosition);
+			var copy = new Item(Production, CurrentPosition - 1, StartPosition);
 			return copy;
 		}
 
@@ -120,9 +115,6 @@ namespace CFGLib.Parsers.Earley {
 				return false;
 			}
 			if (x.StartPosition != y.StartPosition) {
-				return false;
-			}
-			if (x.EndPosition != y.EndPosition) {
 				return false;
 			}
 

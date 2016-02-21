@@ -59,6 +59,13 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		private IList<Item> ComputeSuccesses(Sentence s) {
+			// this helps sometimes
+			//var incomingTerminals = s.GetAllTerminals();
+			//var parseableTerminals = _grammar.GetTerminals();
+			//if (!incomingTerminals.IsSubsetOf(parseableTerminals)) {
+			//	return new List<Item>();
+			//}
+
 			var S = ComputeState(s);
 			if (S == null) {
 				return new List<Item>();
@@ -73,7 +80,7 @@ namespace CFGLib.Parsers.Earley {
 			// Initialize S(0)
 			S[0] = new StateSet();
 			foreach (var production in _grammar.ProductionsFrom(_grammar.Start)) {
-				var item = new Item(production, 0, 0, 0);
+				var item = new Item(production, 0, 0);
 				S[0].Add(item);
 			}
 
@@ -392,7 +399,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 #endregion annotate
 
-		private SymbolNode ConstructInternalSppf(IList<Item> successes, Sentence s) {
+		private SymbolNode ConstructInternalSppf(IEnumerable<Item> successes, Sentence s) {
 			var root = new SymbolNode(_grammar.Start, 0, s.Count);
 			var processed = new HashSet<Item>();
 			var nodes = new Dictionary<Node, Node>();
@@ -638,7 +645,7 @@ namespace CFGLib.Parsers.Earley {
 				toAdd.Add(newItem);
 			}
 			foreach (var item in toAdd) {
-				state.InsertWithoutDuplicating(stateIndex, item);
+				state.InsertWithoutDuplicating(item);
 			}
 		}
 		private void Prediction(StateSet[] S, int stateIndex, Nonterminal nonterminal, Item item) {
@@ -650,13 +657,13 @@ namespace CFGLib.Parsers.Earley {
 
 				// insert, but avoid duplicates
 				foreach (var production in productions) {
-					var newItem = new Item(production, 0, stateIndex, stateIndex);
+					var newItem = new Item(production, 0, stateIndex);
 					// state.InsertWithoutDuplicating(stateIndex, newItem);
 					// with the above optimization,
 					// prediction can never introduce a duplicate item
 					// its current marker is always 0, while completion
 					// and scan generate items with nonzero current markers
-					state.Insert(stateIndex, newItem);
+					state.Insert(newItem);
 				}
 			}
 			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon. [AH2002]
@@ -668,7 +675,7 @@ namespace CFGLib.Parsers.Earley {
 				if (item.CurrentPosition != 0) {
 					newItem.AddPredecessor(stateIndex, item);
 				}
-				var actualNewItem = state.InsertWithoutDuplicating(stateIndex, newItem);
+				var actualNewItem = state.InsertWithoutDuplicating(newItem);
 				state._magicItems.Add(actualNewItem);
 			}
 		}
@@ -688,7 +695,7 @@ namespace CFGLib.Parsers.Earley {
 				if (item.CurrentPosition != 0) {
 					newItem.AddPredecessor(stateIndex, item);
 				}
-				nextState.InsertWithoutDuplicating(stateIndex + 1, newItem);		
+				nextState.InsertWithoutDuplicating(newItem);		
 			}
 		}
 	}
