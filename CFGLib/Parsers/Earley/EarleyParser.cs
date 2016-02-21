@@ -102,7 +102,7 @@ namespace CFGLib.Parsers.Earley {
 			
 			// for those items we added magically, make sure they get treated by completion
 			for (int stateIndex = 0; stateIndex < S.Length; stateIndex++) {
-				foreach (var p in S[stateIndex]._magicItems) {
+				foreach (var p in S[stateIndex].MagicItems) {
 					foreach (var t in S[stateIndex]) {
 						if (t.StartPosition != stateIndex) {
 							continue;
@@ -676,7 +676,7 @@ namespace CFGLib.Parsers.Earley {
 					newItem.AddPredecessor(stateIndex, item);
 				}
 				var actualNewItem = state.InsertWithoutDuplicating(newItem);
-				state._magicItems.Add(actualNewItem);
+				state.MagicItems.Add(actualNewItem);
 			}
 		}
 		

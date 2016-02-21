@@ -6,27 +6,15 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class StateSet {
-		List<Item> _list = new List<Item>();
-		Dictionary<Item, Item> _hash = new Dictionary<Item, Item>(new ItemComparer());
-		HashSet<Nonterminal> _alreadyPredicted = new HashSet<Nonterminal>();
-		public List<Item> _magicItems = new List<Item>();
+		private readonly List<Item> _list = new List<Item>();
+		private readonly Dictionary<Item, Item> _hash = new Dictionary<Item, Item>(new ItemComparer());
+		private readonly HashSet<Nonterminal> _alreadyPredicted = new HashSet<Nonterminal>();
+		private readonly List<Item> _magicItems = new List<Item>();
 
-
-		public List<Item>.Enumerator GetEnumerator() {
-			return _list.GetEnumerator();
-		}
-
-		// Should only be used during initialization!
-		internal void Add(Item item) {
-			if (_hash.ContainsKey(item)) {
-				throw new Exception("Duplicate item found when using Add()");
+		public List<Item> MagicItems {
+			get {
+				return _magicItems;
 			}
-			AddUnsafe(item);
-		}
-
-		private void AddUnsafe(Item item) {
-			_hash[item] = item;
-			_list.Add(item);
 		}
 
 		public int Count {
@@ -43,7 +31,23 @@ namespace CFGLib.Parsers.Earley {
 				_list[index] = value;
 			}
 		}
+		
+		public List<Item>.Enumerator GetEnumerator() {
+			return _list.GetEnumerator();
+		}
 
+		// Should only be used during initialization!
+		internal void Add(Item item) {
+			if (_hash.ContainsKey(item)) {
+				throw new Exception("Duplicate item found when using Add()");
+			}
+			AddUnsafe(item);
+		}
+
+		private void AddUnsafe(Item item) {
+			_hash[item] = item;
+			_list.Add(item);
+		}
 
 		public void Insert(Item item) {
 
