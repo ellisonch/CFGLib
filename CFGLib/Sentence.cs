@@ -190,13 +190,11 @@ namespace CFGLib {
 			return false;
 		}
 
-		public static ISet<Terminal> GetAllTerminals(IEnumerable<Sentence> sentences) {
+		public ISet<Terminal> GetAllTerminals() {
 			var terminals = new HashSet<Terminal>();
-			foreach (var sentence in sentences) {
-				foreach (var word in sentence) {
-					if (!word.IsNonterminal) {
-						terminals.Add((Terminal)word);
-					}
+			foreach (var word in this) {
+				if (!word.IsNonterminal) {
+					terminals.Add((Terminal)word);
 				}
 			}
 			return terminals;
