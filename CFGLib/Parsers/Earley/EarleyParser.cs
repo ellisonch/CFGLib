@@ -67,9 +67,11 @@ namespace CFGLib.Parsers.Earley {
 			return GetSuccesses(S, s);
 		}
 		private StateSet[] ComputeState(Sentence s) {
-			StateSet[] S = FreshS(s.Count + 1);
+			// StateSet[] S = FreshS(s.Count + 1);
+			StateSet[] S = new StateSet[s.Count + 1];
 
 			// Initialize S(0)
+			S[0] = new StateSet();
 			foreach (var production in _grammar.ProductionsFrom(_grammar.Start)) {
 				var item = new Item(production, 0, 0, 0);
 				S[0].Add(item);
@@ -84,6 +86,10 @@ namespace CFGLib.Parsers.Earley {
 					return null;
 				}
 
+				var nextIndex = stateIndex + 1;
+				if (nextIndex < S.Length) {
+					S[nextIndex] = new StateSet();
+				}
 				StepState(S, s, stateIndex, stateprob);
 			}
 			
