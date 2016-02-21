@@ -81,7 +81,7 @@ namespace CFGLib.Parsers.Earley {
 			S[0] = new StateSet();
 			foreach (var production in _grammar.ProductionsFrom(_grammar.Start)) {
 				var item = new Item(production, 0, 0);
-				S[0].Add(item);
+				S[0].Insert(item);
 			}
 
 			// outer loop

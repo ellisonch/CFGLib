@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class StateSet {
-		private readonly List<Item> _list = new List<Item>();
-		private readonly Dictionary<Item, Item> _hash = new Dictionary<Item, Item>(new ItemComparer());
-		private readonly HashSet<Nonterminal> _alreadyPredicted = new HashSet<Nonterminal>();
-		private readonly List<Item> _magicItems = new List<Item>();
+		private readonly List<Item> _items;
+		private readonly Dictionary<Item, Item> _seenItems;
+		private readonly HashSet<Nonterminal> _nonterminalsPredicted;
+		private readonly List<Item> _magicItems;
 
 		public List<Item> MagicItems {
 			get {
@@ -19,44 +19,41 @@ namespace CFGLib.Parsers.Earley {
 
 		public int Count {
 			get {
-				return _list.Count;
+				return _items.Count;
 			}
 		}
 
 		public Item this[int index] {
 			get {
-				return _list[index];
+				return _items[index];
 			}
 			set {
-				_list[index] = value;
+				_items[index] = value;
 			}
+		}
+
+		public StateSet() {
+			_items = new List<Item>();
+			_seenItems = new Dictionary<Item, Item>(new ItemComparer());
+			_nonterminalsPredicted = new HashSet<Nonterminal>();
+			_magicItems = new List<Item>();
 		}
 		
 		public List<Item>.Enumerator GetEnumerator() {
-			return _list.GetEnumerator();
+			return _items.GetEnumerator();
 		}
-
-		// Should only be used during initialization!
-		internal void Add(Item item) {
-			if (_hash.ContainsKey(item)) {
-				throw new Exception("Duplicate item found when using Add()");
-			}
-			AddUnsafe(item);
-		}
-
+		
 		private void AddUnsafe(Item item) {
-			_hash[item] = item;
-			_list.Add(item);
+			_seenItems[item] = item;
+			_items.Add(item);
 		}
 
 		public void Insert(Item item) {
-
 			this.AddUnsafe(item);
 		}
 		public Item InsertWithoutDuplicating(Item item) {
-
 			Item existingItem = null;
-			if (!_hash.TryGetValue(item, out existingItem)) {
+			if (!_seenItems.TryGetValue(item, out existingItem)) {
 				this.AddUnsafe(item);
 				return item;
 			}
@@ -69,7 +66,7 @@ namespace CFGLib.Parsers.Earley {
 
 		public override string ToString() {
 			var retval = "";
-			foreach (var item in _list) {
+			foreach (var item in _items) {
 				retval += item.ToString();
 				retval += "\n";
 			}
@@ -77,8 +74,8 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		internal bool PredictedAlreadyAndSet(Nonterminal nonterminal) {
-			var predicted = _alreadyPredicted.Contains(nonterminal);
-			_alreadyPredicted.Add(nonterminal);
+			var predicted = _nonterminalsPredicted.Contains(nonterminal);
+			_nonterminalsPredicted.Add(nonterminal);
 			return predicted;
 		}
 	}
