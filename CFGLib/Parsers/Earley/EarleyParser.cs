@@ -683,12 +683,10 @@ namespace CFGLib.Parsers.Earley {
 		private void Scan(StateSet[] S, int stateIndex, Item item, Terminal terminal, Sentence s, Terminal currentTerminal) {
 			var state = S[stateIndex];
 
-			StateSet nextState = null;
-			if (stateIndex + 1 < S.Length) {
-				nextState = S[stateIndex + 1];
-			} else {
+			if (stateIndex + 1 >= S.Length) {
 				return;
 			}
+			StateSet nextState = S[stateIndex + 1];
 
 			if (currentTerminal == terminal) {
 				var newItem = item.Increment();
