@@ -553,7 +553,7 @@ namespace CFGLib {
 		public string ToCodeString() {
 			var productions = string.Join(",\n  ", this.Productions.Select((p) => "CFGParser.Production(\"" + p.ToCodeString() + "\")"));
 
-			var start = string.Format("Nonterminal.Of(\"{0}\")", this.Start.ToStringName());
+			var start = string.Format("Nonterminal.Of(\"{0}\")", this.Start.Name);
 			var retval = string.Format("new Grammar(new List<Production>{{\n  {0}\n}}, {1})", productions, start);
 			return retval;
 		}

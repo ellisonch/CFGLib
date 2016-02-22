@@ -7,6 +7,12 @@ namespace CFGLib {
 
 		private readonly string _name;
 
+		public string Name {
+			get {
+				return _name;
+			}
+		}
+
 		private Nonterminal(string name) {
 			_name = name;
 		}
@@ -22,9 +28,6 @@ namespace CFGLib {
 
 		public override string ToString() {
 			return string.Format("<{0}>", _name);
-		}
-		public string ToStringName() {
-			return string.Format("{0}", _name);
 		}
 
 		public override bool IsNonterminal {
