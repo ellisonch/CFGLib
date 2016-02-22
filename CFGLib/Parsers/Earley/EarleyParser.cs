@@ -78,7 +78,7 @@ namespace CFGLib.Parsers.Earley {
 			StateSet[] S = new StateSet[s.Count + 1];
 
 			// Initialize S(0)
-			S[0] = new StateSet();
+			S[0] = new StateSet(_grammar.Start);
 			foreach (var production in _grammar.ProductionsFrom(_grammar.Start)) {
 				var item = new Item(production, 0, 0);
 				S[0].Insert(item);
@@ -591,16 +591,16 @@ namespace CFGLib.Parsers.Earley {
 			return node;
 		}
 
-		private static StateSet[] FreshS(int length) {
-			var S = new StateSet[length];
+		//private static StateSet[] FreshS(int length) {
+		//	var S = new StateSet[length];
 
-			// Initialize S
-			for (int i = 0; i < S.Length; i++) {
-				S[i] = new StateSet();
-			}
+		//	// Initialize S
+		//	for (int i = 0; i < S.Length; i++) {
+		//		S[i] = new StateSet(_grammar.GetNonterminals().Count);
+		//	}
 
-			return S;
-		}
+		//	return S;
+		//}
 
 		private IList<Item> GetSuccesses(StateSet[] S, Sentence s) {
 			var successes = new List<Item>();
@@ -693,7 +693,9 @@ namespace CFGLib.Parsers.Earley {
 				if (item.CurrentPosition != 0) {
 					newItem.AddPredecessor(stateIndex, item);
 				}
-				nextState.InsertWithoutDuplicating(newItem);		
+				// Scan can never insert a duplicate because it adds items to the next
+				// StateSet, but never adds them more than once
+				nextState.Insert(newItem);		
 			}
 		}
 	}

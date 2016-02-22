@@ -17,8 +17,6 @@ namespace CFGLib.Parsers.Earley {
 		// TODO: maybe should keep these out of the item and therefore avoid the messy equality stuff
 		public readonly HashSet<Pointer> Predecessors;
 		public readonly HashSet<Pointer> Reductions;
-		
-		// public bool Processed = false;
 
 		public Word PrevWord {
 			get {

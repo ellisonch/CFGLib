@@ -32,13 +32,17 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		public StateSet() {
+		public StateSet(Nonterminal predictionSeedNonterminal = null) {
 			_items = new List<Item>();
 			_seenItems = new Dictionary<Item, Item>(new ItemComparer());
-			_nonterminalsPredicted = new HashSet<Nonterminal>();
+			if (predictionSeedNonterminal != null) {
+				_nonterminalsPredicted = new HashSet<Nonterminal> { predictionSeedNonterminal };
+			} else {
+				_nonterminalsPredicted = new HashSet<Nonterminal>();
+			}
 			_magicItems = new List<Item>();
 		}
-		
+
 		public List<Item>.Enumerator GetEnumerator() {
 			return _items.GetEnumerator();
 		}
@@ -57,7 +61,13 @@ namespace CFGLib.Parsers.Earley {
 				this.AddUnsafe(item);
 				return item;
 			}
-			// TODO: we're adding duplicate predecessors and reductions because we're rerunning the same completions twice
+			// TODO: we're adding duplicate predecessors and reductions because we're rerunning the same completions twice when we have magic predictions
+			//if (existingItem.AddedFrom != "Completion" && existingItem.AddedFrom != "PredictionMagic") {
+			//	throw new Exception();
+			//}
+			//if (item.AddedFrom != "Completion" && item.AddedFrom != "PredictionMagic") {
+			//	throw new Exception();
+			//}
 			existingItem.Predecessors.UnionWith(item.Predecessors);
 			existingItem.Reductions.UnionWith(item.Reductions);
 
