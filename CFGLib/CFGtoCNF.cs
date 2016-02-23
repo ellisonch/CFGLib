@@ -15,7 +15,6 @@ namespace CFGLib {
 		private int _freshx = 0;
 		private Nonterminal _startSymbol;
 		private bool _used = false;
-		private const double _removeUnitProbabilityThreshold = 1e-300;
 
 		private ISet<ValueUnitProduction> _unitPreviouslyDeleted = new HashSet<ValueUnitProduction>();
 
@@ -52,6 +51,9 @@ namespace CFGLib {
 					resultProductions.Add(production);
 				} else if (production.Rhs.Count == 1) {
 					var rhs = production.Rhs[0];
+					if (rhs.IsNonterminal) {
+						throw new Exception("Didn't expect unit production");
+					}
 					resultProductions.Add(production);
 				} else if (production.Rhs.Count == 0) {
 					producesEmptyWeight += production.Weight;
@@ -160,7 +162,6 @@ namespace CFGLib {
 		/// </summary>
 		/// <param name="productions"></param>
 		private void StepUnit(ISet<Production> productions) {
-			// var previouslyDeleted = new HashSet<ValueUnitProduction>();
 			// TODO: maybe we shouldn't allow self loops?
 			RemoveSelfLoops(productions);
 
@@ -169,12 +170,80 @@ namespace CFGLib {
 				productions.Remove(production);
 			}
 
-			bool changed = true;
-			while (changed) {
-				changed = StepUnitOnce(productions);
-			}
+			var finalProductions = RemoveUnits(productions);
+			productions.Clear();
+			productions.UnionWith(finalProductions);
 		}
 
+		private IEnumerable<Production> RemoveUnits(IEnumerable<Production> productions) {
+			var productionTable = new Dictionary<Production, Production>(new ProductionComparer());
+			foreach (var production in productions) {
+				productionTable[production] = production;
+			}
+
+			var oldSumOfProbability = double.MaxValue;
+
+			// we keep looping until the probability of any unit production has been driven to zero
+			// as an invariant, we make sure that the sum of the unit probabilities goes down each iteration
+			while (oldSumOfProbability > 0) {
+				// TODO: don't need to build this table every round
+				var productionsByNonterminal = GrammarHelpers.BuildLookupTable(productionTable.Keys);
+				var newSumOfProbability = 0.0;
+
+				var toAdd = new List<Production>();
+				var toRemove = new List<Production>();
+
+				// find all the unit productions and replace them with equivalent rules
+				// X -> Y gets replaced with rules X -> Z for all Y -> Z
+				foreach (var production in productionTable.Keys) {
+					if (production.IsUnit()) {
+						var thisProb = GetProbability(production, productionsByNonterminal);
+						if (double.IsNaN(thisProb)) {
+							continue;
+						}
+						newSumOfProbability += thisProb;
+						var replacements = UnitReplacementProductions(production, productionsByNonterminal);
+						toAdd.AddRange(replacements);
+						toRemove.Add(production);
+					}
+				}
+				if (oldSumOfProbability < newSumOfProbability) {
+					throw new Exception("Invariant didn't hold, we want probability sums to decrease every iteration");
+				}
+				oldSumOfProbability = newSumOfProbability;
+
+				foreach (var production in toRemove) {
+					production.Weight = 0.0;
+				}
+				MergeProductions(productionTable, toAdd);
+			}
+
+			return productionTable.Keys.Where((p) => p.Weight > 0.0);
+		}
+
+		private IEnumerable<Production> UnitReplacementProductions(Production unitProduction, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal) {
+			var retval = new List<Production>();
+
+			var productions = productionsByNonterminal.LookupEnumerable((Nonterminal)unitProduction.Rhs[0]);
+
+			foreach (var production in productions) {
+				var productionProb = GetProbability(production, productionsByNonterminal);
+				var newWeight = unitProduction.Weight * productionProb;
+				var newProduction = Production.New(unitProduction.Lhs, production.Rhs, newWeight);
+				if (newProduction.IsSelfLoop) {
+					continue;
+				}
+				retval.Add(newProduction);
+			}
+
+			return retval;
+		}
+
+		private double GetProbability(Production production, Dictionary<Nonterminal, ICollection<Production>> productionsByNonterminal) {
+			var sum = productionsByNonterminal.LookupEnumerable(production.Lhs).Sum((p) => p.Weight);
+			return production.Weight / sum;
+		}
+		
 		private static void RemoveSelfLoops(ISet<Production> productions) {
 			var toDelete = new List<Production>();
 			foreach (var production in productions) {
@@ -186,124 +255,14 @@ namespace CFGLib {
 				productions.Remove(item);
 			}			
 		}
-
-		private bool StepUnitOnce(ISet<Production> productions) {
-			foreach (var production in productions) {
-				var lhs = production.Lhs;
-				if (production.Rhs.Count != 1) {
-					continue;
-				}
-				var rhs = production.Rhs[0];
-				if (rhs.IsTerminal) {
-					continue;
-				}
-				// at this point we have a unit production lhs -> rhs
-				HandleIndividualUnit(productions, production);
-				return true;
-			}
-			return false;
-		}
-
-		private void HandleIndividualUnit(ISet<Production> productions, Production production) {
-			var table = GrammarHelpers.BuildLookupTable(productions);
-			var results = new HashSet<Production>(productions);
-			var newProductions = new HashSet<Production>();
-			results.Remove(production);
-			var unitLhs = production.Lhs;
-			var unitRhs = (Nonterminal)production.Rhs[0];
-			var vup = new ValueUnitProduction(unitLhs, unitRhs);
-			_unitPreviouslyDeleted.Add(vup);
-
-			var entries = table.LookupEnumerable(unitRhs);
-
-			foreach (var entry in entries) {
-				var toAdd = HandleUnitBackwards(production, entry, entries, table);
-				newProductions.UnionWith(toAdd);
-			}
-
-			MergeProductions(results, newProductions);
-			productions.Clear();
-			productions.UnionWith(results);
-		}
-
-		private ISet<Production> HandleUnitBackwards(Production production, Production entry, IEnumerable<Production> entries, Dictionary<Nonterminal, ICollection<Production>> table) {
-			var sum = entries.Sum((p) => p.Weight);
-			var newProductions = new HashSet<Production>();
-			var probThisEntry = entry.Weight / sum;
-			// TODO: I've seen this create a 0 weight
-			var newProdWeight = production.Weight * probThisEntry;
-			var newProd = Production.New(production.Lhs, entry.Rhs, newProdWeight);
-
-			// Console.WriteLine("considering {0} and {1}", production, entry);
-
-			if (newProd.IsSelfLoop) {
-				return newProductions;
-			}
-			// TODO: this case messes up probability
-			if (UnitPreviouslyDeleted(newProd)) {
-				var secondaryProductions = table.LookupEnumerable((Nonterminal)entry.Rhs[0]);
-				var secondarySum = secondaryProductions.Sum((p) => p.Weight);
-				foreach (var secondaryProduction in secondaryProductions) {
-					var secondaryProbThisEntry = secondaryProduction.Weight / secondarySum;
-					var newWeight = newProd.Weight * secondaryProbThisEntry;
-					if (newWeight <= _removeUnitProbabilityThreshold) {
-						continue;
-						// Console.WriteLine("foo");
-					}
-					var newnewProd = Production.New(production.Lhs, secondaryProduction.Rhs, newWeight);
-					if (UnitPreviouslyDeleted(newnewProd)) {
-						// Console.WriteLine("foo");
-					}
-					newProductions.Add(newnewProd);
-				}
-				
-				return newProductions;
-			}
-
-			newProductions.Add(newProd);
-			return newProductions;
-		}
-
-		private bool UnitPreviouslyDeleted(Production newProd) {
-			if (newProd.Rhs.Count == 1) {
-				if (newProd.Rhs[0].IsNonterminal) {
-					var vup = new ValueUnitProduction(newProd.Lhs, (Nonterminal)newProd.Rhs[0]);
-					if (_unitPreviouslyDeleted.Contains(vup)) {
-						//// we're trying to add vup.Lhs -> vup.Rhs
-						//// but we don't want to add a unit we've already deleted
-						//// we need to divide up the newProd.weight among all the 
-						//// rules vup.Lhs -> X where vup.Rhs -> X
-						// var destinations = table.LookupEnumerable(vup.Rhs);
-						//var newSum = destinations.Sum((p) => p.Weight);
-						//foreach (var relayed in destinations) {
-						//	var newProb = relayed.Weight / newSum;
-						//	var relayedProd = new DefaultProduction(lhs, entry.Rhs, production.Weight * probThisEntry);
-						//	results.Add()
-						//}
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-
-		// TODO need a structure for this to make it fast
-		// TODO it's markedly slow on big grammars
-		private static void MergeProductions(ISet<Production> results, ISet<Production> b) {
-			foreach (var newProd in b) {
-				bool found = false;
-				foreach (var result in results) {
-					if (result.Lhs != newProd.Lhs) {
-						continue;
-					}
-					if (result.Rhs.SequenceEqual(newProd.Rhs)) {
-						found = true;
-						result.Weight += newProd.Weight;
-						break;
-					}
-				}
-				if (!found) {
-					results.Add(newProd);
+		
+		private static void MergeProductions(Dictionary<Production, Production> results, IEnumerable<Production> toAdd) {
+			foreach (var newProduction in toAdd) {
+				Production existingProduction;
+				if (results.TryGetValue(newProduction, out existingProduction)) {
+					existingProduction.Weight += newProduction.Weight;
+				} else {
+					results[newProduction] = newProduction;
 				}
 			}
 		}

@@ -138,5 +138,16 @@ namespace CFGLib {
 			}
 			return true;
 		}
+
+		internal bool IsUnit() {
+			if (this.Rhs.Count != 1) {
+				return false;
+			}
+			var rhs = this.Rhs[0];
+			if (rhs.IsTerminal) {
+				return false;
+			}
+			return true;
+		}
 	}
 }
