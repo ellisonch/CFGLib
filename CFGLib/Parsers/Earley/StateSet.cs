@@ -35,10 +35,9 @@ namespace CFGLib.Parsers.Earley {
 		public StateSet(Nonterminal predictionSeedNonterminal = null) {
 			_items = new List<Item>();
 			_seenItems = new Dictionary<Item, Item>(new ItemComparer());
+			_nonterminalsPredicted = new HashSet<Nonterminal>();
 			if (predictionSeedNonterminal != null) {
-				_nonterminalsPredicted = new HashSet<Nonterminal> { predictionSeedNonterminal };
-			} else {
-				_nonterminalsPredicted = new HashSet<Nonterminal>();
+				_nonterminalsPredicted.Add(predictionSeedNonterminal);
 			}
 			_magicItems = new List<Item>();
 		}
