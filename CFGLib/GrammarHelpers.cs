@@ -190,7 +190,7 @@ namespace CFGLib {
 			return product;
 		}
 
-		internal static Dictionary<Nonterminal, ICollection<Production>> BuildLookupTable(ISet<Production> productions) {
+		internal static Dictionary<Nonterminal, ICollection<Production>> BuildLookupTable(ICollection<Production> productions) {
 			Dictionary<Nonterminal, ICollection<Production>> table;
 
 			table = Helpers.BuildLookup(
