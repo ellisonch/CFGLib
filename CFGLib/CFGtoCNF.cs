@@ -225,9 +225,10 @@ namespace CFGLib {
 			var retval = new List<Production>();
 
 			var productions = productionsByNonterminal.LookupEnumerable((Nonterminal)unitProduction.Rhs[0]);
+			var weightSum = productions.Sum((p) => p.Weight);
 
 			foreach (var production in productions) {
-				var productionProb = GetProbability(production, productionsByNonterminal);
+				var productionProb = production.Weight / weightSum;
 				var newWeight = unitProduction.Weight * productionProb;
 				var newProduction = Production.New(unitProduction.Lhs, production.Rhs, newWeight);
 				if (newProduction.IsSelfLoop) {
