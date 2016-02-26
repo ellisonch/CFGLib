@@ -36,12 +36,7 @@ namespace CFGLib.Parsers.Earley {
 
 			//PrintForest(internalSppf, nodeProbs);
 			//Console.WriteLine();
-
 			//PrintDebugForest(internalSppf, s, nodeProbs);
-			// var sppfNice = sppf.ToSppf(s);
-			//Console.WriteLine(sppfNice.ToString());
-			//var sppf = internalSppf.ToNewSymbolSppf(s);
-			//Console.WriteLine(sppf.ToString());
 
 			return prob;
 		}
@@ -61,9 +56,7 @@ namespace CFGLib.Parsers.Earley {
 			//PrintForest(internalSppf, nodeProbs);
 			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);
-			//Console.WriteLine();
-			//var sppf = internalSppf.ToNewSymbolSppf(s);
-			//Console.WriteLine(sppf.ToString());
+
 			return null;
 		}
 
@@ -83,7 +76,6 @@ namespace CFGLib.Parsers.Earley {
 			return GetSuccesses(S, s);
 		}
 		private StateSet[] ComputeState(Sentence s) {
-			// StateSet[] S = FreshS(s.Count + 1);
 			StateSet[] S = new StateSet[s.Count + 1];
 
 			// Initialize S(0)
@@ -461,7 +453,7 @@ namespace CFGLib.Parsers.Earley {
 			if (item.Production.Rhs.Count == 0) {
 				var i = node.EndPosition;
 				var v = NewOrExistingNode(nodes, new SymbolNode(item.Production.Lhs, i, i));
-				//if there is no SPPF node v labelled (A, i, i)
+				//if there is no SPPF node v labeled (A, i, i)
 				//create one with child node ϵ
 				v.AddFamily(new Family(new EpsilonNode(i, i)));
 				// basically, SymbolNodes with no children have empty children
@@ -470,7 +462,6 @@ namespace CFGLib.Parsers.Earley {
 				if (prevWord.IsTerminal) {
 					var a = (Terminal)prevWord;
 					var i = node.EndPosition;
-					// var v = NewOrExistingNode(nodes, new SymbolNode(a, i - 1, i));
 					var v = NewOrExistingNode(nodes, new TerminalNode(a, i - 1, i));
 					node.AddFamily(new Family(v));
 				} else {
@@ -493,7 +484,6 @@ namespace CFGLib.Parsers.Earley {
 				var a = (Terminal)item.PrevWord;
 				var j = node.StartPosition;
 				var i = node.EndPosition;
-				// var v = NewOrExistingNode(nodes, new SymbolNode(a, i - 1, i));
 				var v = NewOrExistingNode(nodes, new TerminalNode(a, i - 1, i));
 				var w = NewOrExistingNode(nodes, new IntermediateNode(item.Decrement(), j, i - 1));
 				foreach (var predecessor in item.Predecessors) {
@@ -542,17 +532,6 @@ namespace CFGLib.Parsers.Earley {
 			node = (T)existingNode;
 			return node;
 		}
-
-		//private static StateSet[] FreshS(int length) {
-		//	var S = new StateSet[length];
-
-		//	// Initialize S
-		//	for (int i = 0; i < S.Length; i++) {
-		//		S[i] = new StateSet(_grammar.GetNonterminals().Count);
-		//	}
-
-		//	return S;
-		//}
 
 		private IList<Item> GetSuccesses(StateSet[] S, Sentence s) {
 			var successes = new List<Item>();
