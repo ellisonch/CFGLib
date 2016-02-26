@@ -1,22 +1,25 @@
-﻿using System;
+﻿using CFGLib.Parsers.Forests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Earley {
-	internal class Family {
-		private readonly List<Node> _nodes = new List<Node>();
-		public IList<Node> Members {
+namespace CFGLib.Parsers.Forests {
+	public class Family {
+		private readonly List<SppfNode> _nodes = new List<SppfNode>();
+		public Production Production { get; internal set; }
+
+		public IList<SppfNode> Members {
 			get {
 				return _nodes;
 			}
 		}
-		
-		public Family(Node node1) {
+
+		internal Family(SppfNode node1) {
 			_nodes.Add(node1);
 		}
-		public Family(InteriorNode node1, InteriorNode node2) {
+		internal Family(InteriorNode node1, SppfNode node2) {
 			_nodes.Add(node1);
 			_nodes.Add(node2);
 		}

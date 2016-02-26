@@ -114,6 +114,10 @@ namespace CFGLib {
 
 			return result;
 		}
+
+		public static string Indent(this string str, int count) {
+			return new string(' ', count) + str;
+		}
 	}
 	internal class Boxed<T> {
 		public T Value;

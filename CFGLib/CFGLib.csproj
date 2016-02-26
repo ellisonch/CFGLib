@@ -44,18 +44,17 @@
   <ItemGroup>
     <Compile Include="Parsers\CYK\CykParser.cs" />
     <Compile Include="Parsers\CYK\LocalCykProduction.cs" />
-    <Compile Include="Parsers\Forests\Children.cs" />
-    <Compile Include="Parsers\Earley\EpsilonNode.cs" />
-    <Compile Include="Parsers\Earley\Family.cs" />
-    <Compile Include="Parsers\Earley\IntermediateNode.cs" />
-    <Compile Include="Parsers\Earley\Node.cs" />
-    <Compile Include="Parsers\Forests\Sppf.cs" />
-    <Compile Include="Parsers\Earley\SymbolNode.cs" />
+    <Compile Include="Parsers\Forests\LeafNode.cs" />
+    <Compile Include="Parsers\Forests\TerminalNode.cs" />
+    <Compile Include="Parsers\Forests\EpsilonNode.cs" />
+    <Compile Include="Parsers\Forests\Family.cs" />
+    <Compile Include="Parsers\Forests\IntermediateNode.cs" />
+    <Compile Include="Parsers\Forests\SppfNode.cs" />
+    <Compile Include="Parsers\Forests\SymbolNode.cs" />
     <Compile Include="Parsers\Earley\EarleyParser.cs" />
-    <Compile Include="Parsers\Earley\InteriorNode.cs" />
+    <Compile Include="Parsers\Forests\InteriorNode.cs" />
     <Compile Include="Parsers\Earley\Item.cs" />
     <Compile Include="GrammarHelpers.cs" />
-    <Compile Include="Parsers\Earley\ParseGraph.cs" />
     <Compile Include="Parsers\Earley\Pointer.cs" />
     <Compile Include="Parsers\Parser.cs" />
     <Compile Include="Production.cs" />

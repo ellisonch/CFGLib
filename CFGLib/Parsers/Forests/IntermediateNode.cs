@@ -1,29 +1,27 @@
-﻿using CFGLib.Parsers.Forests;
+﻿using CFGLib.Parsers.Earley;
+using CFGLib.Parsers.Forests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Earley {
-	internal class IntermediateNode : InteriorNode {
-		public readonly Item Item;
+namespace CFGLib.Parsers.Forests {
+	public class IntermediateNode : InteriorNode {
+		internal readonly Item Item;
 
 		// these two are used just for figuring out equality
 		private readonly Production _production;
 		private readonly int _currentPosition;
 
-		public IntermediateNode(Item item, int startPosition, int endPosition) : base(startPosition, endPosition) {
+		internal IntermediateNode(Item item, int startPosition, int endPosition) : base(startPosition, endPosition) {
 			Item = item;
 
 			// these two are used just for figuring out equality
 			_production = item.Production;
 			_currentPosition = item.CurrentPosition;
 		}
-
-		//public IntermediateNode(Item item) : this(item, item.StartPosition, item.EndPosition) {
-		//}
-
+		
 		public override int GetHashCode() {
 			return new {
 				StartPosition,
@@ -56,34 +54,6 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			return true;
-		}
-
-		internal override Sppf ToSppf(Sentence s, Dictionary<Node, Sppf> dict = null) {
-			if (Item.CurrentPosition == 0) {
-				throw new Exception();
-			}
-			if (dict == null) {
-				dict = new Dictionary<Node, Sppf>();
-			}
-			Sppf previouslySeenSppf;
-			if (dict.TryGetValue(this, out previouslySeenSppf)) {
-				return previouslySeenSppf;
-			}
-
-			var sppf = new Sppf(null, s.GetRange(StartPosition, EndPosition - StartPosition));
-			dict[this] = sppf;
-
-			// List<Children> families = new List<Children>();
-			// foreach (var family in this.Families) {
-			var familiesList = FamiliesList;
-			for (int i = 0; i < familiesList.Count; i++) {
-				var family = familiesList[i];
-				var sppfList = family.Members.Select((l) => l.ToSppf(s, dict));
-				var sppfChildren = new Children(this.ChildProductions[i], sppfList);
-				sppf.Families.Add(sppfChildren);
-			}
-
-			return sppf;
 		}
 
 		public override string ToString() {

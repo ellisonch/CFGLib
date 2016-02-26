@@ -28,20 +28,25 @@ namespace CFGLib.Parsers.Earley {
 				return 0.0;
 			}
 
-			var sppf = ConstructInternalSppf(successes, s);
-			AnnotateWithProductions(sppf);
+			var internalSppf = ConstructInternalSppf(successes, s);
+			AnnotateWithProductions(internalSppf);
 
-			var nodeProbs = new Dictionary<Node, double>();
-			var prob = CalculateProbability(sppf, nodeProbs);
+			var nodeProbs = new Dictionary<SppfNode, double>();
+			var prob = CalculateProbability(internalSppf, nodeProbs);
 
-			//PrintForest(sppf, nodeProbs);
+			//PrintForest(internalSppf, nodeProbs);
 			//Console.WriteLine();
-			//PrintDebugForest(sppf, s, nodeProbs);
+
+			//PrintDebugForest(internalSppf, s, nodeProbs);
+			// var sppfNice = sppf.ToSppf(s);
+			//Console.WriteLine(sppfNice.ToString());
+			//var sppf = internalSppf.ToNewSymbolSppf(s);
+			//Console.WriteLine(sppf.ToString());
 
 			return prob;
 		}
 
-		public override Sppf ParseGetForest(Sentence s) {
+		public override SppfNode ParseGetForest(Sentence s) {
 			var successes = ComputeSuccesses(s);
 			if (successes.Count == 0) {
 				return null;
@@ -50,12 +55,16 @@ namespace CFGLib.Parsers.Earley {
 			var internalSppf = ConstructInternalSppf(successes, s);
 			AnnotateWithProductions(internalSppf);
 
+			var nodeProbs = new Dictionary<SppfNode, double>();
+			var prob = CalculateProbability(internalSppf, nodeProbs);
+
 			//PrintForest(internalSppf, nodeProbs);
 			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);
-
-			var sppf = internalSppf.ToSppf(s);
-			return sppf;
+			//Console.WriteLine();
+			//var sppf = internalSppf.ToNewSymbolSppf(s);
+			//Console.WriteLine(sppf.ToString());
+			return null;
 		}
 
 		private IList<Item> ComputeSuccesses(Sentence s) {
@@ -188,11 +197,11 @@ namespace CFGLib.Parsers.Earley {
 			//}
 		}
 
-		private double CalculateProbability(SymbolNode sppf, Dictionary<Node, double> nodeProbs) {
+		private double CalculateProbability(SymbolNode sppf, Dictionary<SppfNode, double> nodeProbs) {
 			var nodes = GetAllNodes(sppf);
 
 			var indexToNode = nodes.ToArray();
-			var nodeToIndex = new Dictionary<Node, int>();
+			var nodeToIndex = new Dictionary<SppfNode, int>();
 			for (int i = 0; i < indexToNode.Length; i++) {
 				nodeToIndex[indexToNode[i]] = i;
 			}
@@ -240,13 +249,13 @@ namespace CFGLib.Parsers.Earley {
 
 			return currentEstimates[nodeToIndex[sppf]];
 		}
-
-		private double StepProbability(Node node, Dictionary<Node, int> nodeToIndex, double[] previousEstimates) {
+		
+		private double StepProbability(SppfNode node, Dictionary<SppfNode, int> nodeToIndex, double[] previousEstimates) {
 			if (node.Families.Count == 0) {
 				return 1.0;
 			}
 
-			var l = node.FamiliesList;
+			var l = node.Families;
 			var familyProbs = new double[l.Count];
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
@@ -268,8 +277,8 @@ namespace CFGLib.Parsers.Earley {
 			return result;
 		}
 
-		private double GetChildProb(Node node, int i) {
-			var production = node.ChildProductions[i];
+		private double GetChildProb(SppfNode node, int i) {
+			var production = node.Families[i].Production;
 			var prob = 1.0;
 			if (production != null) {
 				prob = _grammar.GetProbability(production);
@@ -278,9 +287,9 @@ namespace CFGLib.Parsers.Earley {
 			return prob;
 		}
 
-		private static HashSet<Node> GetAllNodes(SymbolNode sppf) {
-			var nodes = new HashSet<Node>();
-			var stack = new Stack<Node>();
+		private static HashSet<SppfNode> GetAllNodes(SymbolNode sppf) {
+			var nodes = new HashSet<SppfNode>();
+			var stack = new Stack<SppfNode>();
 
 			stack.Push(sppf);
 			while (stack.Count > 0) {
@@ -302,9 +311,9 @@ namespace CFGLib.Parsers.Earley {
 
 		#region annotate
 		//TODO this is so horribly terrible. There's got to be a better way of thinking about this structure
-		private void AnnotateWithProductions(Node node, HashSet<Node> seen = null, Node parent = null, int place = 0) {
+		private void AnnotateWithProductions(SppfNode node, HashSet<SppfNode> seen = null, InteriorNode parent = null, int place = 0) {
 			if (seen == null) {
-				seen = new HashSet<Node>();
+				seen = new HashSet<SppfNode>();
 			}
 
 			if (node is IntermediateNode) {
@@ -319,32 +328,32 @@ namespace CFGLib.Parsers.Earley {
 				return;
 			}
 			seen.Add(node);
-
-			var l = node.Families.ToList();
-			node.FamiliesList = l;
-			if (node.ChildProductions == null) {
-				node.ChildProductions = new Production[l.Count];
-			}
+			
+			var l = node.Families;
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
+				
+				if (!(node is InteriorNode)) {
+					throw new Exception();
+				}
 
 				var members = l[i].Members;
 				if (members.Count == 1) {
 					var child = members[0];
-
-					AnnotateWithProductionsChildren(node, seen, child, i);
+					
+					AnnotateWithProductionsChildren((InteriorNode)node, seen, child, i);
 				} else if (members.Count == 2) {
 					var left = members[0];
 					var right = members[1];
-
-					AnnotateWithProductionsChildren(node, seen, left, right, i);
+					
+					AnnotateWithProductionsChildren((InteriorNode)node, seen, left, right, i);
 				} else {
 					throw new Exception("Should only be 0--2 children");
 				}
 			}
 		}
 		
-		private void AnnotateWithProductionsChildren(Node parent, HashSet<Node> seen, Node child, int place) {
+		private void AnnotateWithProductionsChildren(InteriorNode parent, HashSet<SppfNode> seen, SppfNode child, int place) {
 			Word parentSymbol = null;
 			if (parent is SymbolNode) {
 				var symbolParent = (SymbolNode)parent;
@@ -359,40 +368,34 @@ namespace CFGLib.Parsers.Earley {
 
 			if (child is SymbolNode) {
 				var symbolChild = (SymbolNode)child;
-				if (symbolChild.Symbol.IsNonterminal) {
-					if (parent is SymbolNode) {
-						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
-						parent.AddChild(place, production);
-					}
-					AnnotateWithProductions(symbolChild, seen, parent, place);
-					return;
-				} else {
-					if (parentSymbol.IsNonterminal) {
-						var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
-						parent.AddChild(place, production);
-						return;
-					} else {
-						// this is like parent = x o x  with child x
-						return;
-					}
+				if (parent is SymbolNode) {
+					var symbolParent = (SymbolNode)parent;
+					var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
+					symbolParent.AddChild(place, production);
 				}
+				AnnotateWithProductions(symbolChild, seen, parent, place);
+				return;
 			} else if (child is IntermediateNode) {
 				throw new Exception("Don't handle intermediate");
-			} else if (child is EpsilonNode) {
-				var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence());
-				parent.AddChild(place, production);
+			} else if (child is LeafNode) {
+				if (parentSymbol is Nonterminal) {
+					var leafChild = (LeafNode)child;
+					var childSentence = leafChild.GetSentence();
+					var production = _grammar.FindProduction((Nonterminal)parentSymbol, childSentence);
+					parent.AddChild(place, production);
+				}
 				return;
 			}
 			throw new Exception();
 		}
 
-		private void AnnotateWithProductionsChildren(Node parent, HashSet<Node> seen, Node left, Node right, int place) {
+		private void AnnotateWithProductionsChildren(InteriorNode parent, HashSet<SppfNode> seen, SppfNode left, SppfNode right, int place) {
 			if (!(left is IntermediateNode)) {
 				throw new Exception();
 			}
-			if (!(right is SymbolNode)) {
-				throw new Exception();
-			}
+			//if (!(right is SymbolNode)) {
+			//	throw new Exception();
+			//}
 
 			AnnotateWithProductions(left, seen, parent, place);
 			AnnotateWithProductions(right, seen, parent, place);
@@ -402,46 +405,40 @@ namespace CFGLib.Parsers.Earley {
 		private SymbolNode ConstructInternalSppf(IEnumerable<Item> successes, Sentence s) {
 			var root = new SymbolNode(_grammar.Start, 0, s.Count);
 			var processed = new HashSet<Item>();
-			var nodes = new Dictionary<Node, Node>();
+			var nodes = new Dictionary<SppfNode, SppfNode>();
 			nodes[root] = root;
 			
 			foreach (var success in successes) {
 				BuildTree(nodes, processed, root, success);
 			}
 
+			foreach (var node in nodes.Keys) {
+				node.FinishFamily();
+			}
+
 			return root;
 		}
 
-		private void PrintForest(Node node, Dictionary<Node, double> nodeProbs = null, string padding = "", HashSet<Node> seen = null) {
+		private void PrintForest(SppfNode node, Dictionary<SppfNode, double> nodeProbs = null, string padding = "", HashSet<SppfNode> seen = null) {
 			if (seen == null) {
-				seen = new HashSet<Node>();
+				seen = new HashSet<SppfNode>();
 			}
-
-			var star = "";
-			if (node.ChildProductions != null && node.ChildProductions.Length == 2 && node.ChildProductions.All((p) => p == null)) {
-				star = "***";
-			}
-
+			
 			var nodeProb = "";
 			if (nodeProbs != null) {
 				nodeProb = " p=" + nodeProbs[node];
 			}
 
-			Console.WriteLine("{0}{1}{2}{3}", padding, node, star, nodeProb);
+			Console.WriteLine("{0}{1}{2}", padding, node, nodeProb);
 
 			if (node.Families.Count > 0 && seen.Contains(node)) {
 				Console.WriteLine("{0}Already seen this node!", padding);
 				return;
 			}
 			seen.Add(node);
-
-			List<Family> l;
-			if (node.FamiliesList != null) {
-				l = node.FamiliesList;
-			} else {
-				l = node.Families.ToList();
-			}
 			
+			var l = node.Families;
+
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
 				if (l.Count > 1) {
@@ -453,9 +450,9 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private void PrintDebugForest(Node node, Sentence s, Dictionary<Node, double> nodeProbs = null, string padding = "", HashSet<Node> seen = null) {
+		private void PrintDebugForest(SppfNode node, Sentence s, Dictionary<SppfNode, double> nodeProbs = null, string padding = "", HashSet<SppfNode> seen = null) {
 			if (seen == null) {
-				seen = new HashSet<Node>();
+				seen = new HashSet<SppfNode>();
 			}
 			
 			double? nodeProb = null;
@@ -470,8 +467,8 @@ namespace CFGLib.Parsers.Earley {
 			} else if (node is IntermediateNode) {
 				var inter = (IntermediateNode)node;
 				lhs = inter.Item.ProductionToString();
-			} else if (node is EpsilonNode) {
-				lhs = "ε";
+			} else if (node is LeafNode) {
+				lhs = ((LeafNode)node).GetSentence().ToString();
 			} else {
 				throw new Exception();
 			}
@@ -492,7 +489,7 @@ namespace CFGLib.Parsers.Earley {
 			if (node.Families.Count == 0) {
 				return;
 			}
-			var l = node.FamiliesList;
+			var l = node.Families;
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
 				if (l.Count > 1) {
@@ -505,7 +502,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// [Sec 4, ES2008]
-		private void BuildTree(Dictionary<Node, Node> nodes, HashSet<Item> processed, InteriorNode node, Item item) {
+		private void BuildTree(Dictionary<SppfNode, SppfNode> nodes, HashSet<Item> processed, InteriorNode node, Item item) {
 			processed.Add(item);
 
 			if (item.Production.Rhs.Count == 0) {
@@ -513,14 +510,15 @@ namespace CFGLib.Parsers.Earley {
 				var v = NewOrExistingNode(nodes, new SymbolNode(item.Production.Lhs, i, i));
 				//if there is no SPPF node v labelled (A, i, i)
 				//create one with child node ϵ
-				v.AddFamily(new Family(EpsilonNode.Node));
+				v.AddFamily(new Family(new EpsilonNode(i, i)));
 				// basically, SymbolNodes with no children have empty children
 			} else if (item.CurrentPosition == 1) {
 				var prevWord = item.PrevWord;
 				if (prevWord.IsTerminal) {
 					var a = (Terminal)prevWord;
 					var i = node.EndPosition;
-					var v = NewOrExistingNode(nodes, new SymbolNode(a, i - 1, i));
+					// var v = NewOrExistingNode(nodes, new SymbolNode(a, i - 1, i));
+					var v = NewOrExistingNode(nodes, new TerminalNode(a, i - 1, i));
 					node.AddFamily(new Family(v));
 				} else {
 					var C = (Nonterminal)prevWord;
@@ -542,7 +540,8 @@ namespace CFGLib.Parsers.Earley {
 				var a = (Terminal)item.PrevWord;
 				var j = node.StartPosition;
 				var i = node.EndPosition;
-				var v = NewOrExistingNode(nodes, new SymbolNode(a, i - 1, i));
+				// var v = NewOrExistingNode(nodes, new SymbolNode(a, i - 1, i));
+				var v = NewOrExistingNode(nodes, new TerminalNode(a, i - 1, i));
 				var w = NewOrExistingNode(nodes, new IntermediateNode(item.Decrement(), j, i - 1));
 				foreach (var predecessor in item.Predecessors) {
 					if (predecessor.Label != i - 1) {
@@ -581,8 +580,8 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private T NewOrExistingNode<T>(Dictionary<Node, Node> nodes, T node) where T : Node {
-			Node existingNode;
+		private T NewOrExistingNode<T>(Dictionary<SppfNode, SppfNode> nodes, T node) where T : SppfNode {
+			SppfNode existingNode;
 			if (!nodes.TryGetValue(node, out existingNode)) {
 				existingNode = node;
 				nodes[node] = node;
