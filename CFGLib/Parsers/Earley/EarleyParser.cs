@@ -34,14 +34,17 @@ namespace CFGLib.Parsers.Earley {
 			var nodeProbs = new Dictionary<SppfNode, double>();
 			var prob = CalculateProbability(internalSppf, nodeProbs);
 
-			//PrintForest(internalSppf, nodeProbs);
+			PrintForest(internalSppf, nodeProbs);
 			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);
+			//var pp = new PrettyPrinter();
+			//internalSppf.Accept(pp);
+			//Console.WriteLine(pp.Result);
 
 			return prob;
 		}
 
-		public override SppfNode ParseGetForest(Sentence s) {
+		public override ForestNode ParseGetForest(Sentence s) {
 			var successes = ComputeSuccesses(s);
 			if (successes.Count == 0) {
 				return null;
@@ -53,11 +56,11 @@ namespace CFGLib.Parsers.Earley {
 			var nodeProbs = new Dictionary<SppfNode, double>();
 			var prob = CalculateProbability(internalSppf, nodeProbs);
 
-			//PrintForest(internalSppf, nodeProbs);
+			PrintForest(internalSppf, nodeProbs);
 			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);
 
-			return null;
+			return new ForestInternal(internalSppf, internalSppf.Symbol);
 		}
 
 		private IList<Item> ComputeSuccesses(Sentence s) {
@@ -382,6 +385,17 @@ namespace CFGLib.Parsers.Earley {
 			}
 			seen.Add(node);
 			
+			//if (node is IntermediateNode) {
+			//	foreach (var family in node.Families) {
+			//		if (family.Production != null) {
+			//			// throw new Exception();
+			//		}
+			//	}
+			//	if (node.Families.Count > 1) {
+
+			//	}
+			//}
+
 			var l = node.Families;
 
 			for (int i = 0; i < l.Count; i++) {

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
-	public class IntermediateNode : InteriorNode {
+	internal class IntermediateNode : InteriorNode {
 		internal readonly Item Item;
 
 		// these two are used just for figuring out equality

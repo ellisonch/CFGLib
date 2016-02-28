@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
-	public class TerminalNode : LeafNode {
+	internal class TerminalNode : LeafNode {
 		private readonly Terminal _terminal;
 		//public TerminalNode(Terminal terminal) {
 		//	_terminal = terminal;
 		//}
+		public Terminal Terminal {
+			get { return _terminal; }
+		}
 
 		public TerminalNode(Terminal terminal, int start, int end) : base(start, end) {
 			_terminal = terminal;

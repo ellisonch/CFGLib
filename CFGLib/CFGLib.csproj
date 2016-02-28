@@ -44,6 +44,11 @@
   <ItemGroup>
     <Compile Include="Parsers\CYK\CykParser.cs" />
     <Compile Include="Parsers\CYK\LocalCykProduction.cs" />
+    <Compile Include="Parsers\Forests\ForestInternal.cs" />
+    <Compile Include="Parsers\Forests\ForestNode.cs" />
+    <Compile Include="Parsers\Forests\ForestOption.cs" />
+    <Compile Include="Parsers\Forests\ForestStep.cs" />
+    <Compile Include="Parsers\Forests\ForestLeaf.cs" />
     <Compile Include="Parsers\Forests\LeafNode.cs" />
     <Compile Include="Parsers\Forests\TerminalNode.cs" />
     <Compile Include="Parsers\Forests\EpsilonNode.cs" />

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
-	public class SymbolNode : InteriorNode {
+	internal class SymbolNode : InteriorNode {
 		public readonly Nonterminal Symbol;
 
 		public SymbolNode(Nonterminal symbol, int start, int end) : base(start, end) {

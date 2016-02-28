@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
-	public class EpsilonNode : LeafNode {
+	internal class EpsilonNode : LeafNode {
 		// private static EpsilonNode _node = new EpsilonNode();
 
 		//public static EpsilonNode Node {

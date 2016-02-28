@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using CFGLib.Parsers.Forests;
 
 namespace CFGLib.Parsers.Forests {
-	public abstract class LeafNode : SppfNode {
+	internal abstract class LeafNode : SppfNode {
 		protected LeafNode(int start, int end) : base(start, end) {
 		}
 

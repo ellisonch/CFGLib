@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
-	public abstract class SppfNode {
+	internal abstract class SppfNode {
 		public readonly int StartPosition;
 		public readonly int EndPosition;
 

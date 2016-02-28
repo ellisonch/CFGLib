@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
-	public abstract class InteriorNode : SppfNode {
+	internal abstract class InteriorNode : SppfNode {
 		private HashSet<Family> _familiesInternal = new HashSet<Family>(); // used during construction only
 		private readonly List<Family> _families = new List<Family>();
 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
-	public class Family {
+	internal class Family {
 		private readonly List<SppfNode> _nodes = new List<SppfNode>();
 		public Production Production { get; internal set; }
 

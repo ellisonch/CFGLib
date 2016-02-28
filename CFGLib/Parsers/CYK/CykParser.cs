@@ -13,7 +13,7 @@ namespace CFGLib.Parsers.CYK {
 			_grammar = grammar;
 		}
 
-		public override SppfNode ParseGetForest(Sentence s) {
+		public override ForestNode ParseGetForest(Sentence s) {
 			throw new NotImplementedException();
 		}
 
