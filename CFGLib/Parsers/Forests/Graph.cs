@@ -26,12 +26,12 @@ namespace CFGLib.Parsers.Forests {
 	}
 	internal struct NodeNode : INode {
 		public readonly ForestNode Node;
-		public readonly int Id;
+		public readonly string Id;
 
 		public string Name {
 			get {
 				// return string.Format("\"{0} {1}\"", Node.ToStringSelf(), Id);
-				return string.Format("{0}", Id);
+				return string.Format("\"{0}\"", Id);
 				// return string.Format("{0}", &Node);
 			}
 		}
@@ -55,7 +55,7 @@ namespace CFGLib.Parsers.Forests {
 				}
 			}
 		}
-		public NodeNode(ForestNode node, int id) {
+		public NodeNode(ForestNode node, string id) {
 			Node = node;
 			Id = id;
 		}
@@ -64,12 +64,12 @@ namespace CFGLib.Parsers.Forests {
 		public readonly Sentence Sentence;
 		public readonly int StartPosition;
 		public readonly int EndPosition;
-		public readonly int Id;
+		public readonly string Id;
 
 		public string Name {
 			get {
 				// return string.Format("\"{0} ({1}, {2}) {3}\"", Sentence, StartPosition, EndPosition, Id);
-				return string.Format("{0}", Id);
+				return string.Format("\"{0}\"", Id);
 			}
 		}
 		public string Label {
@@ -88,7 +88,7 @@ namespace CFGLib.Parsers.Forests {
 				return "white";
 			}
 		}
-		public ChildNode(Sentence rhs, int startPosition, int endPosition, int id) : this() {
+		public ChildNode(Sentence rhs, int startPosition, int endPosition, string id) : this() {
 			Sentence = rhs;
 			StartPosition = startPosition;
 			EndPosition = endPosition;

@@ -30,8 +30,8 @@ namespace CFGLib.Parsers.Forests {
 			return retval;
 		}
 
-		internal override void GetGraphHelper(Graph g, NodeNode myNode, HashSet<ForestNode> seen, ref int id) {
-			seen.Add(this);
+		internal override void GetGraphHelper(Graph g, NodeNode myNode, HashSet<ForestNode> visited, Dictionary<InteriorNode, int> seen, ref int id, bool share = false) {
+			return;
 		}
 	}
 }

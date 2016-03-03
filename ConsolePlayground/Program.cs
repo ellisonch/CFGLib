@@ -69,6 +69,9 @@ namespace ConsolePlayground {
 			var dot = ((ForestInternal)sppf).ToDot();
 			DotRunner.Run(dot, "addition");
 
+			var dotShared = ((ForestInternal)sppf).ToDot(true);
+			DotRunner.Run(dotShared, "additionShared");
+
 			//var pp = new PrettyPrinter();
 			//sppf.Accept(pp);
 			//Console.WriteLine(pp.Result);
