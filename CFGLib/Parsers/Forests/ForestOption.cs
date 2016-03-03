@@ -44,6 +44,13 @@ namespace CFGLib.Parsers.Forests {
 
 		private List<ForestNode[]> BuildChildren() {
 			var count = _family.Production.Rhs.Count;
+			if (count == 0) {
+				if (_family.Members.Count != 1) {
+					throw new Exception();
+				}
+				var leaf = new ForestLeaf((EpsilonNode)_family.Members[0]);
+				return new List<ForestNode[]> { new ForestNode[1] { leaf } };
+			}
 			var start = new ForestNode[count];
 			var startList = new List<ForestNode[]> { start };
 			BuildChildrenHelper(_family, startList, _family.Production.Rhs, count - 1);
@@ -115,13 +122,13 @@ namespace CFGLib.Parsers.Forests {
 		//	}
 		//	return string.Format("{0} ({1}, {2})", _family.Production.Rhs, StartPosition, EndPosition);
 		//}
-		internal string ToStringHelper(int level) {
+		internal string ToStringHelper(int level, HashSet<InteriorNode> visited) {
 			var retval = "";
 
 			var children = "";
 			foreach (var childrenSet in Children()) {
 				foreach (var child in childrenSet) {
-					children += child.ToStringHelper(level + 1);
+					children += child.ToStringHelper(level + 1, visited);
 				}
 			}
 
