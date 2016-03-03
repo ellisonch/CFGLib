@@ -6,16 +6,32 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
 	public class ForestLeaf : ForestNode {
+		private readonly TerminalNode _terminalNode;
 		private readonly Terminal _terminal;
 
-		internal ForestLeaf(TerminalNode terminalChild) {
+		public override int Id {
+			get {
+				return _terminalNode.Id;
+			}
+		}
+
+		internal ForestLeaf(TerminalNode terminalChild) : base(terminalChild.StartPosition, terminalChild.EndPosition) {
+			_terminalNode = terminalChild;
 			_terminal = terminalChild.Terminal;
+		}
+
+		internal override string ToStringSelf() {
+			return string.Format("{0} ({1}, {2})", _terminal, StartPosition, EndPosition);
 		}
 
 		internal override string ToStringHelper(int level) {
 			var retval = "";
-			retval += string.Format("{0}\n", _terminal.ToString()).Indent(2 * level);
+			retval += string.Format("{0}\n", ToStringSelf()).Indent(2 * level);
 			return retval;
+		}
+
+		internal override void GetGraphHelper(Graph g, NodeNode myNode, HashSet<ForestNode> seen, ref int id) {
+			seen.Add(this);
 		}
 	}
 }

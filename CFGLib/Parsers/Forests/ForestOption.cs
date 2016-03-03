@@ -5,18 +5,29 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
-	public class ForestOption {
-		// private readonly Production _production;
+	public class ForestOption {		
 		private readonly Family _family;
 		private List<ForestNode[]> _children;
 
+		public Production Production {
+			get {
+				return _family.Production;
+			}
+		}
+
+		public List<ForestNode[]> Children() {
+			if (_children == null) {
+				_children = BuildChildren();
+			}
+			return _children;
+		}
 		//private readonly List<ForestLeaf> _leafChildren = new List<ForestLeaf>();
 		//private readonly List<ForestInternal> _internalChildren = new List<ForestInternal>();
 
 		// private readonly List<ForestNode> _options;
 		// private readonly Family _family;
 
-		internal static List<ForestOption> BuildOptions(IList<Family> families) {
+		internal static List<ForestOption> BuildOptions(IList<Family> families, int startPosition, int endPosition) {
 			var retval = new List<ForestOption>();
 
 			foreach (var family in families) {
@@ -29,32 +40,6 @@ namespace CFGLib.Parsers.Forests {
 
 		internal ForestOption(Family family) {
 			_family = family;
-			//_production = family.Production;
-
-			//// int count = 0;
-
-			//// var productionStack = new Stack<Word>(_production.Rhs);
-			//var nodeStack = new Stack<SppfNode>(family.Members);
-
-			//while (nodeStack.Count > 0) {
-			//	// var word = productionStack.Pop();
-			//	var child = nodeStack.Pop();
-
-			//	if (child is EpsilonNode) {
-			//		// do nothing
-			//	} else if (child is TerminalNode) {
-			//		var terminalChild = (TerminalNode)child;
-			//		_leafChildren.Add(new ForestLeaf(terminalChild));
-			//	} else if (child is SymbolNode) {
-			//		var symbolChild = (SymbolNode)child;
-			//		_internalChildren.Add(new ForestInternal(symbolChild, symbolChild.Symbol));
-			//	} else if (child is IntermediateNode) {
-			//		var intermediateChild = (IntermediateNode)child;
-			//		// TODO: need to duplicate parent options here
-			//		throw new Exception();
-			//		// intermediateChild.Families
-			//	}
-			//}
 		}
 
 		private List<ForestNode[]> BuildChildren() {
@@ -91,6 +76,27 @@ namespace CFGLib.Parsers.Forests {
 			}
 		}
 
+		//internal void GetGraphHelper(Graph g) {
+		//	//g.Add(this);
+		//	bool changes = false;
+		//	var myNode = new NodeNode(this, 0);
+		//	foreach (var children in _children) {
+		//		var childNode = new ChildNode(_family.Production.Rhs, StartPosition, EndPosition);
+		//		changes |= g.AddEdge(myNode, childNode);
+		//		foreach (var child in children) {
+		//			var mychildNode = new NodeNode(child, 0);
+		//			changes |= g.AddEdge(childNode, mychildNode);
+		//		}
+		//	}
+		//	if (changes) {
+		//		foreach (var children in _children) {
+		//			foreach (var child in children) {
+		//				child.GetGraphHelper(g);
+		//			}
+		//		}
+		//	}
+		//}
+
 		private static void AddNode(SppfNode node, List<ForestNode[]> startList, Sentence rhs, int position) {
 			ForestNode nodeToAdd;
 			if (node is TerminalNode) {
@@ -103,13 +109,12 @@ namespace CFGLib.Parsers.Forests {
 			}
 		}
 
-		private List<ForestNode[]> Children() {
-			if (_children == null) {
-				_children = BuildChildren();
-			}
-			return _children;
-		}
-
+		//internal override string ToStringSelf() {
+		//	if (_family.Production == null) {
+		//		return "INTERNAL OPTION";
+		//	}
+		//	return string.Format("{0} ({1}, {2})", _family.Production.Rhs, StartPosition, EndPosition);
+		//}
 		internal string ToStringHelper(int level) {
 			var retval = "";
 
@@ -126,7 +131,6 @@ namespace CFGLib.Parsers.Forests {
 
 			return retval;
 		}
-
 
 		// public ForestOptions()
 	}

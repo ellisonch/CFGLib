@@ -9,6 +9,18 @@ namespace CFGLib.Parsers.Forests {
 		public readonly int StartPosition;
 		public readonly int EndPosition;
 
+		public abstract int Id {
+			get;
+		}
+
+		public ForestNode(int startPosition, int endPosition) {
+			StartPosition = startPosition;
+			EndPosition = endPosition;
+		}
+
 		internal abstract string ToStringHelper(int level);
+		internal abstract void GetGraphHelper(Graph g, NodeNode myNode, HashSet<ForestNode> seen, ref int id);
+
+		internal abstract string ToStringSelf();
 	}
 }

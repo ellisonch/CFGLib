@@ -34,7 +34,7 @@ namespace CFGLib.Parsers.Earley {
 			var nodeProbs = new Dictionary<SppfNode, double>();
 			var prob = CalculateProbability(internalSppf, nodeProbs);
 
-			PrintForest(internalSppf, nodeProbs);
+			//PrintForest(internalSppf, nodeProbs);
 			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);
 			//var pp = new PrettyPrinter();
@@ -53,10 +53,15 @@ namespace CFGLib.Parsers.Earley {
 			var internalSppf = ConstructInternalSppf(successes, s);
 			AnnotateWithProductions(internalSppf);
 
-			var nodeProbs = new Dictionary<SppfNode, double>();
-			var prob = CalculateProbability(internalSppf, nodeProbs);
-
-			PrintForest(internalSppf, nodeProbs);
+			//var nodeProbs = new Dictionary<SppfNode, double>();
+			//var prob = CalculateProbability(internalSppf, nodeProbs);
+			var nodes = GetAllNodes(internalSppf);
+			var id = 0;
+			foreach (var node in nodes) {
+				node.Id = id;
+				id++;
+			}
+			// PrintForest(internalSppf);
 			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);
 

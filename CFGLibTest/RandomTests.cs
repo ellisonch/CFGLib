@@ -34,7 +34,7 @@ namespace CFGLibTest {
 				var numNonterminals = rand.Next(_maxNonterminals) + 1;
 				var g = randg.NextCFG(numNonterminals, numProductions, _maxProductionLength, terminals);
 				Console.WriteLine(g);
-				var h = g.ToCNF();				
+				var h = g.ToCNF();
 				Console.WriteLine(h);
 
 				var swps = g.ProduceToDepth(_maxDepth, _maxTestSentences);
@@ -92,7 +92,7 @@ namespace CFGLibTest {
 				//}
 			}
 		}
-		
+
 		public void RandomParsingTest(
 			int _numGrammars = 10000,
 			int _numNonterminals = 10,
@@ -101,7 +101,9 @@ namespace CFGLibTest {
 			int _maxProductionLength = 8,
 			int _maxInputLength = 6,
 			int seed = 0
-		) {			
+		) {
+			var printStatus = true;
+
 			var range = Enumerable.Range(0, _numTerminals);
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
 			Console.WriteLine("Preparing sentences");
@@ -130,23 +132,26 @@ namespace CFGLibTest {
 				// Console.WriteLine("---------------{0}/{1}---------------", i.ToString("D5"), _numGrammars.ToString("D5"));
 				// Console.WriteLine(g.ToCodeString());
 				var h = g.ToCNF();
+				//return;
 				// Console.WriteLine(g);
 				// g.PrintProbabilities(2, 3);
 				preparedGrammars.Add(g);
 				preparedGrammarsCNF.Add(h);
 			}
-
+			Console.WriteLine("starting");
 			var sw = Stopwatch.StartNew();
 			int count = 0;
 			for (int grammarIndex = 0; grammarIndex < _numGrammars; grammarIndex++) {
-				Console.WriteLine("---------------{0}/{1}---------------", grammarIndex.ToString("D5"), _numGrammars.ToString("D5"));
+				if (printStatus) {
+					Console.WriteLine("---------------{0}/{1}---------------", grammarIndex.ToString("D5"), _numGrammars.ToString("D5"));
+				}
 
 				var g = preparedGrammars[grammarIndex];
 				var h = preparedGrammarsCNF[grammarIndex];
 
 				var earley = new EarleyParser(g);
 				var cyk = new CykParser(h);
-				
+
 				// Console.WriteLine(g.ToCodeString());
 				// Console.Write("{0}, ", count);
 				count++;
@@ -169,7 +174,9 @@ namespace CFGLibTest {
 						throw;
 					}
 				}
-				Console.WriteLine("Accepted {0} / {1}", accepts, preparedSentences.Count);
+				if (printStatus) {
+					Console.WriteLine("Accepted {0} / {1}", accepts, preparedSentences.Count);
+				}
 			}
 			sw.Stop();
 			Console.WriteLine();

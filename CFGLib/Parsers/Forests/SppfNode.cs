@@ -9,6 +9,7 @@ namespace CFGLib.Parsers.Forests {
 	internal abstract class SppfNode {
 		public readonly int StartPosition;
 		public readonly int EndPosition;
+		public int Id; // added later
 
 		// An ordered version of the hash
 		internal abstract IList<Family> Families { get; }
