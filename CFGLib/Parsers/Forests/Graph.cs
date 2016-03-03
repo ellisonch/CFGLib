@@ -21,6 +21,8 @@ namespace CFGLib.Parsers.Forests {
 	internal interface INode {
 		string Label { get; }
 		string Name { get; }
+		string Shape { get; }
+		string Color { get; }
 	}
 	internal struct NodeNode : INode {
 		public readonly ForestNode Node;
@@ -37,6 +39,20 @@ namespace CFGLib.Parsers.Forests {
 			get {
 				// return string.Format("{0} {1}", Node.ToStringSelf(), Id);
 				return string.Format("{0}", Node.ToStringSelf());
+			}
+		}
+		public string Shape {
+			get {
+				return "oval";
+			}
+		}
+		public string Color {
+			get {
+				if (Node is ForestLeaf) {
+					return "yellow";
+				} else {
+					return "white";
+				}
 			}
 		}
 		public NodeNode(ForestNode node, int id) {
@@ -62,6 +78,16 @@ namespace CFGLib.Parsers.Forests {
 				return string.Format("{0} ({1}, {2})", Sentence, StartPosition, EndPosition);
 			}
 		}
+		public string Shape {
+			get {
+				return "box";
+			}
+		}
+		public string Color {
+			get {
+				return "white";
+			}
+		}
 		public ChildNode(Sentence rhs, int startPosition, int endPosition, int id) : this() {
 			Sentence = rhs;
 			StartPosition = startPosition;
@@ -78,7 +104,7 @@ namespace CFGLib.Parsers.Forests {
 			var retval = "";
 			retval += "digraph G {\n";
 			foreach (var node in Nodes) {
-				retval += string.Format("{0} [label=\"{1}\"];\n", node.Name, node.Label);
+				retval += string.Format("{0} [shape={2} style=filled fillcolor={3} label=\"{1}\"];\n", node.Name, node.Label, node.Shape, node.Color);
 			}
 			foreach (var edge in Edges) {
 				retval += string.Format("{0} -> {1} [label=\"{2}\"]\n", edge.Left.Name, edge.Right.Name, edge.Label?.ToStringNoWeight());
