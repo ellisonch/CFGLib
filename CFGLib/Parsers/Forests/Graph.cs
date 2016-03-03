@@ -23,10 +23,20 @@ namespace CFGLib.Parsers.Forests {
 		string Name { get; }
 		string Shape { get; }
 		string Color { get; }
+		string Ordering { get; }
+		int StartPosition { get; }
+		int EndPosition { get; }
 	}
 	internal struct NodeNode : INode {
 		public readonly ForestNode Node;
 		public readonly string Id;
+
+		public int StartPosition {
+			get { return Node.StartPosition; }
+		}
+		public int EndPosition {
+			get { return Node.EndPosition; }
+		}
 
 		public string Name {
 			get {
@@ -55,6 +65,11 @@ namespace CFGLib.Parsers.Forests {
 				}
 			}
 		}
+		public string Ordering {
+			get {
+				return "";
+			}
+		}
 		public NodeNode(ForestNode node, string id) {
 			Node = node;
 			Id = id;
@@ -62,8 +77,8 @@ namespace CFGLib.Parsers.Forests {
 	}
 	internal struct ChildNode : INode {
 		public readonly Sentence Sentence;
-		public readonly int StartPosition;
-		public readonly int EndPosition;
+		public int StartPosition { get; set; }
+		public int EndPosition { get; set; }
 		public readonly string Id;
 
 		public string Name {
@@ -88,6 +103,11 @@ namespace CFGLib.Parsers.Forests {
 				return "white";
 			}
 		}
+		public string Ordering {
+			get {
+				return "ordering=out";
+			}
+		}
 		public ChildNode(Sentence rhs, int startPosition, int endPosition, string id) : this() {
 			Sentence = rhs;
 			StartPosition = startPosition;
@@ -103,8 +123,23 @@ namespace CFGLib.Parsers.Forests {
 		internal string ToDot() {
 			var retval = "";
 			retval += "digraph G {\n";
-			foreach (var node in Nodes) {
-				retval += string.Format("{0} [shape={2} style=filled fillcolor={3} label=\"{1}\"];\n", node.Name, node.Label, node.Shape, node.Color);
+			// retval += "graph [ordering=out];\n";
+			var nodes = Nodes.ToList();
+			nodes.Sort((a, b) => {
+				if (a.StartPosition < b.StartPosition) {
+					return -1;
+				} else if (a.StartPosition > b.StartPosition) {
+					return 1;
+				} else if (a.EndPosition < b.EndPosition) {
+					return -1;
+				} else if (a.EndPosition > b.EndPosition) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+			foreach (var node in nodes) {
+				retval += string.Format("{0} [{4} shape={2} style=filled fillcolor={3} label=\"{1}\"];\n", node.Name, node.Label, node.Shape, node.Color, node.Ordering);
 			}
 			foreach (var edge in Edges) {
 				retval += string.Format("{0} -> {1} [label=\"{2}\"]\n", edge.Left.Name, edge.Right.Name, edge.Label?.ToStringNoWeight());

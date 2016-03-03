@@ -19,7 +19,7 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		internal abstract string ToStringHelper(int level);
-		internal abstract void GetGraphHelper(Graph g, NodeNode myNode, HashSet<ForestNode> visited, Dictionary<InteriorNode, int> ids, ref int id, bool share = false);
+		internal abstract void GetGraphHelper(Graph g, NodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> ids, ref int id, bool share = false);
 
 		internal abstract string ToStringSelf();
 	}

@@ -94,13 +94,14 @@ namespace CFGLib.Parsers.Forests {
 			var g = new Graph();
 			int id = 0;
 			var myNode = new NodeNode(this, "" + id++);
-			GetGraphHelper(g, myNode, new HashSet<ForestNode>(), new Dictionary<InteriorNode, int>(), ref id, share);
+			GetGraphHelper(g, myNode, new HashSet<InteriorNode>(), new Dictionary<InteriorNode, int>(), ref id, share);
 			return g;
 		}
-		internal override void GetGraphHelper(Graph g, NodeNode myNode, HashSet<ForestNode> visited, Dictionary<InteriorNode, int> ids, ref int id, bool share = false) {
-			if (visited.Contains(this)) {
+		internal override void GetGraphHelper(Graph g, NodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> ids, ref int id, bool share = false) {
+			if (visited.Contains(_node)) {
 				return;
 			}
+			visited.Add(_node);
 			if (!ids.ContainsKey(_node)) {
 				ids[_node] = id++;
 			}
@@ -143,7 +144,11 @@ namespace CFGLib.Parsers.Forests {
 						}
 						var childNode = new NodeNode(child, childId);
 						g.AddEdge(optionNode, childNode);
-						child.GetGraphHelper(g, childNode, visited, ids, ref id, share);
+						if (share) {
+							child.GetGraphHelper(g, childNode, visited, ids, ref id, share);
+						} else {
+							child.GetGraphHelper(g, childNode, new HashSet<InteriorNode>(visited), ids, ref id, share);
+						}
 					}
 				}
 			}
