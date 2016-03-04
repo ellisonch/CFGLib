@@ -44,7 +44,7 @@ namespace CFGLib.Parsers.Earley {
 			return prob;
 		}
 
-		public override ForestNode ParseGetForest(Sentence s) {
+		public override ForestInternal ParseGetForest(Sentence s) {
 			var successes = ComputeSuccesses(s);
 			if (successes.Count == 0) {
 				return null;

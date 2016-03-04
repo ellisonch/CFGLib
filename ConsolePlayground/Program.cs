@@ -66,10 +66,13 @@ namespace ConsolePlayground {
 			// var sppf = ep.ParseGetForest(Sentence.FromWords("x x"));
 			//Console.WriteLine();
 			Console.WriteLine(sppf);
-			var dot = ((ForestInternal)sppf).ToDot();
+			// var dot = ForestHelpers.ToDot(sppf);
+
+			var dot = sppf.ToDot();
 			DotRunner.Run(dot, "addition");
 
-			var dotShared = ((ForestInternal)sppf).ToDot(true);
+			// var dotShared = ForestHelpers.ToDot(sppf, true);
+			var dotShared = sppf.ToDot(true);
 			DotRunner.Run(dotShared, "additionShared");
 
 			//var pp = new PrettyPrinter();
@@ -82,13 +85,16 @@ namespace ConsolePlayground {
 			//var p = CFGParser.Production("<S> -> 'a' [5]");
 			//Console.WriteLine(p);
 
-			var rt = new CFGLibTest.RandomTests();
-			var sw = Stopwatch.StartNew();
-			// rt.RandomParsingTest(50000, 4, 3, 5, 4, 6, 1);
-			// rt.RandomParsingTest(500, 10, 5, 30, 8, 6);
-			rt.RandomParsingTest(1, 10, 5, 50, 8, 6);
-			sw.Stop();
-			Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
+			//Console.Read();
+			//return;
+
+			//var rt = new CFGLibTest.RandomTests();
+			//var sw = Stopwatch.StartNew();
+			//// rt.RandomParsingTest(50000, 4, 3, 5, 4, 6, 1);
+			//// rt.RandomParsingTest(500, 10, 5, 30, 8, 6);
+			//rt.RandomParsingTest(1, 10, 5, 50, 8, 6);
+			//sw.Stop();
+			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
 			
 			Console.WriteLine("Finished!");

@@ -11,6 +11,6 @@ namespace CFGLib.Parsers {
 		public bool Accepts(Sentence s) {
 			return ParseGetProbability(s) > 0.0;
 		}
-		public abstract ForestNode ParseGetForest(Sentence s);
+		public abstract ForestInternal ParseGetForest(Sentence s);
 	}
 }
