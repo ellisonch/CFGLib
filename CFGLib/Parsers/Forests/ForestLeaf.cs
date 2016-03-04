@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CFGLib.Parsers.Graphs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +28,7 @@ namespace CFGLib.Parsers.Forests {
 			return retval;
 		}
 
-		internal override void GetGraphHelper(Graph g, NodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> seen, ref int id, bool share = false) {
+		internal override void GetGraphHelper(Graph g, ForestNodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> seen, ref int id, bool share = false) {
 			return;
 		}
 	}

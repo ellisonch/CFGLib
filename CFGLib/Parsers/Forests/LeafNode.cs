@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Graphs;
 
 namespace CFGLib.Parsers.Forests {
 	internal abstract class LeafNode : SppfNode {
@@ -23,6 +24,13 @@ namespace CFGLib.Parsers.Forests {
 
 		public override string ToString() {
 			return string.Format("Leaf({0}, {1}, {2})", GetSentence().ToString(), StartPosition, EndPosition);
+		}
+		internal override string ToStringSimple() {
+			return string.Format("{0} ({1}, {2})", GetSentence().ToString(), StartPosition, EndPosition);
+		}
+
+		internal override void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited) {
+			return;
 		}
 	}
 }

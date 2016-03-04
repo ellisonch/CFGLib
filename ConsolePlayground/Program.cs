@@ -47,12 +47,17 @@ namespace ConsolePlayground {
 			//}, Nonterminal.Of("S"));
 
 			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<S> → <S> '+' <S>"),
-				// CFGParser.Production("<S> → <S> '*' <S>"),
-				// CFGParser.Production("<S> → [0-9]+"),
-				CFGParser.Production("<S> → '0'"),
-				// CFGParser.Production("<S> → '2'"),
+				CFGParser.Production("<S> → <S> <S>"),
+				CFGParser.Production("<S> → 'b'"),
 			}, Nonterminal.Of("S"));
+
+			//var g = new Grammar(new List<Production>{
+			//	CFGParser.Production("<S> → <S> '+' <S>"),
+			//	// CFGParser.Production("<S> → <S> '*' <S>"),
+			//	// CFGParser.Production("<S> → [0-9]+"),
+			//	CFGParser.Production("<S> → '0'"),
+			//	// CFGParser.Production("<S> → '2'"),
+			//}, Nonterminal.Of("S"));
 			//var ests = g.EstimateProbabilities(10000);
 			//foreach (var est in ests) {
 			//	Console.WriteLine("{0}: {1}", est.Key, est.Value);
@@ -61,12 +66,16 @@ namespace ConsolePlayground {
 			// 0 + 123 * 72
 
 			var ep = new EarleyParser(g);
-			var sppf = ep.ParseGetForest(Sentence.FromWords("0 + 0 + 0"));
-			
+			// var sppf = ep.ParseGetForest(Sentence.FromWords("0 + 0 + 0"));
+
 			// var sppf = ep.ParseGetForest(Sentence.FromWords("x x"));
+			var sppf = ep.ParseGetForest(Sentence.FromWords("b b b"));
 			//Console.WriteLine();
 			Console.WriteLine(sppf);
 			// var dot = ForestHelpers.ToDot(sppf);
+			
+			var rawdot = sppf.GetRawDot();
+			DotRunner.Run(rawdot, "rawGraph");
 
 			var dot = sppf.ToDot();
 			DotRunner.Run(dot, "addition");

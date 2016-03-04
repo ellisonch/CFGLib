@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Graphs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +45,16 @@ namespace CFGLib.Parsers.Forests {
 
 		public override string ToString() {
 			return string.Format("({0}, {1}, {2}){3}", Symbol, StartPosition, EndPosition, ProductionsToString());
+		}
+		internal override string ToStringSimple() {
+			return string.Format("{0} ({1}, {2})", Symbol, StartPosition, EndPosition);
+		}
+
+		public Graph GetGraph() {
+			var g = new Graph();
+			var node = new SppfNodeNode(this);
+			GetGraphHelper(g, node, new HashSet<InteriorNode>());
+			return g;
 		}
 	}
 }

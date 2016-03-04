@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CFGLib.Parsers.Graphs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,20 +9,9 @@ namespace CFGLib.Parsers.Forests {
 	public class ForestInternal : ForestNode {
 		private readonly InteriorNode _node;
 		private readonly Nonterminal _nonterminal;
-		
-		//private readonly List<ForestLeaf> _leafChildren;
+		//private readonly Dictionary<InteriorNode, ForestInternal> _nodeLookup;
 		private readonly List<ForestOption> _options = new List<ForestOption>();
-
-		//public List<ForestLeaf> LeafChildren {
-		//	get {
-		//		return _leafChildren;
-		//	}
-		//}
-		//public List<ForestOptions> SymbolChildren {
-		//	get {
-		//		return _symbolChildren;
-		//	}
-		//}
+		
 		public List<ForestOption> Options {
 			get {
 				return _options;
@@ -37,6 +27,8 @@ namespace CFGLib.Parsers.Forests {
 		internal ForestInternal(InteriorNode node, Nonterminal nonterminal) : base(node.StartPosition, node.EndPosition) {
 			_node = node;
 			_nonterminal = nonterminal;
+			//_nodeLookup = new Dictionary<InteriorNode, ForestInternal>();
+			//_nodeLookup[node] = this;
 
 			_options = ForestOption.BuildOptions(node.Families, node.StartPosition, node.EndPosition);
 		}
@@ -84,6 +76,11 @@ namespace CFGLib.Parsers.Forests {
 			return retval;
 		}
 
+		public string GetRawDot() {
+			var graph = ((SymbolNode)_node).GetGraph();
+			return graph.ToDot();
+		}
+
 		public string ToDot(bool share = false) {
 			var graph = GetGraph(share);
 			return graph.ToDot();
@@ -92,11 +89,11 @@ namespace CFGLib.Parsers.Forests {
 		private Graph GetGraph(bool share = false) {
 			var g = new Graph();
 			int id = 0;
-			var myNode = new NodeNode(this, "" + id++);
+			var myNode = new ForestNodeNode(this, "" + id++);
 			GetGraphHelper(g, myNode, new HashSet<InteriorNode>(), new Dictionary<InteriorNode, int>(), ref id, share);
 			return g;
 		}
-		internal override void GetGraphHelper(Graph g, NodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> ids, ref int id, bool share = false) {
+		internal override void GetGraphHelper(Graph g, ForestNodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> ids, ref int id, bool share = false) {
 			if (visited.Contains(_node)) {
 				return;
 			}
@@ -141,7 +138,7 @@ namespace CFGLib.Parsers.Forests {
 						} else {
 							childId = "" + id++;
 						}
-						var childNode = new NodeNode(child, childId);
+						var childNode = new ForestNodeNode(child, childId);
 						g.AddEdge(optionNode, childNode);
 						if (share) {
 							child.GetGraphHelper(g, childNode, visited, ids, ref id, share);

@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Graphs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,5 +42,9 @@ namespace CFGLib.Parsers.Forests {
 
 			return retval;
 		}
+
+		internal abstract string ToStringSimple();
+
+		internal abstract void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited);
 	}
 }

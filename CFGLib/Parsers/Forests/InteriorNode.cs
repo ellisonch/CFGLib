@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CFGLib.Parsers.Graphs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,6 +40,31 @@ namespace CFGLib.Parsers.Forests {
 				}
 			}
 			_families[i].Production = production;
+		}
+
+		internal override void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited) {
+			if (visited.Contains(this)) {
+				return;
+			}
+			visited.Add(this);
+
+			// foreach (var family in Families) {
+			for (int i = 0; i < Families.Count; i++) {
+				var family = Families[i];
+
+				INode prevNode;
+				if (Families.Count == 1) {
+					prevNode = myNode;
+				} else {
+					prevNode = new FamilyNode(family, myNode.Node.Id + "-" + i);
+					g.AddEdge(myNode, prevNode);
+				}
+				foreach (var child in family.Members) {
+					var childNode = new SppfNodeNode(child);
+					g.AddEdge(prevNode, childNode);
+					child.GetGraphHelper(g, childNode, visited);
+				}
+			}
 		}
 	}
 }

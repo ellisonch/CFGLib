@@ -64,7 +64,7 @@ namespace CFGLib.Parsers.Earley {
 			// PrintForest(internalSppf);
 			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);
-
+			
 			return new ForestInternal(internalSppf, internalSppf.Symbol);
 		}
 
