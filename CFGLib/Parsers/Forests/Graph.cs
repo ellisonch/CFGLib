@@ -123,6 +123,53 @@ namespace CFGLib.Parsers.Forests {
 		internal string ToDot() {
 			var retval = "";
 			retval += "digraph G {\n";
+
+//			retval += @"
+//subgraph cluster_key {
+//  rank=min;
+//  label=""Key"";
+//  rankdir=LR;
+//  nodesep=0.02;
+
+//  k1[shape=plaintext, style=solid, label=""Nonterminal Node\r""]
+//  k2[shape=plaintext, style=solid, label=""Apply Production\r""]
+//  k3[shape=plaintext, style=solid, label=""Children Node\r""]
+//  k4[shape=plaintext, style=solid, label=""Terminal Node\r""]
+
+//  kc1[label=""<S> (2, 3)""];
+//  kc2pre[label=""""];
+//  kc2post[label="""" shape=box];
+//  kc3[label=""<S> '+' <S> (0, 3)"" shape=box];
+//  kc4[label=""'+' (0, 1)"" style=filled fillcolor=yellow];
+
+//  {
+//    rank=same;
+//    k1 kc1
+//  }
+//  {
+//    rank=same;
+//    k2 kc2pre kc2post
+//  }
+//  {
+//    rank=same;
+//    k3 kc3
+//  }
+//  {
+//    rank=same;
+//    k4 kc4
+//  }
+
+//  k1->k2->k3->k4[style=invis];
+
+//  kc2pre->kc2post[label=""<S> → '+'""]
+
+//  k1->kc1[style=invis, minlen=0.25, len=0.25];
+//  k2->kc2pre[style=invis];
+//  k3->kc3[style=invis];
+//  k4->kc4[style=invis];
+//}
+//";
+
 			// retval += "graph [ordering=out];\n";
 			var nodes = Nodes.ToList();
 			nodes.Sort((a, b) => {
