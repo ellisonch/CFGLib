@@ -8,8 +8,14 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Graphs {
 	internal struct ForestNodeNode : INode {
 		public readonly ForestNode Node;
+		public int Rank { get; set; }
 		public readonly string Id;
 
+		public string Other {
+			get {
+				return "";
+			}
+		}
 		public int StartPosition {
 			get { return Node.StartPosition; }
 		}
@@ -49,9 +55,10 @@ namespace CFGLib.Parsers.Graphs {
 				return "";
 			}
 		}
-		public ForestNodeNode(ForestNode node, string id) {
+		public ForestNodeNode(ForestNode node, string id, int rank) {
 			Node = node;
 			Id = id;
+			Rank = rank;
 		}
 	}
 }

@@ -51,8 +51,8 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		public Graph GetGraph() {
-			var g = new Graph();
-			var node = new SppfNodeNode(this);
+			var node = new SppfNodeNode(this, 0);
+			var g = new Graph(node);			
 			GetGraphHelper(g, node, new HashSet<InteriorNode>());
 			return g;
 		}

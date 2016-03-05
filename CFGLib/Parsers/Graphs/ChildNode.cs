@@ -9,7 +9,14 @@ namespace CFGLib.Parsers.Graphs {
 		public readonly Sentence Sentence;
 		public int StartPosition { get; set; }
 		public int EndPosition { get; set; }
+		public int Rank { get; set; }
 		public readonly string Id;
+
+		public string Other {
+			get {
+				return "";
+			}
+		}
 
 		public string Name {
 			get {
@@ -38,11 +45,12 @@ namespace CFGLib.Parsers.Graphs {
 				return "ordering=out";
 			}
 		}
-		public ChildNode(Sentence rhs, int startPosition, int endPosition, string id) : this() {
+		public ChildNode(Sentence rhs, int startPosition, int endPosition, string id, int rank) : this() {
 			Sentence = rhs;
 			StartPosition = startPosition;
 			EndPosition = endPosition;
 			Id = id;
+			Rank = rank;
 		}
 	}
 }

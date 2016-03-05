@@ -49,6 +49,7 @@ namespace ConsolePlayground {
 			var g = new Grammar(new List<Production>{
 				CFGParser.Production("<S> → <S> <S>"),
 				CFGParser.Production("<S> → 'b'"),
+				CFGParser.Production("<S> → ε"),
 			}, Nonterminal.Of("S"));
 
 			//var g = new Grammar(new List<Production>{
@@ -69,7 +70,7 @@ namespace ConsolePlayground {
 			// var sppf = ep.ParseGetForest(Sentence.FromWords("0 + 0 + 0"));
 
 			// var sppf = ep.ParseGetForest(Sentence.FromWords("x x"));
-			var sppf = ep.ParseGetForest(Sentence.FromWords("b b b"));
+			var sppf = ep.ParseGetForest(Sentence.FromWords("b"));
 			//Console.WriteLine();
 			Console.WriteLine(sppf);
 			// var dot = ForestHelpers.ToDot(sppf);

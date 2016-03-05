@@ -10,7 +10,9 @@ namespace CFGLib.Parsers.Graphs {
 		string Name { get; }
 		string Shape { get; }
 		string Color { get; }
+		string Other { get; }
 		string Ordering { get; }
+		int Rank { get; }
 		int StartPosition { get; }
 		int EndPosition { get; }
 	}

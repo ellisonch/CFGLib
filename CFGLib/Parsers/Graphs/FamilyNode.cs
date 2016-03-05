@@ -12,6 +12,7 @@ namespace CFGLib.Parsers.Graphs {
 		private string _id;
 		public int StartPosition { get; set; }
 		public int EndPosition { get; set; }
+		public int Rank { get; set; }
 
 		public string Color {
 			get {
@@ -43,9 +44,16 @@ namespace CFGLib.Parsers.Graphs {
 			}
 		}
 
-		public FamilyNode(Family family, string id) {
+		public string Other {
+			get {
+				return "fixedsize=true width=0.25 height=0.25";
+			}
+		}
+
+		public FamilyNode(Family family, string id, int rank) {
 			_family = family;
 			_id = id;
+			Rank = rank;
 		}
 	}
 }

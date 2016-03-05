@@ -8,7 +8,13 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Graphs {
 	internal class SppfNodeNode : INode {
 		public readonly SppfNode Node;
+		public int Rank { get; set; }
 
+		public string Other {
+			get {
+				return "";
+			}
+		}
 		public int StartPosition {
 			get { return Node.StartPosition; }
 		}
@@ -48,8 +54,9 @@ namespace CFGLib.Parsers.Graphs {
 				return "";
 			}
 		}
-		public SppfNodeNode(SppfNode node) {
+		public SppfNodeNode(SppfNode node, int rank) {
 			Node = node;
+			Rank = rank;
 		}
 	}
 }

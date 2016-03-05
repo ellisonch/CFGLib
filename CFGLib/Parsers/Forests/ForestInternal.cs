@@ -87,9 +87,9 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		private Graph GetGraph(bool share = false) {
-			var g = new Graph();
 			int id = 0;
-			var myNode = new ForestNodeNode(this, "" + id++);
+			var myNode = new ForestNodeNode(this, "" + id++, 0);
+			var g = new Graph(myNode);
 			GetGraphHelper(g, myNode, new HashSet<InteriorNode>(), new Dictionary<InteriorNode, int>(), ref id, share);
 			return g;
 		}
@@ -116,7 +116,7 @@ namespace CFGLib.Parsers.Forests {
 				} else {
 					optionId = "" + id++;
 				}
-				var optionNode = new ChildNode(option.Production.Rhs, this.StartPosition, this.EndPosition, optionId);
+				var optionNode = new ChildNode(option.Production.Rhs, this.StartPosition, this.EndPosition, optionId, myNode.Rank + 1);
 
 				g.AddEdge(myNode, optionNode, option.Production);
 				foreach (var children in option.Children()) {
@@ -138,7 +138,7 @@ namespace CFGLib.Parsers.Forests {
 						} else {
 							childId = "" + id++;
 						}
-						var childNode = new ForestNodeNode(child, childId);
+						var childNode = new ForestNodeNode(child, childId, optionNode.Rank + 1);
 						g.AddEdge(optionNode, childNode);
 						if (share) {
 							child.GetGraphHelper(g, childNode, visited, ids, ref id, share);
