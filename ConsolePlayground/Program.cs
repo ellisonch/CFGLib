@@ -46,19 +46,19 @@ namespace ConsolePlayground {
 			//	CFGParser.Production("<S> → ε"),
 			//}, Nonterminal.Of("S"));
 
-			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<S> → <S> <S>"),
-				CFGParser.Production("<S> → 'b'"),
-				CFGParser.Production("<S> → ε"),
-			}, Nonterminal.Of("S"));
-
 			//var g = new Grammar(new List<Production>{
-			//	CFGParser.Production("<S> → <S> '+' <S>"),
-			//	// CFGParser.Production("<S> → <S> '*' <S>"),
-			//	// CFGParser.Production("<S> → [0-9]+"),
-			//	CFGParser.Production("<S> → '0'"),
-			//	// CFGParser.Production("<S> → '2'"),
+			//	CFGParser.Production("<S> → <S> <S>"),
+			//	CFGParser.Production("<S> → 'b'"),
+			//	CFGParser.Production("<S> → ε"),
 			//}, Nonterminal.Of("S"));
+
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <S> '+' <S>"),
+				// CFGParser.Production("<S> → <S> '*' <S>"),
+				// CFGParser.Production("<S> → [0-9]+"),
+				CFGParser.Production("<S> → '0'"),
+				// CFGParser.Production("<S> → '2'"),
+			}, Nonterminal.Of("S"));
 			//var ests = g.EstimateProbabilities(10000);
 			//foreach (var est in ests) {
 			//	Console.WriteLine("{0}: {1}", est.Key, est.Value);
@@ -67,10 +67,10 @@ namespace ConsolePlayground {
 			// 0 + 123 * 72
 
 			var ep = new EarleyParser(g);
-			// var sppf = ep.ParseGetForest(Sentence.FromWords("0 + 0 + 0"));
+			var sppf = ep.ParseGetForest(Sentence.FromWords("0 + 0 + 0"));
 
 			// var sppf = ep.ParseGetForest(Sentence.FromWords("x x"));
-			var sppf = ep.ParseGetForest(Sentence.FromWords("b"));
+			// var sppf = ep.ParseGetForest(Sentence.FromWords("b"));
 			//Console.WriteLine();
 			Console.WriteLine(sppf);
 			// var dot = ForestHelpers.ToDot(sppf);
@@ -82,8 +82,8 @@ namespace ConsolePlayground {
 			DotRunner.Run(dot, "addition");
 
 			// var dotShared = ForestHelpers.ToDot(sppf, true);
-			var dotShared = sppf.ToDot(true);
-			DotRunner.Run(dotShared, "additionShared");
+			//var dotShared = sppf.ToDot(true);
+			//DotRunner.Run(dotShared, "additionShared");
 
 			//var pp = new PrettyPrinter();
 			//sppf.Accept(pp);

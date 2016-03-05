@@ -81,41 +81,30 @@ namespace CFGLib.Parsers.Forests {
 			return graph.ToDot();
 		}
 
-		public string ToDot(bool share = false) {
-			var graph = GetGraph(share);
+		public string ToDot() {
+			var graph = GetGraph();
 			return graph.ToDot();
 		}
 
-		private Graph GetGraph(bool share = false) {
+		private Graph GetGraph() {
 			int id = 0;
 			var myNode = new ForestNodeNode(this, "" + id++, 0);
 			var g = new Graph(myNode);
-			GetGraphHelper(g, myNode, new HashSet<InteriorNode>(), new Dictionary<InteriorNode, int>(), ref id, share);
+			GetGraphHelper(g, myNode, new HashSet<InteriorNode>(), new Dictionary<InteriorNode, int> { { _node, 0 } }, ref id);
 			return g;
 		}
-		internal override void GetGraphHelper(Graph g, ForestNodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> ids, ref int id, bool share = false) {
+		internal override void GetGraphHelper(Graph g, ForestNodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> ids, ref int id) {
 			if (visited.Contains(_node)) {
 				return;
 			}
 			visited.Add(_node);
-			if (!ids.ContainsKey(_node)) {
-				ids[_node] = id++;
-			}
-			// var myNode = new NodeNode(this, id++);
-			// seen.Add(this);
+			//if (!ids.ContainsKey(_node)) {
+			//	ids[_node] = myNode.Id;
+			//}
 
-			//g.Add(this);
-			//bool changes = false;
-			// foreach (var option in _options) {
-			// var myNode = new NodeNode(this, seen.Count);
 			for (int i = 0; i < _options.Count; i++) {
 				var option = _options[i];
-				string optionId;
-				if (share) {
-					optionId = ids[_node] + "-" + i;
-				} else {
-					optionId = "" + id++;
-				}
+				string optionId = ids[_node] + "-" + i;
 				var optionNode = new ChildNode(option.Production.Rhs, this.StartPosition, this.EndPosition, optionId, myNode.Rank + 1);
 
 				g.AddEdge(myNode, optionNode, option.Production);
@@ -132,32 +121,13 @@ namespace CFGLib.Parsers.Forests {
 							}
 						}
 						
-						string childId;
-						if (share) {
-							childId = "" + childSeenId;
-						} else {
-							childId = "" + id++;
-						}
+						string childId = "" + childSeenId;
 						var childNode = new ForestNodeNode(child, childId, optionNode.Rank + 1);
 						g.AddEdge(optionNode, childNode);
-						if (share) {
-							child.GetGraphHelper(g, childNode, visited, ids, ref id, share);
-						} else {
-							child.GetGraphHelper(g, childNode, new HashSet<InteriorNode>(visited), ids, ref id, share);
-						}
+						child.GetGraphHelper(g, childNode, visited, ids, ref id);	
 					}
 				}
 			}
-			//if (changes) {
-			//	for (int i = 0; i < _options.Count; i++) {
-			//		var option = _options[i];
-			//		foreach (var children in option.Children()) {
-			//			foreach (var child in children) {
-			//				child.GetGraphHelper(g, seen);
-			//			}
-			//		}
-			//	}
-			//}
 		}
 
 	}
