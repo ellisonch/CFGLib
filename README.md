@@ -73,6 +73,19 @@ baab
 bbbb
 ```
 
+### Parse Forests
+Consider the following simple, but ambiguous grammar:
+```
+<S> → <S> '+' <S>
+<S> → '0'
+````
+Using this grammar to parse the string `0 + 0 + 0` yields a parse forest, not just a parse tree, because the parsing is ambiguous.
+That is, it could either be grouped like `(0 + 0) + 0` or `0 + (0 + 0)`.
+The tool returns a shared packed parse forest (SPPF):
+[[https://github.com/ellisonch/CFGLib/blob/master/wiki/additionRaw.png|alt=Addition SPPF]]
+or for convenience (but not efficiency), a flattened version:
+[[https://github.com/ellisonch/CFGLib/blob/master/wiki/additionFlat.png|alt=Addition SPPF]]
+
 ### Random Grammar Generation
 You can also generate random Grammars (either generic, or CNF).
 ```cs
@@ -103,8 +116,9 @@ Grammar(<X_0>){
 I used randomly generated grammars and both parsing algorithms to help test and make sure everything is correct.
 
 ## Caveats
-The format that CFGLib returns parse forests in is kind of weird.
-It will hopefully become easier to use as it is refined.
+There are still a few weaknesses:
+* No support for EBNF
+* No easy to use forest visitor
 
 
 ## Other Useful Classes and Methods
