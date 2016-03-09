@@ -82,9 +82,10 @@ Consider the following simple, but ambiguous grammar:
 Using this grammar to parse the string `0 + 0 + 0` yields a parse forest, not just a parse tree, because the parsing is ambiguous.
 That is, it could either be grouped like `(0 + 0) + 0` or `0 + (0 + 0)`.
 The tool returns a shared packed parse forest (SPPF):
-[[https://github.com/ellisonch/CFGLib/blob/master/wiki/additionRaw.png|alt=Addition SPPF]]
+<a href="https://github.com/ellisonch/CFGLib/blob/master/wiki/additionRaw.png"><img alt="Addition SPPF" src="https://github.com/ellisonch/CFGLib/blob/master/wiki/additionRaw.png" width="600"/></a>
+
 or for convenience (but not efficiency), a flattened version:
-[[https://github.com/ellisonch/CFGLib/blob/master/wiki/additionFlat.png|alt=Addition SPPF]]
+<a href="https://github.com/ellisonch/CFGLib/blob/master/wiki/additionFlat.png"><img alt="Addition SPPF Flattened" src="https://github.com/ellisonch/CFGLib/blob/master/wiki/additionFlat.png" width="600"/></a>
 
 ### Random Grammar Generation
 You can also generate random Grammars (either generic, or CNF).
