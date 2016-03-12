@@ -9,7 +9,7 @@ namespace CFGLibTest.Unit {
 		[TestMethod]
 		public void TestProduction() {
 			var actualp = CFGParser.Production(@"<S> -> <X> 'a' <S> [3.0]");
-			var expectedp = Production.New(
+			var expectedp = new Production(
 				Nonterminal.Of("S"),
 				new Sentence {
 					Nonterminal.Of("X"),
@@ -18,7 +18,7 @@ namespace CFGLibTest.Unit {
 				},
 				3.0
 			);
-			var unexpectedp = Production.New(
+			var unexpectedp = new Production(
 				Nonterminal.Of("S"),
 				new Sentence {
 					Terminal.Of("a"),
@@ -33,7 +33,7 @@ namespace CFGLibTest.Unit {
 		}
 		[TestMethod]
 		public void TestProductionWeight() {
-			Func<double, Production> prodp = (w) => Production.New(
+			Func<double, Production> prodp = (w) => new Production(
 				Nonterminal.Of("S"),
 				new Sentence { Nonterminal.Of("X") },
 				w

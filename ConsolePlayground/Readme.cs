@@ -13,7 +13,7 @@ namespace ConsolePlayground {
 			// S -> aSa | bSb | ε
 			var productions = new List<Production> {
 				// construct productions by passing arguments...
-				Production.New(
+				new Production(
 					lhs: Nonterminal.Of("S"),
 					rhs: new Sentence { Terminal.Of("a"), Nonterminal.Of("S"), Terminal.Of("a") },
 					weight: 20

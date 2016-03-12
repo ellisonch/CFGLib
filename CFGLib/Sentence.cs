@@ -15,6 +15,9 @@ namespace CFGLib {
 		public Sentence() {
 			_sentence = new List<Word>();
 		}
+		public Sentence(Word w) {
+			_sentence = new List<Word> { w };
+		}
 		public Sentence(IEnumerable<Word> l) {
 			_sentence = new List<Word>(l);
 		}

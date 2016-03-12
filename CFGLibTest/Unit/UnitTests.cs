@@ -24,22 +24,22 @@ namespace CFGLibTest.Unit {
 		[TestMethod]
 		public void TestCYK01() {
 			var productions = new List<Production> {
-				Production.New(
+				new Production(
 					Nonterminal.Of("S"),
 					new Sentence { Nonterminal.Of("X"), Nonterminal.Of("X") },
 					2
 				),
-				Production.New(
+				new Production(
 					Nonterminal.Of("X"),
 					new Sentence { Nonterminal.Of("X"), Nonterminal.Of("X") },
 					2
 				),
-				Production.New(
+				new Production(
 					Nonterminal.Of("S"),
 					new Sentence { Terminal.Of("a") },
 					8
 				),
-				Production.New(
+				new Production(
 					Nonterminal.Of("X"),
 					new Sentence { Terminal.Of("a") },
 					8
@@ -69,9 +69,9 @@ namespace CFGLibTest.Unit {
 
 		[TestMethod]
 		public void TestBadProduction() {
-			Helpers.AssertThrows<ArgumentException>(() => Production.New(Nonterminal.Of("S"), new Sentence(), double.PositiveInfinity));
-			Helpers.AssertThrows<ArgumentException>(() => Production.New(Nonterminal.Of("S"), new Sentence(), double.NegativeInfinity));
-			Helpers.AssertThrows<ArgumentException>(() => Production.New(Nonterminal.Of("S"), new Sentence(), double.NaN));
+			Helpers.AssertThrows<ArgumentException>(() => new Production(Nonterminal.Of("S"), new Sentence(), double.PositiveInfinity));
+			Helpers.AssertThrows<ArgumentException>(() => new Production(Nonterminal.Of("S"), new Sentence(), double.NegativeInfinity));
+			Helpers.AssertThrows<ArgumentException>(() => new Production(Nonterminal.Of("S"), new Sentence(), double.NaN));
 		}
 	}
 }

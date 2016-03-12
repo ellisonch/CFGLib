@@ -51,7 +51,7 @@ namespace CFGLib {
 				}
 			}
 
-			return Production.New(lhs, rhs, weight);
+			return new Production(lhs, rhs, weight);
 		}
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace CFGLib {
 				productions.Add(NextCNFTerminalProduction(numNonterminals, terminals, terminal));
 			}
 
-			productions.Add(Production.New(start, new Sentence(), producesEmptyWeight));
+			productions.Add(new Production(start, new Sentence(), producesEmptyWeight));
 
 			return new CNFGrammar(productions, start);
 		}
@@ -95,7 +95,7 @@ namespace CFGLib {
 			var rhs1 = RandomNonterminal(numNonTerminals, false);
 			var rhs2 = RandomNonterminal(numNonTerminals, false);
 
-			return Production.New(lhs, new Sentence { rhs1, rhs2 });
+			return new Production(lhs, new Sentence { rhs1, rhs2 });
 		}
 
 		public Production NextCNFTerminalProduction(int numNonterminals, IList<Terminal> terminals, Terminal rhs = null) {
@@ -104,7 +104,7 @@ namespace CFGLib {
 			}
 			var lhs = RandomNonterminal(numNonterminals);
 
-			return Production.New(lhs, new Sentence { rhs });
+			return new Production(lhs, new Sentence { rhs });
 		}
 
 		private Nonterminal RandomNonterminal(int numNonterminals, bool allowStart = true) {

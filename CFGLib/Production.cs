@@ -12,16 +12,9 @@ namespace CFGLib {
 		private Nonterminal _lhs;
 		private double _weight = 1.0;
 		private Sentence _rhs;
-		
-		/// <summary>
-		/// Legacy
-		/// </summary>
-		public static Production New(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
-			return new Production(lhs, rhs, weight);
-		}
+
 		/// <summary>
 		/// Returns a new production.
-		/// We use a New() method because this class is abstract.
 		/// </summary>
 		public Production(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
 			if (lhs == null) {
@@ -33,6 +26,13 @@ namespace CFGLib {
 			this.Lhs = lhs;
 			_rhs = rhs;
 			this.Weight = weight;
+		}
+
+		public Production(string lhsName, Sentence rhs, double weight = 1.0) : this(Nonterminal.Of(lhsName), rhs, weight) {
+		}
+		public Production(Nonterminal lhs, Word rhsOnlyWord, double weight = 1.0) : this(lhs, new Sentence(rhsOnlyWord), weight) {
+		}
+		public Production(string lhsName, Word rhsOnlyWord, double weight = 1.0) : this(Nonterminal.Of(lhsName), new Sentence(rhsOnlyWord), weight) {
 		}
 
 		/// <summary>
@@ -120,7 +120,7 @@ namespace CFGLib {
 		/// The Rhs is a new Sentence, so that any piece of the new Production can be changed without changing the old Production.
 		/// </summary>
 		internal Production DeepClone() {
-			return Production.New(this.Lhs, new Sentence(_rhs), this.Weight);
+			return new Production(this.Lhs, new Sentence(_rhs), this.Weight);
 		}
 
 		/// <summary>

@@ -73,7 +73,7 @@ namespace CFGLib {
 			var rhs = new Sentence(rhsList.Values);
 			var lhs = Nonterminal.Of(lhsMatch.Value);
 
-			var retval = CFGLib.Production.New(lhs, rhs, weight);
+			var retval = new Production(lhs, rhs, weight);
 			return retval;
 		}
 	}

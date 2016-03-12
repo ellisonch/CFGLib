@@ -61,7 +61,7 @@ namespace CFGLib {
 				}
 			}
 
-			resultProductions.Add(Production.New(_startSymbol, new Sentence(), producesEmptyWeight));
+			resultProductions.Add(new Production(_startSymbol, new Sentence(), producesEmptyWeight));
 
 			return new CNFGrammar(resultProductions, _startSymbol);
 		}
@@ -74,7 +74,7 @@ namespace CFGLib {
 			var fresh = GetFresh();
 			productions.Add(
 				// new Production(fresh, new Sentence { Nonterminal.Of("S") })
-				Production.New(fresh, new Sentence { _grammar.Start })
+				new Production(fresh, new Sentence { _grammar.Start })
 			);
 			_startSymbol = fresh;
 		}
@@ -101,7 +101,7 @@ namespace CFGLib {
 						fresh = GetFresh();
 						lookup[terminal] = fresh;
 						newProductions.Add(
-							Production.New(fresh, new Sentence { terminal })
+							new Production(fresh, new Sentence { terminal })
 						);
 					}
 					production.Rhs[i] = fresh;
@@ -128,12 +128,12 @@ namespace CFGLib {
 					var left = rhs[i];
 					var newFresh = GetFresh();
 					finalProductions.Add(
-						Production.New(curr, new Sentence { left, newFresh }, weight)
+						new Production(curr, new Sentence { left, newFresh }, weight)
 					);
 					curr = newFresh;
 				}
 				finalProductions.Add(
-					Production.New(curr, new Sentence { rhs[rhs.Count - 2], rhs[rhs.Count - 1] })
+					new Production(curr, new Sentence { rhs[rhs.Count - 2], rhs[rhs.Count - 1] })
 				);
 			}
 			productions.Clear();
@@ -230,7 +230,7 @@ namespace CFGLib {
 			foreach (var production in productions) {
 				var productionProb = production.Weight / weightSum;
 				var newWeight = unitProduction.Weight * productionProb;
-				var newProduction = Production.New(unitProduction.Lhs, production.Rhs, newWeight);
+				var newProduction = new Production(unitProduction.Lhs, production.Rhs, newWeight);
 				if (newProduction.IsSelfLoop) {
 					continue;
 				}
