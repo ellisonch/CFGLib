@@ -62,7 +62,8 @@ namespace CFGLib.Parsers.Earley {
 				beforeDotString = "ε";
 			}
 
-			return string.Format("{0} → {1} o {2}", Production.Lhs, beforeDotString, afterDotString);
+			// node.Label.Replace('o', '•')
+			return string.Format("{0} → {1} • {2}", Production.Lhs, beforeDotString, afterDotString);
 		}
 
 		public override string ToString() {
