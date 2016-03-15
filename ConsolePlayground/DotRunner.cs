@@ -11,7 +11,7 @@ namespace ConsolePlayground {
 			File.WriteAllText(outputFilename, dot);
 
 			// assumes dot.exe is on the path:
-			var args = string.Format(@"{0} -Tpng -O", outputFilename);
+			var args = string.Format(@"{0} -Tpdf -O", outputFilename);
 			var proc = System.Diagnostics.Process.Start("dot.exe", args);
 			proc.WaitForExit();
 		}
