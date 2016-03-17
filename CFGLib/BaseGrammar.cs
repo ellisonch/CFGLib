@@ -562,7 +562,7 @@ namespace CFGLib {
 			var earley = new Parsers.Earley.EarleyParser(this);
 			return earley.ParseGetProbability(s);
 		}
-		public ForestNode ParseGetForest(Sentence s) {
+		public ForestInternal ParseGetForest(Sentence s) {
 			var earley = new Parsers.Earley.EarleyParser(this);
 			return earley.ParseGetForest(s);
 		}
