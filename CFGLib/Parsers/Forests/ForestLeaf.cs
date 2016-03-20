@@ -1,4 +1,5 @@
-﻿using CFGLib.Parsers.Graphs;
+﻿using CFGLib.Parsers.Forests.ForestVisitors;
+using CFGLib.Parsers.Graphs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,10 @@ namespace CFGLib.Parsers.Forests {
 			// _terminal = terminalChild.Terminal;
 		}
 
+		internal override bool Accept(IForestVisitor visitor) {
+			return visitor.Visit(this);
+		}
+
 		internal override string ToStringSelf() {
 			return string.Format("{0} ({1}, {2})", _leafNode.GetSentence(), StartPosition, EndPosition);
 		}
@@ -26,10 +31,6 @@ namespace CFGLib.Parsers.Forests {
 			var retval = "";
 			retval += string.Format("{0}\n", ToStringSelf()).Indent(2 * level);
 			return retval;
-		}
-
-		internal override void GetGraphHelper(Graph g, ForestNodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> seen, ref int id) {
-			return;
 		}
 	}
 }

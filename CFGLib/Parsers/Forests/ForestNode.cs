@@ -1,4 +1,5 @@
-﻿using CFGLib.Parsers.Graphs;
+﻿using CFGLib.Parsers.Forests.ForestVisitors;
+using CFGLib.Parsers.Graphs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,9 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		internal abstract string ToStringHelper(int level, HashSet<InteriorNode> visited);
-		internal abstract void GetGraphHelper(Graph g, ForestNodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> ids, ref int id);
 
 		internal abstract string ToStringSelf();
+		
+		internal abstract bool Accept(IForestVisitor visitor);
 	}
 }

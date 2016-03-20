@@ -1,4 +1,5 @@
-﻿using CFGLib.Parsers.Graphs;
+﻿using CFGLib.Parsers.Forests.ForestVisitors;
+using CFGLib.Parsers.Graphs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,12 @@ namespace CFGLib.Parsers.Forests {
 			}
 		}
 
+		internal InteriorNode InternalNode {
+			get {
+				return _node;
+			}
+		}
+
 		public Nonterminal Nonterminal{
 			get {
 				return _nonterminal;
@@ -31,6 +38,10 @@ namespace CFGLib.Parsers.Forests {
 			//_nodeLookup[node] = this;
 
 			_options = ForestOption.BuildOptions(node.Families, node.StartPosition, node.EndPosition);
+		}
+
+		internal override bool Accept(IForestVisitor visitor) {
+			return visitor.Visit(this);
 		}
 
 		public override string ToString() {
@@ -82,53 +93,12 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		public string ToDot() {
-			var graph = GetGraph();
+			// var graph = GetGraph();
+			var gv = new ForestVisitors.GraphVisitors.GraphVisitor(this);
+			var graph = gv.Graph();
 			return graph.ToDot();
 		}
 
-		private Graph GetGraph() {
-			int id = 0;
-			var myNode = new ForestNodeNode(this, "" + id++, 0);
-			var g = new Graph(myNode);
-			GetGraphHelper(g, myNode, new HashSet<InteriorNode>(), new Dictionary<InteriorNode, int> { { _node, 0 } }, ref id);
-			return g;
-		}
-		internal override void GetGraphHelper(Graph g, ForestNodeNode myNode, HashSet<InteriorNode> visited, Dictionary<InteriorNode, int> ids, ref int id) {
-			if (visited.Contains(_node)) {
-				return;
-			}
-			visited.Add(_node);
-			//if (!ids.ContainsKey(_node)) {
-			//	ids[_node] = myNode.Id;
-			//}
-
-			for (int i = 0; i < _options.Count; i++) {
-				var option = _options[i];
-				string optionId = ids[_node] + "-" + i;
-				var optionNode = new ChildNode(option.Production.Rhs, this.StartPosition, this.EndPosition, optionId, myNode.Rank + 1);
-
-				g.AddEdge(myNode, optionNode, option.Production);
-				foreach (var children in option.Children()) {
-					foreach (var child in children) {
-						int childSeenId;
-						if (child is ForestLeaf) {
-							childSeenId = id++;
-						} else {
-							var internalChild = (ForestInternal)child;
-							if (!ids.TryGetValue(internalChild._node, out childSeenId)) {
-								childSeenId = id++;
-								ids[internalChild._node] = childSeenId;
-							}
-						}
-						
-						string childId = "" + childSeenId;
-						var childNode = new ForestNodeNode(child, childId, optionNode.Rank + 1);
-						g.AddEdge(optionNode, childNode);
-						child.GetGraphHelper(g, childNode, visited, ids, ref id);	
-					}
-				}
-			}
-		}
 
 	}
 }
