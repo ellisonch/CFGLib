@@ -34,12 +34,14 @@ namespace CFGLib.Parsers.Forests.ForestVisitors.GraphVisitors {
 			}
 			_visited.Add(node.InternalNode);
 
+			var currentNode = _currentNode;
+
 			for (int i = 0; i < node.Options.Count; i++) {
 				var option = node.Options[i];
 				string optionId = _ids[node.InternalNode] + "-" + i;
-				var optionNode = new ChildNode(option.Production.Rhs, node.StartPosition, node.EndPosition, optionId, _currentNode.Rank + 1);
+				var optionNode = new ChildNode(option.Production.Rhs, node.StartPosition, node.EndPosition, optionId, currentNode.Rank + 1);
 
-				_graph.AddEdge(_currentNode, optionNode, option.Production);
+				_graph.AddEdge(currentNode, optionNode, option.Production);
 				foreach (var children in option.Children()) {
 					foreach (var child in children) {
 						int childSeenId;
@@ -56,6 +58,7 @@ namespace CFGLib.Parsers.Forests.ForestVisitors.GraphVisitors {
 						string childId = "" + childSeenId;
 						var childNode = new ForestNodeNode(child, childId, optionNode.Rank + 1);
 						_graph.AddEdge(optionNode, childNode);
+						_currentNode = childNode;
 						child.Accept(this);
 						// child.GetGraphHelper(g, childNode, visited, ids, ref id);
 					}
