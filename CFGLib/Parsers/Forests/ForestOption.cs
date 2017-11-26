@@ -16,16 +16,17 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		public List<ForestNode[]> Children() {
+			// lazily build children to prevent nontermination
 			if (_children == null) {
 				_children = BuildChildren();
 			}
 			return _children;
 		}
-		//private readonly List<ForestLeaf> _leafChildren = new List<ForestLeaf>();
-		//private readonly List<ForestInternal> _internalChildren = new List<ForestInternal>();
 
-		// private readonly List<ForestNode> _options;
-		// private readonly Family _family;
+		internal ForestOption(Family family) {
+			_family = family;
+			//_children = BuildChildren();
+		}
 
 		internal static List<ForestOption> BuildOptions(IList<Family> families, int startPosition, int endPosition) {
 			var retval = new List<ForestOption>();
@@ -36,10 +37,6 @@ namespace CFGLib.Parsers.Forests {
 			}
 
 			return retval;
-		}
-
-		internal ForestOption(Family family) {
-			_family = family;
 		}
 
 		private List<ForestNode[]> BuildChildren() {
