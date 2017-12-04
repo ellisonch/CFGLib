@@ -19,6 +19,7 @@ namespace ConsolePlayground {
 	/// </summary>
 	class Program {
 		static void Main(string[] args) {
+			Console.OutputEncoding = System.Text.Encoding.UTF8;
 			//var rand = new Random(0);
 			//Experimental.TestSolver(rand);
 			// RandomTests.RandomJacobianTest();
