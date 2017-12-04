@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actioneer\ParserAction.cs" />
     <Compile Include="Parsers\CYK\CykParser.cs" />
     <Compile Include="Parsers\CYK\LocalCykProduction.cs" />
     <Compile Include="Parsers\Forests\ForestInternal.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="Parsers\Forests\ForestVisitors\DefaultVisitor.cs" />
     <Compile Include="Parsers\Forests\ForestVisitors\GraphVisitors\GraphVisitor.cs" />
     <Compile Include="Parsers\Forests\ForestVisitors\IForestVisitor.cs" />
+    <Compile Include="Actioneer\Traversal.cs" />
     <Compile Include="Parsers\Graphs\ChildNode.cs" />
     <Compile Include="Parsers\Graphs\Edge.cs" />
     <Compile Include="Parsers\Graphs\FamilyNode.cs" />

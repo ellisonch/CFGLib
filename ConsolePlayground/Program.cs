@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CFGLib.Actioneer;
 
 namespace ConsolePlayground {
 	/// <summary>
@@ -24,7 +25,8 @@ namespace ConsolePlayground {
 			//Experimental.TestSolver(rand);
 			// RandomTests.RandomJacobianTest();
 
-			PaperExamples();
+			// PaperExamples();
+
 			VisitorPlay();
 
 			//var g = new Grammar(new List<Production>{
@@ -168,8 +170,8 @@ namespace ConsolePlayground {
 			var input = Sentence.FromWords(inputString);
 			var sppf = ep.ParseGetForest(input);
 
-			//var rawdot = sppf.GetRawDot();
-			// DotRunner.Run(rawdot, "rawGraph");
+			//var rawdot = sppf.ToDot();
+			//DotRunner.Run(rawdot, "rawGraph");
 
 			Console.WriteLine(sppf.ToString());
 			Console.WriteLine();
