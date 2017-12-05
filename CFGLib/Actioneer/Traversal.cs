@@ -11,9 +11,9 @@ namespace CFGLib.Actioneer {
 		private readonly ForestInternal _forestRoot;
 		private readonly InteriorNode _root;
 		private readonly Sentence _input;
-		private readonly Dictionary<Production, IParserAction> _actions;
+		private readonly GrammarPlus _actions;
 
-		public Traversal(ForestInternal root, Sentence input, Dictionary<Production, IParserAction> actions) {
+		public Traversal(ForestInternal root, Sentence input, GrammarPlus actions) {
 			_forestRoot = root;
 			_root = root.InternalNode;
 			_input = input;

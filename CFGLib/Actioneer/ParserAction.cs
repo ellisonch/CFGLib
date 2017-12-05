@@ -5,14 +5,14 @@ namespace CFGLib.Actioneer {
 	public interface IParserAction {
 		object Act(TraverseResult[] args);
 	}
-	public class ParserAction<T> : IParserAction {
-		private Func<TraverseResult[], T> _action;
+	public class ParserAction : IParserAction {
+		private Func<TraverseResult[], object> _action;
 
-		public ParserAction(Func<TraverseResult[], T> p) {
+		public ParserAction(Func<TraverseResult[], object> p) {
 			_action = p;
 		}
 
-		public T Act(TraverseResult[] args) {
+		public object Act(TraverseResult[] args) {
 			return _action(args);
 		}
 

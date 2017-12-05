@@ -164,21 +164,25 @@ namespace ConsolePlayground {
 			Console.WriteLine(g.ToCodeString());
 			Console.WriteLine();
 
-			var actions = new Dictionary<Production, IParserAction> {
-				[p1] = new ParserAction<string>((argList) => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload)),
+			var actions = new List<ProductionPlus> {
+				// new Dictionary<Production, IParserAction> {
+				new ProductionPlus(p1, new ParserAction((argList) => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload))),
 			};
-			var termAction1 = new ParserAction<long>(x => Convert.ToInt64(x[0].Payload));
+			var termAction1 = new ParserAction(x => Convert.ToInt64(x[0].Payload));
 			foreach (var num in nums) {
-				actions[num] = termAction1;
+				actions.Add(new ProductionPlus(num, termAction1));
+				// actions[num] = ;
 			}
+			var gp = new GrammarPlus(g, actions);
 
-			var actions2 = new Dictionary<Production, IParserAction> {
-				[p1] = new ParserAction<long>((argList) => (long)(argList[0].Payload) + (long)(argList[2].Payload)),
-			};
-			var termAction2 = new ParserAction<long>(x => Convert.ToInt64(x[0].Payload));
-			foreach (var num in nums) {
-				actions2[num] = termAction2;
-			}
+
+			//var actions2 = new Dictionary<Production, IParserAction> {
+			//	[p1] = new ParserAction<long>((argList) => (long)(argList[0].Payload) + (long)(argList[2].Payload)),
+			//};
+			//var termAction2 = new ParserAction<long>(x => Convert.ToInt64(x[0].Payload));
+			//foreach (var num in nums) {
+			//	actions2[num] = termAction2;
+			//}
 
 			//Console.WriteLine(h.ToCodeString());
 
@@ -199,17 +203,17 @@ namespace ConsolePlayground {
 			Console.WriteLine();
 
 			Console.WriteLine("Starting Traversal...");
-			var trav = new Traversal(sppf, input, actions);
+			var trav = new Traversal(sppf, input, gp);
 			var resultList = trav.Traverse();
 			Console.WriteLine("-----------------");
 			foreach (var result in resultList) {
 				Console.WriteLine(result.Payload);
 			}
 
-			Console.WriteLine("-----------------");
-			foreach (var result in new Traversal(sppf, input, actions2).Traverse()) {
-				Console.WriteLine(result.Payload);
-			}
+			//Console.WriteLine("-----------------");
+			//foreach (var result in new Traversal(sppf, input, actions2).Traverse()) {
+			//	Console.WriteLine(result.Payload);
+			//}
 
 		}
 	}

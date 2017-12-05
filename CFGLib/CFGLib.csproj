@@ -42,7 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actioneer\GrammarPlus.cs" />
     <Compile Include="Actioneer\ParserAction.cs" />
+    <Compile Include="Actioneer\ProductionPlus.cs" />
     <Compile Include="Actioneer\TraverseResult.cs" />
     <Compile Include="Actioneer\TraverseResultCollection.cs" />
     <Compile Include="Parsers\CYK\CykParser.cs" />
