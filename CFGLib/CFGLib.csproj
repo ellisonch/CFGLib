@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actioneer\ParserAction.cs" />
+    <Compile Include="Actioneer\TraverseResult.cs" />
     <Compile Include="Parsers\CYK\CykParser.cs" />
     <Compile Include="Parsers\CYK\LocalCykProduction.cs" />
     <Compile Include="Parsers\Forests\ForestInternal.cs" />

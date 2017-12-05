@@ -154,9 +154,10 @@ namespace ConsolePlayground {
 			Console.WriteLine(g.ToCodeString());
 			Console.WriteLine();
 
-			var actions = new Dictionary<Production, ParserAction>();
-			actions[p1] = new ParserAction((argList) => string.Format("({0} + {1})", argList[0], argList[1]));
-			actions[p2] = new ParserAction((argList) => "0");
+			var actions = new Dictionary<Production, IParserAction> {
+				[p1] = new ParserAction<string>((argList) => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload)),
+				[p2] = new ParserAction<string>((argList) => "0")
+			};
 
 			//Console.WriteLine(h.ToCodeString());
 
@@ -176,8 +177,11 @@ namespace ConsolePlayground {
 			Console.WriteLine(sppf.ToString());
 			Console.WriteLine();
 
+			Console.WriteLine("Starting Traversal...");
 			var trav = new Traversal(sppf, input, actions);
-			trav.Traverse();
+			var result = trav.Traverse();
+			Console.WriteLine(result.Payload);
+
 		}
 	}
 }
