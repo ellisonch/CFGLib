@@ -166,11 +166,11 @@ namespace ConsolePlayground {
 
 			var actions = new List<ProductionPlus> {
 				// new Dictionary<Production, IParserAction> {
-				new ProductionPlus(p1, new ParserAction((argList) => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload))),
+				new ProductionPlus(p1, new ParserAction((argList) => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload)), 5, new GatherOption[]{ GatherOption.SameOrLower, GatherOption.StrictlyLower }),
 			};
 			var termAction1 = new ParserAction(x => Convert.ToInt64(x[0].Payload));
 			foreach (var num in nums) {
-				actions.Add(new ProductionPlus(num, termAction1));
+				actions.Add(new ProductionPlus(num, termAction1, 0, new GatherOption[] { }));
 				// actions[num] = ;
 			}
 			var gp = new GrammarPlus(g, actions);

@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actioneer\GatherOption.cs" />
     <Compile Include="Actioneer\GrammarPlus.cs" />
     <Compile Include="Actioneer\ParserAction.cs" />
     <Compile Include="Actioneer\ProductionPlus.cs" />

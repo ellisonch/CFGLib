@@ -11,13 +11,13 @@ namespace CFGLib.Actioneer {
 		private readonly ForestInternal _forestRoot;
 		private readonly InteriorNode _root;
 		private readonly Sentence _input;
-		private readonly GrammarPlus _actions;
+		private readonly GrammarPlus _annotatedGrammar;
 
-		public Traversal(ForestInternal root, Sentence input, GrammarPlus actions) {
+		public Traversal(ForestInternal root, Sentence input, GrammarPlus annotatedGrammar) {
 			_forestRoot = root;
 			_root = root.InternalNode;
 			_input = input;
-			_actions = actions;
+			_annotatedGrammar = annotatedGrammar;
 		}
 
 		public TraverseResultCollection Traverse() {
@@ -37,7 +37,7 @@ namespace CFGLib.Actioneer {
 
 		private TraverseResultCollection TraverseTerminal(TerminalNode nt, int level) {
 			// Console.WriteLine(string.Format("Terminal({2}) ({0}, {1})", nt.StartPosition, nt.EndPosition, nt.Terminal).Indent(level));
-			var resultList = new List<TraverseResult> { new TraverseResult(nt.Terminal.Name, nt) };
+			var resultList = new List<TraverseResult> { new TraverseResult(nt.Terminal.Name, nt, null) };
 			return new TraverseResultCollection(resultList);
 		}
 
@@ -63,12 +63,16 @@ namespace CFGLib.Actioneer {
 				//}
 				foreach (var oneSet in OneOfEach(args)) {
 					object payload = null;
-					if (_actions.TryGetValue(family.Production, out IParserAction action)) {
+					if (_annotatedGrammar.TryGetValue(family.Production, out ProductionPlus productionPlus)) {
+						if (!productionPlus.Supports(_annotatedGrammar, oneSet)) {
+							continue;
+						}
+						var action = productionPlus.Action;
 						// payload = action.Act(args.Select(a => a.First()).ToArray());
 						payload = action.Act(oneSet);
 					}
 
-					var result = new TraverseResult(payload, node);
+					var result = new TraverseResult(payload, node, family.Production);
 					resultList.Add(result);
 				}
 			}
@@ -220,7 +224,7 @@ namespace CFGLib.Actioneer {
 
 		private TraverseResult TraverseEpsilon(EpsilonNode leaf, int level) {
 			// Console.WriteLine("Epsilon".Indent(level));
-			return new TraverseResult("", leaf);
+			return new TraverseResult("", leaf, null);
 		}
 		//private void TraverseInternal(ForestLeaf leaf, int level) {
 		//	var start = leaf.StartPosition;
