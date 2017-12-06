@@ -142,7 +142,7 @@ namespace ConsolePlayground {
 			DotRunner.Run(sppf3.GetRawDot(), "example3");
 		}
 
-		private static void VisitorPlay() {
+		private static GrammarPlus AdditionGrammar() {
 			var p1 = CFGParser.Production("<S> → <S> '+' <S>");
 			var nums = new List<Production> {
 				CFGParser.Production("<S> → '0'"),
@@ -174,8 +174,12 @@ namespace ConsolePlayground {
 				// actions[num] = ;
 			}
 			var gp = new GrammarPlus(g, actions);
+			return gp;
+		}
 
-
+		private static void VisitorPlay() {
+			var gp = AdditionGrammar();
+			
 			//var actions2 = new Dictionary<Production, IParserAction> {
 			//	[p1] = new ParserAction<long>((argList) => (long)(argList[0].Payload) + (long)(argList[2].Payload)),
 			//};
@@ -184,15 +188,9 @@ namespace ConsolePlayground {
 			//	actions2[num] = termAction2;
 			//}
 
-			//Console.WriteLine(h.ToCodeString());
+			var ep = new EarleyParser(gp.Grammar);
 
-			//var t = new TestCFGToCNF();
-			//var tp = new TestCFGToCNFEmptyProb();
-			//var tr = new RegressionTests();
-			//var testp = new TestParsing();
-			var ep = new EarleyParser(g);
-
-			var inputString = "0 + 1 + 2 + 3";
+			var inputString = AdditionInput(3);
 			var input = Sentence.FromWords(inputString);
 			var sppf = ep.ParseGetForest(input);
 
@@ -215,6 +213,19 @@ namespace ConsolePlayground {
 			//	Console.WriteLine(result.Payload);
 			//}
 
+		}
+
+		private static string AdditionInput(int count) {
+			if (count == 0) {
+				return "";
+			}
+
+			var retval = "1";
+			while (count > 1) {
+				retval += " + 1";
+				count--;
+			}
+			return retval;
 		}
 	}
 }
