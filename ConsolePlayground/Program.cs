@@ -29,6 +29,8 @@ namespace ConsolePlayground {
 
 			VisitorPlay();
 
+			Benchmark();
+
 			//var g = new Grammar(new List<Production>{
 			//	CFGParser.Production("<S> → <X>"),
 			//	CFGParser.Production("<X> → <X> <X> <X>"),
@@ -128,6 +130,36 @@ namespace ConsolePlayground {
 			Console.Read();
 		}
 
+		private static void Benchmark() {
+			Console.WriteLine("Benching...");
+			var inputs = new List<Tuple<Sentence, long, int>>();
+			for (var i = 1; i < 14; i++) {
+				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
+			}
+			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
+			var ep = new EarleyParser(gp.Grammar);
+
+			foreach (var inputPair in inputs) {
+				var input = inputPair.Item1;
+				var expectedResult = inputPair.Item2;
+				var i = inputPair.Item3;
+
+				var sw = Stopwatch.StartNew();
+				var sppf = ep.ParseGetForest(input);
+				var trav = new Traversal(sppf, input, gp);
+				var resultList = trav.Traverse();
+				if (resultList.Count() != 1) {
+					throw new Exception();
+				}
+				var result = (long)resultList.First().Payload;
+				if (result != expectedResult) {
+					throw new Exception();
+				}
+				Console.WriteLine("{0},{1}", i, sw.Elapsed.TotalMilliseconds);
+			}
+			Console.WriteLine("Done!");
+		}
+
 		// from http://dx.doi.org/10.1016/j.entcs.2008.03.044
 		private static void PaperExamples() {
 			var ex3 = new Grammar(new List<Production>{
@@ -142,7 +174,7 @@ namespace ConsolePlayground {
 			DotRunner.Run(sppf3.GetRawDot(), "example3");
 		}
 
-		private static GrammarPlus AdditionGrammar() {
+		private static GrammarPlus AdditionGrammar<T>(Func<TraverseResult[], T> func) {
 			var p1 = CFGParser.Production("<S> → <S> '+' <S>");
 			var nums = new List<Production> {
 				CFGParser.Production("<S> → '0'"),
@@ -161,12 +193,12 @@ namespace ConsolePlayground {
 			}.Concat(nums), Nonterminal.Of("S"));
 
 			//var h = g.ToCNF();
-			Console.WriteLine(g.ToCodeString());
-			Console.WriteLine();
+			//Console.WriteLine(g.ToCodeString());
+			//Console.WriteLine();
 
 			var actions = new List<ProductionPlus> {
 				// new Dictionary<Production, IParserAction> {
-				new ProductionPlus(p1, new ParserAction((argList) => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload)), 5, new GatherOption[]{ GatherOption.SameOrLower, GatherOption.StrictlyLower }),
+				new ProductionPlus(p1, new ParserAction(argList => func(argList)), 5, new GatherOption[]{ GatherOption.SameOrLower, GatherOption.StrictlyLower }),
 			};
 			var termAction1 = new ParserAction(x => Convert.ToInt64(x[0].Payload));
 			foreach (var num in nums) {
@@ -178,7 +210,7 @@ namespace ConsolePlayground {
 		}
 
 		private static void VisitorPlay() {
-			var gp = AdditionGrammar();
+			var gp = AdditionGrammar(argList => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload));
 			
 			//var actions2 = new Dictionary<Production, IParserAction> {
 			//	[p1] = new ParserAction<long>((argList) => (long)(argList[0].Payload) + (long)(argList[2].Payload)),
