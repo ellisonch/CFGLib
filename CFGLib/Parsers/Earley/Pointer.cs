@@ -15,10 +15,17 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public override int GetHashCode() {
-			return new {
-				Label,
-				Item
-			}.GetHashCode();
+			//return new {
+			//	Label,
+			//	Item
+			//}.GetHashCode();
+			// based on http://stackoverflow.com/a/263416/2877032
+			unchecked {
+				int hash = 17;
+				hash = hash * 23 + Item.GetHashCode();
+				hash = hash * 23 + Label;
+				return hash;
+			}
 		}
 
 		public override bool Equals(Object other) {

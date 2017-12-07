@@ -175,6 +175,8 @@ namespace ConsolePlayground {
 			var inputs = new List<Tuple<Sentence, long, int>>();
 			// for (var i = 80; i < 105; i++) { // 13336ms
 			// for (var i = 1; i < 280; i++) {
+			// for (var i = 170; i < 195; i++) { // 10755ms after gather in sppf
+			// for (var i = 170; i < 195; i++) { // 9203ms after hash change
 			for (var i = 170; i < 195; i++) {
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
@@ -201,7 +203,7 @@ namespace ConsolePlayground {
 				//}
 				Console.WriteLine("{0},{1}", i, sw.Elapsed.TotalMilliseconds);
 			}
-			Console.WriteLine("Done in {0}ms (prev 10878ms)", totalSw.ElapsedMilliseconds);
+			Console.WriteLine("Done in {0}ms (prev 9203ms)", totalSw.ElapsedMilliseconds);
 		}
 
 		// from http://dx.doi.org/10.1016/j.entcs.2008.03.044
