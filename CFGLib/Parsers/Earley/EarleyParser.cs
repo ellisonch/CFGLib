@@ -1,6 +1,7 @@
 ﻿using CFGLib.Parsers.Forests;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,6 +45,19 @@ namespace CFGLib.Parsers.Earley {
 			return prob;
 		}
 
+		public object ParseGetRawSppf(Sentence s) {
+			var successes = ComputeSuccesses(s);
+			if (successes.Count == 0) {
+				return null;
+			}
+
+			var internalSppf = ConstructInternalSppf(successes, s);
+			AnnotateWithProductions(internalSppf);
+
+			// return internalSppf;
+			return null;
+		}
+
 		public override ForestInternal ParseGetForest(Sentence s) {
 			var successes = ComputeSuccesses(s);
 			if (successes.Count == 0) {
@@ -68,6 +82,9 @@ namespace CFGLib.Parsers.Earley {
 			return new ForestInternal(internalSppf, internalSppf.Symbol);
 		}
 
+		/// <summary>
+		/// Compute E_0 ... E_i as in [ES2008] Sec 4.0
+		/// </summary>
 		private IList<Item> ComputeSuccesses(Sentence s) {
 			// this helps sometimes
 			//var incomingTerminals = s.GetAllTerminals();
@@ -574,6 +591,20 @@ namespace CFGLib.Parsers.Earley {
 			var state = S[stateIndex];
 			var Si = S[completedItem.StartPosition];
 			var toAdd = new List<Item>();
+			if (Si.Count > 20) {
+
+			}
+
+			/*
+			For each item t = (B ::= τ ·, k) ∈ E_i and each corresponding item q = (D ::= τ · B µ, h) ∈ E_k, if there is no item p = (D ::= τ B · µ, h) ∈ E_i create one.
+			Add a reduction pointer labelled k from p to t and, if τ ̸= ϵ, a predecessor pointer labelled k from p to q.
+
+			completedItem is t
+			Si is E_k
+			item is q
+			newItem is p
+			*/
+
 			foreach (var item in Si) {
 				// make sure it's the same nonterminal
 				if (item.NextWord != completedItem.Production.Lhs) {
@@ -581,10 +612,14 @@ namespace CFGLib.Parsers.Earley {
 				}
 				// for some reason, making sure it's the same prefix (tau) breaks everything.
 				// this seems like a bug in [ES2008]
+				// TODO: what about if tau2 isn't a suffix of tau1?
 				// make sure it's the same prefix
 				//var tau1 = completedItem.Production.Rhs.GetRange(0, completedItem.CurrentPosition);
 				//var tau2 = item.Production.Rhs.GetRange(0, item.CurrentPosition);
 				//if (!tau1.SequenceEqual(tau2)) {
+				//	continue;
+				//}
+				//if (!IsSuffix(tau2, tau1)) {
 				//	continue;
 				//}
 				var newItem = item.Increment();
@@ -595,10 +630,43 @@ namespace CFGLib.Parsers.Earley {
 				toAdd.Add(newItem);
 			}
 			foreach (var item in toAdd) {
+				if (item.Production.Rhs.Count == 3) {
+					if (item.CurrentPosition == 3) {
+						if (item.Reductions.Count == 1) {
+							var red = item.Reductions.First();
+							if (red.Item.Production.Rhs.Count == 3) {
+								continue;
+							}
+						}
+						if (item.Reductions.Count > 1) {
+							throw new Exception();
+						}
+					}
+				}
 				state.InsertWithoutDuplicating(item);
 			}
 		}
+
+		private bool IsSuffix(Sentence possibleSuffix, Sentence list) {
+			if (list.Count < possibleSuffix.Count) {
+				return false;
+			}
+			for (var i = 0; i < possibleSuffix.Count; i++) {
+				var reverseIndex = list.Count - 1 - i;
+				Debug.Assert(reverseIndex >= 0);
+				Debug.Assert(reverseIndex < list.Count);
+
+				if (list[reverseIndex] != possibleSuffix[reverseIndex]) {
+					return false;
+				}
+			}
+			return true;
+		}
+
 		private void Prediction(StateSet[] S, int stateIndex, Nonterminal nonterminal, Item item) {
+			// From [ES2008] Sec 4.0.
+			// For each item (B::= γ · D δ, k) ∈ E_i and each rule D ::= ρ, (D::= ·ρ, i) is added to E_i.
+			
 			var state = S[stateIndex];
 			// check if we've already predicted this nonterminal in this state, if so, don't
 			// this optimization may not always be faster, but should help when there are lots of productions or high ambiguity

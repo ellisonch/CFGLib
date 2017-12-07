@@ -32,6 +32,7 @@ namespace ConsolePlayground {
 			Benchmark();
 			// BenchmarkBison();
 
+			#region junk 
 			//var g = new Grammar(new List<Production>{
 			//	CFGParser.Production("<S> → <X>"),
 			//	CFGParser.Production("<X> → <X> <X> <X>"),
@@ -126,11 +127,10 @@ namespace ConsolePlayground {
 			//sw.Stop();
 			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
+			#endregion
 
 			Console.WriteLine("Finished!");
-			if (Environment.GetEnvironmentVariable("COR_ENABLE_PROFILING") == null) {
-				Console.Read();
-			}
+			Console.Read();
 		}
 
 		private static void BenchmarkBison() {
@@ -173,7 +173,9 @@ namespace ConsolePlayground {
 		private static void Benchmark() {
 			Console.WriteLine("Benching...");
 			var inputs = new List<Tuple<Sentence, long, int>>();
-			for (var i = 80; i < 100; i++) {
+			// for (var i = 80; i < 105; i++) { // 13336ms
+			// for (var i = 1; i < 280; i++) {
+			for (var i = 170; i < 195; i++) {
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
@@ -186,6 +188,7 @@ namespace ConsolePlayground {
 				var i = inputPair.Item3;
 
 				var sw = Stopwatch.StartNew();
+				// var sppf = ep.ParseGetRawSppf(input);
 				var sppf = ep.ParseGetForest(input);
 				//var trav = new Traversal(sppf, input, gp);
 				//var resultList = trav.Traverse();
@@ -198,7 +201,7 @@ namespace ConsolePlayground {
 				//}
 				Console.WriteLine("{0},{1}", i, sw.Elapsed.TotalMilliseconds);
 			}
-			Console.WriteLine("Done in {0}ms (prev 9784ms)", totalSw.ElapsedMilliseconds);
+			Console.WriteLine("Done in {0}ms (prev 10878ms)", totalSw.ElapsedMilliseconds);
 		}
 
 		// from http://dx.doi.org/10.1016/j.entcs.2008.03.044
