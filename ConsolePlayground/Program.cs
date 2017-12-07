@@ -30,6 +30,7 @@ namespace ConsolePlayground {
 			VisitorPlay();
 
 			Benchmark();
+			// BenchmarkBison();
 
 			//var g = new Grammar(new List<Production>{
 			//	CFGParser.Production("<S> → <X>"),
@@ -93,7 +94,7 @@ namespace ConsolePlayground {
 			////Console.WriteLine();
 			//Console.WriteLine(sppf);
 			//// var dot = ForestHelpers.ToDot(sppf);
-			
+
 			//var rawdot = sppf.GetRawDot();
 			//DotRunner.Run(rawdot, "rawGraph");
 
@@ -125,20 +126,60 @@ namespace ConsolePlayground {
 			//sw.Stop();
 			//Console.WriteLine("Elapsed: {0}s", sw.Elapsed.TotalMilliseconds / 1000.0);
 
-			
+
 			Console.WriteLine("Finished!");
-			Console.Read();
+			if (Environment.GetEnvironmentVariable("COR_ENABLE_PROFILING") == null) {
+				Console.Read();
+			}
+		}
+
+		private static void BenchmarkBison() {
+			Console.WriteLine("Benching...");
+			var inputs = new List<Tuple<string, long, int>>();
+			for (var i = 1; i <= 280; i++) {
+				inputs.Add(Tuple.Create(AdditionInput(i) + ":", (long)i, i));
+			}
+
+			ProcessStartInfo startInfo = new ProcessStartInfo();
+			startInfo.UseShellExecute = false;
+			startInfo.RedirectStandardOutput = true;
+			startInfo.RedirectStandardInput = true;
+			startInfo.FileName = @"..\..\..\comparison\vars.exe";
+			Process process = new Process();
+			process.StartInfo = startInfo;
+			
+
+			foreach (var inputPair in inputs) {
+				var input = inputPair.Item1;
+				var expectedResult = inputPair.Item2;
+				var i = inputPair.Item3;
+
+				process.Start();
+				var sw = Stopwatch.StartNew();
+				process.StandardInput.WriteLine(input);
+				process.StandardInput.Close();
+				var result = process.StandardOutput.ReadLine();
+				sw.Stop();
+				var resultLong = Convert.ToInt64(result);
+				if (resultLong != expectedResult) {
+					throw new Exception();
+				}
+				// process.Kill();
+				Console.WriteLine("{0},{1}", i, sw.Elapsed.TotalMilliseconds);
+				process.WaitForExit();
+			}
 		}
 
 		private static void Benchmark() {
 			Console.WriteLine("Benching...");
 			var inputs = new List<Tuple<Sentence, long, int>>();
-			for (var i = 1; i < 14; i++) {
+			for (var i = 80; i < 100; i++) {
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
 			var ep = new EarleyParser(gp.Grammar);
 
+			var totalSw = Stopwatch.StartNew();
 			foreach (var inputPair in inputs) {
 				var input = inputPair.Item1;
 				var expectedResult = inputPair.Item2;
@@ -146,18 +187,18 @@ namespace ConsolePlayground {
 
 				var sw = Stopwatch.StartNew();
 				var sppf = ep.ParseGetForest(input);
-				var trav = new Traversal(sppf, input, gp);
-				var resultList = trav.Traverse();
-				if (resultList.Count() != 1) {
-					throw new Exception();
-				}
-				var result = (long)resultList.First().Payload;
-				if (result != expectedResult) {
-					throw new Exception();
-				}
+				//var trav = new Traversal(sppf, input, gp);
+				//var resultList = trav.Traverse();
+				//if (resultList.Count() != 1) {
+				//	throw new Exception();
+				//}
+				//var result = (long)resultList.First().Payload;
+				//if (result != expectedResult) {
+				//	throw new Exception();
+				//}
 				Console.WriteLine("{0},{1}", i, sw.Elapsed.TotalMilliseconds);
 			}
-			Console.WriteLine("Done!");
+			Console.WriteLine("Done in {0}ms (prev 9784ms)", totalSw.ElapsedMilliseconds);
 		}
 
 		// from http://dx.doi.org/10.1016/j.entcs.2008.03.044
