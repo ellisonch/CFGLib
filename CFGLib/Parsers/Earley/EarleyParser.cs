@@ -622,6 +622,10 @@ namespace CFGLib.Parsers.Earley {
 				//if (!IsSuffix(tau2, tau1)) {
 				//	continue;
 				//}
+				if (GatherExcludes(item, completedItem)) {
+					continue;
+				}
+
 				var newItem = item.Increment();
 				newItem.AddReduction(completedItem.StartPosition, completedItem);
 				if (item.CurrentPosition != 0) {
@@ -630,21 +634,19 @@ namespace CFGLib.Parsers.Earley {
 				toAdd.Add(newItem);
 			}
 			foreach (var item in toAdd) {
-				if (item.Production.Rhs.Count == 3) {
-					if (item.CurrentPosition == 3) {
-						if (item.Reductions.Count == 1) {
-							var red = item.Reductions.First();
-							if (red.Item.Production.Rhs.Count == 3) {
-								continue;
-							}
-						}
-						if (item.Reductions.Count > 1) {
-							throw new Exception();
-						}
-					}
-				}
 				state.InsertWithoutDuplicating(item);
 			}
+		}
+
+		private bool GatherExcludes(Item item, Item completedItem) {
+			if (item.Production.Rhs.Count == 3) {
+				if (item.CurrentPosition + 1 == 3) { // +1 since we're going to increment
+					if (completedItem.Production.Rhs.Count == 3) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		private bool IsSuffix(Sentence possibleSuffix, Sentence list) {
