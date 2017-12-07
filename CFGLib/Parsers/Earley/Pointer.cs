@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class Pointer {
-		public int Label;
-		public Item Item;
+		public readonly int Label;
+		public readonly Item Item;
 
 		public Pointer(int label, Item item) {
 			Label = label;
