@@ -45,19 +45,6 @@ namespace CFGLib.Parsers.Earley {
 			return prob;
 		}
 
-		public object ParseGetRawSppf(Sentence s) {
-			var successes = ComputeSuccesses(s);
-			if (successes.Count == 0) {
-				return null;
-			}
-
-			var internalSppf = ConstructInternalSppf(successes, s);
-			AnnotateWithProductions(internalSppf);
-
-			// return internalSppf;
-			return null;
-		}
-
 		public override ForestInternal ParseGetForest(Sentence s) {
 			var successes = ComputeSuccesses(s);
 			if (successes.Count == 0) {
@@ -622,9 +609,9 @@ namespace CFGLib.Parsers.Earley {
 				//if (!IsSuffix(tau2, tau1)) {
 				//	continue;
 				//}
-				if (GatherExcludes(item, completedItem)) {
-					continue;
-				}
+				//if (GatherExcludes(item, completedItem)) {
+				//	continue;
+				//}
 
 				var newItem = item.Increment();
 				newItem.AddReduction(completedItem.StartPosition, completedItem);
@@ -638,6 +625,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+		// Just for testing the S + S example
 		private bool GatherExcludes(Item item, Item completedItem) {
 			if (item.Production.Rhs.Count == 3) {
 				if (item.CurrentPosition + 1 == 3) { // +1 since we're going to increment
