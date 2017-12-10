@@ -7,10 +7,18 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Earley {
 	internal class EarleySet {
 		private readonly List<EarleyItem> _items = new List<EarleyItem>();
-
+		
 		public bool IsEmpty {
 			get {
 				return _items.Count == 0;
+			}
+		}
+
+		public EarleySet() { }
+
+		public EarleySet(EarleySet earleySet) {
+			foreach (var item in earleySet._items) {
+				this.Add(item);
 			}
 		}
 

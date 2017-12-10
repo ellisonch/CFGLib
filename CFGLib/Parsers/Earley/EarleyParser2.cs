@@ -56,10 +56,6 @@ namespace CFGLib.Parsers.Earley {
 				var potentialItem = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
 				var potentialItem2 = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
 
-				var hash = new HashSet<EarleyItem>();
-				hash.Add(potentialItem);
-				hash.Add(potentialItem2);
-
 				// if α ∈ Σ_N, add (S ::= · α, 0, null) to E_0
 				if (InSigma(alpha)) {
 					E[0].Add(potentialItem);
@@ -77,7 +73,7 @@ namespace CFGLib.Parsers.Earley {
 			for (var i = 0; i <= a.Count; i++) {
 				// H = ∅, R = E_i , Q = Q ′
 				H = new EarleySet();
-				R = E[i];
+				R = new EarleySet(E[i]);
 				Q = QPrime;
 
 				// Q′ = ∅
