@@ -15,6 +15,9 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		internal void Add(EarleyItem earleyItem) {
+			if (earleyItem == null) {
+				throw new ArgumentNullException();
+			}
 			_items.Add(earleyItem);
 		}
 

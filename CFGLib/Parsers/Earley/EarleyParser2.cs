@@ -54,6 +54,11 @@ namespace CFGLib.Parsers.Earley {
 			foreach (var production in _grammar.Productions) {
 				var alpha = production.Rhs;
 				var potentialItem = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
+				var potentialItem2 = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
+
+				var hash = new HashSet<EarleyItem>();
+				hash.Add(potentialItem);
+				hash.Add(potentialItem2);
 
 				// if α ∈ Σ_N, add (S ::= · α, 0, null) to E_0
 				if (InSigma(alpha)) {

@@ -19,6 +19,12 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public DecoratedProduction(Production production, int currentPosition) {
+			if (production == null) {
+				throw new ArgumentNullException();
+			}
+			if (currentPosition < 0 || currentPosition > production.Rhs.Count) {
+				throw new ArgumentOutOfRangeException();
+			}
 			Production = production;
 			CurrentPosition = currentPosition;
 		}
