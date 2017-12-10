@@ -30,6 +30,12 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+		public bool AtEnd {
+			get {
+				return CurrentPosition == Production.Rhs.Count;
+			}
+		}
+
 		public DecoratedProduction(Production production, int currentPosition) {
 			if (production == null) {
 				throw new ArgumentNullException();

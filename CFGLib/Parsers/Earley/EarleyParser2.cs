@@ -16,7 +16,8 @@ namespace CFGLib.Parsers.Earley {
 
 		public override ForestInternal ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
-			return new ForestInternal(sppf, sppf.Symbol);
+			throw new NotImplementedException();
+			// return new ForestInternal(sppf, sppf.Symbol);
 		}
 
 		public override double ParseGetProbability(Sentence s) {
@@ -31,10 +32,12 @@ namespace CFGLib.Parsers.Earley {
 		//}
 
 		// [Sec 5, ES2008]
-		private SymbolNode ParseGetSppf(Sentence a) {
+		private SppfNode2 ParseGetSppf(Sentence a) {
 			if (a.Count == 0) {
 				throw new ArgumentException("Not sure how to handle empty yet");
 			}
+			var S = _grammar.Start;
+
 			// E_0, ..., E_n, R, Q′, V = ∅
 			EarleySet[] E = new EarleySet[a.Count + 1]; // need +1?
 			for (var i = 0; i < E.Length; i++) {
@@ -45,13 +48,9 @@ namespace CFGLib.Parsers.Earley {
 			EarleySet R = new EarleySet();
 			var H = new Dictionary<Nonterminal, SppfNode2>();
 			HashSet<SppfNode2> V = new HashSet<SppfNode2>();
-
-
-			//for all (S ::= α) ∈ P {
-			//	if α ∈ Σ_N, add (S ::= · α, 0, null) to E_0
-			//	if α = a_1 α′, add (S ::= · α, 0, null) to Q′
-			//}
-			foreach (var production in _grammar.Productions) {
+			
+			// for all (S ::= α) ∈ P {
+			foreach (var production in _grammar.ProductionsFrom(S)) {
 				var alpha = production.Rhs;
 				var potentialItem = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
 				var potentialItem2 = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
@@ -141,9 +140,57 @@ namespace CFGLib.Parsers.Earley {
 				}
 
 				V = new HashSet<SppfNode2>();
+				// create an SPPF node v labelled(a_i+1, i, i + 1)
+				SppfNode2 v2 = null;
+				throw new NotImplementedException();
+
+				// while Q ̸= ∅ {
+				while (!Q.IsEmpty) {
+					// remove an element, Λ = (B ::= α · a_i+1 β, h, w) say, from Q
+					var Λ = Q.TakeOne();
+					if (Λ.NextWord != a[i + 1]) {
+						throw new Exception();
+					}
+					var h = Λ.StartPosition;
+					var w = Λ.SppfNode;
+					var β = Λ.Tail;
+
+					// let y = MAKE NODE(B ::= α a_i+1 · β, h, i + 1, w, v, V)
+					var productionAdvanced = Λ.DecoratedProduction.Increment();
+					var y = MakeNode(productionAdvanced, h, i + 1, w, v2, V);
+
+					var newItem = new EarleyItem(productionAdvanced, h, y);
+					// if β ∈ Σ_N { add (B ::= α a_i+1 · β, h, y) to E_i+1 }
+					if (InSigma(β)) {
+						E[i + 1].Add(newItem);
+					}
+
+					 // if β = a_i+2 β′ { add (B ::= α a_i+1 · β, h, y) to Q′ }
+					else {
+						var aNextNext = a[i + 2];
+						if (β.First() == aNextNext) {
+							QPrime.Add(newItem);
+						}
+					}
+				}
 			}
 
-			throw new NotImplementedException();
+			// if (S ::= τ ·, 0, w) ∈ E_n return w
+			// else return failure
+			foreach (var item in E[a.Count]) {
+				if (item.DecoratedProduction.Production.Lhs != S) {
+					continue;
+				}
+				if (item.StartPosition != 0) {
+					continue;
+				}
+				if (!item.DecoratedProduction.AtEnd) {
+					continue;
+				}
+				return item.SppfNode;
+				// TODO: could there be others?
+			}
+			return null;
 		}
 
 		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, HashSet<SppfNode2> V) {

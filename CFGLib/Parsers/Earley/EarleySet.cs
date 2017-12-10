@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
-	internal class EarleySet {
+	internal class EarleySet : IEnumerable<EarleyItem> {
 		private readonly List<EarleyItem> _items = new List<EarleyItem>();
 		
 		public bool IsEmpty {
@@ -41,6 +42,14 @@ namespace CFGLib.Parsers.Earley {
 			var item = _items[_items.Count - 1];
 			_items.RemoveAt(_items.Count - 1);
 			return item;
+		}
+
+		public IEnumerator<EarleyItem> GetEnumerator() {
+			return _items.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() {
+			return GetEnumerator();
 		}
 	}
 }
