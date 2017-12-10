@@ -32,6 +32,7 @@ namespace CFGLib.Parsers.Earley {
 		//}
 
 		// [Sec 5, ES2008]
+		// I've taken the liberty of adjusting the indices of a to start from 0
 		private SppfNode2 ParseGetSppf(Sentence a) {
 			if (a.Count == 0) {
 				throw new ArgumentException("Not sure how to handle empty yet");
@@ -53,13 +54,12 @@ namespace CFGLib.Parsers.Earley {
 			foreach (var production in _grammar.ProductionsFrom(S)) {
 				var alpha = production.Rhs;
 				var potentialItem = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
-				var potentialItem2 = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
 
 				// if α ∈ Σ_N, add (S ::= · α, 0, null) to E_0
 				if (InSigma(alpha)) {
 					E[0].Add(potentialItem);
 				}
-				// if α = a_1 α′, add (S ::= · α, 0, null) to Q′
+				// if α = a_0 α′, add (S ::= · α, 0, null) to Q′
 				// TODO: not sure how to handle this when a is ε
 				else {
 					var a1 = a.First();
@@ -92,15 +92,15 @@ namespace CFGLib.Parsers.Earley {
 							var δ = production.Rhs;
 							var newItem = new EarleyItem(new DecoratedProduction(production, 0), i, null);
 							if (InSigma(δ)) {
-								// add (C::= ·δ, i, null) to E_i and R }
+								// add (C ::= ·δ, i, null) to E_i and R }
 								if (!E[i].Contains(newItem)) {
 									E[i].Add(newItem);
 									R.Add(newItem);
 								}
 							} else {
-								// if δ = a_i+1 δ ′ { add (C ::= ·δ, i, null) to Q }
-								var aNext = a[i + 1];
-								if (δ.First() == aNext) {
+								// if δ = a_i δ′ { add (C ::= · δ, i, null) to Q }
+								var aCurr = a[i];
+								if (δ.First() == aCurr) {
 									Q.Add(newItem);
 								}
 							}
@@ -119,14 +119,14 @@ namespace CFGLib.Parsers.Earley {
 							// if β ∈ Σ N and (B ::= αC · β, h, y) ̸∈ E_i {
 							if (InSigma(β)) {
 								if (!E[i].Contains(newItem)) {
-									// add(B::= αC · β, h, y) to E i and R }
+									// add(B::= αC · β, h, y) to E_i and R }
 									E[i].Add(newItem);
 									R.Add(newItem);
 								}
 							} else {
-								// if β = a_i+1 β ′ { add (B ::= αC · β,h,y) to Q } } }
-								var aNext = a[i + 1];
-								if (β.First() == aNext) {
+								// if β = a_i β′ { add (B ::= αC · β, h, y) to Q } } }
+								var aCurr = a[i];
+								if (β.First() == aCurr) {
 									Q.Add(newItem);
 								}
 							}
@@ -141,41 +141,41 @@ namespace CFGLib.Parsers.Earley {
 				}
 
 				V = new HashSet<SppfNode2>();
-				// create an SPPF node v labelled(a_i+1, i, i + 1)
+				// create an SPPF node v labelled(a_i, i, i + 1)
 				// TODO: not sure what this is supposed to do when a_i+1 is oob
 				if (i + 1 >= a.Count) {
 					continue;
 				}
-				var v2 = new SppfNode2(a[i + 1], i, i + 1);
+				var v2 = new SppfNode2(a[i], i, i + 1);
 				// throw new NotImplementedException();
 
 				// while Q ̸= ∅ {
 				while (!Q.IsEmpty) {
-					// remove an element, Λ = (B ::= α · a_i+1 β, h, w) say, from Q
+					// remove an element, Λ = (B ::= α · a_i β, h, w) say, from Q
 					// TODO: the statement above seems to imply all elements of Q have that form, but this doesn't seem to happen.  Skip them if they don't?
 					var Λ = Q.TakeOne();
-					if (Λ.NextWord != a[i + 1]) {
-						// throw new Exception();
-						continue;
+					if (Λ.NextWord != a[i]) {
+						throw new Exception();
+						// continue;
 					}
 					var h = Λ.StartPosition;
 					var w = Λ.SppfNode;
 					var β = Λ.Tail;
 
-					// let y = MAKE NODE(B ::= α a_i+1 · β, h, i + 1, w, v, V)
+					// let y = MAKE NODE(B ::= α a_i · β, h, i + 1, w, v, V)
 					var productionAdvanced = Λ.DecoratedProduction.Increment();
 					var y = MakeNode(productionAdvanced, h, i + 1, w, v2, V);
 
 					var newItem = new EarleyItem(productionAdvanced, h, y);
-					// if β ∈ Σ_N { add (B ::= α a_i+1 · β, h, y) to E_i+1 }
+					// if β ∈ Σ_N { add (B ::= α a_i · β, h, y) to E_i+1 }
 					if (InSigma(β)) {
 						E[i + 1].Add(newItem);
 					}
 
-					 // if β = a_i+2 β′ { add (B ::= α a_i+1 · β, h, y) to Q′ }
+					 // if β = a_i+1 β′ { add (B ::= α a_i · β, h, y) to Q′ }
 					else {
-						var aNextNext = a[i + 2];
-						if (β.First() == aNextNext) {
+						var aNext = a[i + 1];
+						if (β.First() == aNext) {
 							QPrime.Add(newItem);
 						}
 					}

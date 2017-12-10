@@ -225,16 +225,16 @@ namespace ConsolePlayground {
 		private static GrammarPlus AdditionGrammar<T>(Func<TraverseResult[], T> func) {
 			var p1 = CFGParser.Production("<S> → <S> '+' <S>");
 			var nums = new List<Production> {
-				CFGParser.Production("<S> → '0'"),
+				// CFGParser.Production("<S> → '0'"),
 				CFGParser.Production("<S> → '1'"),
-				CFGParser.Production("<S> → '2'"),
-				CFGParser.Production("<S> → '3'"),
-				CFGParser.Production("<S> → '4'"),
-				CFGParser.Production("<S> → '5'"),
-				CFGParser.Production("<S> → '6'"),
-				CFGParser.Production("<S> → '7'"),
-				CFGParser.Production("<S> → '8'"),
-				CFGParser.Production("<S> → '9'"),
+				//CFGParser.Production("<S> → '2'"),
+				//CFGParser.Production("<S> → '3'"),
+				//CFGParser.Production("<S> → '4'"),
+				//CFGParser.Production("<S> → '5'"),
+				//CFGParser.Production("<S> → '6'"),
+				//CFGParser.Production("<S> → '7'"),
+				//CFGParser.Production("<S> → '8'"),
+				//CFGParser.Production("<S> → '9'"),
 			};
 			var g = new Grammar(new List<Production>{
 				p1,
