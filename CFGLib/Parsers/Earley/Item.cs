@@ -119,7 +119,7 @@ namespace CFGLib.Parsers.Earley {
 
 			return true;
 		}
-
+		
 		public int GetHashCode(Item obj) {
 			//return new {
 			//	obj.Production,

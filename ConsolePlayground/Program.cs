@@ -29,7 +29,7 @@ namespace ConsolePlayground {
 
 			VisitorPlay();
 
-			Benchmark();
+			// Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
@@ -268,7 +268,7 @@ namespace ConsolePlayground {
 			//	actions2[num] = termAction2;
 			//}
 
-			var ep = new EarleyParser(gp.Grammar);
+			var ep = new EarleyParser2(gp.Grammar);
 
 			var inputString = AdditionInput(3);
 			var input = Sentence.FromWords(inputString);
