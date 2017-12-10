@@ -20,11 +20,29 @@ namespace CFGLib.Parsers.Earley {
 
 		/// <summary>
 		/// a, * b, c, d
-		/// returns c
+		/// returns c, d
 		/// </summary>
 		public Sentence Tail {
 			get {
 				var start = CurrentPosition + 1;
+				var count = Production.Rhs.Count - start;
+				return Production.Rhs.GetRange(start, count);
+			}
+		}
+
+		public Sentence Prefix {
+			get {
+				return Production.Rhs.GetRange(0, CurrentPosition - 1);
+			}
+		}
+
+		/// <summary>
+		/// a, * b, c, d
+		/// returns b, c, d
+		/// </summary>
+		public Sentence Suffix {
+			get {
+				var start = CurrentPosition;
 				var count = Production.Rhs.Count - start;
 				return Production.Rhs.GetRange(start, count);
 			}

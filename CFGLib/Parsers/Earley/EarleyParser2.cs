@@ -48,7 +48,7 @@ namespace CFGLib.Parsers.Earley {
 			EarleySet QPrime = new EarleySet();
 			EarleySet R = new EarleySet();
 			var H = new Dictionary<Nonterminal, SppfNode2>();
-			HashSet<SppfNode2> V = new HashSet<SppfNode2>();
+			var V = new Dictionary<SppfNode2, SppfNode2>();
 			
 			// for all (S ::= α) ∈ P {
 			foreach (var production in _grammar.ProductionsFrom(S)) {
@@ -140,7 +140,7 @@ namespace CFGLib.Parsers.Earley {
 					}
 				}
 
-				V = new HashSet<SppfNode2>();
+				V = new Dictionary<SppfNode2, SppfNode2>();
 				// create an SPPF node v labelled(a_i, i, i + 1)
 				// TODO: not sure what this is supposed to do when a_i+1 is oob
 				if (i + 1 >= a.Count) {
@@ -200,8 +200,43 @@ namespace CFGLib.Parsers.Earley {
 			return null;
 		}
 
-		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, HashSet<SppfNode2> V) {
-			throw new NotImplementedException();
+		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
+		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, Dictionary<SppfNode2, SppfNode2> V) {
+			var β = decoratedProduction.Suffix;
+			var α = decoratedProduction.Prefix;
+
+			// hacking in sum type
+			Tuple<Word, DecoratedProduction> s;
+			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
+			if (β.Count == 0) {
+				s = Tuple.Create<Word, DecoratedProduction>(decoratedProduction.Production.Lhs, null);
+			} else {
+				s = Tuple.Create<Word, DecoratedProduction>(null, decoratedProduction);
+			}
+
+			SppfNode2 y;
+			// if α = ϵ and β ̸= ϵ { let y = v }
+			if (α.Count == 0 && β.Count != 0) {
+				y = v;
+			} else {
+				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
+				var potentialY = new SppfNode2(s, j, i);
+				if (!V.TryGetValue(potentialY, out y)) {
+					V[potentialY] = potentialY;
+					y = potentialY;
+				}
+
+				// if w = null and y does not have a family of children (v) add one
+				if (w == null) {
+					y.AddFamily(v);
+				}
+				// if w ̸= null and y does not have a family of children(w, v) add one
+				else {
+					y.AddFamily(w, v);
+				}
+			}
+
+			return y;
 		}
 
 		private bool InSigma(Sentence alpha) {

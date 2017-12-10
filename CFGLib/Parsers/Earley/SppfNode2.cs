@@ -7,16 +7,20 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Earley {
 	internal class SppfNode2 {
 		private Word Word { get; }
+		private DecoratedProduction DecoratedProduction { get; }
 		private int StartPosition { get; }
 		private int EndPosition { get; }
 
-		public SppfNode2(Word word, int startPos, int endPos) {
+		public SppfNode2(Tuple<Word, DecoratedProduction> tuple, int startPos, int endPos) {
 			if (startPos > endPos) {
 				throw new Exception();
 			}
-			Word = word;
+			Word = tuple.Item1;
+			DecoratedProduction = tuple.Item2;
 			StartPosition = startPos;
 			EndPosition = endPos;
+		}
+		public SppfNode2(Word word, int startPos, int endPos) : this(Tuple.Create<Word, DecoratedProduction>(word, null), startPos, endPos) {
 		}
 
 		public static bool operator ==(SppfNode2 x, SppfNode2 y) {
@@ -44,6 +48,9 @@ namespace CFGLib.Parsers.Earley {
 			if (x.Word != y.Word) {
 				return false;
 			}
+			if (x.DecoratedProduction != y.DecoratedProduction) {
+				return false;
+			}
 
 			return true;
 		}
@@ -54,10 +61,19 @@ namespace CFGLib.Parsers.Earley {
 				int hash = 17;
 				hash = hash * 23 + this.StartPosition.GetHashCode();
 				hash = hash * 23 + this.EndPosition.GetHashCode();
-				hash = hash * 23 + this.Word.GetHashCode();
+				hash = hash * 23 + (this.Word == null ? 0 : this.Word.GetHashCode());
+				hash = hash * 23 + (this.DecoratedProduction == null ? 0 : this.DecoratedProduction.GetHashCode());
 
 				return hash;
 			}
+		}
+
+		internal void AddFamily(SppfNode2 v) {
+			throw new NotImplementedException();
+		}
+
+		internal void AddFamily(SppfNode2 w, SppfNode2 v) {
+			throw new NotImplementedException();
 		}
 	}
 }
