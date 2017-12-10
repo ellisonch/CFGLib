@@ -6,7 +6,18 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class SppfNode2 {
+		private Word Word { get; }
+		private int StartPosition { get; }
+		private int EndPosition { get; }
 
+		public SppfNode2(Word word, int startPos, int endPos) {
+			if (startPos > endPos) {
+				throw new Exception();
+			}
+			Word = word;
+			StartPosition = startPos;
+			EndPosition = endPos;
+		}
 
 		public static bool operator ==(SppfNode2 x, SppfNode2 y) {
 			if (ReferenceEquals(x, null)) {
@@ -24,13 +35,15 @@ namespace CFGLib.Parsers.Earley {
 				return false;
 			}
 
-			//if (x.CurrentPosition != y.CurrentPosition) {
-			//	return false;
-			//}
-
-			//if (x.Production != y.Production) {
-			//	return false;
-			//}
+			if (x.StartPosition != y.StartPosition) {
+				return false;
+			}
+			if (x.EndPosition != y.EndPosition) {
+				return false;
+			}
+			if (x.Word != y.Word) {
+				return false;
+			}
 
 			return true;
 		}
@@ -39,8 +52,9 @@ namespace CFGLib.Parsers.Earley {
 		public override int GetHashCode() {
 			unchecked {
 				int hash = 17;
-				//hash = hash * 23 + this.Production.GetHashCode();
-				//hash = hash * 23 + this.CurrentPosition.GetHashCode();
+				hash = hash * 23 + this.StartPosition.GetHashCode();
+				hash = hash * 23 + this.EndPosition.GetHashCode();
+				hash = hash * 23 + this.Word.GetHashCode();
 
 				return hash;
 			}

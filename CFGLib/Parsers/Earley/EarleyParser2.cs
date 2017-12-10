@@ -59,12 +59,13 @@ namespace CFGLib.Parsers.Earley {
 				if (InSigma(alpha)) {
 					E[0].Add(potentialItem);
 				}
-
-				// if α = a_1 α′, add(S::= · α, 0, null) to Q′
+				// if α = a_1 α′, add (S ::= · α, 0, null) to Q′
 				// TODO: not sure how to handle this when a is ε
-				var a1 = a.First();
-				if (alpha.First() == a1) {
-					QPrime.Add(potentialItem);
+				else {
+					var a1 = a.First();
+					if (alpha.First() == a1) {
+						QPrime.Add(potentialItem);
+					}
 				}
 			}
 
@@ -141,15 +142,21 @@ namespace CFGLib.Parsers.Earley {
 
 				V = new HashSet<SppfNode2>();
 				// create an SPPF node v labelled(a_i+1, i, i + 1)
-				SppfNode2 v2 = null;
-				throw new NotImplementedException();
+				// TODO: not sure what this is supposed to do when a_i+1 is oob
+				if (i + 1 >= a.Count) {
+					continue;
+				}
+				var v2 = new SppfNode2(a[i + 1], i, i + 1);
+				// throw new NotImplementedException();
 
 				// while Q ̸= ∅ {
 				while (!Q.IsEmpty) {
 					// remove an element, Λ = (B ::= α · a_i+1 β, h, w) say, from Q
+					// TODO: the statement above seems to imply all elements of Q have that form, but this doesn't seem to happen.  Skip them if they don't?
 					var Λ = Q.TakeOne();
 					if (Λ.NextWord != a[i + 1]) {
-						throw new Exception();
+						// throw new Exception();
+						continue;
 					}
 					var h = Λ.StartPosition;
 					var w = Λ.SppfNode;
