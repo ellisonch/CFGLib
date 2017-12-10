@@ -54,6 +54,7 @@
     <Compile Include="Parsers\Earley\EarleyItem.cs" />
     <Compile Include="Parsers\Earley\EarleyParser2.cs" />
     <Compile Include="Parsers\Earley\EarleySet.cs" />
+    <Compile Include="Parsers\Earley\Family2.cs" />
     <Compile Include="Parsers\Earley\SppfNode2.cs" />
     <Compile Include="Parsers\Forests\ForestInternal.cs" />
     <Compile Include="Parsers\Forests\ForestNode.cs" />

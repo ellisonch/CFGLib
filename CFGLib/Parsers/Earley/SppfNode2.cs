@@ -11,6 +11,8 @@ namespace CFGLib.Parsers.Earley {
 		private int StartPosition { get; }
 		private int EndPosition { get; }
 
+		internal HashSet<Family2> Families { get; }
+
 		public SppfNode2(Tuple<Word, DecoratedProduction> tuple, int startPos, int endPos) {
 			if (startPos > endPos) {
 				throw new Exception();
@@ -19,6 +21,7 @@ namespace CFGLib.Parsers.Earley {
 			DecoratedProduction = tuple.Item2;
 			StartPosition = startPos;
 			EndPosition = endPos;
+			Families = new HashSet<Family2>();
 		}
 		public SppfNode2(Word word, int startPos, int endPos) : this(Tuple.Create<Word, DecoratedProduction>(word, null), startPos, endPos) {
 		}
@@ -69,11 +72,13 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		internal void AddFamily(SppfNode2 v) {
-			throw new NotImplementedException();
+			var family = new Family2(v);
+			Families.Add(family);
 		}
 
 		internal void AddFamily(SppfNode2 w, SppfNode2 v) {
-			throw new NotImplementedException();
+			var family = new Family2(w, v);
+			Families.Add(family);
 		}
 	}
 }
