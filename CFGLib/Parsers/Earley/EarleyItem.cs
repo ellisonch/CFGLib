@@ -25,6 +25,12 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+		public Sentence Tail {
+			get {
+				return DecoratedProduction.Tail;
+			}
+		}
+
 		public static bool operator ==(EarleyItem x, EarleyItem y) {
 			if (ReferenceEquals(x, null)) {
 				return ReferenceEquals(y, null);

@@ -43,7 +43,7 @@ namespace CFGLib.Parsers.Earley {
 			EarleySet Q = new EarleySet();
 			EarleySet QPrime = new EarleySet();
 			EarleySet R = new EarleySet();
-			EarleySet H = new EarleySet();
+			var H = new Dictionary<Nonterminal, SppfNode2>();
 			HashSet<SppfNode2> V = new HashSet<SppfNode2>();
 
 
@@ -72,7 +72,7 @@ namespace CFGLib.Parsers.Earley {
 			// for 0 ≤ i ≤ n {
 			for (var i = 0; i <= a.Count; i++) {
 				// H = ∅, R = E_i , Q = Q ′
-				H = new EarleySet();
+				H = new Dictionary<Nonterminal, SppfNode2>();
 				R = new EarleySet(E[i]);
 				Q = QPrime;
 
@@ -85,18 +85,51 @@ namespace CFGLib.Parsers.Earley {
 					var Λ = R.TakeOne();
 					// if Λ = (B ::= α · Cβ, h, w) {
 					if (Λ.NextWord is Nonterminal C) {
+						var β = Λ.Tail;
 						// for all (C ::= δ) ∈ P {
 						foreach (var production in _grammar.ProductionsFrom(C)) {
-							// if δ ∈ Σ N and (C ::= ·δ,i,null) ̸∈ E i {				
-							if (InSigma(production.Rhs)) {
-								// add(C::= ·δ, i, null) to E_i and R }
-								var newItem = new EarleyItem(new DecoratedProduction(production, 0), i, null);
+							// if δ ∈ Σ_N and (C ::= ·δ, i, null) ̸∈ E_i {
+							var δ = production.Rhs;
+							var newItem = new EarleyItem(new DecoratedProduction(production, 0), i, null);
+							if (InSigma(δ)) {
+								// add (C::= ·δ, i, null) to E_i and R }
 								if (!E[i].Contains(newItem)) {
 									E[i].Add(newItem);
 									R.Add(newItem);
 								}
+							} else {
+								// if δ = a_i+1 δ ′ { add (C ::= ·δ, i, null) to Q }
+								var aNext = a[i + 1];
+								if (δ.First() == aNext) {
+									Q.Add(newItem);
+								}
 							}
-							// if δ = a i + 1 δ ′ { add(C::= ·δ, i, null) to Q }
+						}
+
+						// if ((C,v) ∈ H) {
+						if (H.TryGetValue(C, out SppfNode2 v)) {
+							// let y = MAKE_NODE(B ::= αC · β, h, i, w, v, V)
+
+							var h = Λ.StartPosition;
+							var w = Λ.SppfNode;
+							var productionAdvanced = Λ.DecoratedProduction.Increment();
+							var y = MakeNode(productionAdvanced, h, i, w, v, V);
+
+							var newItem = new EarleyItem(productionAdvanced, h, y);
+							// if β ∈ Σ N and (B ::= αC · β, h, y) ̸∈ E_i {
+							if (InSigma(β)) {
+								if (!E[i].Contains(newItem)) {
+									// add(B::= αC · β, h, y) to E i and R }
+									E[i].Add(newItem);
+									R.Add(newItem);
+								}
+							} else {
+								// if β = a_i+1 β ′ { add (B ::= αC · β,h,y) to Q } } }
+								var aNext = a[i + 1];
+								if (β.First() == aNext) {
+									Q.Add(newItem);
+								}
+							}
 						}
 					}
 					// if Λ = (D ::= α·, h, w) {
@@ -110,6 +143,10 @@ namespace CFGLib.Parsers.Earley {
 				V = new HashSet<SppfNode2>();
 			}
 
+			throw new NotImplementedException();
+		}
+
+		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, HashSet<SppfNode2> V) {
 			throw new NotImplementedException();
 		}
 

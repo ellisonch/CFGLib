@@ -18,6 +18,18 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+		/// <summary>
+		/// a, * b, c, d
+		/// returns c
+		/// </summary>
+		public Sentence Tail {
+			get {
+				var start = CurrentPosition + 1;
+				var count = Production.Rhs.Count - start;
+				return Production.Rhs.GetRange(start, count);
+			}
+		}
+
 		public DecoratedProduction(Production production, int currentPosition) {
 			if (production == null) {
 				throw new ArgumentNullException();
@@ -78,6 +90,10 @@ namespace CFGLib.Parsers.Earley {
 
 			// node.Label.Replace('o', '•')
 			return string.Format("{0} → {1} • {2}", Production.Lhs, beforeDotString, afterDotString);
+		}
+
+		internal DecoratedProduction Increment() {
+			return new DecoratedProduction(Production, CurrentPosition + 1);
 		}
 	}
 }
