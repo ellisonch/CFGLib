@@ -17,8 +17,8 @@ namespace CFGLib.Parsers.Earley {
 		public override ForestInternal ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
 			var oldSppf = SppfBridge.OldFromNew(sppf);
-
-			return new ForestInternal(oldSppf, oldSppf.Symbol);
+			var forest = EarleyParser.SppfToForest(_grammar, oldSppf);
+			return forest;
 		}
 
 		public override double ParseGetProbability(Sentence s) {

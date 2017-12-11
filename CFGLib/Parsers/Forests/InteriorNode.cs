@@ -51,11 +51,11 @@ namespace CFGLib.Parsers.Forests {
 			// foreach (var family in Families) {
 			for (int i = 0; i < Families.Count; i++) {
 				var family = Families[i];
-				Production singletonProduction = null;
+				//Production singletonProduction = null;
 				INode prevNode;
 				if (Families.Count == 1) {
 					prevNode = myNode;
-					singletonProduction = Families[0].Production;
+					//singletonProduction = Families[0].Production;
 				} else {
 					prevNode = new FamilyNode(family, myNode.Node.Id + "-" + i, myNode.Rank + 1);
 					// g.AddEdge(myNode, prevNode, family.Production);

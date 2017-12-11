@@ -30,7 +30,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			var internalSppf = ConstructInternalSppf(successes, s);
-			AnnotateWithProductions(internalSppf);
+			AnnotateWithProductions(_grammar, internalSppf);
 
 			return GetProbFromSppf(_grammar, internalSppf);
 		}
@@ -56,7 +56,11 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			var internalSppf = ConstructInternalSppf(successes, s);
-			AnnotateWithProductions(internalSppf);
+			return SppfToForest(_grammar, internalSppf);
+		}
+
+		internal static ForestInternal SppfToForest(BaseGrammar _grammar, SymbolNode internalSppf) {
+			AnnotateWithProductions(_grammar, internalSppf);
 
 			//var nodeProbs = new Dictionary<SppfNode, double>();
 			//var prob = CalculateProbability(internalSppf, nodeProbs);
@@ -69,7 +73,7 @@ namespace CFGLib.Parsers.Earley {
 			// PrintForest(internalSppf);
 			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);
-			
+
 			return new ForestInternal(internalSppf, internalSppf.Symbol);
 		}
 
@@ -272,7 +276,7 @@ namespace CFGLib.Parsers.Earley {
 
 		#region annotate
 		//TODO this is so horribly terrible. There's got to be a better way of thinking about this structure
-		private void AnnotateWithProductions(SppfNode node, HashSet<SppfNode> seen = null, InteriorNode parent = null, int place = 0) {
+		private static void AnnotateWithProductions(BaseGrammar _grammar, SppfNode node, HashSet<SppfNode> seen = null, InteriorNode parent = null, int place = 0) {
 			if (seen == null) {
 				seen = new HashSet<SppfNode>();
 			}
@@ -302,19 +306,19 @@ namespace CFGLib.Parsers.Earley {
 				if (members.Count == 1) {
 					var child = members[0];
 					
-					AnnotateWithProductionsChildren((InteriorNode)node, seen, child, i);
+					AnnotateWithProductionsChildren(_grammar, (InteriorNode)node, seen, child, i);
 				} else if (members.Count == 2) {
 					var left = members[0];
 					var right = members[1];
 					
-					AnnotateWithProductionsChildren((InteriorNode)node, seen, left, right, i);
+					AnnotateWithProductionsChildren(_grammar, (InteriorNode)node, seen, left, right, i);
 				} else {
 					throw new Exception("Should only be 0--2 children");
 				}
 			}
 		}
 		
-		private void AnnotateWithProductionsChildren(InteriorNode parent, HashSet<SppfNode> seen, SppfNode child, int place) {
+		private static void AnnotateWithProductionsChildren(BaseGrammar _grammar, InteriorNode parent, HashSet<SppfNode> seen, SppfNode child, int place) {
 			Word parentSymbol = null;
 			if (parent is SymbolNode) {
 				var symbolParent = (SymbolNode)parent;
@@ -334,7 +338,7 @@ namespace CFGLib.Parsers.Earley {
 					var production = _grammar.FindProduction((Nonterminal)parentSymbol, new Sentence { symbolChild.Symbol });
 					symbolParent.AddChild(place, production);
 				}
-				AnnotateWithProductions(symbolChild, seen, parent, place);
+				AnnotateWithProductions(_grammar, symbolChild, seen, parent, place);
 				return;
 			} else if (child is IntermediateNode) {
 				throw new Exception("Don't handle intermediate");
@@ -350,16 +354,17 @@ namespace CFGLib.Parsers.Earley {
 			throw new Exception();
 		}
 
-		private void AnnotateWithProductionsChildren(InteriorNode parent, HashSet<SppfNode> seen, SppfNode left, SppfNode right, int place) {
-			if (!(left is IntermediateNode)) {
-				throw new Exception();
-			}
+		private static void AnnotateWithProductionsChildren(BaseGrammar _grammar, InteriorNode parent, HashSet<SppfNode> seen, SppfNode left, SppfNode right, int place) {
+			// Commenting this out because it's not true in the new sppf
+			//if (!(left is IntermediateNode)) {
+			//	throw new Exception();
+			//}
 			//if (!(right is SymbolNode)) {
 			//	throw new Exception();
 			//}
 
-			AnnotateWithProductions(left, seen, parent, place);
-			AnnotateWithProductions(right, seen, parent, place);
+			AnnotateWithProductions(_grammar, left, seen, parent, place);
+			AnnotateWithProductions(_grammar, right, seen, parent, place);
 		}
 #endregion annotate
 

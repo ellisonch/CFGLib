@@ -25,7 +25,7 @@ namespace ConsolePlayground {
 			//Experimental.TestSolver(rand);
 			// RandomTests.RandomJacobianTest();
 
-			// PaperExamples();
+			PaperExamples();
 
 			VisitorPlay();
 
@@ -218,12 +218,15 @@ namespace ConsolePlayground {
 				CFGParser.Production("<B> → ε"),
 				CFGParser.Production("<T> → 'b' 'b' 'b'"),
 			}, Nonterminal.Of("S"));
-			// var sppf3 = ex3.ParseGetForest(Sentence.FromLetters("abbb"));
-			// DotRunner.Run(sppf3.GetRawDot(), "example3");
 
 			var ep = new EarleyParser2(ex3);
 			var input = Sentence.FromLetters("abbb");
 			var sppf = ep.ParseGetForest(input);
+
+			// var sppf3 = ex3.ParseGetForest(Sentence.FromLetters("abbb"));
+			var dot = sppf.GetRawDot();
+			System.IO.File.WriteAllText(@"D:\prog\ContextFreeGrammars\ConsolePlayground\bin\Debug\ex3dot.dot", dot);
+			DotRunner.Run(dot, "example3");
 		}
 
 		private static GrammarPlus AdditionGrammar<T>(Func<TraverseResult[], T> func) {
@@ -278,8 +281,8 @@ namespace ConsolePlayground {
 			var input = Sentence.FromWords(inputString);
 			var sppf = ep.ParseGetForest(input);
 
-			//var rawdot = sppf.ToDot();
-			//DotRunner.Run(rawdot, "rawGraph");
+			var rawdot = sppf.GetRawDot();
+			DotRunner.Run(rawdot, "newSppf");
 
 			Console.WriteLine(sppf.ToString());
 			Console.WriteLine();

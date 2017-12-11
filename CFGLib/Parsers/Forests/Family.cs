@@ -19,7 +19,8 @@ namespace CFGLib.Parsers.Forests {
 		internal Family(SppfNode node1) {
 			_nodes.Add(node1);
 		}
-		internal Family(InteriorNode node1, SppfNode node2) {
+		// TODO: node1 was InteriorNode
+		internal Family(SppfNode node1, SppfNode node2) {
 			_nodes.Add(node1);
 			_nodes.Add(node2);
 		}
