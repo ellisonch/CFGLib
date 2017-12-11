@@ -22,7 +22,16 @@ namespace CFGLib.Parsers.Earley {
 			var first = Children.ElementAtOrDefault(0);
 			var second = Children.ElementAtOrDefault(1);
 
-			return new { first, second }.GetHashCode();
+			//return new { first, second }.GetHashCode();
+
+			// based on http://stackoverflow.com/a/263416/2877032
+			unchecked {
+				int hash = 17;
+				hash = hash * 23 + (first == null ? 0 : first.GetHashCode());
+				hash = hash * 23 + (second == null ? 0 : second.GetHashCode());
+
+				return hash;
+			}
 		}
 
 		public override bool Equals(Object other) {
