@@ -70,7 +70,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			// for 0 ≤ i ≤ n {
-			for (var i = 0; i <= a.Count; i++) {
+			for (var i = 0; i < E.Length; i++) {
 				// H = ∅, R = E_i , Q = Q ′
 				H = new Dictionary<Nonterminal, SppfNode2>();
 				R = new EarleySet(E[i]);
@@ -176,9 +176,18 @@ namespace CFGLib.Parsers.Earley {
 								}
 							} else {
 								// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
-								var aCurr = a[i];
-								if (δ.First() == aCurr) {
-									Q.Add(newItem);
+								// TODO: not exactly sure what should happen when a[i] is oob
+								//if (i > a.Count) {
+								//	throw new Exception();
+								//} else if (i == a.Count) {
+								//	Q.Add(newItem);
+								//} else {
+
+								if (i < a.Count) {
+									var aCurr = a[i];
+									if (δ.First() == aCurr) {
+										Q.Add(newItem);
+									}
 								}
 							}
 						}
@@ -186,51 +195,45 @@ namespace CFGLib.Parsers.Earley {
 						throw new Exception("Didn't expect a terminal");
 					}
 				}
+				if (i < a.Count) {
+					V = new Dictionary<SppfNode2, SppfNode2>();
+					// create an SPPF node v labelled(a_i, i, i + 1)
+					var v2 = new SppfNode2(a[i], i, i + 1);
 
-				V = new Dictionary<SppfNode2, SppfNode2>();
-				// create an SPPF node v labelled(a_i, i, i + 1)
-				// TODO: not sure what this is supposed to do when a_i+1 is oob
-				if (i + 1 >= a.Count) {
-					continue;
-				}
-				var v2 = new SppfNode2(a[i], i, i + 1);
-				// throw new NotImplementedException();
+					// while Q ̸= ∅ {
+					while (!Q.IsEmpty) {
+						// remove an element, Λ = (B ::= α · a_i β, h, w) say, from Q
+						// TODO: the statement above seems to imply all elements of Q have that form, but this doesn't seem to happen.  Skip them if they don't?
+						var Λ = Q.TakeOne();
+						if (Λ.NextWord != a[i]) {
+							throw new Exception();
+							// continue;
+						}
+						var h = Λ.StartPosition;
+						var w = Λ.SppfNode;
+						var β = Λ.Tail;
 
-				// while Q ̸= ∅ {
-				while (!Q.IsEmpty) {
-					// remove an element, Λ = (B ::= α · a_i β, h, w) say, from Q
-					// TODO: the statement above seems to imply all elements of Q have that form, but this doesn't seem to happen.  Skip them if they don't?
-					var Λ = Q.TakeOne();
-					if (Λ.NextWord != a[i]) {
-						throw new Exception();
-						// continue;
-					}
-					var h = Λ.StartPosition;
-					var w = Λ.SppfNode;
-					var β = Λ.Tail;
+						// let y = MAKE NODE(B ::= α a_i · β, h, i + 1, w, v, V)
+						var productionAdvanced = Λ.DecoratedProduction.Increment();
+						var y = MakeNode(productionAdvanced, h, i + 1, w, v2, V);
 
-					// let y = MAKE NODE(B ::= α a_i · β, h, i + 1, w, v, V)
-					var productionAdvanced = Λ.DecoratedProduction.Increment();
-					var y = MakeNode(productionAdvanced, h, i + 1, w, v2, V);
+						var newItem = new EarleyItem(productionAdvanced, h, y);
+						// if β ∈ Σ_N { add (B ::= α a_i · β, h, y) to E_i+1 }
+						if (InSigma(β)) {
+							E[i + 1].Add(newItem);
+						}
 
-					var newItem = new EarleyItem(productionAdvanced, h, y);
-					// if β ∈ Σ_N { add (B ::= α a_i · β, h, y) to E_i+1 }
-					if (InSigma(β)) {
-						E[i + 1].Add(newItem);
-					}
-
-					 // if β = a_i+1 β′ { add (B ::= α a_i · β, h, y) to Q′ }
-					else {
-						var aNext = a[i + 1];
-						if (β.First() == aNext) {
-							QPrime.Add(newItem);
+						// if β = a_i+1 β′ { add (B ::= α a_i · β, h, y) to Q′ }
+						else {
+							var aNext = a[i + 1];
+							if (β.First() == aNext) {
+								QPrime.Add(newItem);
+							}
 						}
 					}
 				}
 			}
-
 			// if (S ::= τ ·, 0, w) ∈ E_n return w
-			// else return failure
 			foreach (var item in E[a.Count]) {
 				if (item.DecoratedProduction.Production.Lhs != S) {
 					continue;
@@ -244,6 +247,7 @@ namespace CFGLib.Parsers.Earley {
 				return item.SppfNode;
 				// TODO: could there be others?
 			}
+			// else return failure
 			return null;
 		}
 
