@@ -43,7 +43,7 @@ namespace CFGLib.Parsers.Earley {
 		public override bool Equals(object other) {
 			var x = this;
 			var y = other as EarleyItem;
-			if (y == null) {
+			if (ReferenceEquals(y, null)) {
 				return false;
 			}
 

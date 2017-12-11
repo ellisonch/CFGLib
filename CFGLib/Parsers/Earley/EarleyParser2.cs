@@ -19,8 +19,9 @@ namespace CFGLib.Parsers.Earley {
 			//foreach (var family in sppf.Families) {
 			//	var str = family.ToString();
 			//}
-			throw new NotImplementedException();
+			// throw new NotImplementedException();
 			// return new ForestInternal(sppf, sppf.Symbol);
+			return null;
 		}
 
 		public override double ParseGetProbability(Sentence s) {

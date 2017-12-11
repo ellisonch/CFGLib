@@ -25,11 +25,11 @@ namespace ConsolePlayground {
 			//Experimental.TestSolver(rand);
 			// RandomTests.RandomJacobianTest();
 
-			PaperExamples();
+			// PaperExamples();
 
 			// VisitorPlay();
 
-			// Benchmark();
+			Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
@@ -173,8 +173,8 @@ namespace ConsolePlayground {
 		private static void Benchmark() {
 			Console.WriteLine("Benching...");
 			var inputs = new List<Tuple<Sentence, long, int>>();
-			for (var i = 80; i < 105; i++) { // 13336ms
-			// for (var i = 1; i < 2000; i += 10) {
+			// for (var i = 80; i < 105; i++) { // 13336ms
+			for (var i = 1; i < 100; i += 1) {
 			// for (var i = 170; i < 195; i++) { // 10755ms after gather in sppf
 			// for (var i = 170; i < 195; i++) { // 9203ms after hash change
 			// for (var i = 170; i < 195; i++) { // 2703ms after doing gather earlier
@@ -183,7 +183,7 @@ namespace ConsolePlayground {
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
-			var ep = new EarleyParser(gp.Grammar);
+			var ep = new EarleyParser2(gp.Grammar);
 
 			var totalSw = Stopwatch.StartNew();
 			foreach (var inputPair in inputs) {
