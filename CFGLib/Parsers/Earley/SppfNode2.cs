@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class SppfNode2 {
-		private Word Word { get; }
-		private DecoratedProduction DecoratedProduction { get; }
-		private int StartPosition { get; }
-		private int EndPosition { get; }
+		public Word Word { get; }
+		public DecoratedProduction DecoratedProduction { get; }
+		public int StartPosition { get; }
+		public int EndPosition { get; }
 
 		internal HashSet<Family2> Families { get; }
 

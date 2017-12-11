@@ -16,12 +16,9 @@ namespace CFGLib.Parsers.Earley {
 
 		public override ForestInternal ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
-			//foreach (var family in sppf.Families) {
-			//	var str = family.ToString();
-			//}
-			// throw new NotImplementedException();
-			// return new ForestInternal(sppf, sppf.Symbol);
-			return null;
+			var oldSppf = SppfBridge.OldFromNew(sppf);
+
+			return new ForestInternal(oldSppf, oldSppf.Symbol);
 		}
 
 		public override double ParseGetProbability(Sentence s) {
@@ -29,13 +26,9 @@ namespace CFGLib.Parsers.Earley {
 			if (sppf == null) {
 				return 0.0;
 			}
-			var oldSppf = OldFromNew(sppf);
+			var oldSppf = SppfBridge.OldFromNew(sppf);
 			var prob = EarleyParser.GetProbFromSppf(_grammar, oldSppf);
 			return prob;
-		}
-
-		private SymbolNode OldFromNew(SppfNode2 sppf) {
-			throw new NotImplementedException();
 		}
 
 		//public TraverseResultCollection Traverse(Sentence input) {

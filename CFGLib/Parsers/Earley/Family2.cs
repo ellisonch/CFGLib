@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class Family2 {
-		private List<SppfNode2> Children { get; }
+		public List<SppfNode2> Children { get; }
 
 		public Family2() {
 			Children = new List<SppfNode2> { };

@@ -27,9 +27,9 @@ namespace ConsolePlayground {
 
 			// PaperExamples();
 
-			// VisitorPlay();
+			VisitorPlay();
 
-			Benchmark();
+			// Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
