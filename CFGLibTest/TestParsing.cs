@@ -15,11 +15,14 @@ namespace CFGLibTest {
 			CNFGrammar h = g.ToCNF();
 			var earley = new EarleyParser(g);
 			var cyk = new CykParser(h);
+			var earley2 = new EarleyParser2(g);
 
 			foreach (var sentence in sentences) {
 				var p1 = cyk.ParseGetProbability(sentence);
 				var p2 = earley.ParseGetProbability(sentence);
+				var p3 = earley2.ParseGetProbability(sentence);
 				Helpers.AssertNear(p1, p2);
+				Helpers.AssertNear(p2, p3);
 			}
 		}
 
