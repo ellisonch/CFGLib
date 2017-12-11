@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Earley {
 	internal class EarleySet : IEnumerable<EarleyItem> {
 		private readonly List<EarleyItem> _items = new List<EarleyItem>();
+		private readonly HashSet<EarleyItem> _hashedItems = new HashSet<EarleyItem>();
 
 		public bool IsEmpty {
 			get {
@@ -29,7 +30,7 @@ namespace CFGLib.Parsers.Earley {
 
 		public EarleySet(EarleySet earleySet) {
 			foreach (var item in earleySet._items) {
-				this.Add(item);
+				this.Add(item);				
 			}
 		}
 
@@ -37,12 +38,14 @@ namespace CFGLib.Parsers.Earley {
 			if (earleyItem == null) {
 				throw new ArgumentNullException();
 			}
-			_items.Add(earleyItem);
+			
+			if (_hashedItems.Add(earleyItem)) {
+				_items.Add(earleyItem);
+			}
 		}
-
-		// TODO: Need to use hash
+		
 		public bool Contains(EarleyItem item) {
-			return _items.Contains(item);
+			return _hashedItems.Contains(item);
 		}
 
 		internal EarleyItem TakeOne() {
@@ -51,6 +54,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 			var item = _items[_items.Count - 1];
 			_items.RemoveAt(_items.Count - 1);
+			_hashedItems.Remove(item);
 			return item;
 		}
 
