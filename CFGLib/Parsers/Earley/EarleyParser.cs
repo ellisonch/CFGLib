@@ -17,7 +17,7 @@ namespace CFGLib.Parsers.Earley {
 
 	public class EarleyParser : Parser {
 		private readonly BaseGrammar _grammar;
-		private readonly double _probabilityChangePercentage = 1e-15;
+		private static readonly double _probabilityChangePercentage = 1e-15;
 
 		public EarleyParser(BaseGrammar grammar) {
 			_grammar = grammar;
@@ -32,8 +32,12 @@ namespace CFGLib.Parsers.Earley {
 			var internalSppf = ConstructInternalSppf(successes, s);
 			AnnotateWithProductions(internalSppf);
 
+			return GetProbFromSppf(_grammar, internalSppf);
+		}
+
+		internal static double GetProbFromSppf(BaseGrammar _grammar, SymbolNode internalSppf) {
 			var nodeProbs = new Dictionary<SppfNode, double>();
-			var prob = CalculateProbability(internalSppf, nodeProbs);
+			var prob = CalculateProbability(_grammar, internalSppf, nodeProbs);
 
 			//PrintForest(internalSppf, nodeProbs);
 			//Console.WriteLine();
@@ -154,7 +158,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private double CalculateProbability(SymbolNode sppf, Dictionary<SppfNode, double> nodeProbs) {
+		private static double CalculateProbability(BaseGrammar _grammar, SymbolNode sppf, Dictionary<SppfNode, double> nodeProbs) {
 			var nodes = GetAllNodes(sppf);
 
 			var indexToNode = nodes.ToArray();
@@ -178,7 +182,7 @@ namespace CFGLib.Parsers.Earley {
 
 				for (var i = 0; i < indexToNode.Length; i++) {
 					var node = indexToNode[i];
-					var estimate = StepProbability(node, nodeToIndex, previousEstimates);
+					var estimate = StepProbability(_grammar, node, nodeToIndex, previousEstimates);
 					currentEstimates[i] = estimate;
 
 					if (currentEstimates[i] > previousEstimates[i]) {
@@ -207,7 +211,7 @@ namespace CFGLib.Parsers.Earley {
 			return currentEstimates[nodeToIndex[sppf]];
 		}
 		
-		private double StepProbability(SppfNode node, Dictionary<SppfNode, int> nodeToIndex, double[] previousEstimates) {
+		private static double StepProbability(BaseGrammar _grammar, SppfNode node, Dictionary<SppfNode, int> nodeToIndex, double[] previousEstimates) {
 			if (node.Families.Count == 0) {
 				return 1.0;
 			}
@@ -217,7 +221,7 @@ namespace CFGLib.Parsers.Earley {
 			for (int i = 0; i < l.Count; i++) {
 				var alternative = l[i];
 				
-				double prob = GetChildProb(node, i);
+				double prob = GetChildProb(_grammar, node, i);
 
 				var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]).ToList();
 
@@ -234,7 +238,7 @@ namespace CFGLib.Parsers.Earley {
 			return result;
 		}
 
-		private double GetChildProb(SppfNode node, int i) {
+		private static double GetChildProb(BaseGrammar _grammar, SppfNode node, int i) {
 			var production = node.Families[i].Production;
 			var prob = 1.0;
 			if (production != null) {

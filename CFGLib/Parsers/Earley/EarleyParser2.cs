@@ -25,6 +25,16 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public override double ParseGetProbability(Sentence s) {
+			var sppf = ParseGetSppf(s);
+			if (sppf == null) {
+				return 0.0;
+			}
+			var oldSppf = OldFromNew(sppf);
+			var prob = EarleyParser.GetProbFromSppf(_grammar, oldSppf);
+			return prob;
+		}
+
+		private SymbolNode OldFromNew(SppfNode2 sppf) {
 			throw new NotImplementedException();
 		}
 
