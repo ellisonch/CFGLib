@@ -70,7 +70,11 @@ namespace CFGLib.Parsers.Earley {
 				return hash;
 			}
 		}
-
+		
+		internal void AddFamily() {
+			var family = new Family2();
+			Families.Add(family);
+		}
 		internal void AddFamily(SppfNode2 v) {
 			var family = new Family2(v);
 			Families.Add(family);
@@ -79,6 +83,12 @@ namespace CFGLib.Parsers.Earley {
 		internal void AddFamily(SppfNode2 w, SppfNode2 v) {
 			var family = new Family2(w, v);
 			Families.Add(family);
+		}
+
+
+		public override string ToString() {
+			var firstBit = Word?.ToString() ?? DecoratedProduction.ToString();
+			return string.Format("{0} {1} {2}", firstBit, StartPosition, EndPosition);
 		}
 	}
 }

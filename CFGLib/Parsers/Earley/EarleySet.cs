@@ -8,11 +8,21 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Earley {
 	internal class EarleySet : IEnumerable<EarleyItem> {
 		private readonly List<EarleyItem> _items = new List<EarleyItem>();
-		
+
 		public bool IsEmpty {
 			get {
 				return _items.Count == 0;
 			}
+		}
+
+		public int Count {
+			get {
+				return _items.Count;
+			}
+		}
+
+		public EarleyItem this[int i] {
+			get { return _items[i]; }
 		}
 
 		public EarleySet() { }

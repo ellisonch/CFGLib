@@ -8,6 +8,9 @@ namespace CFGLib.Parsers.Earley {
 	internal class Family2 {
 		private List<SppfNode2> Children { get; }
 
+		public Family2() {
+			Children = new List<SppfNode2> { };
+		}
 		public Family2(SppfNode2 v) {
 			Children = new List<SppfNode2> { v };
 		}
@@ -15,42 +18,30 @@ namespace CFGLib.Parsers.Earley {
 			Children = new List<SppfNode2> { w, v };
 		}
 
-		internal class Family {
-			private readonly List<SppfNode2> _nodes = new List<SppfNode2>();
-			public Production Production { get; internal set; }
+		public override int GetHashCode() {
+			var first = Children.ElementAtOrDefault(0);
+			var second = Children.ElementAtOrDefault(1);
 
-			public IList<SppfNode2> Members {
-				get {
-					return _nodes;
-				}
+			return new { first, second }.GetHashCode();
+		}
+
+		public override bool Equals(Object other) {
+			if (other == null) {
+				return false;
+			}
+			var localOther = other as Family2;
+			if (localOther == null) {
+				return false;
 			}
 
-			internal Family(SppfNode2 node1) {
-				_nodes.Add(node1);
-			}
-			internal Family(SppfNode2 node1, SppfNode2 node2) {
-				_nodes.Add(node1);
-				_nodes.Add(node2);
-			}
+			return Children.SequenceEqual(localOther.Children);
+		}
 
-			public override int GetHashCode() {
-				var first = _nodes.ElementAtOrDefault(0);
-				var second = _nodes.ElementAtOrDefault(1);
-
-				return new { first, second }.GetHashCode();
+		public override string ToString() {
+			if (this.Children.Count == 0) {
+				return string.Format("ε");
 			}
-
-			public override bool Equals(Object other) {
-				if (other == null) {
-					return false;
-				}
-				var localOther = other as Family;
-				if (localOther == null) {
-					return false;
-				}
-
-				return _nodes.SequenceEqual(localOther._nodes);
-			}
+			return string.Format(string.Join(" | ", this.Children));
 		}
 	}
 }

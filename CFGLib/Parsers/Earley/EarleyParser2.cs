@@ -16,6 +16,9 @@ namespace CFGLib.Parsers.Earley {
 
 		public override ForestInternal ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
+			//foreach (var family in sppf.Families) {
+			//	var str = family.ToString();
+			//}
 			throw new NotImplementedException();
 			// return new ForestInternal(sppf, sppf.Symbol);
 		}
@@ -146,7 +149,7 @@ namespace CFGLib.Parsers.Earley {
 							// set w = v
 							w = v;
 							// if w does not have family (ϵ) add one
-							throw new NotImplementedException();
+							w.AddFamily();
 						}
 
 						// if h = i { add (D, w) to H }
@@ -158,7 +161,11 @@ namespace CFGLib.Parsers.Earley {
 						}
 
 						// for all (A ::= τ · Dδ, k, z) in E_h {
-						foreach (var item in E[h]) {
+						for (var itemi = 0; itemi < E[h].Count; itemi++) {
+							var item = E[h][itemi];
+							if (item.NextWord != D) {
+								continue;
+							}
 							var k = item.StartPosition;
 							var z = item.SppfNode;
 							var δ = item.Tail;
