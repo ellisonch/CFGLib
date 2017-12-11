@@ -83,6 +83,9 @@ namespace CFGLib.Parsers.Earley {
 				while (!R.IsEmpty) {
 					// remove an element, Λ say, from R
 					var Λ = R.TakeOne();
+					var w = Λ.SppfNode;
+					var h = Λ.StartPosition;
+
 					// if Λ = (B ::= α · Cβ, h, w) {
 					if (Λ.NextWord is Nonterminal C) {
 						var β = Λ.Tail;
@@ -106,12 +109,9 @@ namespace CFGLib.Parsers.Earley {
 							}
 						}
 
-						// if ((C,v) ∈ H) {
+						// if ((C, v) ∈ H) {
 						if (H.TryGetValue(C, out SppfNode2 v)) {
 							// let y = MAKE_NODE(B ::= αC · β, h, i, w, v, V)
-
-							var h = Λ.StartPosition;
-							var w = Λ.SppfNode;
 							var productionAdvanced = Λ.DecoratedProduction.Increment();
 							var y = MakeNode(productionAdvanced, h, i, w, v, V);
 
@@ -134,7 +134,54 @@ namespace CFGLib.Parsers.Earley {
 					}
 					// if Λ = (D ::= α·, h, w) {
 					else if (Λ.NextWord == null) {
-						throw new NotImplementedException();
+						var D = Λ.DecoratedProduction.Production.Lhs;
+						// if w = null {
+						if (w == null) {
+							// if there is no node v ∈ V labelled (D, i, i) create one
+							var potentialV = new SppfNode2(D, i, i);
+							if (!V.TryGetValue(potentialV, out SppfNode2 v)) {
+								v = potentialV;
+								V[potentialV] = potentialV;
+							}
+							// set w = v
+							w = v;
+							// if w does not have family (ϵ) add one
+							throw new NotImplementedException();
+						}
+
+						// if h = i { add (D, w) to H }
+						if (h == i) {
+							if (H.ContainsKey(D)) {
+								throw new Exception();
+							}
+							H[D] = w;
+						}
+
+						// for all (A ::= τ · Dδ, k, z) in E_h {
+						foreach (var item in E[h]) {
+							var k = item.StartPosition;
+							var z = item.SppfNode;
+							var δ = item.Tail;
+							// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
+							var productionAdvanced = item.DecoratedProduction.Increment();
+							var y = MakeNode(productionAdvanced, k, i, z, w, V);
+
+							var newItem = new EarleyItem(productionAdvanced, k, y);
+							// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
+							if (InSigma(δ)) {
+								if (!E[i].Contains(newItem)) {
+									// add (A ::= τD · δ, k, y) to E_i and R
+									E[i].Add(newItem);
+									R.Add(newItem);
+								}
+							} else {
+								// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
+								var aCurr = a[i];
+								if (δ.First() == aCurr) {
+									Q.Add(newItem);
+								}
+							}
+						}
 					} else {
 						throw new Exception("Didn't expect a terminal");
 					}
