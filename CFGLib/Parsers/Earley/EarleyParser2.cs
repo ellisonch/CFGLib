@@ -187,18 +187,14 @@ namespace CFGLib.Parsers.Earley {
 								}
 							} else {
 								// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
-								// TODO: not exactly sure what should happen when a[i] is oob
-								//if (i > a.Count) {
-								//	throw new Exception();
-								//} else if (i == a.Count) {
-								//	Q.Add(newItem);
-								//} else {
-
 								if (i < a.Count) {
 									var aCurr = a[i];
 									if (δ.First() == aCurr) {
 										Q.Add(newItem);
 									}
+								} else {
+									// TODO: do nothing when at end?
+									// throw new Exception();
 								}
 							}
 						}
@@ -280,6 +276,7 @@ namespace CFGLib.Parsers.Earley {
 			// if α = ϵ and β ̸= ϵ { let y = v }
 			if (α.Count == 0 && β.Count != 0) {
 				y = v;
+				y.FakeProduction = decoratedProduction.Production;
 			} else {
 				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
 				var potentialY = new SppfNode2(s, j, i);

@@ -244,9 +244,17 @@ namespace CFGLib.Parsers.Earley {
 
 		private static double GetChildProb(BaseGrammar _grammar, SppfNode node, int i) {
 			var production = node.Families[i].Production;
+			var fakeProduction = node.Families[i].Members[0].FakeProduction;
 			var prob = 1.0;
 			if (production != null) {
 				prob = _grammar.GetProbability(production);
+				if (fakeProduction != null) {
+					throw new Exception();
+				}
+			} else {
+				if (fakeProduction != null) {
+					prob = _grammar.GetProbability(fakeProduction);
+				}
 			}
 
 			return prob;
@@ -362,6 +370,22 @@ namespace CFGLib.Parsers.Earley {
 			//if (!(right is SymbolNode)) {
 			//	throw new Exception();
 			//}
+			if (left is IntermediateNode) {
+				// just keep going
+			} else if (left is LeafNode leafNode) {
+				// throw new NotImplementedException();
+				// var intermediateNode = (IntermediateNode)node;
+				var production = leafNode.FakeProduction;
+				if (production == null) {
+					throw new Exception();
+				}
+				parent.AddChild(place, production);
+				//if (leafNodeItem.CurrentPosition == production.Rhs.Count - 1) {
+				//	parent.AddChild(place, production);
+				//}
+			} else {
+				throw new NotImplementedException();
+			}
 
 			AnnotateWithProductions(_grammar, left, seen, parent, place);
 			AnnotateWithProductions(_grammar, right, seen, parent, place);

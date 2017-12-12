@@ -13,6 +13,11 @@ namespace CFGLib.Parsers.Earley {
 
 		internal HashSet<Family2> Families { get; }
 
+		/// <summary>
+		/// Used just to convey production in contracted sppf nodes, for testing
+		/// </summary>
+		public Production FakeProduction { get; internal set; }
+
 		public SppfNode2(Tuple<Word, DecoratedProduction> tuple, int startPos, int endPos) {
 			if (startPos > endPos) {
 				throw new Exception();

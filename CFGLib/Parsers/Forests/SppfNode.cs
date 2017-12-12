@@ -13,8 +13,10 @@ namespace CFGLib.Parsers.Forests {
 		public int Id; // added later
 
 		// An ordered version of the hash
-		internal abstract IList<Family> Families { get; }
-		
+		internal abstract IList<Family> Families { get; }		
+
+		public Production FakeProduction { get; internal set; }
+
 		protected SppfNode(int startPosition, int endPosition) {
 			StartPosition = startPosition;
 			EndPosition = endPosition;

@@ -40,12 +40,15 @@ namespace CFGLib.Parsers.Earley {
 			if (word.IsNonterminal) {
 				var retval = new SymbolNode(word as Nonterminal, sppf.StartPosition, sppf.EndPosition);
 				cache[sppf] = retval;
+				retval.FakeProduction = sppf.FakeProduction;
 				foreach (var family in sppf.Families) {
 					AddFamily(retval, family, cache);
 				}
 				return retval;
 			} else {
-				var retval = new TerminalNode(word as Terminal, sppf.StartPosition, sppf.EndPosition);
+				var retval = new TerminalNode(word as Terminal, sppf.StartPosition, 
+					sppf.EndPosition);
+				retval.FakeProduction = sppf.FakeProduction;
 				return retval;
 			}
 		}

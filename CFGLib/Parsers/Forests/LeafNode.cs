@@ -10,9 +10,8 @@ namespace CFGLib.Parsers.Forests {
 	internal abstract class LeafNode : SppfNode {
 		protected LeafNode(int start, int end) : base(start, end) {
 		}
-
 		public abstract Sentence GetSentence();
-		
+
 		private static IList<Family> _families = new List<Family>().AsReadOnly();
 		internal override IList<Family> Families {
 			get {
