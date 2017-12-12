@@ -28,9 +28,11 @@ namespace ConsolePlayground {
 			// PaperExamples();
 
 			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<S> → ε"),
+				CFGParser.Production("<S> → <A> <A>"),
+				CFGParser.Production("<A> → 'a' <A>"),
+				CFGParser.Production("<A> → ε")
 			}, Nonterminal.Of("S"));
-			var sentence = Sentence.FromWords("");
+			var sentence = Sentence.FromWords("a");
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 

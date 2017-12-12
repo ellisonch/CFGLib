@@ -113,10 +113,12 @@ namespace CFGLib.Parsers.Earley {
 								}
 							} else {
 								// if δ = a_i δ′ { add (C ::= · δ, i, null) to Q }
-								var aCurr = a[i];
-								if (δ.First() == aCurr) {
-									Q.Add(newItem);
-								}
+								if (i < a.Count) {
+									var aCurr = a[i];
+									if (δ.First() == aCurr) {
+										Q.Add(newItem);
+									}
+								} // TODO: do nothing when not?
 							}
 						}
 
