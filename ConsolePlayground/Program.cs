@@ -27,19 +27,20 @@ namespace ConsolePlayground {
 
 
 			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<X_0> → <X_1>"),
-				CFGParser.Production("<X_1> → 'x1' 'x2'"),
-				CFGParser.Production("<X_1> → ε")
-			}, Nonterminal.Of("X_0"));
-			var sentence = Sentence.FromWords("x1 x2");
+				CFGParser.Production("<S> → <X> 'b'"),
+				CFGParser.Production("<S> → 'a'"),
+				CFGParser.Production("<X> → <S>"),
+				CFGParser.Production("<X> → 'x'")
+			}, Nonterminal.Of("S"));
+			var sentence = Sentence.FromWords("a b b");
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
-			var p2 = earley.ParseGetForest(sentence);
+			// var p2 = earley.ParseGetForest(sentence);
 			var p3 = earley2.ParseGetForest(sentence);
 			//var p2 = earley.ParseGetProbability(sentence);
 			//var p3 = earley2.ParseGetProbability(sentence);
 
-			DotRunner.Run(p2.GetRawDot(), "testEarleyOld");
+			// DotRunner.Run(p2.GetRawDot(), "testEarleyOld");
 			DotRunner.Run(p3.GetRawDot(), "testEarleyNew");
 
 			var prob = earley2.ParseGetProbability(sentence);

@@ -284,7 +284,7 @@ namespace CFGLib.Parsers.Earley {
 
 		#region annotate
 		//TODO this is so horribly terrible. There's got to be a better way of thinking about this structure
-		private static void AnnotateWithProductions(BaseGrammar _grammar, SppfNode node, HashSet<SppfNode> seen = null, InteriorNode parent = null, int place = 0) {
+		internal static void AnnotateWithProductions(BaseGrammar _grammar, SppfNode node, HashSet<SppfNode> seen = null, InteriorNode parent = null, int place = 0) {
 			if (seen == null) {
 				seen = new HashSet<SppfNode>();
 			}
@@ -383,8 +383,12 @@ namespace CFGLib.Parsers.Earley {
 				//if (leafNodeItem.CurrentPosition == production.Rhs.Count - 1) {
 				//	parent.AddChild(place, production);
 				//}
-			} else {
-				throw new NotImplementedException();
+			} else if (left is SymbolNode symbolNode) {
+				var production = symbolNode.FakeProduction;
+				if (production == null) {
+					throw new Exception();
+				}
+				parent.AddChild(place, production);
 			}
 
 			AnnotateWithProductions(_grammar, left, seen, parent, place);

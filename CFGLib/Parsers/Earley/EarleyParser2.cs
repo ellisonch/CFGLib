@@ -27,6 +27,7 @@ namespace CFGLib.Parsers.Earley {
 				return 0.0;
 			}
 			var oldSppf = SppfBridge.OldFromNew(sppf);
+			EarleyParser.AnnotateWithProductions(_grammar, oldSppf);
 			var prob = EarleyParser.GetProbFromSppf(_grammar, oldSppf);
 			return prob;
 		}
