@@ -160,7 +160,7 @@ namespace CFGLib.Parsers.Earley {
 						// if h = i { add (D, w) to H }
 						if (h == i) {
 							if (H.ContainsKey(D)) {
-								throw new Exception();
+								throw new Exception("D already exists in H");
 							}
 							H[D] = w;
 						}
@@ -279,7 +279,7 @@ namespace CFGLib.Parsers.Earley {
 				y = v;
 				if (y.FakeProduction != null) {
 					if (y.FakeProduction != decoratedProduction.Production) {
-						throw new Exception();
+						throw new Exception("Different production for contracted node");
 					}
 				}
 				y.FakeProduction = decoratedProduction.Production;
