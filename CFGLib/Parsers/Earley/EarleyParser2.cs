@@ -275,14 +275,19 @@ namespace CFGLib.Parsers.Earley {
 
 			SppfNode2 y;
 			// if α = ϵ and β ̸= ϵ { let y = v }
-			if (α.Count == 0 && β.Count != 0) {
-				y = v;
-				if (y.FakeProduction != null) {
-					if (y.FakeProduction != decoratedProduction.Production) {
-						throw new Exception("Different production for contracted node");
-					}
-				}
-				y.FakeProduction = decoratedProduction.Production;
+			//if (α.Count == 0 && β.Count != 0) {
+			if (false) {
+				//y = v;
+
+				//var tup = new Tuple<Word, DecoratedProduction>(null, decoratedProduction);
+				//y = new SppfNode2(tup, j, i)
+				//y = v;
+				//if (y.FakeProduction != null) {
+				//	if (y.FakeProduction != decoratedProduction.Production) {
+				//		throw new Exception("Different production for contracted node");
+				//	}
+				//}
+				//y.FakeProduction = decoratedProduction.Production;
 			} else {
 				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
 				var potentialY = new SppfNode2(s, j, i);
