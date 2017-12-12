@@ -277,6 +277,11 @@ namespace CFGLib.Parsers.Earley {
 			// if α = ϵ and β ̸= ϵ { let y = v }
 			if (α.Count == 0 && β.Count != 0) {
 				y = v;
+				if (y.FakeProduction != null) {
+					if (y.FakeProduction != decoratedProduction.Production) {
+						throw new Exception();
+					}
+				}
 				y.FakeProduction = decoratedProduction.Production;
 			} else {
 				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V

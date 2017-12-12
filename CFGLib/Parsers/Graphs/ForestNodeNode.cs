@@ -10,6 +10,18 @@ namespace CFGLib.Parsers.Graphs {
 		public readonly ForestNode Node;
 		public int Rank { get; set; }
 		public readonly string Id;
+		private Family _theFamily;
+		public Family TheFamily {
+			get {
+				return _theFamily;
+			}
+			set {
+				if (_theFamily != null) {
+					throw new Exception();
+				}
+				_theFamily = value;
+			}
+		}
 
 		public string Other {
 			get {
@@ -59,6 +71,7 @@ namespace CFGLib.Parsers.Graphs {
 			Node = node;
 			Id = id;
 			Rank = rank;
+			_theFamily = null;
 		}
 	}
 }

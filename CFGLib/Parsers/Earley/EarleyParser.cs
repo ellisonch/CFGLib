@@ -60,7 +60,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		internal static ForestInternal SppfToForest(BaseGrammar _grammar, SymbolNode internalSppf) {
-			AnnotateWithProductions(_grammar, internalSppf);
+			// AnnotateWithProductions(_grammar, internalSppf);
 
 			//var nodeProbs = new Dictionary<SppfNode, double>();
 			//var prob = CalculateProbability(internalSppf, nodeProbs);
@@ -244,17 +244,9 @@ namespace CFGLib.Parsers.Earley {
 
 		private static double GetChildProb(BaseGrammar _grammar, SppfNode node, int i) {
 			var production = node.Families[i].Production;
-			var fakeProduction = node.Families[i].Members[0].FakeProduction;
 			var prob = 1.0;
 			if (production != null) {
 				prob = _grammar.GetProbability(production);
-				//if (fakeProduction != null) {
-				//	throw new Exception();
-				//}
-			} else {
-				if (fakeProduction != null) {
-					prob = _grammar.GetProbability(fakeProduction);
-				}
 			}
 
 			return prob;
@@ -363,32 +355,8 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		private static void AnnotateWithProductionsChildren(BaseGrammar _grammar, InteriorNode parent, HashSet<SppfNode> seen, SppfNode left, SppfNode right, int place) {
-			// Commenting this out because it's not true in the new sppf
-			//if (!(left is IntermediateNode)) {
-			//	throw new Exception();
-			//}
-			//if (!(right is SymbolNode)) {
-			//	throw new Exception();
-			//}
-			if (left is IntermediateNode) {
-				// just keep going
-			} else if (left is LeafNode leafNode) {
-				// throw new NotImplementedException();
-				// var intermediateNode = (IntermediateNode)node;
-				var production = leafNode.FakeProduction;
-				if (production == null) {
-					throw new Exception();
-				}
-				parent.AddChild(place, production);
-				//if (leafNodeItem.CurrentPosition == production.Rhs.Count - 1) {
-				//	parent.AddChild(place, production);
-				//}
-			} else if (left is SymbolNode symbolNode) {
-				var production = symbolNode.FakeProduction;
-				if (production == null) {
-					throw new Exception();
-				}
-				parent.AddChild(place, production);
+			if (!(left is IntermediateNode)) {
+				throw new Exception();
 			}
 
 			AnnotateWithProductions(_grammar, left, seen, parent, place);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CFGLib.Parsers.Forests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,18 @@ namespace CFGLib.Parsers.Graphs {
 		public int EndPosition { get; set; }
 		public int Rank { get; set; }
 		public readonly string Id;
+		private Family _theFamily;
+		public Family TheFamily {
+			get {
+				return _theFamily;
+			}
+			set {
+				if (_theFamily != null) {
+					throw new Exception();
+				}
+				_theFamily = value;
+			}
+		}
 
 		public string Other {
 			get {

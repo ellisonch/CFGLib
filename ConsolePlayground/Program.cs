@@ -25,6 +25,7 @@ namespace ConsolePlayground {
 			//Experimental.TestSolver(rand);
 			// RandomTests.RandomJacobianTest();
 
+			PaperExamples();
 
 			var g = new Grammar(new List<Production>{
 				CFGParser.Production("<X_0> → <X_2> 'x2' 'x0'"),
@@ -45,7 +46,7 @@ namespace ConsolePlayground {
 			var testp = new TestParsing();
 			// testp.TestParsing02();
 
-			//PaperExamples();
+			
 			//VisitorPlay();
 
 

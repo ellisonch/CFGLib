@@ -38,17 +38,34 @@ namespace CFGLib.Parsers.Earley {
 		private static SppfNode OldFromNewWord(SppfNode2 sppf, Dictionary<SppfNode2, SppfNode> cache) {
 			var word = sppf.Word;
 			if (word.IsNonterminal) {
-				var retval = new SymbolNode(word as Nonterminal, sppf.StartPosition, sppf.EndPosition);
-				cache[sppf] = retval;
-				retval.FakeProduction = sppf.FakeProduction;
+				InteriorNode retval;
+				var inner = new SymbolNode(word as Nonterminal, sppf.StartPosition, sppf.EndPosition);
+				if (sppf.FakeProduction == null) {
+					retval = inner;
+				} else {
+					var item = new Item(sppf.FakeProduction, 1, inner.StartPosition);
+					retval = new IntermediateNode(item, inner.StartPosition, inner.EndPosition);
+					var family = new Family(inner);
+					retval.Families.Add(family);
+				}
+				cache[sppf] = inner;
 				foreach (var family in sppf.Families) {
-					AddFamily(retval, family, cache);
+					AddFamily(inner, family, cache);
 				}
 				return retval;
 			} else {
-				var retval = new TerminalNode(word as Terminal, sppf.StartPosition, 
+				SppfNode retval;
+				var inner = new TerminalNode(word as Terminal, sppf.StartPosition,
 					sppf.EndPosition);
-				retval.FakeProduction = sppf.FakeProduction;
+				if (sppf.FakeProduction == null) {
+					retval = inner;
+				} else {
+					var item = new Item(sppf.FakeProduction, 1, inner.StartPosition);
+					retval = new IntermediateNode(item, inner.StartPosition, inner.EndPosition);
+					var family = new Family(inner);
+					retval.Families.Add(family);
+				}
+				cache[sppf] = inner;
 				return retval;
 			}
 		}

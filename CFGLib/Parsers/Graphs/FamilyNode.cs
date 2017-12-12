@@ -13,6 +13,18 @@ namespace CFGLib.Parsers.Graphs {
 		public int StartPosition { get; set; }
 		public int EndPosition { get; set; }
 		public int Rank { get; set; }
+		private Family _theFamily;
+		public Family TheFamily {
+			get {
+				return _theFamily;
+			}
+			set {
+				if (_theFamily != null) {
+					throw new Exception();
+				}
+				_theFamily = value;
+			}
+		}
 
 		public string Color {
 			get {
@@ -23,6 +35,10 @@ namespace CFGLib.Parsers.Graphs {
 		public string Label {
 			get {
 				return "";
+				
+				//var production = _family.Production;
+				//var fakeProduction = _family.Members[0].FakeProduction;
+				//return string.Format("\n{0}\n{1}", production, fakeProduction);
 			}
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CFGLib.Parsers.Forests;
 
 namespace CFGLib.Parsers.Graphs {
 	internal interface INode {
@@ -15,5 +16,6 @@ namespace CFGLib.Parsers.Graphs {
 		int Rank { get; }
 		int StartPosition { get; }
 		int EndPosition { get; }
+		Family TheFamily { get; set; }
 	}
 }

@@ -61,6 +61,7 @@ namespace CFGLib.Parsers.Forests {
 					// g.AddEdge(myNode, prevNode, family.Production);
 					g.AddEdge(myNode, prevNode);
 				}
+				prevNode.TheFamily = family;
 				foreach (var child in family.Members) {
 					var childNode = new SppfNodeNode(child, prevNode.Rank + 1);
 					// var childNode = g.GetNode(child, prevNode.Rank + 1);
