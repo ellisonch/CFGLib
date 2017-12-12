@@ -248,9 +248,9 @@ namespace CFGLib.Parsers.Earley {
 			var prob = 1.0;
 			if (production != null) {
 				prob = _grammar.GetProbability(production);
-				if (fakeProduction != null) {
-					throw new Exception();
-				}
+				//if (fakeProduction != null) {
+				//	throw new Exception();
+				//}
 			} else {
 				if (fakeProduction != null) {
 					prob = _grammar.GetProbability(fakeProduction);
