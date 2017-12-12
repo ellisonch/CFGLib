@@ -39,10 +39,11 @@ namespace ConsolePlayground {
 			DotRunner.Run(earley.ParseGetForest(sentence).GetRawDot(), "testEarleyOld");
 			DotRunner.Run(earley2.ParseGetForest(sentence).GetRawDot(), "testEarleyNew");
 
+			// var prob0 = earley.ParseGetProbability(sentence);
 			var prob = earley2.ParseGetProbability(sentence);
 
 			var testp = new TestParsing();
-			testp.TestParsing02();
+			// testp.TestParsing02();
 
 			//PaperExamples();
 			//VisitorPlay();
