@@ -8,7 +8,7 @@ namespace CFGLib.Parsers.Earley {
 	internal class EarleyItem {
 		public DecoratedProduction DecoratedProduction { get; }
 		public int StartPosition { get; }
-		public SppfNode2 SppfNode { get; }
+		public SppfNode2 SppfNode { get; internal set; }
 
 		public EarleyItem(DecoratedProduction decoratedProduction, int startPosition, SppfNode2 sppfNode) {
 			if (decoratedProduction == null) {
@@ -67,6 +67,8 @@ namespace CFGLib.Parsers.Earley {
 				int hash = 17;
 				hash = hash * 23 + this.DecoratedProduction.GetHashCode();
 				hash = hash * 23 + this.StartPosition.GetHashCode();
+
+				// TODO: because SppfNode has to change, we can't use it in the hash easily
 				hash = hash * 23 + (this.SppfNode == null ? 0 : this.SppfNode.GetHashCode());
 				
 				return hash;

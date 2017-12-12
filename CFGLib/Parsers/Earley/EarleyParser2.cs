@@ -16,6 +16,9 @@ namespace CFGLib.Parsers.Earley {
 
 		public override ForestInternal ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
+			if (sppf == null) {
+				return null;
+			}
 			var oldSppf = SppfBridge.OldFromNew(sppf);
 			var forest = EarleyParser.SppfToForest(_grammar, oldSppf);
 			return forest;
@@ -42,9 +45,9 @@ namespace CFGLib.Parsers.Earley {
 		// [Sec 5, ES2008]
 		// I've taken the liberty of adjusting the indices of a to start from 0
 		private SppfNode2 ParseGetSppf(Sentence a) {
-			if (a.Count == 0) {
-				throw new ArgumentException("Not sure how to handle empty yet");
-			}
+			//if (a.Count == 0) {
+			//	throw new ArgumentException("Not sure how to handle empty yet");
+			//}
 			var S = _grammar.Start;
 
 			// E_0, ..., E_n, R, Q′, V = ∅
@@ -153,16 +156,21 @@ namespace CFGLib.Parsers.Earley {
 							}
 							// set w = v
 							w = v;
+							Λ.SppfNode = v;
+
 							// if w does not have family (ϵ) add one
 							w.AddFamily();
 						}
 
 						// if h = i { add (D, w) to H }
 						if (h == i) {
-							if (H.ContainsKey(D)) {
-								throw new Exception("D already exists in H");
+							if (H.TryGetValue(D, out var oldw)) {
+								if (w != oldw) {
+									throw new Exception("Different D, w in H");
+								}
+							} else {
+								H[D] = w;
 							}
-							H[D] = w;
 						}
 
 						// for all (A ::= τ · Dδ, k, z) in E_h {

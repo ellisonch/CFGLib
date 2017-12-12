@@ -25,15 +25,12 @@ namespace ConsolePlayground {
 			//Experimental.TestSolver(rand);
 			// RandomTests.RandomJacobianTest();
 
-			PaperExamples();
+			// PaperExamples();
 
 			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<X_0> → <X_2> 'x2' 'x0'"),
-				CFGParser.Production("<X_2> → <X_0>"),
-				CFGParser.Production("<X_0> → 'x1'"),
-				CFGParser.Production("<X_2> → 'q'")
-			}, Nonterminal.Of("X_0"));
-			var sentence = Sentence.FromWords("x1 x2 x0 x2 x0");
+				CFGParser.Production("<S> → ε"),
+			}, Nonterminal.Of("S"));
+			var sentence = Sentence.FromWords("");
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 
