@@ -231,7 +231,7 @@ namespace ConsolePlayground {
 				//}
 				Console.WriteLine("{0}, {1}", i, sw.Elapsed.TotalMilliseconds);
 			}
-			Console.WriteLine("Done in {0}ms (prev 16174ms)", totalSw.ElapsedMilliseconds);
+			Console.WriteLine("Done in {0}ms (prev 14001ms)", totalSw.ElapsedMilliseconds);
 		}
 
 		// from http://dx.doi.org/10.1016/j.entcs.2008.03.044

@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Earley {
 	public class SppfBranch : SppfNode2 {
 		public DecoratedProduction DecoratedProduction { get; }
+		private readonly int _cachedHash;
 
 		public SppfBranch(DecoratedProduction dprod, int startPos, int endPos) : base(startPos, endPos) {
 			DecoratedProduction = dprod;
+			_cachedHash = MyGetHashCode();
 		}
 
 		public static bool operator ==(SppfBranch x, SppfBranch y) {
@@ -41,8 +43,12 @@ namespace CFGLib.Parsers.Earley {
 			return true;
 		}
 
-		// based on http://stackoverflow.com/a/263416/2877032
 		public override int GetHashCode() {
+			return _cachedHash;
+		}
+
+		// based on http://stackoverflow.com/a/263416/2877032
+		public int MyGetHashCode() {
 			unchecked {
 				int hash = 17;
 				hash = hash * 23 + this.StartPosition.GetHashCode();
