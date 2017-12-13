@@ -211,13 +211,27 @@ namespace ConsolePlayground {
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
 			var ep = new EarleyParser2(gp.Grammar);
 
-			var totalSw = Stopwatch.StartNew();
+			// var totalSw = Stopwatch.StartNew();
+			double totalMs = 0;
 			foreach (var inputPair in inputs) {
 				var input = inputPair.Item1;
 				var expectedResult = inputPair.Item2;
 				var i = inputPair.Item3;
 
-				var sw = Stopwatch.StartNew();
+				var time = MinTime(3, ep, input);
+				totalMs += time;
+
+				Console.WriteLine("{0}, {1}", i, time);
+			}
+			Console.WriteLine("Done in {0}ms (prev 13582ms)", (int)totalMs);
+		}
+
+		private static double MinTime(int times, EarleyParser2 ep, Sentence input) {
+			double fastest = double.MaxValue;
+
+			var sw = new Stopwatch();
+			for (var i = 0; i < times; i++) {
+				sw.Restart();
 				// var sppf = ep.ParseGetRawSppf(input);
 				var sppf = ep.ParseGetSppf2(input);
 				//var trav = new Traversal(sppf, input, gp);
@@ -229,9 +243,11 @@ namespace ConsolePlayground {
 				//if (result != expectedResult) {
 				//	throw new Exception();
 				//}
-				Console.WriteLine("{0}, {1}", i, sw.Elapsed.TotalMilliseconds);
+				if (sw.Elapsed.TotalMilliseconds < fastest) {
+					fastest = sw.Elapsed.TotalMilliseconds;
+				}
 			}
-			Console.WriteLine("Done in {0}ms (prev 14001ms)", totalSw.ElapsedMilliseconds);
+			return fastest;
 		}
 
 		// from http://dx.doi.org/10.1016/j.entcs.2008.03.044
