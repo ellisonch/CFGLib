@@ -204,7 +204,8 @@ namespace ConsolePlayground {
 			// for (var i = 170; i < 195; i++) { // 2703ms after doing gather earlier
 			// for (var i = 170; i < 195; i++) {
 			// for (var i = 751; i < 752; i++) {
-			for (var i = 95; i < 130; i++) { // new; 15385
+			// for (var i = 95; i < 130; i++) { // new; 15385
+			for (var i = 120; i < 160; i++) { // new; 19939
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
@@ -230,7 +231,7 @@ namespace ConsolePlayground {
 				//}
 				Console.WriteLine("{0}, {1}", i, sw.Elapsed.TotalMilliseconds);
 			}
-			Console.WriteLine("Done in {0}ms (prev 9575ms)", totalSw.ElapsedMilliseconds);
+			Console.WriteLine("Done in {0}ms (prev 16697ms)", totalSw.ElapsedMilliseconds);
 		}
 
 		// from http://dx.doi.org/10.1016/j.entcs.2008.03.044
