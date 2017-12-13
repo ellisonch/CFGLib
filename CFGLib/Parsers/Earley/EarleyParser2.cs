@@ -241,7 +241,7 @@ namespace CFGLib.Parsers.Earley {
 						}
 						var h = Λ.StartPosition;
 						var w = Λ.SppfNode;
-						var β = Λ.Tail;
+						var β0 = Λ.TailFirst;
 
 						// let y = MAKE NODE(B ::= α a_i · β, h, i + 1, w, v, V)
 						var productionAdvanced = Λ.DecoratedProduction.Increment();
@@ -249,14 +249,14 @@ namespace CFGLib.Parsers.Earley {
 
 						var newItem = new EarleyItem(productionAdvanced, h, y);
 						// if β ∈ Σ_N { add (B ::= α a_i · β, h, y) to E_i+1 }
-						if (InSigma(β)) {
+						if (PrefixInSigma(β0)) {
 							E[i + 1].Add(newItem);
 						}
 
 						// if β = a_i+1 β′ { add (B ::= α a_i · β, h, y) to Q′ }
 						else {
 							var aNext = a[i + 1];
-							if (β.First() == aNext) {
+							if (β0 == aNext) {
 								QPrime.Add(newItem);
 							}
 						}

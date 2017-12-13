@@ -37,13 +37,7 @@ namespace CFGLib.Parsers.Earley {
 				return DecoratedProduction.NextWord;
 			}
 		}
-
-		public Sentence Tail {
-			get {
-				return DecoratedProduction.Tail;
-			}
-		}
-
+		
 		public Word TailFirst {
 			get {
 				var pos = DecoratedProduction.CurrentPosition + 1;
