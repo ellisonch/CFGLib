@@ -64,7 +64,7 @@ namespace CFGLib.Parsers.Earley {
 			EarleySet QPrime = new EarleySet();
 			EarleySet R = new EarleySet();
 			var H = new Dictionary<Nonterminal, SppfNode2>();
-			var V = new Dictionary<SppfNode2, SppfNode2>();
+			var V = new Dictionary<ValueTuple<Tuple<Word, DecoratedProduction>, int, int>, SppfNode2>();
 			
 			// for all (S ::= α) ∈ P {
 			foreach (var production in _grammar.ProductionsFrom(S)) {
@@ -161,10 +161,11 @@ namespace CFGLib.Parsers.Earley {
 						// if w = null {
 						if (w == null) {
 							// if there is no node v ∈ V labelled (D, i, i) create one
-							var potentialV = new SppfNode2(D, i, i);
-							if (!V.TryGetValue(potentialV, out SppfNode2 v)) {
+							var tup = ValueTuple.Create(Tuple.Create<Word, DecoratedProduction>(D, null), i, i);
+							if (!V.TryGetValue(tup, out SppfNode2 v)) {
+								var potentialV = new SppfNode2(D, i, i);
 								v = potentialV;
-								V[potentialV] = potentialV;
+								V[tup] = potentialV;
 							}
 							// set w = v
 							w = v;
@@ -225,7 +226,7 @@ namespace CFGLib.Parsers.Earley {
 					}
 				}
 				if (i < a.Count) {
-					V = new Dictionary<SppfNode2, SppfNode2>();
+					V = new Dictionary<ValueTuple<Tuple<Word, DecoratedProduction>, int, int>, SppfNode2>();
 					// create an SPPF node v labelled(a_i, i, i + 1)
 					var v2 = new SppfNode2(a[i], i, i + 1);
 
@@ -281,7 +282,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
-		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, Dictionary<SppfNode2, SppfNode2> V) {
+		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, Dictionary<ValueTuple<Tuple<Word, DecoratedProduction>, int, int>, SppfNode2> V) {
 			// var α = decoratedProduction.Prefix;
 			var β0 = decoratedProduction.NextWord;
 
@@ -312,10 +313,11 @@ namespace CFGLib.Parsers.Earley {
 				//y.FakeProduction = decoratedProduction.Production;
 			} else {
 				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
-				var potentialY = new SppfNode2(s, j, i);
-				if (!V.TryGetValue(potentialY, out y)) {
-					V[potentialY] = potentialY;
-					y = potentialY;
+				var tup = ValueTuple.Create(s, j, i);
+				if (!V.TryGetValue(tup, out y)) {
+					var newY = new SppfNode2(s, j, i);
+					V[tup] = newY;
+					y = newY;
 				}
 
 				// if w = null and y does not have a family of children (v) add one
