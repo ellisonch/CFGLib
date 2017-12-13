@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
-	internal class DecoratedProduction {
+	public class DecoratedProduction {
 		public Production Production { get; }
 		public int CurrentPosition { get; }
 
@@ -29,7 +29,7 @@ namespace CFGLib.Parsers.Earley {
 				return Production.Rhs.GetRange(start, count);
 			}
 		}
-
+		
 		public Sentence Prefix {
 			get {
 				return Production.Rhs.GetRange(0, CurrentPosition - 1);

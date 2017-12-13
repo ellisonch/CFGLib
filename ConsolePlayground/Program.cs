@@ -198,12 +198,13 @@ namespace ConsolePlayground {
 			Console.WriteLine("Benching...");
 			var inputs = new List<Tuple<Sentence, long, int>>();
 			// for (var i = 80; i < 105; i++) { // 13336ms
-			for (var i = 1; i < 100; i += 1) {
+			// for (var i = 1; i < 100; i += 1) {
 			// for (var i = 170; i < 195; i++) { // 10755ms after gather in sppf
 			// for (var i = 170; i < 195; i++) { // 9203ms after hash change
 			// for (var i = 170; i < 195; i++) { // 2703ms after doing gather earlier
 			// for (var i = 170; i < 195; i++) {
 			// for (var i = 751; i < 752; i++) {
+			for (var i = 95; i < 130; i++) { // new; 15385
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
@@ -217,7 +218,7 @@ namespace ConsolePlayground {
 
 				var sw = Stopwatch.StartNew();
 				// var sppf = ep.ParseGetRawSppf(input);
-				var sppf = ep.ParseGetForest(input);
+				var sppf = ep.ParseGetSppf2(input);
 				//var trav = new Traversal(sppf, input, gp);
 				//var resultList = trav.Traverse();
 				//if (resultList.Count() != 1) {
@@ -227,9 +228,9 @@ namespace ConsolePlayground {
 				//if (result != expectedResult) {
 				//	throw new Exception();
 				//}
-				Console.WriteLine("{0},{1}", i, sw.Elapsed.TotalMilliseconds);
+				Console.WriteLine("{0}, {1}", i, sw.Elapsed.TotalMilliseconds);
 			}
-			Console.WriteLine("Done in {0}ms (prev 9203ms)", totalSw.ElapsedMilliseconds);
+			Console.WriteLine("Done in {0}ms (prev 15385ms)", totalSw.ElapsedMilliseconds);
 		}
 
 		// from http://dx.doi.org/10.1016/j.entcs.2008.03.044

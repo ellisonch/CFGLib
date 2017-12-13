@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
-	internal class SppfNode2 {
+	public class SppfNode2 {
 		public Word Word { get; }
 		public DecoratedProduction DecoratedProduction { get; }
 		public int StartPosition { get; }

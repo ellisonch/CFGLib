@@ -14,6 +14,11 @@ namespace CFGLib.Parsers.Earley {
 			_grammar = grammar;
 		}
 
+		public SppfNode2 ParseGetSppf2(Sentence s) {
+			var sppf = ParseGetSppf(s);
+			return sppf;
+		}
+
 		public override ForestInternal ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
 			if (sppf == null) {
