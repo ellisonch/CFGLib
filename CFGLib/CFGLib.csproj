@@ -60,7 +60,6 @@
     <Compile Include="Parsers\Earley\Family2.cs" />
     <Compile Include="Parsers\Earley\SppfBranch.cs" />
     <Compile Include="Parsers\Earley\SppfBridge.cs" />
-    <Compile Include="Parsers\Earley\SppfEpsilon.cs" />
     <Compile Include="Parsers\Earley\SppfNode2.cs" />
     <Compile Include="Parsers\Earley\SppfWord.cs" />
     <Compile Include="Parsers\Forests\ForestInternal.cs" />
