@@ -163,7 +163,7 @@ namespace CFGLib.Parsers.Earley {
 							// if there is no node v ∈ V labelled (D, i, i) create one
 							var tup = ValueTuple.Create(Tuple.Create<Word, DecoratedProduction>(D, null), i, i);
 							if (!V.TryGetValue(tup, out SppfNode2 v)) {
-								var potentialV = new SppfNode2(D, i, i);
+								var potentialV = new SppfWord(D, i, i);
 								v = potentialV;
 								V[tup] = potentialV;
 							}
@@ -228,7 +228,7 @@ namespace CFGLib.Parsers.Earley {
 				if (i < a.Count) {
 					V = new Dictionary<ValueTuple<Tuple<Word, DecoratedProduction>, int, int>, SppfNode2>();
 					// create an SPPF node v labelled(a_i, i, i + 1)
-					var v2 = new SppfNode2(a[i], i, i + 1);
+					var v2 = new SppfWord(a[i], i, i + 1);
 
 					// while Q ̸= ∅ {
 					while (!Q.IsEmpty) {
@@ -315,7 +315,12 @@ namespace CFGLib.Parsers.Earley {
 				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
 				var tup = ValueTuple.Create(s, j, i);
 				if (!V.TryGetValue(tup, out y)) {
-					var newY = new SppfNode2(s, j, i);
+					SppfNode2 newY;
+					if (tup.Item1.Item1 != null) {
+						newY = new SppfWord(tup.Item1.Item1, j, i);
+					} else {
+						newY = new SppfBranch(tup.Item1.Item2, j, i);
+					}
 					V[tup] = newY;
 					y = newY;
 				}

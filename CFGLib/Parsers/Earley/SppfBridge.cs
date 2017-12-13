@@ -22,12 +22,12 @@ namespace CFGLib.Parsers.Earley {
 			if (cache.TryGetValue(sppf, out SppfNode cached)) {
 				return cached;
 			}
-			if (sppf.Word != null) {
-				var retval = OldFromNewWord(sppf, cache);
+			if (sppf is SppfWord sppfWord) {
+				var retval = OldFromNewWord(sppfWord, cache);
 				cache[sppf] = retval;
 				return retval;
-			} else if (sppf.DecoratedProduction != null) {
-				var retval = OldFromNewProduction(sppf, cache);
+			} else if (sppf is SppfBranch sppfBranch) {
+				var retval = OldFromNewProduction(sppfBranch, cache);
 				cache[sppf] = retval;
 				return retval;
 			} else {
@@ -35,7 +35,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private static SppfNode OldFromNewWord(SppfNode2 sppf, Dictionary<SppfNode2, SppfNode> cache) {
+		private static SppfNode OldFromNewWord(SppfWord sppf, Dictionary<SppfNode2, SppfNode> cache) {
 			var word = sppf.Word;
 			if (word.IsNonterminal) {
 				InteriorNode retval;
@@ -69,7 +69,7 @@ namespace CFGLib.Parsers.Earley {
 				return retval;
 			}
 		}
-		private static SppfNode OldFromNewProduction(SppfNode2 sppf, Dictionary<SppfNode2, SppfNode> cache) {
+		private static SppfNode OldFromNewProduction(SppfBranch sppf, Dictionary<SppfNode2, SppfNode> cache) {
 			var prod = sppf.DecoratedProduction;
 			var newItem = new Item(prod.Production, prod.CurrentPosition, sppf.StartPosition);
 			var retval = new IntermediateNode(newItem, sppf.StartPosition, sppf.EndPosition);
