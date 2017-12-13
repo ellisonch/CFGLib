@@ -6,20 +6,40 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal class Family2 {
-		public List<SppfNode2> Children { get; }
+		// TODO: remove children interface entirely
+		private List<SppfNode2> _children;
+		public List<SppfNode2> Children {
+			get {
+				if (_children == null) {
+					_children = new List<SppfNode2>();
+					if (_firstChild != null) {
+						_children.Add(_firstChild);
+						if (_secondChild != null) {
+							_children.Add(_secondChild);
+						}
+					}
+				}
+				return _children;
+			}
+		}
 		private readonly int _cachedHash;
-
+		private readonly SppfNode2 _firstChild;
+		private readonly SppfNode2 _secondChild;
+		
 		public Family2() {
-			Children = new List<SppfNode2> { };
+			//Children = new List<SppfNode2> { };
 			_cachedHash = 0;
 		}
 		public Family2(SppfNode2 v) {
-			Children = new List<SppfNode2> { v };
+			// Children = new List<SppfNode2> { v };
 			_cachedHash = v.GetHashCode();
+			_firstChild = v;
 		}
 		public Family2(SppfNode2 w, SppfNode2 v) {
-			Children = new List<SppfNode2> { w, v };
+			//Children = new List<SppfNode2> { w, v };
 			_cachedHash = unchecked((17 * 23 + w.GetHashCode()) * 23 + v.GetHashCode());
+			_firstChild = w;
+			_secondChild = v;
 		}
 
 		public override int GetHashCode() {
@@ -48,7 +68,9 @@ namespace CFGLib.Parsers.Earley {
 				return false;
 			}
 
-			return Children.SequenceEqual(localOther.Children);
+			// return Children.SequenceEqual(localOther.Children);
+			return this._firstChild == localOther._firstChild
+				&& this._secondChild == localOther._secondChild;
 		}
 
 		public override string ToString() {
