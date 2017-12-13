@@ -73,9 +73,11 @@ namespace CFGLib.Parsers.Earley {
 				// if α = a_0 α′, add (S ::= · α, 0, null) to Q′
 				// TODO: not sure how to handle this when a is ε
 				else {
-					var a1 = a.First();
-					if (alpha.First() == a1) {
-						QPrime.Add(potentialItem);
+					if (a.Count > 0) {
+						var a1 = a.First();
+						if (alpha.First() == a1) {
+							QPrime.Add(potentialItem);
+						}
 					}
 				}
 			}
@@ -138,9 +140,11 @@ namespace CFGLib.Parsers.Earley {
 								}
 							} else {
 								// if β = a_i β′ { add (B ::= αC · β, h, y) to Q } } }
-								var aCurr = a[i];
-								if (β.First() == aCurr) {
-									Q.Add(newItem);
+								if (i < a.Count) {
+									var aCurr = a[i];
+									if (β.First() == aCurr) {
+										Q.Add(newItem);
+									}
 								}
 							}
 						}
