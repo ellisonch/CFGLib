@@ -22,7 +22,7 @@ namespace CFGLib.Parsers.Earley {
 		/// <summary>
 		/// Used just to convey production in contracted sppf nodes, for testing
 		/// </summary>
-		public Production FakeProduction { get; internal set; }
+		// public Production FakeProduction { get; internal set; }
 		
 		internal void AddFamily() {
 			var family = new Family2();
