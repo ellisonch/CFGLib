@@ -31,6 +31,13 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+		public Word TailFirst {
+			get {
+				var pos = DecoratedProduction.CurrentPosition + 1;
+				return DecoratedProduction.Production.Rhs.ElementAtOrDefault(pos);
+			}
+		}
+
 		public static bool operator ==(EarleyItem x, EarleyItem y) {
 			if (ReferenceEquals(x, null)) {
 				return ReferenceEquals(y, null);

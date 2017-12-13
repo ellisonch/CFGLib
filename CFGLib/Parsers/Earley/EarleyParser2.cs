@@ -106,7 +106,8 @@ namespace CFGLib.Parsers.Earley {
 
 					// if Λ = (B ::= α · Cβ, h, w) {
 					if (Λ.NextWord is Nonterminal C) {
-						var β = Λ.Tail;
+						//var β = Λ.Tail;
+						var β0 = Λ.TailFirst;
 						// for all (C ::= δ) ∈ P {
 						foreach (var production in _grammar.ProductionsFrom(C)) {
 							// if δ ∈ Σ_N and (C ::= ·δ, i, null) ̸∈ E_i {
@@ -137,7 +138,7 @@ namespace CFGLib.Parsers.Earley {
 
 							var newItem = new EarleyItem(productionAdvanced, h, y);
 							// if β ∈ Σ N and (B ::= αC · β, h, y) ̸∈ E_i {
-							if (InSigma(β)) {
+							if (PrefixInSigma(β0)) {
 								if (!E[i].Contains(newItem)) {
 									// add(B::= αC · β, h, y) to E_i and R }
 									E[i].Add(newItem);
@@ -147,7 +148,7 @@ namespace CFGLib.Parsers.Earley {
 								// if β = a_i β′ { add (B ::= αC · β, h, y) to Q } } }
 								if (i < a.Count) {
 									var aCurr = a[i];
-									if (β.First() == aCurr) {
+									if (β0 == aCurr) {
 										Q.Add(newItem);
 									}
 								}
@@ -192,14 +193,15 @@ namespace CFGLib.Parsers.Earley {
 							}
 							var k = item.StartPosition;
 							var z = item.SppfNode;
-							var δ = item.Tail;
+							// var δ = item.Tail;
+							var δ0 = item.TailFirst;
 							// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
 							var productionAdvanced = item.DecoratedProduction.Increment();
 							var y = MakeNode(productionAdvanced, k, i, z, w, V);
 
 							var newItem = new EarleyItem(productionAdvanced, k, y);
 							// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
-							if (InSigma(δ)) {
+							if (PrefixInSigma(δ0)) {
 								if (!E[i].Contains(newItem)) {
 									// add (A ::= τD · δ, k, y) to E_i and R
 									E[i].Add(newItem);
@@ -209,7 +211,7 @@ namespace CFGLib.Parsers.Earley {
 								// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
 								if (i < a.Count) {
 									var aCurr = a[i];
-									if (δ.First() == aCurr) {
+									if (δ0 == aCurr) {
 										Q.Add(newItem);
 									}
 								} else {
@@ -329,6 +331,15 @@ namespace CFGLib.Parsers.Earley {
 			return y;
 		}
 
+		private bool PrefixInSigma(Word alpha) {
+			if (alpha == null) {
+				return true;
+			}
+			if (alpha.IsNonterminal) {
+				return true;
+			}
+			return false;
+		}
 		private bool InSigma(Sentence alpha) {
 			if (alpha.Count == 0) {
 				return true;
