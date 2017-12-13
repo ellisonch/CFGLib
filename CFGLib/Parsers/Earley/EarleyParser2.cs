@@ -289,6 +289,7 @@ namespace CFGLib.Parsers.Earley {
 
 			SppfNode2 y;
 			// if α = ϵ and β ̸= ϵ { let y = v }
+			// TODO: got rid of contraction to make it easy to run old code
 			//if (α.Count == 0 && β.Count != 0) {
 			if (false) {
 				//y = v;

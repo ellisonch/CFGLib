@@ -27,29 +27,16 @@ namespace ConsolePlayground {
 
 			// PaperExamples();
 
-			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<S> → <A> <A>"),
-				CFGParser.Production("<A> → 'a' <A>"),
-				CFGParser.Production("<A> → ε")
-			}, Nonterminal.Of("S"));
-			var sentence = Sentence.FromWords("a");
-			var earley = new EarleyParser(g);
-			var earley2 = new EarleyParser2(g);
+			// DebugGrammar();
 
-			DotRunner.Run(earley.ParseGetForest(sentence).GetRawDot(), "testEarleyOld");
-			DotRunner.Run(earley2.ParseGetForest(sentence).GetRawDot(), "testEarleyNew");
-
-			// var prob0 = earley.ParseGetProbability(sentence);
-			var prob = earley2.ParseGetProbability(sentence);
-
-			var testp = new TestParsing();
+			// var testp = new TestParsing();
 			// testp.TestParsing02();
 
-			
+
 			//VisitorPlay();
 
 
-			// Benchmark();
+			Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
@@ -151,6 +138,23 @@ namespace ConsolePlayground {
 
 			Console.WriteLine("Finished!");
 			Console.Read();
+		}
+
+		private static void DebugGrammar() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <A> <A>"),
+				CFGParser.Production("<A> → 'a' <A>"),
+				CFGParser.Production("<A> → ε")
+			}, Nonterminal.Of("S"));
+			var sentence = Sentence.FromWords("a");
+			var earley = new EarleyParser(g);
+			var earley2 = new EarleyParser2(g);
+
+			DotRunner.Run(earley.ParseGetForest(sentence).GetRawDot(), "testEarleyOld");
+			DotRunner.Run(earley2.ParseGetForest(sentence).GetRawDot(), "testEarleyNew");
+
+			// var prob0 = earley.ParseGetProbability(sentence);
+			var prob = earley2.ParseGetProbability(sentence);
 		}
 
 		private static void BenchmarkBison() {
