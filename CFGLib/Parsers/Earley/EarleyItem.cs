@@ -10,6 +10,8 @@ namespace CFGLib.Parsers.Earley {
 		public int StartPosition { get; }
 		public SppfNode2 SppfNode { get; internal set; }
 
+		private readonly int _cachedHash;
+
 		public EarleyItem(DecoratedProduction decoratedProduction, int startPosition, SppfNode2 sppfNode) {
 			if (decoratedProduction == null) {
 				throw new ArgumentNullException();
@@ -17,6 +19,17 @@ namespace CFGLib.Parsers.Earley {
 			DecoratedProduction = decoratedProduction;
 			StartPosition = startPosition;
 			SppfNode = sppfNode;
+
+			unchecked {
+				int hash = 17;
+				hash = hash * 23 + this.DecoratedProduction.GetHashCode();
+				hash = hash * 23 + this.StartPosition.GetHashCode();
+
+				// TODO: because SppfNode has to change, we can't use it in the hash easily
+				// hash = hash * 23 + (this.SppfNode == null ? 0 : this.SppfNode.GetHashCode());
+
+				_cachedHash = hash;
+			}
 		}
 
 		public Word NextWord {
@@ -70,16 +83,17 @@ namespace CFGLib.Parsers.Earley {
 
 		// based on http://stackoverflow.com/a/263416/2877032
 		public override int GetHashCode() {
-			unchecked {
-				int hash = 17;
-				hash = hash * 23 + this.DecoratedProduction.GetHashCode();
-				hash = hash * 23 + this.StartPosition.GetHashCode();
+			return _cachedHash;
+			//unchecked {
+			//	int hash = 17;
+			//	hash = hash * 23 + this.DecoratedProduction.GetHashCode();
+			//	hash = hash * 23 + this.StartPosition.GetHashCode();
 
-				// TODO: because SppfNode has to change, we can't use it in the hash easily
-				hash = hash * 23 + (this.SppfNode == null ? 0 : this.SppfNode.GetHashCode());
+			//	// TODO: because SppfNode has to change, we can't use it in the hash easily
+			//	// hash = hash * 23 + (this.SppfNode == null ? 0 : this.SppfNode.GetHashCode());
 				
-				return hash;
-			}
+			//	return hash;
+			//}
 		}
 
 		public override string ToString() {
