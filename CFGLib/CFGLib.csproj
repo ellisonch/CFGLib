@@ -62,6 +62,7 @@
     <Compile Include="Parsers\Earley\SppfBridge.cs" />
     <Compile Include="Parsers\Earley\SppfNode2.cs" />
     <Compile Include="Parsers\Earley\SppfWord.cs" />
+    <Compile Include="Parsers\Earley\Stats.cs" />
     <Compile Include="Parsers\Forests\ForestInternal.cs" />
     <Compile Include="Parsers\Forests\ForestNode.cs" />
     <Compile Include="Parsers\Forests\ForestOption.cs" />

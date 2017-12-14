@@ -218,12 +218,16 @@ namespace ConsolePlayground {
 				var expectedResult = inputPair.Item2;
 				var i = inputPair.Item3;
 
-				var time = MinTime(3, ep, input);
+				var time = MinTime(5, ep, input);
 				totalMs += time;
 
 				Console.WriteLine("{0}, {1}", i, time);
 			}
-			Console.WriteLine("Done in {0}ms (prev 13582ms)", (int)totalMs);
+			Console.WriteLine("Done in {0}ms (prev 13053ms)", (int)totalMs);
+
+			foreach (var kvp in EarleyParser2._stats.Data) {
+				Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);
+			}
 		}
 
 		private static double MinTime(int times, EarleyParser2 ep, Sentence input) {
@@ -243,8 +247,9 @@ namespace ConsolePlayground {
 				//if (result != expectedResult) {
 				//	throw new Exception();
 				//}
-				if (sw.Elapsed.TotalMilliseconds < fastest) {
-					fastest = sw.Elapsed.TotalMilliseconds;
+				var elapsed = sw.Elapsed.TotalMilliseconds;
+				if (elapsed < fastest) {
+					fastest = elapsed;
 				}
 			}
 			return fastest;

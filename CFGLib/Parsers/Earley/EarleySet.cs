@@ -34,14 +34,16 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		internal void Add(EarleyItem earleyItem) {
+		internal bool Add(EarleyItem earleyItem) {
 			if (earleyItem == null) {
 				throw new ArgumentNullException();
 			}
 			
 			if (_hashedItems.Add(earleyItem)) {
 				_items.Add(earleyItem);
+				return true;
 			}
+			return false;
 		}
 		
 		public bool Contains(EarleyItem item) {

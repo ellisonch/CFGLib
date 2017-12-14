@@ -9,6 +9,7 @@ using CFGLib.Actioneer;
 namespace CFGLib.Parsers.Earley {
 	public class EarleyParser2 : Parser {
 		private readonly BaseGrammar _grammar;
+		public static Stats _stats = new Stats();
 
 		public EarleyParser2(BaseGrammar grammar) {
 			_grammar = grammar;
@@ -198,21 +199,28 @@ namespace CFGLib.Parsers.Earley {
 							var δ0 = item.TailFirst;
 							// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
 							var productionAdvanced = item.DecoratedProduction.Increment();
+							_stats.AddCount("consider");
 							var y = MakeNode(productionAdvanced, k, i, z, w, V);
 
 							var newItem = new EarleyItem(productionAdvanced, k, y);
 							// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
 							if (PrefixInSigma(δ0)) {
+								_stats.AddCount("inSigma");
 								if (!E[i].Contains(newItem)) {
+									_stats.AddCount("not in E");
 									// add (A ::= τD · δ, k, y) to E_i and R
 									E[i].Add(newItem);
 									R.Add(newItem);
+								} else {
+									_stats.AddCount("in E");
 								}
 							} else {
+								_stats.AddCount("notInSigma");
 								// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
 								if (i < a.Count) {
 									var aCurr = a[i];
 									if (δ0 == aCurr) {
+										_stats.AddCount("AddToQ");
 										Q.Add(newItem);
 									}
 								} else {
