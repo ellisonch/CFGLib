@@ -43,15 +43,21 @@ namespace CFGLibTest {
 		}
 
 		public void Run() {
-			int pass = 0;
+			int fail = 0;
 			int total = 0;
+			int timeouts = 0;
 			while (true) {
-				if (!ProcessOneGrammar()) {
-					pass++;
+				var task = Task.Run(() => ProcessOneGrammar());
+				if (task.Wait(TimeSpan.FromSeconds(20))) {
+					if (task.Result) {
+						fail++;
+					}
+				} else { 
+					timeouts++;
 				}
 				total++;
 				if (total % 100 == 0) {
-					Console.WriteLine("{0} / {1} pass", pass, total);
+					Console.WriteLine("{0} / {1} / {2} fail / timeout / total", fail, timeouts, total);
 				}
 			}
 		}
