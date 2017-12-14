@@ -263,9 +263,11 @@ namespace CFGLib.Parsers.Earley {
 
 						// if β = a_i+1 β′ { add (B ::= α a_i · β, h, y) to Q′ }
 						else {
-							var aNext = a[i + 1];
-							if (β0 == aNext) {
-								QPrime.Add(newItem);
+							if (i + 1 < a.Count) {
+								var aNext = a[i + 1];
+								if (β0 == aNext) {
+									QPrime.Add(newItem);
+								}
 							}
 						}
 					}
