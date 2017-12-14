@@ -64,6 +64,7 @@ namespace CFGLibTest {
 
 		private bool ProcessOneGrammar() {
 			var (g, terminals) = NextGrammar();
+			var h = g.ToCNF();
 			// Console.WriteLine(g.Productions.Count());
 			var preparedSentences = new List<Sentence>();
 			for (int length = 0; length <= _maxInputLength; length++) {
@@ -84,9 +85,11 @@ namespace CFGLibTest {
 			// Console.WriteLine("Parsing sentences...");
 			EarleyParser earley1;
 			EarleyParser2 earley2;
+			CykParser cyk;
 			try {
 				earley1 = new EarleyParser(g);
 				earley2 = new EarleyParser2(g);
+				cyk = new CykParser(h);
 			} catch {
 				Report(g);
 				return true;
@@ -96,8 +99,11 @@ namespace CFGLibTest {
 				try {
 					var p1 = earley1.ParseGetProbability(sentence);
 					var p2 = earley2.ParseGetProbability(sentence);
-
-					if (!Helpers.IsNear(p2, p1)) {
+					var p3 = cyk.ParseGetProbability(sentence);
+					if (!Helpers.IsNear(p1, p2)) {
+						throw new Exception();
+					}
+					if (!Helpers.IsNear(p1, p3)) {
 						throw new Exception();
 					}
 				} catch {

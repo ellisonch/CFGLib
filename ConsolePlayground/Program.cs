@@ -35,7 +35,7 @@ namespace ConsolePlayground {
 
 			//VisitorPlay();
 
-			var crt = new ContinuousRandomTesting(10, 10, 10, 10, 4, 500, 1);
+			var crt = new ContinuousRandomTesting(6, 6, 15, 10, 5, 500, 2);
 			crt.Run();
 			// Benchmark();
 			// BenchmarkBison();
