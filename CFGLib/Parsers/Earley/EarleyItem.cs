@@ -8,6 +8,8 @@ namespace CFGLib.Parsers.Earley {
 	internal class EarleyItem {
 		public DecoratedProduction DecoratedProduction { get; }
 		public int StartPosition { get; }
+
+		// TODO: not used for hash or equality; assumes if the other bits exist, this is identical
 		public SppfNode2 SppfNode { get; internal set; }
 
 		private readonly int _cachedHash;
@@ -68,9 +70,9 @@ namespace CFGLib.Parsers.Earley {
 			if (x.DecoratedProduction != y.DecoratedProduction) {
 				return false;
 			}
-			if (x.SppfNode != y.SppfNode) {
-				return false;
-			}
+			//if (x.SppfNode != y.SppfNode) {
+			//	return false;
+			//}
 
 			return true;
 		}
