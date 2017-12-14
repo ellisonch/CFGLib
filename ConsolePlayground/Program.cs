@@ -35,8 +35,9 @@ namespace ConsolePlayground {
 
 			//VisitorPlay();
 
-
-			Benchmark();
+			var crt = new ContinuousRandomTesting(10, 10, 10, 10, 4, 0);
+			crt.Run();
+			// Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
