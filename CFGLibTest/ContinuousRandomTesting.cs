@@ -16,6 +16,7 @@ namespace CFGLibTest {
 		private readonly int _maxProductions;
 		private readonly int _maxProductionLength;
 		private readonly int _maxInputLength;
+		private readonly int _numRandomSentences;
 		private readonly GrammarGenerator _gramGen;
 
 		private readonly StreamWriter _parseErrorFile;
@@ -26,6 +27,7 @@ namespace CFGLibTest {
 			int maxProductions,
 			int maxProductionLength,
 			int maxInputLength,
+			int numRandomSentences,
 			int seed
 		) {
 			_maxNonterminals = maxNonterminals;
@@ -33,6 +35,7 @@ namespace CFGLibTest {
 			_maxProductions = maxProductions;
 			_maxProductionLength = maxProductionLength;
 			_maxInputLength = maxInputLength;
+			_numRandomSentences = numRandomSentences;
 			_r = new Random(seed);
 			_gramGen = new GrammarGenerator(_r);
 
@@ -40,15 +43,22 @@ namespace CFGLibTest {
 		}
 
 		public void Run() {
+			int pass = 0;
+			int total = 0;
 			while (true) {
-				ProcessOneGrammar();
-				Console.Write(".");
+				if (!ProcessOneGrammar()) {
+					pass++;
+				}
+				total++;
+				if (total % 100 == 0) {
+					Console.WriteLine("{0} / {1} pass", pass, total);
+				}
 			}
 		}
 
-		private void ProcessOneGrammar() {
+		private bool ProcessOneGrammar() {
 			var (g, terminals) = NextGrammar();
-			
+			// Console.WriteLine(g.Productions.Count());
 			var preparedSentences = new List<Sentence>();
 			for (int length = 0; length <= _maxInputLength; length++) {
 				var combinations = CFGLibTest.Helpers.CombinationsWithRepetition(terminals, length);
@@ -58,6 +68,9 @@ namespace CFGLibTest {
 				}
 			}
 
+			AddRandomSentences(preparedSentences, terminals);
+			
+
 			// Console.WriteLine("Parsing sentences...");
 			EarleyParser earley1;
 			EarleyParser2 earley2;
@@ -66,7 +79,7 @@ namespace CFGLibTest {
 				earley2 = new EarleyParser2(g);
 			} catch {
 				Report(g);
-				return;
+				return true;
 			}
 			
 			foreach (var sentence in preparedSentences) {
@@ -79,9 +92,22 @@ namespace CFGLibTest {
 					}
 				} catch {
 					Report(g, sentence);
-					return;
+					return true;
 					// throw new RandomTestException(e, g, sentence);
 				}
+			}
+			return false;
+		}
+
+		private void AddRandomSentences(List<Sentence> preparedSentences, IList<Terminal> terminals) {
+			for (var i = 0; i < _numRandomSentences; i++) {
+				var length = _r.Next(_maxInputLength + 1, _maxInputLength * 4);
+				var sentenceArray = new Terminal[length];
+				for (var pos = 0; pos < length; pos++) {
+					sentenceArray[pos] = terminals[_r.Next(0, terminals.Count)];
+				}
+				var sentence = new Sentence(sentenceArray);
+				preparedSentences.Add(sentence);
 			}
 		}
 
@@ -100,15 +126,21 @@ namespace CFGLibTest {
 		}
 
 		private (Grammar, List<Terminal>) NextGrammar() {
-			var numNonterminals = _maxNonterminals;
-			var numProductions = _maxProductions;
+			var numNonterminals = _r.Next(1, _maxNonterminals);
+			var numProductions = _r.Next(1, _maxProductions);
 			var maxProductionLength = _maxProductionLength;
-			var numTerminals = _maxTerminals;
+			var numTerminals = _r.Next(1, _maxTerminals);
 
 			var range = Enumerable.Range(0, numTerminals);
 			var terminals = new List<Terminal>(range.Select((x) => Terminal.Of("x" + x)));
 
-			var g = _gramGen.NextCFG(numNonterminals, numProductions, maxProductionLength, terminals, true);
+			Grammar g = null;
+			for (int i = 0; i < 200; i++) {
+				g = _gramGen.NextCFG(numNonterminals, numProductions, maxProductionLength, terminals, true);
+				if (g.Productions.Count() > 0) {
+					return (g, terminals);
+				}
+			}
 			return (g, terminals);
 		}
 	}
