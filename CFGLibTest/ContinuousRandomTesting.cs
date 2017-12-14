@@ -69,7 +69,11 @@ namespace CFGLibTest {
 			}
 
 			AddRandomSentences(preparedSentences, terminals);
-			
+			var uniquifySentences = new Dictionary<string, Sentence>();
+			foreach (var sentence in preparedSentences) {
+				uniquifySentences[sentence.AsTerminals()] = sentence;
+			}
+			preparedSentences = uniquifySentences.Values.ToList();
 
 			// Console.WriteLine("Parsing sentences...");
 			EarleyParser earley1;
@@ -99,7 +103,7 @@ namespace CFGLibTest {
 			return false;
 		}
 
-		private void AddRandomSentences(List<Sentence> preparedSentences, IList<Terminal> terminals) {
+		private void AddRandomSentences(IList<Sentence> preparedSentences, IList<Terminal> terminals) {
 			for (var i = 0; i < _numRandomSentences; i++) {
 				var length = _r.Next(_maxInputLength + 1, _maxInputLength * 4);
 				var sentenceArray = new Terminal[length];
