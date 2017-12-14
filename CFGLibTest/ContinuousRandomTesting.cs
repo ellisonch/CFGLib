@@ -90,10 +90,11 @@ namespace CFGLibTest {
 			//Console.WriteLine(g.ToCodeString());
 			//Console.WriteLine("Offending sentence:");
 			//Console.WriteLine(sentence);
-			_parseErrorFile.WriteLine(g.ToCodeString());
-			if (sentence != null) {
-				_parseErrorFile.WriteLine(sentence);
+			if (sentence == null) {
+				sentence = Sentence.FromLetters("");
 			}
+			var test = string.Format("ExecuteTest({0}, \"{1}\");", g.ToCodeString(), sentence.AsTerminals(" "));
+			_parseErrorFile.WriteLine(test);
 			_parseErrorFile.WriteLine("-------------------------------------------");
 			_parseErrorFile.Flush();
 		}
