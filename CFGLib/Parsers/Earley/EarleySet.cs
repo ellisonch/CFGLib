@@ -46,9 +46,9 @@ namespace CFGLib.Parsers.Earley {
 			return false;
 		}
 		
-		public bool Contains(EarleyItem item) {
-			return _hashedItems.Contains(item);
-		}
+		//public bool Contains(EarleyItem item) {
+		//	return _hashedItems.Contains(item);
+		//}
 
 		internal EarleyItem TakeOne() {
 			if (IsEmpty) {

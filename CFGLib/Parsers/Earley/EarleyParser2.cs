@@ -116,10 +116,11 @@ namespace CFGLib.Parsers.Earley {
 							var newItem = new EarleyItem(new DecoratedProduction(production, 0), i, null);
 							if (InSigma(δ)) {
 								// add (C ::= ·δ, i, null) to E_i and R }
-								if (!E[i].Contains(newItem)) {
-									E[i].Add(newItem);
-									R.Add(newItem);
-								}
+								//if (!E[i].Contains(newItem)) {
+									if (E[i].Add(newItem)) {
+										R.Add(newItem);
+									}
+								//}
 							} else {
 								// if δ = a_i δ′ { add (C ::= · δ, i, null) to Q }
 								if (i < a.Count) {
@@ -140,11 +141,12 @@ namespace CFGLib.Parsers.Earley {
 							var newItem = new EarleyItem(productionAdvanced, h, y);
 							// if β ∈ Σ N and (B ::= αC · β, h, y) ̸∈ E_i {
 							if (PrefixInSigma(β0)) {
-								if (!E[i].Contains(newItem)) {
-									// add(B::= αC · β, h, y) to E_i and R }
-									E[i].Add(newItem);
+								//if (!E[i].Contains(newItem)) {
+								// add(B::= αC · β, h, y) to E_i and R }
+								if (E[i].Add(newItem)) {
 									R.Add(newItem);
 								}
+								//}
 							} else {
 								// if β = a_i β′ { add (B ::= αC · β, h, y) to Q } } }
 								if (i < a.Count) {
@@ -206,14 +208,15 @@ namespace CFGLib.Parsers.Earley {
 							// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
 							if (PrefixInSigma(δ0)) {
 								_stats.AddCount("inSigma");
-								if (!E[i].Contains(newItem)) {
-									_stats.AddCount("not in E");
+								//if (!E[i].Contains(newItem)) {
+									// _stats.AddCount("not in E");
 									// add (A ::= τD · δ, k, y) to E_i and R
-									E[i].Add(newItem);
-									R.Add(newItem);
-								} else {
-									_stats.AddCount("in E");
-								}
+									if (E[i].Add(newItem)) {
+										R.Add(newItem);
+									}
+								//} else {
+								//	_stats.AddCount("in E");
+								//}
 							} else {
 								_stats.AddCount("notInSigma");
 								// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
