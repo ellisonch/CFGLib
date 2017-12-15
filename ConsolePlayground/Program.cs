@@ -35,7 +35,7 @@ namespace ConsolePlayground {
 
 			// VisitorPlay();
 
-			(new ContinuousRandomTesting(6, 6, 15, 10, 5, 500, 4)).Run();
+			//(new ContinuousRandomTesting(6, 6, 15, 10, 5, 500, 4)).Run();
 
 			Benchmark();
 			// BenchmarkBison();
