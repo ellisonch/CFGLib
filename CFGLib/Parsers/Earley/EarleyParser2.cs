@@ -65,7 +65,7 @@ namespace CFGLib.Parsers.Earley {
 			EarleySet QPrime = new EarleySet();
 			EarleySet R = new EarleySet();
 			var H = new Dictionary<Nonterminal, SppfNode2>();
-			var V = new Dictionary<ValueTuple<Tuple<Word, DecoratedProduction>, int, int>, SppfNode2>();
+			var V = new SppfNodeDictionary();
 			
 			// for all (S ::= α) ∈ P {
 			foreach (var production in _grammar.ProductionsFrom(S)) {
@@ -164,12 +164,13 @@ namespace CFGLib.Parsers.Earley {
 						// if w = null {
 						if (w == null) {
 							// if there is no node v ∈ V labelled (D, i, i) create one
-							var tup = ValueTuple.Create(Tuple.Create<Word, DecoratedProduction>(D, null), i, i);
-							if (!V.TryGetValue(tup, out SppfNode2 v)) {
-								var potentialV = new SppfWord(D, i, i);
-								v = potentialV;
-								V[tup] = potentialV;
-							}
+							var tup = ValueTuple.Create(ValueTuple.Create<Word, DecoratedProduction>(D, null), i, i);
+							var v = V.GetOrSet(D, i, i);
+							//if (!V.TryGetValue(tup, out SppfNode2 v)) {
+							//	var potentialV = new SppfWord(D, i, i);
+							//	v = potentialV;
+							//	V[tup] = potentialV;
+							//}
 							// set w = v
 							w = v;
 							Λ.SppfNode = v;
@@ -237,7 +238,7 @@ namespace CFGLib.Parsers.Earley {
 					}
 				}
 				if (i < a.Count) {
-					V = new Dictionary<ValueTuple<Tuple<Word, DecoratedProduction>, int, int>, SppfNode2>();
+					V = new SppfNodeDictionary();
 					// create an SPPF node v labelled(a_i, i, i + 1)
 					var v2 = new SppfWord(a[i], i, i + 1);
 
@@ -295,17 +296,17 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
-		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, Dictionary<ValueTuple<Tuple<Word, DecoratedProduction>, int, int>, SppfNode2> V) {
+		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, SppfNodeDictionary V) {
 			// var α = decoratedProduction.Prefix;
 			var β0 = decoratedProduction.NextWord;
 
 			// hacking in sum type
-			Tuple<Word, DecoratedProduction> s;
+			ValueTuple<Word, DecoratedProduction> s;
 			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
 			if (β0 == null) {
-				s = Tuple.Create<Word, DecoratedProduction>(decoratedProduction.Production.Lhs, null);
+				s = ValueTuple.Create<Word, DecoratedProduction>(decoratedProduction.Production.Lhs, null);
 			} else {
-				s = Tuple.Create<Word, DecoratedProduction>(null, decoratedProduction);
+				s = ValueTuple.Create<Word, DecoratedProduction>(null, decoratedProduction);
 			}
 
 			SppfNode2 y;
@@ -326,17 +327,24 @@ namespace CFGLib.Parsers.Earley {
 				//y.FakeProduction = decoratedProduction.Production;
 			} else {
 				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
-				var tup = ValueTuple.Create(s, j, i);
-				if (!V.TryGetValue(tup, out y)) {
-					SppfNode2 newY;
-					if (tup.Item1.Item1 != null) {
-						newY = new SppfWord(tup.Item1.Item1, j, i);
-					} else {
-						newY = new SppfBranch(tup.Item1.Item2, j, i);
-					}
-					V[tup] = newY;
-					y = newY;
+				// var tup = ValueTuple.Create(s, j, i);
+
+				if (s.Item1 != null) {
+					y = V.GetOrSet(s.Item1, j, i);
+				} else {
+					y = V.GetOrSet(s.Item2, j, i);
 				}
+
+				//if (!V.TryGetValue(tup, out y)) {
+				//	SppfNode2 newY;
+				//	if (tup.Item1.Item1 != null) {
+				//		newY = new SppfWord(tup.Item1.Item1, j, i);
+				//	} else {
+				//		newY = new SppfBranch(tup.Item1.Item2, j, i);
+				//	}
+				//	V[tup] = newY;
+				//	y = newY;
+				//}
 
 				// if w = null and y does not have a family of children (v) add one
 				if (w == null) {
