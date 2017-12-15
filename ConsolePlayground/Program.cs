@@ -35,8 +35,7 @@ namespace ConsolePlayground {
 
 			// VisitorPlay();
 
-			//var crt = new ContinuousRandomTesting(6, 6, 15, 10, 5, 500, 3);
-			//crt.Run();
+			(new ContinuousRandomTesting(6, 6, 15, 10, 5, 500, 4)).Run();
 
 			Benchmark();
 			// BenchmarkBison();
@@ -225,7 +224,7 @@ namespace ConsolePlayground {
 
 				Console.WriteLine("{0}, {1}", i, time);
 			}
-			Console.WriteLine("Done in {0}ms (prev 12640ms)", (int)totalMs);
+			Console.WriteLine("Done in {0}ms (prev 11043ms)", (int)totalMs);
 
 			foreach (var kvp in EarleyParser2._stats.Data) {
 				Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);

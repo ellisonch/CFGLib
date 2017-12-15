@@ -227,7 +227,7 @@ namespace CFGLib.Parsers.Earley {
 				
 				double prob = GetChildProb(_grammar, node, i);
 
-				var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]).ToList();
+				var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]);
 
 				var childrenProb = childrenProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
 
