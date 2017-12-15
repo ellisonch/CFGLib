@@ -33,7 +33,7 @@ namespace ConsolePlayground {
 			// testp.TestParsing02();
 
 
-			//VisitorPlay();
+			// VisitorPlay();
 
 			//var crt = new ContinuousRandomTesting(6, 6, 15, 10, 5, 500, 3);
 			//crt.Run();
@@ -144,8 +144,8 @@ namespace ConsolePlayground {
 
 		private static void DebugGrammar() {
 			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<S> → <A> <A>"),
-				CFGParser.Production("<A> → 'a' <A>"),
+				CFGParser.Production("<S> → <A> <A> <A>"),
+				CFGParser.Production("<A> → 'a'"),
 				CFGParser.Production("<A> → ε")
 			}, Nonterminal.Of("S"));
 			var sentence = Sentence.FromWords("a");
@@ -225,7 +225,7 @@ namespace ConsolePlayground {
 
 				Console.WriteLine("{0}, {1}", i, time);
 			}
-			Console.WriteLine("Done in {0}ms (prev 12900ms)", (int)totalMs);
+			Console.WriteLine("Done in {0}ms (prev 12640ms)", (int)totalMs);
 
 			foreach (var kvp in EarleyParser2._stats.Data) {
 				Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);

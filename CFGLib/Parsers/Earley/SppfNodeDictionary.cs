@@ -6,8 +6,20 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	public class SppfNodeDictionary {
-		private Dictionary<ValueTuple<Word, int, int>, SppfWord> _wordDict = new Dictionary<ValueTuple<Word, int, int>, SppfWord>();
+		// private Dictionary<ValueTuple<Word, int>, SppfWord>[] _wordDicts;
+		private Dictionary<Word, SppfWord>[] _wordDicts;
 		private Dictionary<ValueTuple<DecoratedProduction, int, int>, SppfBranch> _prodDict = new Dictionary<ValueTuple<DecoratedProduction, int, int>, SppfBranch>();
+		private int _currenti;
+
+		public SppfNodeDictionary(int currentI, int length) {
+			// _wordDicts = new Dictionary<ValueTuple<Word, int>, SppfWord>[currentI + 1];
+			_wordDicts = new Dictionary<Word, SppfWord>[currentI + 1];
+			_currenti = currentI;
+			for (var i = 0; i < _wordDicts.Length; i++) {
+				// _wordDicts[i] = new Dictionary<(Word, int), SppfWord>();
+				_wordDicts[i] = new Dictionary<Word, SppfWord>();
+			}
+		}
 
 		//internal SppfNode2 this[ValueTuple<ValueTuple<Word, DecoratedProduction>, int, int> key] {
 		//	set {
@@ -21,12 +33,22 @@ namespace CFGLib.Parsers.Earley {
 		//}
 
 		internal SppfWord GetOrSet(Word item, int j, int i) {
-			var tup = ValueTuple.Create(item, j, i);
+			//if (j > _currenti) {
+			//	throw new Exception();
+			//}
+			// var tup = ValueTuple.Create(item, j);
 			SppfWord y;
-			if (!_wordDict.TryGetValue(tup, out y)) {
+			var dict = _wordDicts[j];
+			if (!dict.TryGetValue(item, out y)) {
 				var newY = new SppfWord(item, j, i);
-				_wordDict[tup] = newY;
+				dict[item] = newY;
 				y = newY;
+			}
+			//if (dict.Count > 1) {
+			//	throw new Exception();
+			//}
+			if (i != y.EndPosition) {
+				throw new Exception(string.Format("Invalid assumption; need to include {0} in hash", nameof(i)));
 			}
 			return y;
 		}

@@ -65,7 +65,7 @@ namespace CFGLib.Parsers.Earley {
 			EarleySet QPrime = new EarleySet();
 			EarleySet R = new EarleySet();
 			var H = new Dictionary<Nonterminal, SppfNode2>();
-			var V = new SppfNodeDictionary();
+			var V = new SppfNodeDictionary(0, a.Count);
 			
 			// for all (S ::= α) ∈ P {
 			foreach (var production in _grammar.ProductionsFrom(S)) {
@@ -238,7 +238,7 @@ namespace CFGLib.Parsers.Earley {
 					}
 				}
 				if (i < a.Count) {
-					V = new SppfNodeDictionary();
+					V = new SppfNodeDictionary(i + 1, a.Count);
 					// create an SPPF node v labelled(a_i, i, i + 1)
 					var v2 = new SppfWord(a[i], i, i + 1);
 
