@@ -164,7 +164,7 @@ namespace CFGLib.Parsers.Earley {
 						// if w = null {
 						if (w == null) {
 							// if there is no node v ∈ V labelled (D, i, i) create one
-							var tup = ValueTuple.Create(ValueTuple.Create<Word, DecoratedProduction>(D, null), i, i);
+							//var tup = ValueTuple.Create(ValueTuple.Create<Word, DecoratedProduction>(D, null), i, i);
 							var v = V.GetOrSet(D, i, i);
 							//if (!V.TryGetValue(tup, out SppfNode2 v)) {
 							//	var potentialV = new SppfWord(D, i, i);
@@ -301,59 +301,64 @@ namespace CFGLib.Parsers.Earley {
 			var β0 = decoratedProduction.NextWord;
 
 			// hacking in sum type
-			ValueTuple<Word, DecoratedProduction> s;
-			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
-			if (β0 == null) {
-				s = ValueTuple.Create<Word, DecoratedProduction>(decoratedProduction.Production.Lhs, null);
-			} else {
-				s = ValueTuple.Create<Word, DecoratedProduction>(null, decoratedProduction);
-			}
+			// ValueTuple<Word, DecoratedProduction> s;
 
 			SppfNode2 y;
-			// if α = ϵ and β ̸= ϵ { let y = v }
-			// TODO: got rid of contraction to make it easy to run old code
-			//if (α.Count == 0 && β.Count != 0) {
-			if (false) {
-				//y = v;
-
-				//var tup = new Tuple<Word, DecoratedProduction>(null, decoratedProduction);
-				//y = new SppfNode2(tup, j, i)
-				//y = v;
-				//if (y.FakeProduction != null) {
-				//	if (y.FakeProduction != decoratedProduction.Production) {
-				//		throw new Exception("Different production for contracted node");
-				//	}
-				//}
-				//y.FakeProduction = decoratedProduction.Production;
+			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
+			if (β0 == null) {
+				// s = ValueTuple.Create<Word, DecoratedProduction>(decoratedProduction.Production.Lhs, null);
+				y = V.GetOrSet(decoratedProduction.Production.Lhs, j, i);
 			} else {
-				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
-				// var tup = ValueTuple.Create(s, j, i);
+				// s = ValueTuple.Create<Word, DecoratedProduction>(null, decoratedProduction);
+				y = V.GetOrSet(decoratedProduction, j, i);
+			}
 
-				if (s.Item1 != null) {
-					y = V.GetOrSet(s.Item1, j, i);
-				} else {
-					y = V.GetOrSet(s.Item2, j, i);
-				}
+			//SppfNode2 y;
+			//// if α = ϵ and β ̸= ϵ { let y = v }
+			//// TODO: got rid of contraction to make it easy to run old code
+			////if (α.Count == 0 && β.Count != 0) {
+			//if (false) {
+			//	//y = v;
 
-				//if (!V.TryGetValue(tup, out y)) {
-				//	SppfNode2 newY;
-				//	if (tup.Item1.Item1 != null) {
-				//		newY = new SppfWord(tup.Item1.Item1, j, i);
-				//	} else {
-				//		newY = new SppfBranch(tup.Item1.Item2, j, i);
-				//	}
-				//	V[tup] = newY;
-				//	y = newY;
-				//}
+			//	//var tup = new Tuple<Word, DecoratedProduction>(null, decoratedProduction);
+			//	//y = new SppfNode2(tup, j, i)
+			//	//y = v;
+			//	//if (y.FakeProduction != null) {
+			//	//	if (y.FakeProduction != decoratedProduction.Production) {
+			//	//		throw new Exception("Different production for contracted node");
+			//	//	}
+			//	//}
+			//	//y.FakeProduction = decoratedProduction.Production;
+			//} else {
+			//	// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
+			//	// var tup = ValueTuple.Create(s, j, i);
 
-				// if w = null and y does not have a family of children (v) add one
-				if (w == null) {
-					y.AddFamily(v);
-				}
-				// if w ̸= null and y does not have a family of children(w, v) add one
-				else {
-					y.AddFamily(w, v);
-				}
+			//	if (s.Item1 != null) {
+			//		y = V.GetOrSet(s.Item1, j, i);
+			//	} else {
+			//		y = V.GetOrSet(s.Item2, j, i);
+			//	}
+
+			//	//if (!V.TryGetValue(tup, out y)) {
+			//	//	SppfNode2 newY;
+			//	//	if (tup.Item1.Item1 != null) {
+			//	//		newY = new SppfWord(tup.Item1.Item1, j, i);
+			//	//	} else {
+			//	//		newY = new SppfBranch(tup.Item1.Item2, j, i);
+			//	//	}
+			//	//	V[tup] = newY;
+			//	//	y = newY;
+			//	//}
+
+			//}
+
+			// if w = null and y does not have a family of children (v) add one
+			if (w == null) {
+				y.AddFamily(v);
+			}
+			// if w ̸= null and y does not have a family of children(w, v) add one
+			else {
+				y.AddFamily(w, v);
 			}
 
 			return y;
