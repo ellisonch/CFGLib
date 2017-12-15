@@ -10,7 +10,7 @@ namespace CFGLib {
 	/// This class represents a sentence, i.e., a list of terminals and nonterminals.  It is an IList&lt;Word>, ICollection&lt;Word>, and IEnumerable&lt;Word>.
 	/// </summary>
 	public class Sentence : IList<Word>, ICollection<Word>, IEnumerable<Word> {
-		private List<Word> _sentence;
+		private readonly List<Word> _sentence;
 
 		public Sentence() {
 			_sentence = new List<Word>();

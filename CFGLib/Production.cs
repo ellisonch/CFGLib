@@ -9,9 +9,17 @@ namespace CFGLib {
 	/// This class represents a Production
 	/// </summary>
 	public class Production {
-		private Nonterminal _lhs;
 		private double _weight = 1.0;
-		private Sentence _rhs;
+
+		/// <summary>
+		/// The left-hand side of the Production (e.g., Lhs -> Rhs)
+		/// </summary>
+		public Nonterminal Lhs { get; }
+
+		/// <summary>
+		/// The right-hand side of the Production (e.g., Lhs -> Rhs)
+		/// </summary>
+		public Sentence Rhs { get; }
 
 		/// <summary>
 		/// Returns a new production.
@@ -24,7 +32,7 @@ namespace CFGLib {
 				throw new ArgumentNullException("Rhs must be non-null");
 			}
 			this.Lhs = lhs;
-			_rhs = rhs;
+			Rhs = rhs;
 			this.Weight = weight;
 		}
 
@@ -34,22 +42,7 @@ namespace CFGLib {
 		}
 		public Production(string lhsName, Word rhsOnlyWord, double weight = 1.0) : this(Nonterminal.Of(lhsName), new Sentence(rhsOnlyWord), weight) {
 		}
-
-		/// <summary>
-		/// The left-hand side of the Production (e.g., Lhs -> Rhs)
-		/// </summary>
-		public Nonterminal Lhs {
-			get { return _lhs; }
-			protected set { _lhs = value; }
-		}
-
-		/// <summary>
-		/// The right-hand side of the Production (e.g., Lhs -> Rhs)
-		/// </summary>
-		public Sentence Rhs {
-			get { return _rhs; }
-		}
-
+		
 		/// <summary>
 		/// The weight of the Production.  Weights are compared to the weights of other productions with the same Lhs to calculate Production probability.
 		/// </summary>
@@ -120,7 +113,7 @@ namespace CFGLib {
 		/// The Rhs is a new Sentence, so that any piece of the new Production can be changed without changing the old Production.
 		/// </summary>
 		internal Production DeepClone() {
-			return new Production(this.Lhs, new Sentence(_rhs), this.Weight);
+			return new Production(this.Lhs, new Sentence(Rhs), this.Weight);
 		}
 
 		/// <summary>
