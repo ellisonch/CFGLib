@@ -27,7 +27,7 @@ namespace ConsolePlayground {
 
 			// PaperExamples();
 
-			// DebugGrammar();
+			DebugGrammar();
 
 			// var testp = new TestParsing();
 			// testp.TestParsing02();
@@ -37,7 +37,7 @@ namespace ConsolePlayground {
 
 			//(new ContinuousRandomTesting(6, 6, 15, 10, 5, 500, 4)).Run();
 
-			Benchmark();
+			// Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
@@ -229,7 +229,7 @@ namespace ConsolePlayground {
 
 				Console.WriteLine("{0}, {1}", i, time);
 			}
-			Console.WriteLine("Done in {0}ms (prev 11043ms)", (int)totalMs);
+			Console.WriteLine("Done in {0}ms (prev 10863ms)", (int)totalMs);
 
 			foreach (var kvp in EarleyParser2._stats.Data) {
 				Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);
