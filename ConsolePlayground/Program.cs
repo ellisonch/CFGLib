@@ -27,7 +27,7 @@ namespace ConsolePlayground {
 
 			// PaperExamples();
 
-			DebugGrammar();
+			// DebugGrammar();
 
 			// var testp = new TestParsing();
 			// testp.TestParsing02();
@@ -37,7 +37,7 @@ namespace ConsolePlayground {
 
 			//(new ContinuousRandomTesting(6, 6, 15, 10, 5, 500, 4)).Run();
 
-			// Benchmark();
+			Benchmark();
 			// BenchmarkBison();
 
 			#region junk 

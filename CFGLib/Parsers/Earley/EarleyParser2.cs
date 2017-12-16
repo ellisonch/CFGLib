@@ -298,14 +298,14 @@ namespace CFGLib.Parsers.Earley {
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
 		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, SppfNodeDictionary V) {
 			// var α = decoratedProduction.Prefix;
-			var β0 = decoratedProduction.NextWord;
+			// var β0 = decoratedProduction.NextWord;
 
 			// hacking in sum type
 			// ValueTuple<Word, DecoratedProduction> s;
 
 			SppfNode2 y;
 			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
-			if (β0 == null) {
+			if (decoratedProduction.AtEnd) {
 				// s = ValueTuple.Create<Word, DecoratedProduction>(decoratedProduction.Production.Lhs, null);
 				y = V.GetOrSet(decoratedProduction.Production.Lhs, j, i);
 			} else {
