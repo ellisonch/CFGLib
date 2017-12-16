@@ -9,12 +9,10 @@ namespace CFGLib.Parsers.Earley {
 		// private Dictionary<ValueTuple<Word, int>, SppfWord>[] _wordDicts;
 		private Dictionary<Word, SppfWord>[] _wordDicts;
 		private Dictionary<ValueTuple<DecoratedProduction, int, int>, SppfBranch> _prodDict = new Dictionary<ValueTuple<DecoratedProduction, int, int>, SppfBranch>();
-		private int _currenti;
 
-		public SppfNodeDictionary(int currentI, int length) {
+		public SppfNodeDictionary(int maxPos) {
 			// _wordDicts = new Dictionary<ValueTuple<Word, int>, SppfWord>[currentI + 1];
-			_wordDicts = new Dictionary<Word, SppfWord>[currentI + 1];
-			_currenti = currentI;
+			_wordDicts = new Dictionary<Word, SppfWord>[maxPos + 1];
 			for (var i = 0; i < _wordDicts.Length; i++) {
 				// _wordDicts[i] = new Dictionary<(Word, int), SppfWord>();
 				_wordDicts[i] = new Dictionary<Word, SppfWord>();
