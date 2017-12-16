@@ -143,9 +143,14 @@ namespace ConsolePlayground {
 
 		private static void DebugGrammar() {
 			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<S> → <A> <A> <A>"),
+				CFGParser.Production("<S> → <A>"),
+				CFGParser.Production("<S> → <B>"),
+				CFGParser.Production("<S> → <C>"),
+				CFGParser.Production("<S> → <D>"),
 				CFGParser.Production("<A> → 'a'"),
-				CFGParser.Production("<A> → ε")
+				CFGParser.Production("<B> → 'a'"),
+				CFGParser.Production("<C> → 'a'"),
+				CFGParser.Production("<D> → 'a'"),
 			}, Nonterminal.Of("S"));
 			var sentence = Sentence.FromWords("a");
 			var earley = new EarleyParser(g);

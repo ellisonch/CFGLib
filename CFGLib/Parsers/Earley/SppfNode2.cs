@@ -35,11 +35,7 @@ namespace CFGLib.Parsers.Earley {
 
 		internal void AddFamily(SppfNode2 w, SppfNode2 v) {
 			var family = new Family2(w, v);
-			if (Families.Add(family)) {
-				EarleyParser2._stats.AddCount("added family");
-			} else {
-				EarleyParser2._stats.AddCount("dupe family");
-			}
+			Families.Add(family);
 		}
 	}
 }
