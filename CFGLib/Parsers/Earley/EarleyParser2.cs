@@ -200,38 +200,41 @@ namespace CFGLib.Parsers.Earley {
 							var z = item.SppfNode;
 							// var δ = item.Tail;
 							var δ0 = item.TailFirst;
-							// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
-							var productionAdvanced = item.DecoratedProduction.Increment();
-							_stats.AddCount("consider");
-							var y = MakeNode(productionAdvanced, k, i, z, w, V);
+							var gatherExcludes = GatherExcludes(item, Λ);
+							//if (!gatherExcludes) {
+								// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
+								var productionAdvanced = item.DecoratedProduction.Increment();
+								_stats.AddCount("consider");
+								var y = MakeNode(productionAdvanced, k, i, z, w, V);
 
-							var newItem = new EarleyItem(productionAdvanced, k, y);
-							// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
-							if (PrefixInSigma(δ0)) {
-								_stats.AddCount("inSigma");
-								//if (!E[i].Contains(newItem)) {
+								var newItem = new EarleyItem(productionAdvanced, k, y);
+								// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
+								if (PrefixInSigma(δ0)) {
+									_stats.AddCount("inSigma");
+									//if (!E[i].Contains(newItem)) {
 									// _stats.AddCount("not in E");
 									// add (A ::= τD · δ, k, y) to E_i and R
 									if (E[i].Add(newItem)) {
 										R.Add(newItem);
 									}
-								//} else {
-								//	_stats.AddCount("in E");
-								//}
-							} else {
-								_stats.AddCount("notInSigma");
-								// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
-								if (i < a.Count) {
-									var aCurr = a[i];
-									if (δ0 == aCurr) {
-										_stats.AddCount("AddToQ");
-										Q.Add(newItem);
-									}
+									//} else {
+									//	_stats.AddCount("in E");
+									//}
 								} else {
-									// TODO: do nothing when at end?
-									// throw new Exception();
+									_stats.AddCount("notInSigma");
+									// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
+									if (i < a.Count) {
+										var aCurr = a[i];
+										if (δ0 == aCurr) {
+											_stats.AddCount("AddToQ");
+											Q.Add(newItem);
+										}
+									} else {
+										// TODO: do nothing when at end?
+										// throw new Exception();
+									}
 								}
-							}
+							//}
 						}
 					} else {
 						throw new Exception("Didn't expect a terminal");
@@ -295,8 +298,19 @@ namespace CFGLib.Parsers.Earley {
 			return null;
 		}
 
+		private bool GatherExcludes(EarleyItem item, EarleyItem completedItem) {
+			if (item.DecoratedProduction.Production.Rhs.Count == 3) {
+				if (item.DecoratedProduction.CurrentPosition + 1 == 3) { // +1 since we're going to increment
+					if (completedItem.DecoratedProduction.Production.Rhs.Count == 3) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
-		private SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, SppfNodeDictionary V) {
+		private static SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, SppfNodeDictionary V) {
 			// var α = decoratedProduction.Prefix;
 			// var β0 = decoratedProduction.NextWord;
 

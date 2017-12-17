@@ -142,17 +142,19 @@ namespace ConsolePlayground {
 		}
 
 		private static void DebugGrammar() {
-			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<S> → <A>"),
-				CFGParser.Production("<S> → <B>"),
-				CFGParser.Production("<S> → <C>"),
-				CFGParser.Production("<S> → <D>"),
-				CFGParser.Production("<A> → 'a'"),
-				CFGParser.Production("<B> → 'a'"),
-				CFGParser.Production("<C> → 'a'"),
-				CFGParser.Production("<D> → 'a'"),
-			}, Nonterminal.Of("S"));
-			var sentence = Sentence.FromWords("a");
+			//var g = new Grammar(new List<Production>{
+			//	CFGParser.Production("<S> → <A>"),
+			//	CFGParser.Production("<S> → <B>"),
+			//	CFGParser.Production("<S> → <C>"),
+			//	CFGParser.Production("<S> → <D>"),
+			//	CFGParser.Production("<A> → 'a'"),
+			//	CFGParser.Production("<B> → 'a'"),
+			//	CFGParser.Production("<C> → 'a'"),
+			//	CFGParser.Production("<D> → 'a'"),
+			//}, Nonterminal.Of("S"));
+			var sentence = Sentence.FromWords("1 + 1 + 1 + 1");
+			var grammar = AdditionGrammar(argList => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload));
+			var g = grammar.Grammar;
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 
@@ -204,14 +206,15 @@ namespace ConsolePlayground {
 			Console.WriteLine("Benching...");
 			var inputs = new List<Tuple<Sentence, long, int>>();
 			// for (var i = 80; i < 105; i++) { // 13336ms
-			// for (var i = 1; i < 100; i += 1) {
+			// for (var i = 1; i < 500; i += 1) {
 			// for (var i = 170; i < 195; i++) { // 10755ms after gather in sppf
 			// for (var i = 170; i < 195; i++) { // 9203ms after hash change
 			// for (var i = 170; i < 195; i++) { // 2703ms after doing gather earlier
 			// for (var i = 170; i < 195; i++) {
 			// for (var i = 751; i < 752; i++) {
 			// for (var i = 95; i < 130; i++) { // new; 15385
-			for (var i = 120; i < 160; i++) { // new; 19939
+			// for (var i = 120; i < 160; i++) { // new; 10649ms
+			for (var i = 300; i < 350; i++) { // new; 
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
@@ -224,12 +227,12 @@ namespace ConsolePlayground {
 				var expectedResult = inputPair.Item2;
 				var i = inputPair.Item3;
 
-				var time = MinTime(5, ep, input);
+				var time = MinTime(3, ep, input);
 				totalMs += time;
 
 				Console.WriteLine("{0}, {1}", i, time);
 			}
-			Console.WriteLine("Done in {0}ms (prev 10863ms)", (int)totalMs);
+			Console.WriteLine("Done in {0}ms (prev 10649ms)", (int)totalMs);
 
 			foreach (var kvp in EarleyParser2._stats.Data) {
 				Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);
