@@ -96,221 +96,219 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		private void MainLoop() {
-			EarleySet Q;
-			EarleySet R;
-			Dictionary<Nonterminal, SppfNode2> H;
 			var V = new SppfNodeDictionary(0);
 
 			// for 0 ≤ i ≤ n {
 			for (var i = 0; i < _E.Length; i++) {
 				// H = ∅, R = E_i , Q = Q ′
-				H = new Dictionary<Nonterminal, SppfNode2>();
-				R = new EarleySet(_E[i]);
-				Q = _QPrime;
+				var H = new Dictionary<Nonterminal, SppfNode2>();
+				var R = new EarleySet(_E[i]);
+				var Q = _QPrime;
 
 				// Q′ = ∅
 				_QPrime = new EarleySet();
 
-				// while R ̸= ∅ {
-				while (!R.IsEmpty) {
-					// remove an element, Λ say, from R
-					var Λ = R.TakeOne();
-					var w = Λ.SppfNode;
-					var h = Λ.StartPosition;
+				ProcessR(V, i, H, R, Q);
 
-					// if Λ = (B ::= α · Cβ, h, w) {
-					if (Λ.NextWord is Nonterminal C) {
-						//var β = Λ.Tail;
-						var β0 = Λ.TailFirst;
-						// for all (C ::= δ) ∈ P {
-						foreach (var production in _grammar.ProductionsFrom(C)) {
-							// if δ ∈ Σ_N and (C ::= ·δ, i, null) ̸∈ E_i {
-							var δ = production.Rhs;
-							var newItem = new EarleyItem(new DecoratedProduction(production, 0), i, null);
-							if (InSigma(δ)) {
-								// add (C ::= ·δ, i, null) to E_i and R }
-								//if (!E[i].Contains(newItem)) {
-								if (_E[i].Add(newItem)) {
-									R.Add(newItem);
-								}
-								//}
-							} else {
-								// if δ = a_i δ′ { add (C ::= · δ, i, null) to Q }
-								if (i < _a.Count) {
-									var aCurr = _a[i];
-									if (δ.First() == aCurr) {
-										Q.Add(newItem);
-									}
-								} // TODO: do nothing when not?
-							}
-						}
+				V = ProcessQ(i, Q);
+			}
+		}
 
-						// if ((C, v) ∈ H) {
-						if (H.TryGetValue(C, out SppfNode2 v)) {
-							// let y = MAKE_NODE(B ::= αC · β, h, i, w, v, V)
-							var productionAdvanced = Λ.DecoratedProduction.Increment();
-							var y = MakeNode(productionAdvanced, h, i, w, v, V);
+		private void ProcessR(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode2> H, EarleySet R, EarleySet Q) {
+			// while R ̸= ∅ {
+			while (!R.IsEmpty) {
+				// remove an element, Λ say, from R
+				var Λ = R.TakeOne();
 
-							var newItem = new EarleyItem(productionAdvanced, h, y);
-							// if β ∈ Σ N and (B ::= αC · β, h, y) ̸∈ E_i {
-							if (PrefixInSigma(β0)) {
-								//if (!E[i].Contains(newItem)) {
-								// add(B::= αC · β, h, y) to E_i and R }
-								if (_E[i].Add(newItem)) {
-									R.Add(newItem);
-								}
-								//}
-							} else {
-								// if β = a_i β′ { add (B ::= αC · β, h, y) to Q } } }
-								if (i < _a.Count) {
-									var aCurr = _a[i];
-									if (β0 == aCurr) {
-										Q.Add(newItem);
-									}
-								}
-							}
-						}
+				// if Λ = (B ::= α · Cβ, h, w) {
+				if (Λ.NextWord is Nonterminal C) {
+					Predict(V, i, H, R, Q, Λ, C);
+				}
+				// if Λ = (D ::= α·, h, w) {
+				else if (Λ.NextWord == null) {
+					Complete(V, i, H, R, Q, Λ);
+				} else {
+					throw new Exception("Didn't expect a terminal");
+				}
+			}
+		}
+
+		private SppfNodeDictionary ProcessQ(int i, EarleySet Q) {
+			var V = new SppfNodeDictionary(i + 1);
+			if (i < _a.Count) {
+				// create an SPPF node v labelled(a_i, i, i + 1)
+				var v2 = new SppfWord(_a[i], i, i + 1);
+
+				// while Q ̸= ∅ {
+				while (!Q.IsEmpty) {
+					// remove an element, Λ = (B ::= α · a_i β, h, w) say, from Q
+					// TODO: the statement above seems to imply all elements of Q have that form, but this doesn't seem to happen.  Skip them if they don't?
+					var Λ = Q.TakeOne();
+					if (Λ.NextWord != _a[i]) {
+						throw new Exception();
+						// continue;
 					}
-					// if Λ = (D ::= α·, h, w) {
-					else if (Λ.NextWord == null) {
-						var D = Λ.DecoratedProduction.Production.Lhs;
-						// if w = null {
-						if (w == null) {
-							// if there is no node v ∈ V labelled (D, i, i) create one
-							//var tup = ValueTuple.Create(ValueTuple.Create<Word, DecoratedProduction>(D, null), i, i);
-							var v = V.GetOrSet(D, i, i);
-							//if (!V.TryGetValue(tup, out SppfNode2 v)) {
-							//	var potentialV = new SppfWord(D, i, i);
-							//	v = potentialV;
-							//	V[tup] = potentialV;
-							//}
-							// set w = v
-							w = v;
-							Λ.SppfNode = v;
+					var h = Λ.StartPosition;
+					var w = Λ.SppfNode;
+					var β0 = Λ.TailFirst;
 
-							// if w does not have family (ϵ) add one
-							w.AddFamily();
-						}
+					// let y = MAKE NODE(B ::= α a_i · β, h, i + 1, w, v, V)
+					var productionAdvanced = Λ.DecoratedProduction.Increment();
+					var y = MakeNode(productionAdvanced, h, i + 1, w, v2, V);
 
-						// if h = i { add (D, w) to H }
-						if (h == i) {
-							if (H.TryGetValue(D, out var oldw)) {
-								if (w != oldw) {
-									throw new Exception("Different D, w in H");
-								}
-							} else {
-								H[D] = w;
+					var newItem = new EarleyItem(productionAdvanced, h, y);
+					// if β ∈ Σ_N { add (B ::= α a_i · β, h, y) to E_i+1 }
+					if (PrefixInSigma(β0)) {
+						_E[i + 1].Add(newItem);
+					}
+
+					// if β = a_i+1 β′ { add (B ::= α a_i · β, h, y) to Q′ }
+					else {
+						if (i + 1 < _a.Count) {
+							var aNext = _a[i + 1];
+							if (β0 == aNext) {
+								_QPrime.Add(newItem);
 							}
 						}
-
-						// for all (A ::= τ · Dδ, k, z) in E_h {
-						for (var itemi = 0; itemi < _E[h].Count; itemi++) {
-							var item = _E[h][itemi];
-							if (item.NextWord != D) {
-								continue;
-							}
-							var k = item.StartPosition;
-							var z = item.SppfNode;
-							// var δ = item.Tail;
-							var δ0 = item.TailFirst;
-							var gatherExcludes = GatherExcludes(item, Λ);
-							//if (!gatherExcludes) {
-							// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
-							var productionAdvanced = item.DecoratedProduction.Increment();
-							_stats.AddCount("consider");
-							var y = MakeNode(productionAdvanced, k, i, z, w, V);
-
-							var newItem = new EarleyItem(productionAdvanced, k, y);
-							// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
-							if (PrefixInSigma(δ0)) {
-								_stats.AddCount("inSigma");
-								//if (!E[i].Contains(newItem)) {
-								// _stats.AddCount("not in E");
-								// add (A ::= τD · δ, k, y) to E_i and R
-								if (_E[i].Add(newItem)) {
-									R.Add(newItem);
-								}
-								//} else {
-								//	_stats.AddCount("in E");
-								//}
-							} else {
-								_stats.AddCount("notInSigma");
-								// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
-								if (i < _a.Count) {
-									var aCurr = _a[i];
-									if (δ0 == aCurr) {
-										_stats.AddCount("AddToQ");
-										Q.Add(newItem);
-									}
-								} else {
-									// TODO: do nothing when at end?
-									// throw new Exception();
-								}
-							}
-							//}
-						}
-					} else {
-						throw new Exception("Didn't expect a terminal");
 					}
 				}
-				if (i < _a.Count) {
-					V = new SppfNodeDictionary(i + 1);
-					// create an SPPF node v labelled(a_i, i, i + 1)
-					var v2 = new SppfWord(_a[i], i, i + 1);
+			}
 
-					// while Q ̸= ∅ {
-					while (!Q.IsEmpty) {
-						// remove an element, Λ = (B ::= α · a_i β, h, w) say, from Q
-						// TODO: the statement above seems to imply all elements of Q have that form, but this doesn't seem to happen.  Skip them if they don't?
-						var Λ = Q.TakeOne();
-						if (Λ.NextWord != _a[i]) {
-							throw new Exception();
-							// continue;
+			return V;
+		}
+
+		// if Λ = (B ::= α · Cβ, h, w) {
+		private void Predict(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode2> H, EarleySet R, EarleySet Q, EarleyItem Λ, Nonterminal C) {
+			//var β = Λ.Tail;
+			var w = Λ.SppfNode;
+			var h = Λ.StartPosition;
+			var β0 = Λ.TailFirst;
+			// for all (C ::= δ) ∈ P {
+			foreach (var production in _grammar.ProductionsFrom(C)) {
+				// if δ ∈ Σ_N and (C ::= ·δ, i, null) ̸∈ E_i {
+				var δ0 = production.Rhs.FirstOrDefault();
+				var newItem = new EarleyItem(new DecoratedProduction(production, 0), i, null);
+				if (PrefixInSigma(δ0)) {
+					// add (C ::= ·δ, i, null) to E_i and R }
+					if (_E[i].Add(newItem)) {
+						R.Add(newItem);
+					}
+				} else {
+					// if δ = a_i δ′ { add (C ::= · δ, i, null) to Q }
+					if (i < _a.Count) {
+						var aCurr = _a[i];
+						if (δ0 == aCurr) {
+							Q.Add(newItem);
 						}
-						var h = Λ.StartPosition;
-						var w = Λ.SppfNode;
-						var β0 = Λ.TailFirst;
+					}
+				}
+			}
 
-						// let y = MAKE NODE(B ::= α a_i · β, h, i + 1, w, v, V)
-						var productionAdvanced = Λ.DecoratedProduction.Increment();
-						var y = MakeNode(productionAdvanced, h, i + 1, w, v2, V);
+			// if ((C, v) ∈ H) {
+			if (H.TryGetValue(C, out SppfNode2 v)) {
+				// let y = MAKE_NODE(B ::= αC · β, h, i, w, v, V)
+				var productionAdvanced = Λ.DecoratedProduction.Increment();
+				var y = MakeNode(productionAdvanced, h, i, w, v, V);
 
-						var newItem = new EarleyItem(productionAdvanced, h, y);
-						// if β ∈ Σ_N { add (B ::= α a_i · β, h, y) to E_i+1 }
-						if (PrefixInSigma(β0)) {
-							_E[i + 1].Add(newItem);
-						}
-
-						// if β = a_i+1 β′ { add (B ::= α a_i · β, h, y) to Q′ }
-						else {
-							if (i + 1 < _a.Count) {
-								var aNext = _a[i + 1];
-								if (β0 == aNext) {
-									_QPrime.Add(newItem);
-								}
-							}
+				var newItem = new EarleyItem(productionAdvanced, h, y);
+				// if β ∈ Σ N and (B ::= αC · β, h, y) ̸∈ E_i {
+				if (PrefixInSigma(β0)) {
+					// add(B::= αC · β, h, y) to E_i and R }
+					if (_E[i].Add(newItem)) {
+						R.Add(newItem);
+					}
+				} else {
+					// if β = a_i β′ { add (B ::= αC · β, h, y) to Q } } }
+					if (i < _a.Count) {
+						var aCurr = _a[i];
+						if (β0 == aCurr) {
+							Q.Add(newItem);
 						}
 					}
 				}
 			}
 		}
 
+		// if Λ = (D ::= α·, h, w) {
+		private void Complete(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode2> H, EarleySet R, EarleySet Q, EarleyItem Λ) {
+			var D = Λ.DecoratedProduction.Production.Lhs;
+			var w = Λ.SppfNode;
+			var h = Λ.StartPosition;
+
+			// if w = null {
+			if (w == null) {
+				// if there is no node v ∈ V labelled (D, i, i) create one
+				var v = V.GetOrSet(D, i, i);
+				// set w = v
+				w = v;
+				Λ.SppfNode = v;
+
+				// if w does not have family (ϵ) add one
+				w.AddFamily();
+			}
+
+			// if h = i { add (D, w) to H }
+			if (h == i) {
+				if (H.TryGetValue(D, out var oldw)) {
+					if (w != oldw) {
+						throw new Exception("Different D, w in H");
+					}
+				} else {
+					H[D] = w;
+				}
+			}
+
+			// for all (A ::= τ · Dδ, k, z) in E_h {
+			for (var itemi = 0; itemi < _E[h].Count; itemi++) {
+				var item = _E[h][itemi];
+				if (item.NextWord != D) {
+					continue;
+				}
+				var k = item.StartPosition;
+				var z = item.SppfNode;
+				// var δ = item.Tail;
+				var δ0 = item.TailFirst;
+				// var gatherExcludes = GatherExcludes(item, Λ);
+				//if (!gatherExcludes) {
+				// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
+				var productionAdvanced = item.DecoratedProduction.Increment();
+				var y = MakeNode(productionAdvanced, k, i, z, w, V);
+				var newItem = new EarleyItem(productionAdvanced, k, y);
+
+				// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
+				if (PrefixInSigma(δ0)) {
+					// add (A ::= τD · δ, k, y) to E_i and R
+					if (_E[i].Add(newItem)) {
+						R.Add(newItem);
+					}
+				} else {
+					// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
+					if (i < _a.Count) {
+						var aCurr = _a[i];
+						if (δ0 == aCurr) {
+							Q.Add(newItem);
+						}
+					}
+				}
+				//}
+			}
+		}
+
 		private void Initialize() {
 			// for all (S ::= α) ∈ P {
 			foreach (var production in _grammar.ProductionsFrom(_S)) {
-				var alpha = production.Rhs;
+				var α0 = production.Rhs.FirstOrDefault();
 				var potentialItem = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
 
 				// if α ∈ Σ_N, add (S ::= · α, 0, null) to E_0
-				if (InSigma(alpha)) {
+				if (PrefixInSigma(α0)) {
 					_E[0].Add(potentialItem);
 				}
 				// if α = a_0 α′, add (S ::= · α, 0, null) to Q′
-				// TODO: not sure how to handle this when a is ε
 				else {
 					if (_a.Count > 0) {
 						var a1 = _a.First();
-						if (alpha.First() == a1) {
+						if (α0 == a1) {
 							_QPrime.Add(potentialItem);
 						}
 					}
@@ -331,12 +329,6 @@ namespace CFGLib.Parsers.Earley {
 
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
 		private static SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, SppfNodeDictionary V) {
-			// var α = decoratedProduction.Prefix;
-			// var β0 = decoratedProduction.NextWord;
-
-			// hacking in sum type
-			// ValueTuple<Word, DecoratedProduction> s;
-
 			SppfNode2 y;
 			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
 			if (decoratedProduction.AtEnd) {
@@ -403,15 +395,6 @@ namespace CFGLib.Parsers.Earley {
 				return true;
 			}
 			if (alpha.IsNonterminal) {
-				return true;
-			}
-			return false;
-		}
-		private bool InSigma(Sentence alpha) {
-			if (alpha.Count == 0) {
-				return true;
-			}
-			if (alpha.First().IsNonterminal) {
 				return true;
 			}
 			return false;

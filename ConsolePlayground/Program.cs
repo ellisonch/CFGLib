@@ -142,19 +142,12 @@ namespace ConsolePlayground {
 		}
 
 		private static void DebugGrammar() {
-			//var g = new Grammar(new List<Production>{
-			//	CFGParser.Production("<S> → <A>"),
-			//	CFGParser.Production("<S> → <B>"),
-			//	CFGParser.Production("<S> → <C>"),
-			//	CFGParser.Production("<S> → <D>"),
-			//	CFGParser.Production("<A> → 'a'"),
-			//	CFGParser.Production("<B> → 'a'"),
-			//	CFGParser.Production("<C> → 'a'"),
-			//	CFGParser.Production("<D> → 'a'"),
-			//}, Nonterminal.Of("S"));
-			var sentence = Sentence.FromWords("1 + 1 + 1 + 1");
-			var grammar = AdditionGrammar(argList => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload));
-			var g = grammar.Grammar;
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → ε"),
+			}, Nonterminal.Of("S"));
+			var sentence = Sentence.FromWords("");
+			// var grammar = AdditionGrammar(argList => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload));
+			// var g = grammar.Grammar;
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 
