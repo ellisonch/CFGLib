@@ -27,7 +27,7 @@ namespace ConsolePlayground {
 
 			// PaperExamples();
 
-			// DebugGrammar();
+			DebugGrammar();
 
 			// var testp = new TestParsing();
 			// testp.TestParsing02();
@@ -145,9 +145,9 @@ namespace ConsolePlayground {
 			var g = new Grammar(new List<Production>{
 				CFGParser.Production("<S> → ε"),
 			}, Nonterminal.Of("S"));
-			var sentence = Sentence.FromWords("");
-			// var grammar = AdditionGrammar(argList => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload));
-			// var g = grammar.Grammar;
+			var sentence = Sentence.FromWords("1 + 1 + 1 + 1 + 1 + 1 + 1");
+			var grammar = AdditionGrammar(argList => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload));
+			g = grammar.Grammar;
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 

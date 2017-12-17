@@ -26,7 +26,7 @@ namespace CFGLib.Parsers.Earley {
 		public override bool Equals(object other) {
 			var x = this;
 			var y = other as SppfBranch;
-			if (y == null) {
+			if (ReferenceEquals(y, null)) {
 				return false;
 			}
 
