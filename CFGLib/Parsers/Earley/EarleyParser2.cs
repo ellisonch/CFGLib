@@ -10,9 +10,16 @@ namespace CFGLib.Parsers.Earley {
 	public class EarleyParser2 : Parser {
 		private readonly BaseGrammar _grammar;
 		public static Stats _stats = new Stats();
+		private readonly Nonterminal _S;
+
+		private Sentence _a;
+		private EarleySet[] _E;
+		private EarleySet _QPrime = new EarleySet();
 
 		public EarleyParser2(BaseGrammar grammar) {
 			_grammar = grammar;
+
+			_S = _grammar.Start;
 		}
 
 		public SppfNode2 ParseGetSppf2(Sentence s) {
@@ -54,49 +61,55 @@ namespace CFGLib.Parsers.Earley {
 			//if (a.Count == 0) {
 			//	throw new ArgumentException("Not sure how to handle empty yet");
 			//}
-			var S = _grammar.Start;
 
+			_a = a;
 			// E_0, ..., E_n, R, Q′, V = ∅
-			EarleySet[] E = new EarleySet[a.Count + 1]; // need +1?
-			for (var i = 0; i < E.Length; i++) {
-				E[i] = new EarleySet();
+			_E = new EarleySet[a.Count + 1]; // need +1?
+			for (var i = 0; i < _E.Length; i++) {
+				_E[i] = new EarleySet();
 			}
-			EarleySet Q = new EarleySet();
-			EarleySet QPrime = new EarleySet();
-			EarleySet R = new EarleySet();
-			var H = new Dictionary<Nonterminal, SppfNode2>();
-			var V = new SppfNodeDictionary(0);
-			
-			// for all (S ::= α) ∈ P {
-			foreach (var production in _grammar.ProductionsFrom(S)) {
-				var alpha = production.Rhs;
-				var potentialItem = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
 
-				// if α ∈ Σ_N, add (S ::= · α, 0, null) to E_0
-				if (InSigma(alpha)) {
-					E[0].Add(potentialItem);
+			Initialize();
+
+			MainLoop();
+
+			return Finish();
+		}
+
+		private SppfNode2 Finish() {
+			// if (S ::= τ ·, 0, w) ∈ E_n return w
+			foreach (var item in _E[_a.Count]) {
+				if (item.DecoratedProduction.Production.Lhs != _S) {
+					continue;
 				}
-				// if α = a_0 α′, add (S ::= · α, 0, null) to Q′
-				// TODO: not sure how to handle this when a is ε
-				else {
-					if (a.Count > 0) {
-						var a1 = a.First();
-						if (alpha.First() == a1) {
-							QPrime.Add(potentialItem);
-						}
-					}
+				if (item.StartPosition != 0) {
+					continue;
 				}
+				if (!item.DecoratedProduction.AtEnd) {
+					continue;
+				}
+				return item.SppfNode;
+				// TODO: could there be others?
 			}
+			// else return failure
+			return null;
+		}
+
+		private void MainLoop() {
+			EarleySet Q;
+			EarleySet R;
+			Dictionary<Nonterminal, SppfNode2> H;
+			var V = new SppfNodeDictionary(0);
 
 			// for 0 ≤ i ≤ n {
-			for (var i = 0; i < E.Length; i++) {
+			for (var i = 0; i < _E.Length; i++) {
 				// H = ∅, R = E_i , Q = Q ′
 				H = new Dictionary<Nonterminal, SppfNode2>();
-				R = new EarleySet(E[i]);
-				Q = QPrime;
+				R = new EarleySet(_E[i]);
+				Q = _QPrime;
 
 				// Q′ = ∅
-				QPrime = new EarleySet();
+				_QPrime = new EarleySet();
 
 				// while R ̸= ∅ {
 				while (!R.IsEmpty) {
@@ -117,14 +130,14 @@ namespace CFGLib.Parsers.Earley {
 							if (InSigma(δ)) {
 								// add (C ::= ·δ, i, null) to E_i and R }
 								//if (!E[i].Contains(newItem)) {
-									if (E[i].Add(newItem)) {
-										R.Add(newItem);
-									}
+								if (_E[i].Add(newItem)) {
+									R.Add(newItem);
+								}
 								//}
 							} else {
 								// if δ = a_i δ′ { add (C ::= · δ, i, null) to Q }
-								if (i < a.Count) {
-									var aCurr = a[i];
+								if (i < _a.Count) {
+									var aCurr = _a[i];
 									if (δ.First() == aCurr) {
 										Q.Add(newItem);
 									}
@@ -143,14 +156,14 @@ namespace CFGLib.Parsers.Earley {
 							if (PrefixInSigma(β0)) {
 								//if (!E[i].Contains(newItem)) {
 								// add(B::= αC · β, h, y) to E_i and R }
-								if (E[i].Add(newItem)) {
+								if (_E[i].Add(newItem)) {
 									R.Add(newItem);
 								}
 								//}
 							} else {
 								// if β = a_i β′ { add (B ::= αC · β, h, y) to Q } } }
-								if (i < a.Count) {
-									var aCurr = a[i];
+								if (i < _a.Count) {
+									var aCurr = _a[i];
 									if (β0 == aCurr) {
 										Q.Add(newItem);
 									}
@@ -191,8 +204,8 @@ namespace CFGLib.Parsers.Earley {
 						}
 
 						// for all (A ::= τ · Dδ, k, z) in E_h {
-						for (var itemi = 0; itemi < E[h].Count; itemi++) {
-							var item = E[h][itemi];
+						for (var itemi = 0; itemi < _E[h].Count; itemi++) {
+							var item = _E[h][itemi];
 							if (item.NextWord != D) {
 								continue;
 							}
@@ -202,55 +215,55 @@ namespace CFGLib.Parsers.Earley {
 							var δ0 = item.TailFirst;
 							var gatherExcludes = GatherExcludes(item, Λ);
 							//if (!gatherExcludes) {
-								// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
-								var productionAdvanced = item.DecoratedProduction.Increment();
-								_stats.AddCount("consider");
-								var y = MakeNode(productionAdvanced, k, i, z, w, V);
+							// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
+							var productionAdvanced = item.DecoratedProduction.Increment();
+							_stats.AddCount("consider");
+							var y = MakeNode(productionAdvanced, k, i, z, w, V);
 
-								var newItem = new EarleyItem(productionAdvanced, k, y);
-								// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
-								if (PrefixInSigma(δ0)) {
-									_stats.AddCount("inSigma");
-									//if (!E[i].Contains(newItem)) {
-									// _stats.AddCount("not in E");
-									// add (A ::= τD · δ, k, y) to E_i and R
-									if (E[i].Add(newItem)) {
-										R.Add(newItem);
-									}
-									//} else {
-									//	_stats.AddCount("in E");
-									//}
-								} else {
-									_stats.AddCount("notInSigma");
-									// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
-									if (i < a.Count) {
-										var aCurr = a[i];
-										if (δ0 == aCurr) {
-											_stats.AddCount("AddToQ");
-											Q.Add(newItem);
-										}
-									} else {
-										// TODO: do nothing when at end?
-										// throw new Exception();
-									}
+							var newItem = new EarleyItem(productionAdvanced, k, y);
+							// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
+							if (PrefixInSigma(δ0)) {
+								_stats.AddCount("inSigma");
+								//if (!E[i].Contains(newItem)) {
+								// _stats.AddCount("not in E");
+								// add (A ::= τD · δ, k, y) to E_i and R
+								if (_E[i].Add(newItem)) {
+									R.Add(newItem);
 								}
+								//} else {
+								//	_stats.AddCount("in E");
+								//}
+							} else {
+								_stats.AddCount("notInSigma");
+								// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
+								if (i < _a.Count) {
+									var aCurr = _a[i];
+									if (δ0 == aCurr) {
+										_stats.AddCount("AddToQ");
+										Q.Add(newItem);
+									}
+								} else {
+									// TODO: do nothing when at end?
+									// throw new Exception();
+								}
+							}
 							//}
 						}
 					} else {
 						throw new Exception("Didn't expect a terminal");
 					}
 				}
-				if (i < a.Count) {
+				if (i < _a.Count) {
 					V = new SppfNodeDictionary(i + 1);
 					// create an SPPF node v labelled(a_i, i, i + 1)
-					var v2 = new SppfWord(a[i], i, i + 1);
+					var v2 = new SppfWord(_a[i], i, i + 1);
 
 					// while Q ̸= ∅ {
 					while (!Q.IsEmpty) {
 						// remove an element, Λ = (B ::= α · a_i β, h, w) say, from Q
 						// TODO: the statement above seems to imply all elements of Q have that form, but this doesn't seem to happen.  Skip them if they don't?
 						var Λ = Q.TakeOne();
-						if (Λ.NextWord != a[i]) {
+						if (Λ.NextWord != _a[i]) {
 							throw new Exception();
 							// continue;
 						}
@@ -265,37 +278,44 @@ namespace CFGLib.Parsers.Earley {
 						var newItem = new EarleyItem(productionAdvanced, h, y);
 						// if β ∈ Σ_N { add (B ::= α a_i · β, h, y) to E_i+1 }
 						if (PrefixInSigma(β0)) {
-							E[i + 1].Add(newItem);
+							_E[i + 1].Add(newItem);
 						}
 
 						// if β = a_i+1 β′ { add (B ::= α a_i · β, h, y) to Q′ }
 						else {
-							if (i + 1 < a.Count) {
-								var aNext = a[i + 1];
+							if (i + 1 < _a.Count) {
+								var aNext = _a[i + 1];
 								if (β0 == aNext) {
-									QPrime.Add(newItem);
+									_QPrime.Add(newItem);
 								}
 							}
 						}
 					}
 				}
 			}
-			// if (S ::= τ ·, 0, w) ∈ E_n return w
-			foreach (var item in E[a.Count]) {
-				if (item.DecoratedProduction.Production.Lhs != S) {
-					continue;
+		}
+
+		private void Initialize() {
+			// for all (S ::= α) ∈ P {
+			foreach (var production in _grammar.ProductionsFrom(_S)) {
+				var alpha = production.Rhs;
+				var potentialItem = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
+
+				// if α ∈ Σ_N, add (S ::= · α, 0, null) to E_0
+				if (InSigma(alpha)) {
+					_E[0].Add(potentialItem);
 				}
-				if (item.StartPosition != 0) {
-					continue;
+				// if α = a_0 α′, add (S ::= · α, 0, null) to Q′
+				// TODO: not sure how to handle this when a is ε
+				else {
+					if (_a.Count > 0) {
+						var a1 = _a.First();
+						if (alpha.First() == a1) {
+							_QPrime.Add(potentialItem);
+						}
+					}
 				}
-				if (!item.DecoratedProduction.AtEnd) {
-					continue;
-				}
-				return item.SppfNode;
-				// TODO: could there be others?
 			}
-			// else return failure
-			return null;
 		}
 
 		private bool GatherExcludes(EarleyItem item, EarleyItem completedItem) {

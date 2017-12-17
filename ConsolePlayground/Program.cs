@@ -213,8 +213,8 @@ namespace ConsolePlayground {
 			// for (var i = 170; i < 195; i++) {
 			// for (var i = 751; i < 752; i++) {
 			// for (var i = 95; i < 130; i++) { // new; 15385
-			// for (var i = 120; i < 160; i++) { // new; 10649ms
-			for (var i = 300; i < 350; i++) { // new; 
+			for (var i = 120; i < 160; i++) { // new; 10649ms
+			// for (var i = 300; i < 350; i++) { // new; 
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
