@@ -3,6 +3,7 @@ using CFGLib.Parsers.CYK;
 using CFGLib.Parsers.Earley;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -46,6 +47,7 @@ namespace CFGLibTest {
 			int fail = 0;
 			int total = 0;
 			int timeouts = 0;
+			var sw = Stopwatch.StartNew();
 			while (true) {
 				var task = Task.Run(() => ProcessOneGrammar());
 				if (task.Wait(TimeSpan.FromSeconds(20))) {
@@ -56,8 +58,9 @@ namespace CFGLibTest {
 					timeouts++;
 				}
 				total++;
-				if (total % 100 == 0) {
-					Console.WriteLine("{0} / {1} / {2} fail / timeout / total", fail, timeouts, total);
+				if (total % 50 == 0) {
+					Console.WriteLine("{0} / {1} / {2} fail / timeout / total in {3}ms", fail, timeouts, total, sw.Elapsed.TotalMilliseconds);
+					sw.Restart();
 				}
 			}
 		}

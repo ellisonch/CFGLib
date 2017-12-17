@@ -166,7 +166,7 @@ namespace CFGLib.Parsers.Earley {
 			var nodes = GetAllNodes(sppf);
 
 			var indexToNode = nodes.ToArray();
-			var nodeToIndex = new Dictionary<SppfNode, int>();
+			var nodeToIndex = new Dictionary<SppfNode, int>(nodes.Count);
 			for (int i = 0; i < indexToNode.Length; i++) {
 				nodeToIndex[indexToNode[i]] = i;
 			}
@@ -227,9 +227,14 @@ namespace CFGLib.Parsers.Earley {
 				
 				double prob = GetChildProb(_grammar, node, i);
 
-				var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]);
-
-				var childrenProb = childrenProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
+				//var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]);
+				//var childrenProb = childrenProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
+				var childrenProb = 1.0;
+				foreach (var child in l[i].Members) {
+					var index = nodeToIndex[child];
+					var estimate = previousEstimates[index];
+					childrenProb *= estimate;
+				}
 
 				familyProbs[i] = prob * childrenProb;
 			}
