@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
 	internal abstract class InteriorNode : SppfNode {
-		private HashSet<Family> _familiesInternal = new HashSet<Family>(); // used during construction only
-		private readonly List<Family> _families = new List<Family>();
+		private HashSet<Family2<SppfNode>> _familiesInternal = new HashSet<Family2<SppfNode>>(); // used during construction only
+		private readonly List<Family2<SppfNode>> _families = new List<Family2<SppfNode>>();
 
-		internal override IList<Family> Families {
+		internal override IList<Family2<SppfNode>> Families {
 			get {
 				return _families;
 			}
@@ -19,7 +19,7 @@ namespace CFGLib.Parsers.Forests {
 		protected InteriorNode(int startPosition, int endPosition) : base(startPosition, endPosition) {
 		}
 
-		internal void AddFamily(Family family) {
+		internal void AddFamily(Family2<SppfNode> family) {
 			_familiesInternal.Add(family);
 		}
 		internal override void FinishFamily() {
@@ -28,18 +28,6 @@ namespace CFGLib.Parsers.Forests {
 				_families.AddRange(_familiesInternal);
 				_familiesInternal = null;
 			}
-		}
-
-		internal void AddChild(int i, Production production) {
-			if (i >= _families.Count) {
-				throw new Exception();
-			}
-			if (_families[i].Production != null) {
-				if (production != _families[i].Production) {
-					throw new Exception();
-				}
-			}
-			_families[i].Production = production;
 		}
 
 		internal override void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited) {

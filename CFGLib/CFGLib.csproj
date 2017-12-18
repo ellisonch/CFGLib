@@ -57,7 +57,7 @@
     <Compile Include="Parsers\Earley\EarleyItem.cs" />
     <Compile Include="Parsers\Earley\EarleyParser2.cs" />
     <Compile Include="Parsers\Earley\EarleySet.cs" />
-    <Compile Include="Parsers\Earley\Family2.cs" />
+    <Compile Include="Parsers\Forests\Family2.cs" />
     <Compile Include="Parsers\Earley\SppfBranch.cs" />
     <Compile Include="Parsers\Earley\SppfBridge.cs" />
     <Compile Include="Parsers\Earley\SppfNode2.cs" />
@@ -81,7 +81,6 @@
     <Compile Include="Parsers\Forests\LeafNode.cs" />
     <Compile Include="Parsers\Forests\TerminalNode.cs" />
     <Compile Include="Parsers\Forests\EpsilonNode.cs" />
-    <Compile Include="Parsers\Forests\Family.cs" />
     <Compile Include="Parsers\Forests\IntermediateNode.cs" />
     <Compile Include="Parsers\Forests\SppfNode.cs" />
     <Compile Include="Parsers\Forests\SymbolNode.cs" />

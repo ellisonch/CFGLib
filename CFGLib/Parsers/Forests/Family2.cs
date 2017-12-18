@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Earley {
+namespace CFGLib.Parsers.Forests {
 	internal struct Family2<T> where T : class {
 		private readonly int _cachedHash;
 		private readonly T _firstChild;

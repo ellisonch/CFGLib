@@ -12,8 +12,8 @@ namespace CFGLib.Parsers.Forests {
 		}
 		public abstract Sentence GetSentence();
 
-		private static IList<Family> _families = new List<Family>().AsReadOnly();
-		internal override IList<Family> Families {
+		private static IList<Family2<SppfNode>> _families = new List<Family2<SppfNode>>().AsReadOnly();
+		internal override IList<Family2<SppfNode>> Families {
 			get {
 				return _families;
 			}

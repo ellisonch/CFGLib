@@ -99,8 +99,7 @@ namespace CFGLib.Parsers.Earley {
 
 				var newChild1 = InternalOldFromNew(child1, cache);
 
-				var newFamily = new Family(newChild1);
-				newFamily.Production = family.Production;
+				var newFamily = new Family2<SppfNode>(family.Production, newChild1);
 				retval.Families.Add(newFamily);
 			} else if (family.Members.Count == 2) {
 				var child1 = family.Members[0];
@@ -110,8 +109,7 @@ namespace CFGLib.Parsers.Earley {
 				var newChild2 = InternalOldFromNew(child2, cache);
 
 				// if (newChild1 is InteriorNode iNode) {
-				var newFamily = new Family(newChild1, newChild2);
-				newFamily.Production = family.Production;
+				var newFamily = new Family2<SppfNode>(family.Production, newChild1, newChild2);
 				retval.Families.Add(newFamily);
 				//} else {
 				//	throw new Exception();

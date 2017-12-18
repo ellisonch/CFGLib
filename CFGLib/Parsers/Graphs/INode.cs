@@ -16,6 +16,6 @@ namespace CFGLib.Parsers.Graphs {
 		int Rank { get; }
 		int StartPosition { get; }
 		int EndPosition { get; }
-		Family TheFamily { get; set; }
+		Family2<SppfNode> TheFamily { get; set; }
 	}
 }

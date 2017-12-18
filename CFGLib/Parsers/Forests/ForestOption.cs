@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
 	public class ForestOption {		
-		private readonly Family _family;
+		private readonly Family2<SppfNode> _family;
 		private List<ForestNode[]> _children;
 
 		public Production Production {
@@ -23,12 +23,12 @@ namespace CFGLib.Parsers.Forests {
 			return _children;
 		}
 
-		internal ForestOption(Family family) {
+		internal ForestOption(Family2<SppfNode> family) {
 			_family = family;
 			//_children = BuildChildren();
 		}
 
-		internal static List<ForestOption> BuildOptions(IList<Family> families, int startPosition, int endPosition) {
+		internal static List<ForestOption> BuildOptions(IList<Family2<SppfNode>> families, int startPosition, int endPosition) {
 			var retval = new List<ForestOption>();
 
 			foreach (var family in families) {
@@ -54,7 +54,7 @@ namespace CFGLib.Parsers.Forests {
 			return startList;
 		}
 
-		private static void BuildChildrenHelper(Family family, List<ForestNode[]> startList, Sentence rhs, int position) {
+		private static void BuildChildrenHelper(Family2<SppfNode> family, List<ForestNode[]> startList, Sentence rhs, int position) {
 			if (position + 1 != rhs.Count && family.Production != null) {
 				throw new Exception();
 			}

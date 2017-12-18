@@ -9,15 +9,12 @@ namespace CFGLib.Parsers.Graphs {
 	internal class SppfNodeNode : INode {
 		public readonly SppfNode Node;
 		public int Rank { get; set; }
-		private Family _theFamily;
-		public Family TheFamily {
+		private Family2<SppfNode> _theFamily;
+		public Family2<SppfNode> TheFamily {
 			get {
 				return _theFamily;
 			}
 			set {
-				if (_theFamily != null) {
-					throw new Exception();
-				}
 				_theFamily = value;
 			}
 		}
@@ -44,7 +41,7 @@ namespace CFGLib.Parsers.Graphs {
 		public string Label {
 			get {
 				// return string.Format("{0} {1}", Node.ToStringSelf(), Id);
-				var production = TheFamily?.Production;
+				var production = TheFamily.Production;
 				var productionString = string.Format("\nr:{0}", production);
 				productionString = null;
 				return string.Format("{0}{1}", Node.ToStringSimple(), productionString);

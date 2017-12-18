@@ -138,7 +138,7 @@ namespace CFGLib.Actioneer {
 			//}
 		}
 
-		private TraverseResultCollection[] TraverseFamily(InteriorNode node, Family family, int level) {
+		private TraverseResultCollection[] TraverseFamily(InteriorNode node, Family2<SppfNode> family, int level) {
 			var count = family.Production.Rhs.Count;
 			if (count == 0) {
 				if (family.Members.Count != 1) {
@@ -157,7 +157,7 @@ namespace CFGLib.Actioneer {
 			// throw new Exception();
 		}
 
-		private TraverseResultCollection[] TraverseChildren(InteriorNode node, Family family, int count, int level) {
+		private TraverseResultCollection[] TraverseChildren(InteriorNode node, Family2<SppfNode> family, int count, int level) {
 			// Console.WriteLine("Helping:");
 			var start = new TraverseResultCollection[count];
 			var startList = new List<TraverseResultCollection[]> { start };
@@ -168,7 +168,7 @@ namespace CFGLib.Actioneer {
 			return actual;
 		}
 
-		private void TraverseChildrenHelper(InteriorNode node, Family family, List<TraverseResultCollection[]> startList, Sentence rhs, int position, int level) {
+		private void TraverseChildrenHelper(InteriorNode node, Family2<SppfNode> family, List<TraverseResultCollection[]> startList, Sentence rhs, int position, int level) {
 			// PrintList(startList);
 			if (position + 1 != rhs.Count && family.Production != null) {
 				throw new Exception();

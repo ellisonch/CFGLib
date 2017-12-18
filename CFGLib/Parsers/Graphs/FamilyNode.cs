@@ -8,20 +8,17 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
 	internal class FamilyNode : INode {
-		private Family _family;
+		private Family2<SppfNode> _family;
 		private string _id;
 		public int StartPosition { get; set; }
 		public int EndPosition { get; set; }
 		public int Rank { get; set; }
-		private Family _theFamily;
-		public Family TheFamily {
+		private Family2<SppfNode> _theFamily;
+		public Family2<SppfNode> TheFamily {
 			get {
 				return _theFamily;
 			}
 			set {
-				if (_theFamily != null) {
-					throw new Exception();
-				}
 				_theFamily = value;
 			}
 		}
@@ -66,7 +63,7 @@ namespace CFGLib.Parsers.Graphs {
 			}
 		}
 
-		public FamilyNode(Family family, string id, int rank) {
+		public FamilyNode(Family2<SppfNode> family, string id, int rank) {
 			_family = family;
 			_id = id;
 			Rank = rank;

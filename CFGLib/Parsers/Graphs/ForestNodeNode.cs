@@ -10,16 +10,13 @@ namespace CFGLib.Parsers.Graphs {
 		public readonly ForestNode Node;
 		public int Rank { get; set; }
 		public readonly string Id;
-		private Family _theFamily;
-		public Family TheFamily {
+		private Family2<SppfNode>[] _theFamily;
+		public Family2<SppfNode> TheFamily {
 			get {
-				return _theFamily;
+				return _theFamily[0];
 			}
 			set {
-				if (_theFamily != null) {
-					throw new Exception();
-				}
-				_theFamily = value;
+				_theFamily[0] = value;
 			}
 		}
 
@@ -71,7 +68,8 @@ namespace CFGLib.Parsers.Graphs {
 			Node = node;
 			Id = id;
 			Rank = rank;
-			_theFamily = null;
+			_theFamily = new Family2<SppfNode>[1];
+			// _theFamily = null;
 		}
 	}
 }
