@@ -29,7 +29,7 @@ namespace CFGLib.Parsers.Forests {
 			//_children = BuildChildren();
 		}
 
-		internal static List<ForestOption> BuildOptions(IList<Family2<SppfNode>> families, int startPosition, int endPosition) {
+		internal static List<ForestOption> BuildOptions(IEnumerable<Family2<SppfNode>> families, int startPosition, int endPosition) {
 			var retval = new List<ForestOption>();
 
 			foreach (var family in families) {

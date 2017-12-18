@@ -9,7 +9,13 @@ namespace CFGLib.Parsers.Sppf {
 	public abstract class SppfNode2 {
 		public int StartPosition { get; }
 		public int EndPosition { get; }
-
+		private readonly HashSet<Family2<SppfNode2>> _families = new HashSet<Family2<SppfNode2>>();
+		internal IEnumerable<Family2<SppfNode2>> Families {
+			get {
+				return _families;
+			}
+		}
+		
 		public SppfNode2(int startPos, int endPos) {
 			if (startPos > endPos) {
 				throw new Exception();
@@ -17,8 +23,6 @@ namespace CFGLib.Parsers.Sppf {
 			StartPosition = startPos;
 			EndPosition = endPos;
 		}
-
-		internal HashSet<Family2<SppfNode2>> Families { get; } = new HashSet<Family2<SppfNode2>>();
 
 		/// <summary>
 		/// Used just to convey production in contracted sppf nodes, for testing
@@ -31,12 +35,12 @@ namespace CFGLib.Parsers.Sppf {
 		//}
 		internal void AddFamily(Production production, SppfNode2 v) {
 			var family = new Family2<SppfNode2>(production, v);
-			Families.Add(family);
+			_families.Add(family);
 		}
 
 		internal void AddFamily(Production production, SppfNode2 w, SppfNode2 v) {
 			var family = new Family2<SppfNode2>(production, w, v);
-			Families.Add(family);
+			_families.Add(family);
 		}
 	}
 }

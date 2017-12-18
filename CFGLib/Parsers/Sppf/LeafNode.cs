@@ -12,15 +12,6 @@ namespace CFGLib.Parsers.Sppf {
 		}
 		public abstract Sentence GetSentence();
 
-		private static IList<Family2<SppfNode>> _families = new List<Family2<SppfNode>>().AsReadOnly();
-		internal override IList<Family2<SppfNode>> Families {
-			get {
-				return _families;
-			}
-		}
-		internal override void FinishFamily() {
-		}
-
 		public override string ToString() {
 			return string.Format("Leaf({0}, {1}, {2})", GetSentence().ToString(), StartPosition, EndPosition);
 		}

@@ -7,27 +7,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Sppf {
 	internal abstract class InteriorNode : SppfNode {
-		private HashSet<Family2<SppfNode>> _familiesInternal = new HashSet<Family2<SppfNode>>(); // used during construction only
-		private readonly List<Family2<SppfNode>> _families = new List<Family2<SppfNode>>();
-
-		internal override IList<Family2<SppfNode>> Families {
-			get {
-				return _families;
-			}
-		}
-		
 		protected InteriorNode(int startPosition, int endPosition) : base(startPosition, endPosition) {
-		}
-
-		internal void AddFamily(Family2<SppfNode> family) {
-			_familiesInternal.Add(family);
-		}
-		internal override void FinishFamily() {
-			if (_familiesInternal != null) {
-				_families.Clear();
-				_families.AddRange(_familiesInternal);
-				_familiesInternal = null;
-			}
 		}
 
 		internal override void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited) {
@@ -36,12 +16,13 @@ namespace CFGLib.Parsers.Sppf {
 			}
 			visited.Add(this);
 
-			// foreach (var family in Families) {
-			for (int i = 0; i < Families.Count; i++) {
-				var family = Families[i];
+			var i = 0;
+			foreach (var family in Families) {
+			// for (int i = 0; i < Families.Count; i++) {
+				// var family = Families[i];
 				//Production singletonProduction = null;
 				INode prevNode;
-				if (Families.Count == 1) {
+				if (Families.Count() == 1) {
 					prevNode = myNode;
 					//singletonProduction = Families[0].Production;
 				} else {
@@ -57,6 +38,7 @@ namespace CFGLib.Parsers.Sppf {
 					g.AddEdge(prevNode, childNode);
 					child.GetGraphHelper(g, childNode, visited);
 				}
+				i++;
 			}
 		}
 	}

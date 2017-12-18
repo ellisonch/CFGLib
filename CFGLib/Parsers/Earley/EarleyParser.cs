@@ -216,27 +216,33 @@ namespace CFGLib.Parsers.Earley {
 		}
 		
 		private static double StepProbability(BaseGrammar _grammar, SppfNode node, Dictionary<SppfNode, int> nodeToIndex, double[] previousEstimates) {
-			if (node.Families.Count == 0) {
+			var l = node.Families;
+			var familyCount = l.Count();
+
+			if (familyCount == 0) {
 				return 1.0;
 			}
-
-			var l = node.Families;
-			var familyProbs = new double[l.Count];
-			for (int i = 0; i < l.Count; i++) {
-				var alternative = l[i];
+			
+			var familyProbs = new double[familyCount];
+			var i = 0;
+			foreach (var alternative in l) {
+			// for (int i = 0; i < familyCount; i++) {
+				// var alternative = l[i];
 				
-				double prob = GetChildProb(_grammar, node, i);
+				double prob = GetChildProb(_grammar, alternative.Production);
 
 				//var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]);
 				//var childrenProb = childrenProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
 				var childrenProb = 1.0;
-				foreach (var child in l[i].Members) {
+				foreach (var child in alternative.Members) {
 					var index = nodeToIndex[child];
 					var estimate = previousEstimates[index];
 					childrenProb *= estimate;
 				}
 
 				familyProbs[i] = prob * childrenProb;
+
+				i++;
 			}
 			var familyProb = familyProbs.Sum();
 			if (familyProb > 1) {
@@ -247,8 +253,8 @@ namespace CFGLib.Parsers.Earley {
 			return result;
 		}
 
-		private static double GetChildProb(BaseGrammar _grammar, SppfNode node, int i) {
-			var production = node.Families[i].Production;
+		private static double GetChildProb(BaseGrammar _grammar, Production production) {
+			// var production = alternative.Production;
 			var prob = 1.0;
 			if (production != null) {
 				prob = _grammar.GetProbability(production);
@@ -289,10 +295,6 @@ namespace CFGLib.Parsers.Earley {
 				BuildTree(nodes, processed, root, success);
 			}
 
-			foreach (var node in nodes.Keys) {
-				node.FinishFamily();
-			}
-
 			return root;
 		}
 
@@ -308,12 +310,15 @@ namespace CFGLib.Parsers.Earley {
 
 			Console.WriteLine("{0}{1}{2}", padding, node, nodeProb);
 
-			if (node.Families.Count > 0 && seen.Contains(node)) {
+			var l = node.Families;
+			var familiesCount = l.Count();
+
+			if (familiesCount > 0 && seen.Contains(node)) {
 				Console.WriteLine("{0}Already seen this node!", padding);
 				return;
 			}
 			seen.Add(node);
-			
+
 			//if (node is IntermediateNode) {
 			//	foreach (var family in node.Families) {
 			//		if (family.Production != null) {
@@ -325,16 +330,17 @@ namespace CFGLib.Parsers.Earley {
 			//	}
 			//}
 
-			var l = node.Families;
-
-			for (int i = 0; i < l.Count; i++) {
-				var alternative = l[i];
-				if (l.Count > 1) {
+			var i = 0;
+			foreach (var alternative in l) {
+			// for (int i = 0; i < l.Count; i++) {
+				// var alternative = l[i];
+				if (familiesCount > 1) {
 					Console.WriteLine("{0}Alternative {1}", padding, i);
 				}
-				foreach (var member in l[i].Members) {
+				foreach (var member in alternative.Members) {
 					PrintForest(member, nodeProbs, padding + "  ", seen);
 				}
+				i++;
 			}
 		}
 

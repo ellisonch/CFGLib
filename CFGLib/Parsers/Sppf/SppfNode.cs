@@ -13,19 +13,24 @@ namespace CFGLib.Parsers.Sppf {
 		public readonly int StartPosition;
 		public readonly int EndPosition;
 		public readonly int Id = _nextId++;
+		private readonly HashSet<Family2<SppfNode>> _families = new HashSet<Family2<SppfNode>>();
 
 		// An ordered version of the hash
-		internal abstract IList<Family2<SppfNode>> Families { get; }
+		internal IEnumerable<Family2<SppfNode>> Families { get { return _families; } }
 
 		protected SppfNode(int startPosition, int endPosition) {
 			StartPosition = startPosition;
 			EndPosition = endPosition;
 		}
 		
-		internal abstract void FinishFamily();
+		// internal abstract void FinishFamily();
 
 		internal abstract string ToStringSimple();
 
 		internal abstract void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited);
+
+		internal void AddFamily(Family2<SppfNode> family) {
+			_families.Add(family);
+		}
 	}
 }
