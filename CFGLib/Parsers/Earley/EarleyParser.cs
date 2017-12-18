@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Sppf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -64,11 +65,11 @@ namespace CFGLib.Parsers.Earley {
 			//var nodeProbs = new Dictionary<SppfNode, double>();
 			//var prob = CalculateProbability(internalSppf, nodeProbs);
 			var nodes = GetAllNodes(internalSppf);
-			var id = 0;
-			foreach (var node in nodes) {
-				node.Id = id;
-				id++;
-			}
+			//var id = 0;
+			//foreach (var node in nodes) {
+			//	node.Id = id;
+			//	id++;
+			//}
 			// PrintForest(internalSppf);
 			//Console.WriteLine();
 			//PrintDebugForest(internalSppf, s, nodeProbs);

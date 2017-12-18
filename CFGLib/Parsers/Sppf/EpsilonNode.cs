@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Forests {
+namespace CFGLib.Parsers.Sppf {
 	internal class EpsilonNode : LeafNode {
 		// private static EpsilonNode _node = new EpsilonNode();
 

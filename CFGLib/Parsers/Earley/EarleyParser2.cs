@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CFGLib.Parsers.Forests;
 using CFGLib.Actioneer;
+using CFGLib.Parsers.Sppf;
 
 namespace CFGLib.Parsers.Earley {
 	public class EarleyParser2 : Parser {

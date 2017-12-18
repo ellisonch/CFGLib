@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Forests {
+namespace CFGLib.Parsers.Sppf {
 	internal abstract class InteriorNode : SppfNode {
 		private HashSet<Family2<SppfNode>> _familiesInternal = new HashSet<Family2<SppfNode>>(); // used during construction only
 		private readonly List<Family2<SppfNode>> _families = new List<Family2<SppfNode>>();

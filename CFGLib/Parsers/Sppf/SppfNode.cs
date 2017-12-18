@@ -6,11 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Forests {
+namespace CFGLib.Parsers.Sppf {
 	internal abstract class SppfNode {
+		private static int _nextId = 0;
+
 		public readonly int StartPosition;
 		public readonly int EndPosition;
-		public int Id; // added later
+		public readonly int Id = _nextId++;
 
 		// An ordered version of the hash
 		internal abstract IList<Family2<SppfNode>> Families { get; }

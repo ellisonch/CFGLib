@@ -4,28 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Earley {
-	public class SppfBranch : SppfNode2 {
-		public DecoratedProduction DecoratedProduction { get; }
+namespace CFGLib.Parsers.Sppf {
+	public class SppfWord : SppfNode2 {
 		private readonly int _cachedHash;
 
-		public SppfBranch(DecoratedProduction dprod, int startPos, int endPos) : base(startPos, endPos) {
-			DecoratedProduction = dprod;
+		public Word Word { get; }
+
+		public SppfWord(Word word, int startPos, int endPos) : base(startPos, endPos) {
+			Word = word;
 			_cachedHash = MyGetHashCode();
 		}
 
-		public static bool operator ==(SppfBranch x, SppfBranch y) {
+		public static bool operator ==(SppfWord x, SppfWord y) {
 			if (ReferenceEquals(x, null)) {
 				return ReferenceEquals(y, null);
 			}
 			return x.Equals(y);
 		}
-		public static bool operator !=(SppfBranch x, SppfBranch y) {
+		public static bool operator !=(SppfWord x, SppfWord y) {
 			return !(x == y);
 		}
 		public override bool Equals(object other) {
 			var x = this;
-			var y = other as SppfBranch;
+			var y = other as SppfWord;
 			if (ReferenceEquals(y, null)) {
 				return false;
 			}
@@ -36,7 +37,7 @@ namespace CFGLib.Parsers.Earley {
 			if (x.EndPosition != y.EndPosition) {
 				return false;
 			}
-			if (x.DecoratedProduction != y.DecoratedProduction) {
+			if (x.Word != y.Word) {
 				return false;
 			}
 
@@ -48,19 +49,19 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// based on http://stackoverflow.com/a/263416/2877032
-		public int MyGetHashCode() {
+		private int MyGetHashCode() {
 			unchecked {
 				int hash = 17;
 				hash = hash * 23 + this.StartPosition.GetHashCode();
 				hash = hash * 23 + this.EndPosition.GetHashCode();
-				hash = hash * 23 + this.DecoratedProduction.GetHashCode();
+				hash = hash * 23 + this.Word.GetHashCode();
 
 				return hash;
 			}
 		}
 
 		public override string ToString() {
-			var firstBit = DecoratedProduction.ToString();
+			var firstBit = Word.ToString();
 			return string.Format("{0} {1} {2}", firstBit, StartPosition, EndPosition);
 		}
 	}

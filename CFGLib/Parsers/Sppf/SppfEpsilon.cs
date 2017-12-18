@@ -4,29 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Earley {
-	public class SppfWord : SppfNode2 {
+namespace CFGLib.Parsers.Sppf {
+	public class SppfEpsilon : SppfNode2 {
 		private readonly int _cachedHash;
 
-		public Word Word { get; }
-
-		public SppfWord(Word word, int startPos, int endPos) : base(startPos, endPos) {
-			Word = word;
+		public SppfEpsilon(int startPos, int endPos) : base(startPos, endPos) {
 			_cachedHash = MyGetHashCode();
 		}
 
-		public static bool operator ==(SppfWord x, SppfWord y) {
+		public static bool operator ==(SppfEpsilon x, SppfEpsilon y) {
 			if (ReferenceEquals(x, null)) {
 				return ReferenceEquals(y, null);
 			}
 			return x.Equals(y);
 		}
-		public static bool operator !=(SppfWord x, SppfWord y) {
+		public static bool operator !=(SppfEpsilon x, SppfEpsilon y) {
 			return !(x == y);
 		}
 		public override bool Equals(object other) {
 			var x = this;
-			var y = other as SppfWord;
+			var y = other as SppfEpsilon;
 			if (ReferenceEquals(y, null)) {
 				return false;
 			}
@@ -35,9 +32,6 @@ namespace CFGLib.Parsers.Earley {
 				return false;
 			}
 			if (x.EndPosition != y.EndPosition) {
-				return false;
-			}
-			if (x.Word != y.Word) {
 				return false;
 			}
 
@@ -54,15 +48,13 @@ namespace CFGLib.Parsers.Earley {
 				int hash = 17;
 				hash = hash * 23 + this.StartPosition.GetHashCode();
 				hash = hash * 23 + this.EndPosition.GetHashCode();
-				hash = hash * 23 + this.Word.GetHashCode();
 
 				return hash;
 			}
 		}
 
 		public override string ToString() {
-			var firstBit = Word.ToString();
-			return string.Format("{0} {1} {2}", firstBit, StartPosition, EndPosition);
+			return string.Format("{0} {1} {2}", "ε", StartPosition, EndPosition);
 		}
 	}
 }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CFGLib.Parsers.Forests;
 
-namespace CFGLib.Parsers.Earley {
+namespace CFGLib.Parsers.Sppf {
 	public abstract class SppfNode2 {
 		public int StartPosition { get; }
 		public int EndPosition { get; }

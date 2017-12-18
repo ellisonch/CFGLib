@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Forests {
+namespace CFGLib.Parsers.Sppf {
 	internal class IntermediateNode : InteriorNode {
 		internal readonly Item Item;
 

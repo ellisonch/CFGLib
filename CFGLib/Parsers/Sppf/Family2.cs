@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Forests {
+namespace CFGLib.Parsers.Sppf {
 	internal struct Family2<T> where T : class {
 		private readonly int _cachedHash;
 		private readonly T _firstChild;
