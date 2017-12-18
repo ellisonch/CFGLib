@@ -23,27 +23,6 @@ namespace CFGLib.Parsers.Sppf {
 		}
 		
 		internal abstract void FinishFamily();
-		
-		public string ProductionsToString() {
-			string retval = "";
-
-			var childrenStrings = new List<string>();
-			var children = "";
-			for (int i = 0; i < Families.Count; i++) {
-				var family = Families[i];
-				var production = family.Production;
-				if (production != null) {
-					childrenStrings.Add(string.Format("[{0}]={1}", i, production.ToStringNoWeight()));
-				}
-			}
-			if (childrenStrings.Count > 0) {
-				children = string.Join(", ", childrenStrings);
-				retval += "  |  ";
-				retval += children;
-			}
-
-			return retval;
-		}
 
 		internal abstract string ToStringSimple();
 

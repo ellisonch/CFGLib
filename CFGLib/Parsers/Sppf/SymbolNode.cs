@@ -44,7 +44,7 @@ namespace CFGLib.Parsers.Sppf {
 		}
 
 		public override string ToString() {
-			return string.Format("({0}, {1}, {2}){3}", Symbol, StartPosition, EndPosition, ProductionsToString());
+			return string.Format("({0}, {1}, {2})", Symbol, StartPosition, EndPosition);
 		}
 		internal override string ToStringSimple() {
 			return string.Format("{0} ({1}, {2})", Symbol, StartPosition, EndPosition);

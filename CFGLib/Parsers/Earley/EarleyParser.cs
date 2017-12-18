@@ -338,57 +338,6 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private void PrintDebugForest(SppfNode node, Sentence s, Dictionary<SppfNode, double> nodeProbs = null, string padding = "", HashSet<SppfNode> seen = null) {
-			if (seen == null) {
-				seen = new HashSet<SppfNode>();
-			}
-			
-			double? nodeProb = null;
-			if (nodeProbs != null) {
-				nodeProb = nodeProbs[node];
-			}
-
-			string lhs = "";
-			if (node is SymbolNode) {
-				var symbol = (SymbolNode)node;
-				lhs = symbol.Symbol.ToString();
-			} else if (node is IntermediateNode) {
-				var inter = (IntermediateNode)node;
-				lhs = inter.Item.ProductionToString();
-			} else if (node is LeafNode) {
-				lhs = ((LeafNode)node).GetSentence().ToString();
-			} else {
-				throw new Exception();
-			}
-			string rhs = "";
-			if (node is InteriorNode) {
-				var interior = (InteriorNode)node;
-				rhs = s.GetRange(interior.StartPosition, interior.EndPosition - interior.StartPosition).ToString();
-			}
-
-			Console.WriteLine("{0}{1} --> {2} [{4}]\t{3}", padding, lhs, rhs, nodeProb, node.ProductionsToString());
-
-			if (node.Families.Count > 0 && seen.Contains(node)) {
-				Console.WriteLine("{0}Already seen this node!", padding);
-				return;
-			}
-			seen.Add(node);
-
-			if (node.Families.Count == 0) {
-				return;
-			}
-			var l = node.Families;
-			for (int i = 0; i < l.Count; i++) {
-				var alternative = l[i];
-				if (l.Count > 1) {
-					Console.WriteLine("{0}Alternative {1}", padding, i);
-				}
-				foreach (var member in l[i].Members) {
-					PrintDebugForest(member, s, nodeProbs, padding + "  ", seen);
-				}
-			}
-		}
-
 		// [Sec 4, ES2008]
 		private void BuildTree(Dictionary<SppfNode, SppfNode> nodes, HashSet<Item> processed, InteriorNode node, Item item) {
 			processed.Add(item);
