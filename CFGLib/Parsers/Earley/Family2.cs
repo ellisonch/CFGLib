@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
-	internal struct Family2 {
+	internal struct Family2<T> where T : class {
 		// TODO: remove children interface entirely
 		// private List<SppfNode2> _children;
-		public List<SppfNode2> Children {
+		public List<T> Children {
 			get {
-				var _children = new List<SppfNode2>();
+				var _children = new List<T>();
 				if (_firstChild != null) {
 					_children.Add(_firstChild);
 					if (_secondChild != null) {
@@ -21,20 +21,20 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 		private readonly int _cachedHash;
-		private readonly SppfNode2 _firstChild;
-		private readonly SppfNode2 _secondChild;
+		private readonly T _firstChild;
+		private readonly T _secondChild;
 		
 		//public Family2() {
 		//	//Children = new List<SppfNode2> { };
 		//	_cachedHash = 0;
 		//}
-		public Family2(SppfNode2 v) {
+		public Family2(T v) {
 			// Children = new List<SppfNode2> { v };
 			_cachedHash = v.GetHashCode();
 			_firstChild = v;
 			_secondChild = null;
 		}
-		public Family2(SppfNode2 w, SppfNode2 v) {
+		public Family2(T w, T v) {
 			//Children = new List<SppfNode2> { w, v };
 			_cachedHash = unchecked((17 * 23 + w.GetHashCode()) * 23 + v.GetHashCode());
 			_firstChild = w;
@@ -62,7 +62,7 @@ namespace CFGLib.Parsers.Earley {
 			if (other == null) {
 				return false;
 			}
-			if (!(other is Family2 localOther)) {
+			if (!(other is Family2<T> localOther)) {
 				return false;
 			}
 			// var localOther = other as Family2;

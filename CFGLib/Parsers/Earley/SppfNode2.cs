@@ -17,7 +17,7 @@ namespace CFGLib.Parsers.Earley {
 			EndPosition = endPos;
 		}
 
-		internal HashSet<Family2> Families { get; } = new HashSet<Family2>();
+		internal HashSet<Family2<SppfNode2>> Families { get; } = new HashSet<Family2<SppfNode2>>();
 
 		/// <summary>
 		/// Used just to convey production in contracted sppf nodes, for testing
@@ -25,16 +25,16 @@ namespace CFGLib.Parsers.Earley {
 		// public Production FakeProduction { get; internal set; }
 		
 		internal void AddFamily() {
-			var family = new Family2();
+			var family = new Family2<SppfNode2>();
 			Families.Add(family);
 		}
 		internal void AddFamily(SppfNode2 v) {
-			var family = new Family2(v);
+			var family = new Family2<SppfNode2>(v);
 			Families.Add(family);
 		}
 
 		internal void AddFamily(SppfNode2 w, SppfNode2 v) {
-			var family = new Family2(w, v);
+			var family = new Family2<SppfNode2>(w, v);
 			Families.Add(family);
 		}
 	}

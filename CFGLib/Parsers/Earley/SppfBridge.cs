@@ -80,7 +80,7 @@ namespace CFGLib.Parsers.Earley {
 			return retval;
 		}
 
-		private static void AddFamily(InteriorNode retval, Family2 family, Dictionary<SppfNode2, SppfNode> cache) {
+		private static void AddFamily(InteriorNode retval, Family2<SppfNode2> family, Dictionary<SppfNode2, SppfNode> cache) {
 			if (family.Children.Count == 0) {
 				if (retval.StartPosition != retval.EndPosition) {
 					throw new Exception();
