@@ -26,12 +26,12 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		public Family2(Production production) {
-			_cachedHash = 0;
-			_firstChild = null;
-			_secondChild = null;
-			Production = production;
-		}
+		//public Family2(Production production) {
+		//	_cachedHash = 0;
+		//	// _firstChild = ;
+		//	_secondChild = null;
+		//	Production = production;
+		//}
 		public Family2(Production production, T v) {
 			// Children = new List<SppfNode2> { v };
 			_cachedHash = v.GetHashCode();

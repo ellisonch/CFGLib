@@ -30,6 +30,10 @@ namespace CFGLib.Parsers.Earley {
 				var retval = OldFromNewProduction(sppfBranch, cache);
 				cache[sppf] = retval;
 				return retval;
+			} else if (sppf is SppfEpsilon sppfEpsilon) {
+				var retval = new EpsilonNode(sppfEpsilon.StartPosition, sppfEpsilon.EndPosition);
+				cache[sppf] = retval;
+				return retval;
 			} else {
 				throw new Exception();
 			}
@@ -82,13 +86,14 @@ namespace CFGLib.Parsers.Earley {
 
 		private static void AddFamily(InteriorNode retval, Family2<SppfNode2> family, Dictionary<SppfNode2, SppfNode> cache) {
 			if (family.Members.Count == 0) {
-				if (retval.StartPosition != retval.EndPosition) {
-					throw new Exception();
-				}
-				var node = new EpsilonNode(retval.StartPosition, retval.EndPosition);
-				var newFamily = new Family(node);
-				newFamily.Production = family.Production;
-				retval.Families.Add(newFamily);
+				throw new Exception("Didn't expect 0 count");
+				//if (retval.StartPosition != retval.EndPosition) {
+				//	throw new Exception();
+				//}
+				//var node = new EpsilonNode(retval.StartPosition, retval.EndPosition);
+				//var newFamily = new Family(node);
+				//newFamily.Production = family.Production;
+				//retval.Families.Add(newFamily);
 			} else if (family.Members.Count == 1) {
 				var child1 = family.Members[0];
 

@@ -24,10 +24,10 @@ namespace CFGLib.Parsers.Earley {
 		/// </summary>
 		// public Production FakeProduction { get; internal set; }
 		
-		internal void AddFamily(Production production) {
-			var family = new Family2<SppfNode2>(production);
-			Families.Add(family);
-		}
+		//internal void AddFamily(Production production) {
+		//	var family = new Family2<SppfNode2>(production);
+		//	Families.Add(family);
+		//}
 		internal void AddFamily(Production production, SppfNode2 v) {
 			var family = new Family2<SppfNode2>(production, v);
 			Families.Add(family);

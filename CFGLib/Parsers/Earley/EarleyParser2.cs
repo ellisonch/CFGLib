@@ -244,7 +244,7 @@ namespace CFGLib.Parsers.Earley {
 				Λ.SppfNode = v;
 
 				// if w does not have family (ϵ) add one
-				w.AddFamily(Λ.DecoratedProduction.Production);
+				w.AddFamily(Λ.DecoratedProduction.Production, new SppfEpsilon(i, i));
 			}
 
 			// if h = i { add (D, w) to H }

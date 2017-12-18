@@ -18,11 +18,13 @@ namespace CFGLib.Parsers.Forests {
 
 		internal Family(SppfNode node1) {
 			_nodes.Add(node1);
+			//Production = production;
 		}
 		// TODO: node1 was InteriorNode
 		internal Family(SppfNode node1, SppfNode node2) {
 			_nodes.Add(node1);
 			_nodes.Add(node2);
+			//Production = production;
 		}
 
 		public override int GetHashCode() {
