@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
 	internal struct Family2<T> where T : class {
+		private readonly int _cachedHash;
+		private readonly T _firstChild;
+		private readonly T _secondChild;
+		public Production Production { get; }
+
 		// TODO: remove children interface entirely
 		// private List<SppfNode2> _children;
-		public List<T> Children {
+		public IList<T> Members {
 			get {
 				var _children = new List<T>();
 				if (_firstChild != null) {
@@ -20,25 +25,26 @@ namespace CFGLib.Parsers.Earley {
 				return _children;
 			}
 		}
-		private readonly int _cachedHash;
-		private readonly T _firstChild;
-		private readonly T _secondChild;
-		
-		//public Family2() {
-		//	//Children = new List<SppfNode2> { };
-		//	_cachedHash = 0;
-		//}
-		public Family2(T v) {
+
+		public Family2(Production production) {
+			_cachedHash = 0;
+			_firstChild = null;
+			_secondChild = null;
+			Production = production;
+		}
+		public Family2(Production production, T v) {
 			// Children = new List<SppfNode2> { v };
 			_cachedHash = v.GetHashCode();
 			_firstChild = v;
 			_secondChild = null;
+			Production = production;
 		}
-		public Family2(T w, T v) {
+		public Family2(Production production, T w, T v) {
 			//Children = new List<SppfNode2> { w, v };
 			_cachedHash = unchecked((17 * 23 + w.GetHashCode()) * 23 + v.GetHashCode());
 			_firstChild = w;
 			_secondChild = v;
+			Production = production;
 		}
 
 		public override int GetHashCode() {
@@ -76,10 +82,10 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		public override string ToString() {
-			if (this.Children.Count == 0) {
+			if (this.Members.Count == 0) {
 				return string.Format("ε");
 			}
-			return string.Format(string.Join(" | ", this.Children));
+			return string.Format(string.Join(" | ", this.Members));
 		}
 	}
 }

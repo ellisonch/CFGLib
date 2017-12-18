@@ -81,30 +81,33 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		private static void AddFamily(InteriorNode retval, Family2<SppfNode2> family, Dictionary<SppfNode2, SppfNode> cache) {
-			if (family.Children.Count == 0) {
+			if (family.Members.Count == 0) {
 				if (retval.StartPosition != retval.EndPosition) {
 					throw new Exception();
 				}
 				var node = new EpsilonNode(retval.StartPosition, retval.EndPosition);
 				var newFamily = new Family(node);
+				newFamily.Production = family.Production;
 				retval.Families.Add(newFamily);
-			} else if (family.Children.Count == 1) {
-				var child1 = family.Children[0];
+			} else if (family.Members.Count == 1) {
+				var child1 = family.Members[0];
 
 				var newChild1 = InternalOldFromNew(child1, cache);
 
 				var newFamily = new Family(newChild1);
+				newFamily.Production = family.Production;
 				retval.Families.Add(newFamily);
-			} else if (family.Children.Count == 2) {
-				var child1 = family.Children[0];
-				var child2 = family.Children[1];
+			} else if (family.Members.Count == 2) {
+				var child1 = family.Members[0];
+				var child2 = family.Members[1];
 
 				var newChild1 = InternalOldFromNew(child1, cache);
 				var newChild2 = InternalOldFromNew(child2, cache);
 
 				// if (newChild1 is InteriorNode iNode) {
-					var newFamily = new Family(newChild1, newChild2);
-					retval.Families.Add(newFamily);
+				var newFamily = new Family(newChild1, newChild2);
+				newFamily.Production = family.Production;
+				retval.Families.Add(newFamily);
 				//} else {
 				//	throw new Exception();
 				//}

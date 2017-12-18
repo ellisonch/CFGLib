@@ -43,7 +43,7 @@ namespace CFGLib.Parsers.Earley {
 				return 0.0;
 			}
 			var oldSppf = SppfBridge.OldFromNew(sppf);
-			EarleyParser.AnnotateWithProductions(_grammar, oldSppf);
+			// EarleyParser.AnnotateWithProductions(_grammar, oldSppf);
 			var prob = EarleyParser.GetProbFromSppf(_grammar, oldSppf);
 			return prob;
 		}
@@ -244,7 +244,7 @@ namespace CFGLib.Parsers.Earley {
 				Λ.SppfNode = v;
 
 				// if w does not have family (ϵ) add one
-				w.AddFamily();
+				w.AddFamily(Λ.DecoratedProduction.Production);
 			}
 
 			// if h = i { add (D, w) to H }
@@ -330,10 +330,12 @@ namespace CFGLib.Parsers.Earley {
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
 		private static SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, SppfNodeDictionary V) {
 			SppfNode2 y;
+			Production production = null;
 			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
 			if (decoratedProduction.AtEnd) {
 				// s = ValueTuple.Create<Word, DecoratedProduction>(decoratedProduction.Production.Lhs, null);
 				y = V.GetOrSet(decoratedProduction.Production.Lhs, j, i);
+				production = decoratedProduction.Production;
 			} else {
 				// s = ValueTuple.Create<Word, DecoratedProduction>(null, decoratedProduction);
 				y = V.GetOrSet(decoratedProduction, j, i);
@@ -380,11 +382,11 @@ namespace CFGLib.Parsers.Earley {
 
 			// if w = null and y does not have a family of children (v) add one
 			if (w == null) {
-				y.AddFamily(v);
+				y.AddFamily(production, v);
 			}
 			// if w ̸= null and y does not have a family of children(w, v) add one
 			else {
-				y.AddFamily(w, v);
+				y.AddFamily(production, w, v);
 			}
 
 			return y;
