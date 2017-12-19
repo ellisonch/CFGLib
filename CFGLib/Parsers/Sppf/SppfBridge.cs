@@ -1,4 +1,5 @@
-﻿using CFGLib.Parsers.Forests;
+﻿using CFGLib.Parsers.Earley;
+using CFGLib.Parsers.Forests;
 using CFGLib.Parsers.Sppf;
 using CFGLib.Parsers.Sppf.Old;
 using System;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Earley {
+namespace CFGLib.Parsers.Sppf {
 	internal class SppfBridge {
 		public static SymbolNode OldFromNew(SppfNode2 sppf) {
 			if (sppf == null) {

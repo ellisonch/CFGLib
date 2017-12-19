@@ -60,7 +60,7 @@
     <Compile Include="Parsers\Graphs\GraphBuilder.cs" />
     <Compile Include="Parsers\Sppf\Family2.cs" />
     <Compile Include="Parsers\Sppf\SppfBranch.cs" />
-    <Compile Include="Parsers\Earley\SppfBridge.cs" />
+    <Compile Include="Parsers\Sppf\SppfBridge.cs" />
     <Compile Include="Parsers\Sppf\SppfNode2.cs" />
     <Compile Include="Parsers\Earley\SppfNodeDictionary.cs" />
     <Compile Include="Parsers\Sppf\SppfEpsilon.cs" />
