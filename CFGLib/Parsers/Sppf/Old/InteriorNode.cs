@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Parsers.Sppf {
+namespace CFGLib.Parsers.Sppf.Old {
 	internal abstract class InteriorNode : SppfNode {
 		protected InteriorNode(int startPosition, int endPosition) : base(startPosition, endPosition) {
 		}
