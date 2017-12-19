@@ -34,10 +34,10 @@ namespace ConsolePlayground {
 
 
 			// VisitorPlay();
+			
+			(new ContinuousRandomTesting(10, 10, 20, 10, 6, 1000, 10)).Run();
 
-			(new ContinuousRandomTesting(6, 6, 15, 10, 5, 500, 9)).Run();
-
-			Benchmark();
+			// Benchmark();
 			// BenchmarkBison();
 
 			#region junk 

@@ -43,12 +43,13 @@ namespace CFGLibTest {
 			_parseErrorFile = new System.IO.StreamWriter(@"parseErrors.txt");
 		}
 
-		public void Run() {
+		public void Run(int rounds = -1) {
 			int fail = 0;
 			int total = 0;
 			int timeouts = 0;
+			var overallSw = Stopwatch.StartNew();
 			var sw = Stopwatch.StartNew();
-			while (true) {
+			while (rounds == -1 || rounds-- > 0) {
 				var task = Task.Run(() => ProcessOneGrammar());
 				if (task.Wait(TimeSpan.FromSeconds(20))) {
 					if (task.Result) {
@@ -63,6 +64,7 @@ namespace CFGLibTest {
 					sw.Restart();
 				}
 			}
+			Console.WriteLine("{0} / {1} / {2} fail / timeout / total in {3}ms", fail, timeouts, total, overallSw.Elapsed.TotalMilliseconds);
 		}
 
 		private bool ProcessOneGrammar() {
