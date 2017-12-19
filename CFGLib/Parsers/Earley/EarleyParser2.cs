@@ -33,8 +33,8 @@ namespace CFGLib.Parsers.Earley {
 			if (sppf == null) {
 				return null;
 			}
-			var oldSppf = SppfBridge.OldFromNew(sppf);
-			var forest = EarleyParser.SppfToForest(_grammar, oldSppf);
+			// var oldSppf = SppfBridge.OldFromNew(sppf);
+			var forest = EarleyParser.SppfToForest(_grammar, sppf);
 			return forest;
 		}
 
@@ -43,9 +43,9 @@ namespace CFGLib.Parsers.Earley {
 			if (sppf == null) {
 				return 0.0;
 			}
-			var oldSppf = SppfBridge.OldFromNew(sppf);
+			// var oldSppf = SppfBridge.OldFromNew(sppf);
 			// EarleyParser.AnnotateWithProductions(_grammar, oldSppf);
-			var prob = EarleyParser.GetProbFromSppf(_grammar, oldSppf);
+			var prob = EarleyParser.GetProbFromSppf(_grammar, sppf);
 			return prob;
 		}
 
