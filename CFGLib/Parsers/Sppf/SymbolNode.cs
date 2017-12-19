@@ -49,12 +49,5 @@ namespace CFGLib.Parsers.Sppf {
 		internal override string ToStringSimple() {
 			return string.Format("{0} ({1}, {2})", Symbol, StartPosition, EndPosition);
 		}
-
-		public Graph GetGraph() {
-			var node = new SppfNodeNode(this, 0);
-			var g = new Graph(node);
-			GetGraphHelper(g, node, new HashSet<InteriorNode>());
-			return g;
-		}
 	}
 }

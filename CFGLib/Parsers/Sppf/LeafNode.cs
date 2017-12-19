@@ -18,9 +18,5 @@ namespace CFGLib.Parsers.Sppf {
 		internal override string ToStringSimple() {
 			return string.Format("{0} ({1}, {2})", GetSentence().ToString(), StartPosition, EndPosition);
 		}
-
-		internal override void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited) {
-			return;
-		}
 	}
 }

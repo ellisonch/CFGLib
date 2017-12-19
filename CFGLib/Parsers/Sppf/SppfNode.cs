@@ -27,8 +27,6 @@ namespace CFGLib.Parsers.Sppf {
 
 		internal abstract string ToStringSimple();
 
-		internal abstract void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited);
-
 		internal void AddFamily(Family2<SppfNode> family) {
 			_families.Add(family);
 		}

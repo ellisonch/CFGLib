@@ -89,7 +89,8 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		public string GetRawDot() {
-			var graph = ((SymbolNode)_node).GetGraph();
+			var graph = GraphBuilder.GetGraph(_node);
+			// var graph = ((SymbolNode)_node).GetGraph();
 			return graph.ToDot();
 		}
 
