@@ -11,8 +11,8 @@ namespace CFGLib.Parsers.Graphs {
 		public readonly ForestNode Node;
 		public int Rank { get; set; }
 		public readonly string Id;
-		private SppfFamily<SppfNode>[] _theFamily;
-		public SppfFamily<SppfNode> TheFamily {
+		private SppfFamily[] _theFamily;
+		public SppfFamily TheFamily {
 			get {
 				return _theFamily[0];
 			}
@@ -69,7 +69,7 @@ namespace CFGLib.Parsers.Graphs {
 			Node = node;
 			Id = id;
 			Rank = rank;
-			_theFamily = new SppfFamily<SppfNode>[1];
+			_theFamily = new SppfFamily[1];
 			// _theFamily = null;
 		}
 	}

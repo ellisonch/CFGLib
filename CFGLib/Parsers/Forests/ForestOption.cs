@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
 	public class ForestOption {		
-		private readonly SppfFamily<SppfNode> _family;
+		private readonly SppfFamily _family;
 		private List<ForestNode[]> _children;
 
 		public Production Production {
@@ -24,12 +24,12 @@ namespace CFGLib.Parsers.Forests {
 			return _children;
 		}
 
-		internal ForestOption(SppfFamily<SppfNode> family) {
+		internal ForestOption(SppfFamily family) {
 			_family = family;
 			//_children = BuildChildren();
 		}
 
-		internal static List<ForestOption> BuildOptions(IEnumerable<SppfFamily<SppfNode>> families, int startPosition, int endPosition) {
+		internal static List<ForestOption> BuildOptions(IEnumerable<SppfFamily> families, int startPosition, int endPosition) {
 			var retval = new List<ForestOption>();
 
 			foreach (var family in families) {
@@ -55,7 +55,7 @@ namespace CFGLib.Parsers.Forests {
 			return startList;
 		}
 
-		private static void BuildChildrenHelper(SppfFamily<SppfNode> family, List<ForestNode[]> startList, Sentence rhs, int position) {
+		private static void BuildChildrenHelper(SppfFamily family, List<ForestNode[]> startList, Sentence rhs, int position) {
 			if (position + 1 != rhs.Count && family.Production != null) {
 				throw new Exception();
 			}

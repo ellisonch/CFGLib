@@ -5,17 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Sppf {
-	internal struct SppfFamily<T> where T : class {
+	internal struct SppfFamily {
 		private readonly int _cachedHash;
-		private readonly T _firstChild;
-		private readonly T _secondChild;
+		private readonly SppfNode _firstChild;
+		private readonly SppfNode _secondChild;
 		public Production Production { get; }
 
 		// TODO: remove children interface entirely
 		// private List<SppfNode2> _children;
-		public IList<T> Members {
+		public IList<SppfNode> Members {
 			get {
-				var _children = new List<T>();
+				var _children = new List<SppfNode>();
 				if (_firstChild != null) {
 					_children.Add(_firstChild);
 					if (_secondChild != null) {
@@ -32,14 +32,14 @@ namespace CFGLib.Parsers.Sppf {
 		//	_secondChild = null;
 		//	Production = production;
 		//}
-		public SppfFamily(Production production, T v) {
+		public SppfFamily(Production production, SppfNode v) {
 			// Children = new List<SppfNode2> { v };
 			_cachedHash = v.GetHashCode();
 			_firstChild = v;
 			_secondChild = null;
 			Production = production;
 		}
-		public SppfFamily(Production production, T w, T v) {
+		public SppfFamily(Production production, SppfNode w, SppfNode v) {
 			//Children = new List<SppfNode2> { w, v };
 			_cachedHash = unchecked((17 * 23 + w.GetHashCode()) * 23 + v.GetHashCode());
 			_firstChild = w;
@@ -68,7 +68,7 @@ namespace CFGLib.Parsers.Sppf {
 			if (other == null) {
 				return false;
 			}
-			if (!(other is SppfFamily<T> localOther)) {
+			if (!(other is SppfFamily localOther)) {
 				return false;
 			}
 			// var localOther = other as Family2;

@@ -63,6 +63,8 @@ namespace CFGLib.Parsers.Earley {
 			//	throw new ArgumentException("Not sure how to handle empty yet");
 			//}
 
+			SppfNode._nextId = 0;
+
 			_a = a;
 			// E_0, ..., E_n, R, Q′, V = ∅
 			_E = new EarleySet[a.Count + 1]; // need +1?

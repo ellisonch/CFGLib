@@ -7,14 +7,14 @@ using CFGLib.Parsers.Forests;
 
 namespace CFGLib.Parsers.Sppf {
 	public abstract class SppfNode {
-		private static int _nextId = 0;
+		public static int _nextId = 0;
 				
 		public int StartPosition { get; }
 		public int EndPosition { get; }
-		private readonly HashSet<SppfFamily<SppfNode>> _families = new HashSet<SppfFamily<SppfNode>>();
+		private readonly HashSet<SppfFamily> _families = new HashSet<SppfFamily>();
 		public readonly int Id = _nextId++;
 
-		internal IEnumerable<SppfFamily<SppfNode>> Families {
+		internal IEnumerable<SppfFamily> Families {
 			get {
 				return _families;
 			}
@@ -38,12 +38,12 @@ namespace CFGLib.Parsers.Sppf {
 		//	Families.Add(family);
 		//}
 		internal void AddFamily(Production production, SppfNode v) {
-			var family = new SppfFamily<SppfNode>(production, v);
+			var family = new SppfFamily(production, v);
 			_families.Add(family);
 		}
 
 		internal void AddFamily(Production production, SppfNode w, SppfNode v) {
-			var family = new SppfFamily<SppfNode>(production, w, v);
+			var family = new SppfFamily(production, w, v);
 			_families.Add(family);
 		}
 

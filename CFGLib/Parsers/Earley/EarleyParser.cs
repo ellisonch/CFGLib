@@ -151,7 +151,8 @@ namespace CFGLib.Parsers.Earley {
 			var indexToNode = nodes.ToArray();
 			var nodeToIndex = new Dictionary<SppfNode, int>(nodes.Count);
 			for (int i = 0; i < indexToNode.Length; i++) {
-				nodeToIndex[indexToNode[i]] = i;
+				var node = indexToNode[i];
+				nodeToIndex[node] = i;
 			}
 
 			var previousEstimates = Enumerable.Repeat(1.0, indexToNode.Length).ToArray();

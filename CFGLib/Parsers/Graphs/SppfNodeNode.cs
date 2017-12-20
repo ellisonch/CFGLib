@@ -10,8 +10,8 @@ namespace CFGLib.Parsers.Graphs {
 	internal class SppfNodeNode : INode {
 		public readonly SppfNode Node;
 		public int Rank { get; set; }
-		private SppfFamily<SppfNode> _theFamily;
-		public SppfFamily<SppfNode> TheFamily {
+		private SppfFamily _theFamily;
+		public SppfFamily TheFamily {
 			get {
 				return _theFamily;
 			}
