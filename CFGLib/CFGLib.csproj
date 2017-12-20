@@ -61,7 +61,6 @@
     <Compile Include="Parsers\Sppf\DotBuilder.cs" />
     <Compile Include="Parsers\Sppf\Family2.cs" />
     <Compile Include="Parsers\Sppf\SppfBranch.cs" />
-    <Compile Include="Parsers\Sppf\SppfBridge.cs" />
     <Compile Include="Parsers\Sppf\SppfNode2.cs" />
     <Compile Include="Parsers\Earley\SppfNodeDictionary.cs" />
     <Compile Include="Parsers\Sppf\SppfEpsilon.cs" />
@@ -80,14 +79,7 @@
     <Compile Include="Parsers\Graphs\FamilyNode.cs" />
     <Compile Include="Parsers\Graphs\ForestNodeNode.cs" />
     <Compile Include="Parsers\Graphs\Graph.cs" />
-    <Compile Include="Parsers\Sppf\Old\LeafNode.cs" />
-    <Compile Include="Parsers\Sppf\Old\TerminalNode.cs" />
-    <Compile Include="Parsers\Sppf\Old\EpsilonNode.cs" />
-    <Compile Include="Parsers\Sppf\Old\IntermediateNode.cs" />
-    <Compile Include="Parsers\Sppf\Old\SppfNode.cs" />
-    <Compile Include="Parsers\Sppf\Old\SymbolNode.cs" />
     <Compile Include="Parsers\Earley\EarleyParser.cs" />
-    <Compile Include="Parsers\Sppf\Old\InteriorNode.cs" />
     <Compile Include="Parsers\Earley\Item.cs" />
     <Compile Include="GrammarHelpers.cs" />
     <Compile Include="Parsers\Earley\Pointer.cs" />
