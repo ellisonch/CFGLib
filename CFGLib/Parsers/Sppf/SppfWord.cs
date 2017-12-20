@@ -60,9 +60,12 @@ namespace CFGLib.Parsers.Sppf {
 			}
 		}
 
-		public override string ToString() {
-			var firstBit = Word.ToString();
-			return string.Format("{0} {1} {2}", firstBit, StartPosition, EndPosition);
+		//public override string ToString() {
+		//	var firstBit = Word.ToString();
+		//	return string.Format("{0} {1} {2}", firstBit, StartPosition, EndPosition);
+		//}
+		protected override string PayloadToString() {
+			return Word.ToString();
 		}
 	}
 }

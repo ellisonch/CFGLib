@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
 	internal class FamilyNode : INode {
-		private Family2<SppfNode> _family;
+		private Family2<SppfNode2> _family;
 		private string _id;
 		public int StartPosition { get; set; }
 		public int EndPosition { get; set; }
 		public int Rank { get; set; }
-		private Family2<SppfNode> _theFamily;
-		public Family2<SppfNode> TheFamily {
+		private Family2<SppfNode2> _theFamily;
+		public Family2<SppfNode2> TheFamily {
 			get {
 				return _theFamily;
 			}
@@ -65,7 +65,7 @@ namespace CFGLib.Parsers.Graphs {
 			}
 		}
 
-		public FamilyNode(Family2<SppfNode> family, string id, int rank) {
+		public FamilyNode(Family2<SppfNode2> family, string id, int rank) {
 			_family = family;
 			_id = id;
 			Rank = rank;

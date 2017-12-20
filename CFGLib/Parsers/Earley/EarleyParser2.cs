@@ -28,14 +28,14 @@ namespace CFGLib.Parsers.Earley {
 			return sppf;
 		}
 
-		public override ForestInternal ParseGetForest(Sentence s) {
+		public override SppfNode2 ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
 			if (sppf == null) {
 				return null;
 			}
 			// var oldSppf = SppfBridge.OldFromNew(sppf);
-			var forest = EarleyParser.SppfToForest(_grammar, sppf);
-			return forest;
+			// var forest = EarleyParser.SppfToForest(_grammar, sppf);
+			return sppf;
 		}
 
 		public override double ParseGetProbability(Sentence s) {

@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
 	internal class SppfNodeNode : INode {
-		public readonly SppfNode Node;
+		public readonly SppfNode2 Node;
 		public int Rank { get; set; }
-		private Family2<SppfNode> _theFamily;
-		public Family2<SppfNode> TheFamily {
+		private Family2<SppfNode2> _theFamily;
+		public Family2<SppfNode2> TheFamily {
 			get {
 				return _theFamily;
 			}
@@ -46,7 +46,7 @@ namespace CFGLib.Parsers.Graphs {
 				var production = TheFamily.Production;
 				var productionString = string.Format("\nr:{0}", production);
 				productionString = null;
-				return string.Format("{0}{1}", Node.ToStringSimple(), productionString);
+				return string.Format("{0}{1}", Node.ToString(), productionString);
 			}
 		}
 		public string Shape {
@@ -56,11 +56,14 @@ namespace CFGLib.Parsers.Graphs {
 		}
 		public string Color {
 			get {
-				if (Node is LeafNode) {
+				if (Node is SppfEpsilon) {
 					return "yellow";
-				} else {
-					return "white";
+				} else if (Node is SppfWord sppfWord) {
+					if (sppfWord.Word.IsTerminal) {
+						return "yellow";
+					}
 				}
+				return "white";
 			}
 		}
 		public string Ordering {
@@ -68,7 +71,7 @@ namespace CFGLib.Parsers.Graphs {
 				return "";
 			}
 		}
-		public SppfNodeNode(SppfNode node, int rank) {
+		public SppfNodeNode(SppfNode2 node, int rank) {
 			Node = node;
 			Rank = rank;
 		}

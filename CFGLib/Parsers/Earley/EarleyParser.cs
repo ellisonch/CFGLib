@@ -49,14 +49,15 @@ namespace CFGLib.Parsers.Earley {
 			return prob;
 		}
 
-		public override ForestInternal ParseGetForest(Sentence s) {
+		public override SppfNode2 ParseGetForest(Sentence s) {
 			var successes = ComputeSuccesses(s);
 			if (successes.Count == 0) {
 				return null;
 			}
 
 			var internalSppf = ConstructInternalSppf(successes, s);
-			return SppfToForest(_grammar, internalSppf);
+			// return SppfToForest(_grammar, internalSppf);
+			return internalSppf;
 		}
 
 		internal static ForestInternal SppfToForest(BaseGrammar _grammar, SppfNode2 internalSppf) {

@@ -1,5 +1,4 @@
 ﻿using CFGLib.Parsers.Sppf;
-using CFGLib.Parsers.Sppf.Old;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,26 +7,27 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
 	internal static class GraphBuilder {
-		public static Graph GetGraph(SppfNode node) {
+		public static Graph GetGraph(SppfNode2 node) {
 			var graphNode = new SppfNodeNode(node, 0);
 			var g = new Graph(graphNode);
-			GetGraphHelper(g, node, graphNode, new HashSet<InteriorNode>());
+			GetGraphHelper(g, node, graphNode, new HashSet<SppfNode2>());
 			return g;
 		}
 
 		// internal void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited);
 
-		private static void GetGraphHelper(Graph g, SppfNode node, SppfNodeNode myNode, HashSet<InteriorNode> visited) {
-			if (node is InteriorNode interiorNode) {
-				GetGraphInterior(g, interiorNode, myNode, visited);
-			} else if (node is LeafNode) {
-				// do nothing
-			} else {
-				throw new Exception();
-			}
+		private static void GetGraphHelper(Graph g, SppfNode2 node, SppfNodeNode myNode, HashSet<SppfNode2> visited) {
+			//if (node is InteriorNode interiorNode) {
+			//	GetGraphInterior(g, interiorNode, myNode, visited);
+			//} else if (node is LeafNode) {
+			//	// do nothing
+			//} else {
+			//	throw new Exception();
+			//}
+			GetGraphInterior(g, node, myNode, visited);
 		}
 
-		internal static void GetGraphInterior(Graph g, InteriorNode node, SppfNodeNode myNode, HashSet<InteriorNode> visited) {
+		internal static void GetGraphInterior(Graph g, SppfNode2 node, SppfNodeNode myNode, HashSet<SppfNode2> visited) {
 			if (visited.Contains(node)) {
 				return;
 			}

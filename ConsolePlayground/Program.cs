@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CFGLib.Actioneer;
+using CFGLib.Parsers.Sppf;
 
 namespace ConsolePlayground {
 	/// <summary>
@@ -35,7 +36,7 @@ namespace ConsolePlayground {
 
 			// VisitorPlay();
 			
-			// (new ContinuousRandomTesting(10, 10, 20, 10, 6, 1000, 10)).Run();
+			//(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 12)).Run();
 
 			// Benchmark();
 			// BenchmarkBison();
@@ -150,9 +151,10 @@ namespace ConsolePlayground {
 			g = grammar.Grammar;
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
-
-			DotRunner.Run(earley.ParseGetForest(sentence).GetRawDot(), "testEarleyOld");
-			DotRunner.Run(earley2.ParseGetForest(sentence).GetRawDot(), "testEarleyNew");
+			//DotRunner.Run(earley.ParseGetForest(sentence).GetRawDot(), "testEarleyOld");
+			//DotRunner.Run(earley2.ParseGetForest(sentence).GetRawDot(), "testEarleyNew");
+			DotRunner.Run(DotBuilder.GetRawDot(earley.ParseGetForest(sentence)), "testEarleyOld");
+			DotRunner.Run(DotBuilder.GetRawDot(earley2.ParseGetForest(sentence)), "testEarleyNew");
 
 			// var prob0 = earley.ParseGetProbability(sentence);
 			var prob = earley2.ParseGetProbability(sentence);
@@ -273,7 +275,7 @@ namespace ConsolePlayground {
 			var sppf = ep.ParseGetForest(input);
 
 			// var sppf3 = ex3.ParseGetForest(Sentence.FromLetters("abbb"));
-			var dot = sppf.GetRawDot();
+			var dot = DotBuilder.GetRawDot(sppf);
 			System.IO.File.WriteAllText(@"D:\prog\ContextFreeGrammars\ConsolePlayground\bin\Debug\ex3dot.dot", dot);
 			DotRunner.Run(dot, "example3");
 		}
@@ -330,7 +332,7 @@ namespace ConsolePlayground {
 			var input = Sentence.FromWords(inputString);
 			var sppf = ep.ParseGetForest(input);
 
-			var rawdot = sppf.GetRawDot();
+			var rawdot = DotBuilder.GetRawDot(sppf);
 			DotRunner.Run(rawdot, "newSppf");
 
 			Console.WriteLine(sppf.ToString());

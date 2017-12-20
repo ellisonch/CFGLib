@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Sppf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -562,7 +563,7 @@ namespace CFGLib {
 			var earley = new Parsers.Earley.EarleyParser(this);
 			return earley.ParseGetProbability(s);
 		}
-		public ForestInternal ParseGetForest(Sentence s) {
+		public SppfNode2 ParseGetForest(Sentence s) {
 			var earley = new Parsers.Earley.EarleyParser(this);
 			return earley.ParseGetForest(s);
 		}

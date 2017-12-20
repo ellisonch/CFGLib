@@ -58,6 +58,7 @@
     <Compile Include="Parsers\Earley\EarleyParser2.cs" />
     <Compile Include="Parsers\Earley\EarleySet.cs" />
     <Compile Include="Parsers\Graphs\GraphBuilder.cs" />
+    <Compile Include="Parsers\Sppf\DotBuilder.cs" />
     <Compile Include="Parsers\Sppf\Family2.cs" />
     <Compile Include="Parsers\Sppf\SppfBranch.cs" />
     <Compile Include="Parsers\Sppf\SppfBridge.cs" />

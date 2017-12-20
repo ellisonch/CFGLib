@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Sppf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,6 @@ namespace CFGLib.Parsers {
 		public bool Accepts(Sentence s) {
 			return ParseGetProbability(s) > 0.0;
 		}
-		public abstract ForestInternal ParseGetForest(Sentence s);
+		public abstract SppfNode2 ParseGetForest(Sentence s);
 	}
 }

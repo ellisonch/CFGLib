@@ -53,8 +53,11 @@ namespace CFGLib.Parsers.Sppf {
 			}
 		}
 
-		public override string ToString() {
-			return string.Format("{0} {1} {2}", "ε", StartPosition, EndPosition);
+		//public override string ToString() {
+		//	return string.Format("{0} {1} {2}", "ε", StartPosition, EndPosition);
+		//}
+		protected override string PayloadToString() {
+			return "ε";
 		}
 	}
 }
