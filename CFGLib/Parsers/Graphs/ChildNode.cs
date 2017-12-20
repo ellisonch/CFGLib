@@ -13,8 +13,8 @@ namespace CFGLib.Parsers.Graphs {
 		public int EndPosition { get; set; }
 		public int Rank { get; set; }
 		public readonly string Id;
-		private Family2<SppfNode2> _theFamily;
-		public Family2<SppfNode2> TheFamily {
+		private SppfFamily<SppfNode> _theFamily;
+		public SppfFamily<SppfNode> TheFamily {
 			get {
 				return _theFamily;
 			}

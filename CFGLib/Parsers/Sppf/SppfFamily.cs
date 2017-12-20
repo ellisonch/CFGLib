@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Sppf {
-	internal struct Family2<T> where T : class {
+	internal struct SppfFamily<T> where T : class {
 		private readonly int _cachedHash;
 		private readonly T _firstChild;
 		private readonly T _secondChild;
@@ -32,14 +32,14 @@ namespace CFGLib.Parsers.Sppf {
 		//	_secondChild = null;
 		//	Production = production;
 		//}
-		public Family2(Production production, T v) {
+		public SppfFamily(Production production, T v) {
 			// Children = new List<SppfNode2> { v };
 			_cachedHash = v.GetHashCode();
 			_firstChild = v;
 			_secondChild = null;
 			Production = production;
 		}
-		public Family2(Production production, T w, T v) {
+		public SppfFamily(Production production, T w, T v) {
 			//Children = new List<SppfNode2> { w, v };
 			_cachedHash = unchecked((17 * 23 + w.GetHashCode()) * 23 + v.GetHashCode());
 			_firstChild = w;
@@ -68,7 +68,7 @@ namespace CFGLib.Parsers.Sppf {
 			if (other == null) {
 				return false;
 			}
-			if (!(other is Family2<T> localOther)) {
+			if (!(other is SppfFamily<T> localOther)) {
 				return false;
 			}
 			// var localOther = other as Family2;

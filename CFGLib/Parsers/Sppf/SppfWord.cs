@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Sppf {
-	public class SppfWord : SppfNode2 {
+	public class SppfWord : SppfNode {
 		private readonly int _cachedHash;
 
 		public Word Word { get; }

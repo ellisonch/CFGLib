@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
 	internal class SppfNodeNode : INode {
-		public readonly SppfNode2 Node;
+		public readonly SppfNode Node;
 		public int Rank { get; set; }
-		private Family2<SppfNode2> _theFamily;
-		public Family2<SppfNode2> TheFamily {
+		private SppfFamily<SppfNode> _theFamily;
+		public SppfFamily<SppfNode> TheFamily {
 			get {
 				return _theFamily;
 			}
@@ -70,7 +70,7 @@ namespace CFGLib.Parsers.Graphs {
 				return "";
 			}
 		}
-		public SppfNodeNode(SppfNode2 node, int rank) {
+		public SppfNodeNode(SppfNode node, int rank) {
 			Node = node;
 			Rank = rank;
 		}

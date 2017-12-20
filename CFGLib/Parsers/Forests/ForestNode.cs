@@ -17,13 +17,13 @@ namespace CFGLib.Parsers.Forests {
 			EndPosition = endPosition;
 		}
 
-		internal abstract string ToStringHelper(int level, HashSet<SppfNode2> visited);
+		internal abstract string ToStringHelper(int level, HashSet<SppfNode> visited);
 
 		internal abstract string ToStringSelf();
 		
 		internal abstract bool Accept(IForestVisitor visitor);
 
-		internal static ForestInternal SppfToForest(SppfNode2 internalSppf) {
+		internal static ForestInternal SppfToForest(SppfNode internalSppf) {
 			if (!(internalSppf is SppfWord sppfWord)) {
 				throw new Exception();
 			}

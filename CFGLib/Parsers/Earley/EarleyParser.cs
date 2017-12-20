@@ -35,8 +35,8 @@ namespace CFGLib.Parsers.Earley {
 			return GetProbFromSppf(_grammar, internalSppf);
 		}
 
-		internal static double GetProbFromSppf(BaseGrammar _grammar, SppfNode2 internalSppf) {
-			var nodeProbs = new Dictionary<SppfNode2, double>();
+		internal static double GetProbFromSppf(BaseGrammar _grammar, SppfNode internalSppf) {
+			var nodeProbs = new Dictionary<SppfNode, double>();
 			var prob = CalculateProbability(_grammar, internalSppf, nodeProbs);
 
 			//PrintForest(internalSppf, nodeProbs);
@@ -49,7 +49,7 @@ namespace CFGLib.Parsers.Earley {
 			return prob;
 		}
 
-		public override SppfNode2 ParseGetForest(Sentence s) {
+		public override SppfNode ParseGetForest(Sentence s) {
 			var successes = ComputeSuccesses(s);
 			if (successes.Count == 0) {
 				return null;
@@ -145,11 +145,11 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private static double CalculateProbability(BaseGrammar _grammar, SppfNode2 sppf, Dictionary<SppfNode2, double> nodeProbs) {
+		private static double CalculateProbability(BaseGrammar _grammar, SppfNode sppf, Dictionary<SppfNode, double> nodeProbs) {
 			var nodes = GetAllNodes(sppf);
 
 			var indexToNode = nodes.ToArray();
-			var nodeToIndex = new Dictionary<SppfNode2, int>(nodes.Count);
+			var nodeToIndex = new Dictionary<SppfNode, int>(nodes.Count);
 			for (int i = 0; i < indexToNode.Length; i++) {
 				nodeToIndex[indexToNode[i]] = i;
 			}
@@ -198,7 +198,7 @@ namespace CFGLib.Parsers.Earley {
 			return currentEstimates[nodeToIndex[sppf]];
 		}
 		
-		private static double StepProbability(BaseGrammar _grammar, SppfNode2 node, Dictionary<SppfNode2, int> nodeToIndex, double[] previousEstimates) {
+		private static double StepProbability(BaseGrammar _grammar, SppfNode node, Dictionary<SppfNode, int> nodeToIndex, double[] previousEstimates) {
 			var l = node.Families;
 			var familyCount = l.Count();
 
@@ -246,9 +246,9 @@ namespace CFGLib.Parsers.Earley {
 			return prob;
 		}
 
-		private static HashSet<SppfNode2> GetAllNodes(SppfNode2 sppf) {
-			var nodes = new HashSet<SppfNode2>();
-			var stack = new Stack<SppfNode2>();
+		private static HashSet<SppfNode> GetAllNodes(SppfNode sppf) {
+			var nodes = new HashSet<SppfNode>();
+			var stack = new Stack<SppfNode>();
 
 			stack.Push(sppf);
 			while (stack.Count > 0) {
@@ -268,11 +268,11 @@ namespace CFGLib.Parsers.Earley {
 			return nodes;
 		}
 		
-		private SppfNode2 ConstructInternalSppf(IEnumerable<Item> successes, Sentence s) {
+		private SppfNode ConstructInternalSppf(IEnumerable<Item> successes, Sentence s) {
 			// var root = new SymbolNode(_grammar.Start, 0, s.Count);
 			var root = new SppfWord(_grammar.Start, 0, s.Count);
 			var processed = new HashSet<Item>();
-			var nodes = new Dictionary<SppfNode2, SppfNode2>();
+			var nodes = new Dictionary<SppfNode, SppfNode>();
 			nodes[root] = root;
 			
 			foreach (var success in successes) {
@@ -282,9 +282,9 @@ namespace CFGLib.Parsers.Earley {
 			return root;
 		}
 
-		private void PrintForest(SppfNode2 node, Dictionary<SppfNode2, double> nodeProbs = null, string padding = "", HashSet<SppfNode2> seen = null) {
+		private void PrintForest(SppfNode node, Dictionary<SppfNode, double> nodeProbs = null, string padding = "", HashSet<SppfNode> seen = null) {
 			if (seen == null) {
-				seen = new HashSet<SppfNode2>();
+				seen = new HashSet<SppfNode>();
 			}
 			
 			var nodeProb = "";
@@ -329,7 +329,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// [Sec 4, ES2008]
-		private void BuildTree(Dictionary<SppfNode2, SppfNode2> nodes, HashSet<Item> processed, SppfNode2 node, Item item) {
+		private void BuildTree(Dictionary<SppfNode, SppfNode> nodes, HashSet<Item> processed, SppfNode node, Item item) {
 			processed.Add(item);
 
 			var production = item.IsComplete() ? item.Production : null;
@@ -412,8 +412,8 @@ namespace CFGLib.Parsers.Earley {
 			return new DecoratedProduction(item.Production, item.CurrentPosition);
 		}
 
-		private T NewOrExistingNode<T>(Dictionary<SppfNode2, SppfNode2> nodes, T node) where T : SppfNode2 {
-			SppfNode2 existingNode;
+		private T NewOrExistingNode<T>(Dictionary<SppfNode, SppfNode> nodes, T node) where T : SppfNode {
+			SppfNode existingNode;
 			if (!nodes.TryGetValue(node, out existingNode)) {
 				existingNode = node;
 				nodes[node] = node;

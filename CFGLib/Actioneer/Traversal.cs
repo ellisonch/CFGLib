@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Actioneer {
 	public class Traversal {
-		private readonly SppfNode2 _root;
+		private readonly SppfNode _root;
 		private readonly Sentence _input;
 		private readonly GrammarPlus _annotatedGrammar;
 
-		public Traversal(SppfNode2 root, Sentence input, GrammarPlus annotatedGrammar) {
+		public Traversal(SppfNode root, Sentence input, GrammarPlus annotatedGrammar) {
 			_root = root;
 			_input = input;
 			_annotatedGrammar = annotatedGrammar;
@@ -23,7 +23,7 @@ namespace CFGLib.Actioneer {
 			return Traverse(_root, 0);
 		}
 
-		private TraverseResultCollection Traverse(SppfNode2 node, int level) {
+		private TraverseResultCollection Traverse(SppfNode node, int level) {
 			//if (node is InteriorNode ni) {
 			//	return TraverseInternal(ni, level);
 			//}

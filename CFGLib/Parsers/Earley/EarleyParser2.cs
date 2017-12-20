@@ -23,12 +23,12 @@ namespace CFGLib.Parsers.Earley {
 			_S = _grammar.Start;
 		}
 
-		public SppfNode2 ParseGetSppf2(Sentence s) {
+		public SppfNode ParseGetSppf2(Sentence s) {
 			var sppf = ParseGetSppf(s);
 			return sppf;
 		}
 
-		public override SppfNode2 ParseGetForest(Sentence s) {
+		public override SppfNode ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
 			if (sppf == null) {
 				return null;
@@ -58,7 +58,7 @@ namespace CFGLib.Parsers.Earley {
 
 		// [Sec 5, ES2008]
 		// I've taken the liberty of adjusting the indices of a to start from 0
-		private SppfNode2 ParseGetSppf(Sentence a) {
+		private SppfNode ParseGetSppf(Sentence a) {
 			//if (a.Count == 0) {
 			//	throw new ArgumentException("Not sure how to handle empty yet");
 			//}
@@ -77,7 +77,7 @@ namespace CFGLib.Parsers.Earley {
 			return Finish();
 		}
 
-		private SppfNode2 Finish() {
+		private SppfNode Finish() {
 			// if (S ::= τ ·, 0, w) ∈ E_n return w
 			foreach (var item in _E[_a.Count]) {
 				if (item.DecoratedProduction.Production.Lhs != _S) {
@@ -102,7 +102,7 @@ namespace CFGLib.Parsers.Earley {
 			// for 0 ≤ i ≤ n {
 			for (var i = 0; i < _E.Length; i++) {
 				// H = ∅, R = E_i , Q = Q ′
-				var H = new Dictionary<Nonterminal, SppfNode2>();
+				var H = new Dictionary<Nonterminal, SppfNode>();
 				var R = new EarleySet(_E[i]);
 				var Q = _QPrime;
 
@@ -115,7 +115,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private void ProcessR(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode2> H, EarleySet R, EarleySet Q) {
+		private void ProcessR(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q) {
 			// while R ̸= ∅ {
 			while (!R.IsEmpty) {
 				// remove an element, Λ say, from R
@@ -179,7 +179,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// if Λ = (B ::= α · Cβ, h, w) {
-		private void Predict(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode2> H, EarleySet R, EarleySet Q, EarleyItem Λ, Nonterminal C) {
+		private void Predict(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q, EarleyItem Λ, Nonterminal C) {
 			//var β = Λ.Tail;
 			var w = Λ.SppfNode;
 			var h = Λ.StartPosition;
@@ -206,7 +206,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			// if ((C, v) ∈ H) {
-			if (H.TryGetValue(C, out SppfNode2 v)) {
+			if (H.TryGetValue(C, out SppfNode v)) {
 				// let y = MAKE_NODE(B ::= αC · β, h, i, w, v, V)
 				var productionAdvanced = Λ.DecoratedProduction.Increment();
 				var y = MakeNode(productionAdvanced, h, i, w, v, V);
@@ -231,7 +231,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// if Λ = (D ::= α·, h, w) {
-		private void Complete(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode2> H, EarleySet R, EarleySet Q, EarleyItem Λ) {
+		private void Complete(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q, EarleyItem Λ) {
 			var D = Λ.DecoratedProduction.Production.Lhs;
 			var w = Λ.SppfNode;
 			var h = Λ.StartPosition;
@@ -329,8 +329,8 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
-		private static SppfNode2 MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode2 w, SppfNode2 v, SppfNodeDictionary V) {
-			SppfNode2 y;
+		private static SppfNode MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode w, SppfNode v, SppfNodeDictionary V) {
+			SppfNode y;
 			Production production = null;
 			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
 			if (decoratedProduction.AtEnd) {

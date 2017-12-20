@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
 	public class ForestOption {		
-		private readonly Family2<SppfNode2> _family;
+		private readonly SppfFamily<SppfNode> _family;
 		private List<ForestNode[]> _children;
 
 		public Production Production {
@@ -24,12 +24,12 @@ namespace CFGLib.Parsers.Forests {
 			return _children;
 		}
 
-		internal ForestOption(Family2<SppfNode2> family) {
+		internal ForestOption(SppfFamily<SppfNode> family) {
 			_family = family;
 			//_children = BuildChildren();
 		}
 
-		internal static List<ForestOption> BuildOptions(IEnumerable<Family2<SppfNode2>> families, int startPosition, int endPosition) {
+		internal static List<ForestOption> BuildOptions(IEnumerable<SppfFamily<SppfNode>> families, int startPosition, int endPosition) {
 			var retval = new List<ForestOption>();
 
 			foreach (var family in families) {
@@ -55,7 +55,7 @@ namespace CFGLib.Parsers.Forests {
 			return startList;
 		}
 
-		private static void BuildChildrenHelper(Family2<SppfNode2> family, List<ForestNode[]> startList, Sentence rhs, int position) {
+		private static void BuildChildrenHelper(SppfFamily<SppfNode> family, List<ForestNode[]> startList, Sentence rhs, int position) {
 			if (position + 1 != rhs.Count && family.Production != null) {
 				throw new Exception();
 			}
@@ -102,7 +102,7 @@ namespace CFGLib.Parsers.Forests {
 		//	}
 		//}
 
-		private static void AddNode(SppfNode2 node, List<ForestNode[]> startList, Sentence rhs, int position) {
+		private static void AddNode(SppfNode node, List<ForestNode[]> startList, Sentence rhs, int position) {
 			ForestNode nodeToAdd;
 
 
@@ -130,7 +130,7 @@ namespace CFGLib.Parsers.Forests {
 		//	}
 		//	return string.Format("{0} ({1}, {2})", _family.Production.Rhs, StartPosition, EndPosition);
 		//}
-		internal string ToStringHelper(int level, HashSet<SppfNode2> visited) {
+		internal string ToStringHelper(int level, HashSet<SppfNode> visited) {
 			var retval = "";
 
 			var children = "";

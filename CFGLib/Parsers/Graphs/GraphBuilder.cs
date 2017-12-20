@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
 	internal static class GraphBuilder {
-		public static Graph GetGraph(SppfNode2 node) {
+		public static Graph GetGraph(SppfNode node) {
 			var graphNode = new SppfNodeNode(node, 0);
 			var g = new Graph(graphNode);
-			GetGraphHelper(g, node, graphNode, new HashSet<SppfNode2>());
+			GetGraphHelper(g, node, graphNode, new HashSet<SppfNode>());
 			return g;
 		}
 
 		// internal void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited);
 
-		private static void GetGraphHelper(Graph g, SppfNode2 node, SppfNodeNode myNode, HashSet<SppfNode2> visited) {
+		private static void GetGraphHelper(Graph g, SppfNode node, SppfNodeNode myNode, HashSet<SppfNode> visited) {
 			//if (node is InteriorNode interiorNode) {
 			//	GetGraphInterior(g, interiorNode, myNode, visited);
 			//} else if (node is LeafNode) {
@@ -27,7 +27,7 @@ namespace CFGLib.Parsers.Graphs {
 			GetGraphInterior(g, node, myNode, visited);
 		}
 
-		internal static void GetGraphInterior(Graph g, SppfNode2 node, SppfNodeNode myNode, HashSet<SppfNode2> visited) {
+		internal static void GetGraphInterior(Graph g, SppfNode node, SppfNodeNode myNode, HashSet<SppfNode> visited) {
 			if (visited.Contains(node)) {
 				return;
 			}

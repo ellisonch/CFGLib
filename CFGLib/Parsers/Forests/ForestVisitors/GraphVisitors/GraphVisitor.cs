@@ -11,8 +11,8 @@ namespace CFGLib.Parsers.Forests.ForestVisitors.GraphVisitors {
 		private Graph _graph;
 		private INode _currentNode;
 		private int _id = 0;
-		private HashSet<SppfNode2> _visited = new HashSet<SppfNode2>();
-		private Dictionary<SppfNode2, int> _ids = new Dictionary<SppfNode2, int>();
+		private HashSet<SppfNode> _visited = new HashSet<SppfNode>();
+		private Dictionary<SppfNode, int> _ids = new Dictionary<SppfNode, int>();
 
 		public GraphVisitor(ForestInternal root) : base(root) {
 		}

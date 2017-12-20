@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
 	public class ForestInternal : ForestNode {
-		private readonly SppfNode2 _node;
+		private readonly SppfNode _node;
 		private readonly Nonterminal _nonterminal;
 		//private readonly Dictionary<InteriorNode, ForestInternal> _nodeLookup;
 		private readonly List<ForestOption> _options = new List<ForestOption>();
@@ -20,7 +20,7 @@ namespace CFGLib.Parsers.Forests {
 			}
 		}
 
-		internal SppfNode2 InternalNode {
+		internal SppfNode InternalNode {
 			get {
 				return _node;
 			}
@@ -32,7 +32,7 @@ namespace CFGLib.Parsers.Forests {
 			}
 		}
 
-		internal ForestInternal(SppfNode2 node, Nonterminal nonterminal) : base(node.StartPosition, node.EndPosition) {
+		internal ForestInternal(SppfNode node, Nonterminal nonterminal) : base(node.StartPosition, node.EndPosition) {
 			_node = node;
 			_nonterminal = nonterminal;
 			//_nodeLookup = new Dictionary<InteriorNode, ForestInternal>();
@@ -46,12 +46,12 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		public override string ToString() {
-			return ToStringHelper(0, new HashSet<SppfNode2>());
+			return ToStringHelper(0, new HashSet<SppfNode>());
 		}
 		internal override string ToStringSelf() {
 			return string.Format("{0} ({1}, {2})", Nonterminal, StartPosition, EndPosition);
 		}
-		internal override string ToStringHelper(int level, HashSet<SppfNode2> visited) {
+		internal override string ToStringHelper(int level, HashSet<SppfNode> visited) {
 			var retval = "";
 
 			retval += string.Format("{0}\n", ToStringSelf()).Indent(2 * level);

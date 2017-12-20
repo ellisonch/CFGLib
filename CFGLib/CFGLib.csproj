@@ -59,9 +59,9 @@
     <Compile Include="Parsers\Earley\EarleySet.cs" />
     <Compile Include="Parsers\Graphs\GraphBuilder.cs" />
     <Compile Include="Parsers\Sppf\DotBuilder.cs" />
-    <Compile Include="Parsers\Sppf\Family2.cs" />
+    <Compile Include="Parsers\Sppf\SppfFamily.cs" />
     <Compile Include="Parsers\Sppf\SppfBranch.cs" />
-    <Compile Include="Parsers\Sppf\SppfNode2.cs" />
+    <Compile Include="Parsers\Sppf\SppfNode.cs" />
     <Compile Include="Parsers\Earley\SppfNodeDictionary.cs" />
     <Compile Include="Parsers\Sppf\SppfEpsilon.cs" />
     <Compile Include="Parsers\Sppf\SppfWord.cs" />

@@ -11,11 +11,11 @@ namespace CFGLib.Parsers.Earley {
 		public int StartPosition { get; }
 
 		// TODO: not used for hash or equality; assumes if the other bits exist, this is identical
-		public SppfNode2 SppfNode { get; internal set; }
+		public SppfNode SppfNode { get; internal set; }
 
 		private readonly int _cachedHash;
 
-		public EarleyItem(DecoratedProduction decoratedProduction, int startPosition, SppfNode2 sppfNode) {
+		public EarleyItem(DecoratedProduction decoratedProduction, int startPosition, SppfNode sppfNode) {
 			if (decoratedProduction == null) {
 				throw new ArgumentNullException();
 			}

@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
 	public class ForestLeaf : ForestNode {
-		private readonly SppfNode2 _leafNode;
+		private readonly SppfNode _leafNode;
 		// private readonly Terminal _terminal;
 
-		internal ForestLeaf(SppfNode2 node) : base(node.StartPosition, node.EndPosition) {
+		internal ForestLeaf(SppfNode node) : base(node.StartPosition, node.EndPosition) {
 			_leafNode = node;
 		}
 
@@ -24,7 +24,7 @@ namespace CFGLib.Parsers.Forests {
 			return _leafNode.ToString();
 		}
 
-		internal override string ToStringHelper(int level, HashSet<SppfNode2> visited) {
+		internal override string ToStringHelper(int level, HashSet<SppfNode> visited) {
 			var retval = "";
 			retval += string.Format("{0}\n", ToStringSelf()).Indent(2 * level);
 			return retval;

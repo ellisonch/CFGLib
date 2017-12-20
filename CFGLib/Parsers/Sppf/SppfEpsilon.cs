@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Sppf {
-	public class SppfEpsilon : SppfNode2 {
+	public class SppfEpsilon : SppfNode {
 		private readonly int _cachedHash;
 
 		public SppfEpsilon(int startPos, int endPos) : base(startPos, endPos) {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Sppf {
-	public class SppfBranch : SppfNode2 {
+	public class SppfBranch : SppfNode {
 		public DecoratedProduction DecoratedProduction { get; }
 		private readonly int _cachedHash;
 
