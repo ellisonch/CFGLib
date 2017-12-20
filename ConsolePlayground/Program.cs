@@ -146,7 +146,7 @@ namespace ConsolePlayground {
 			var g = new Grammar(new List<Production>{
 				CFGParser.Production("<S> → ε"),
 			}, Nonterminal.Of("S"));
-			var sentence = Sentence.FromWords("1 + 1 + 1 + 1 + 1 + 1 + 1");
+			var sentence = Sentence.FromWords("1 + 1 + 1");
 			var grammar = AdditionGrammar(argList => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload));
 			g = grammar.Grammar;
 			var earley = new EarleyParser(g);
@@ -155,6 +155,8 @@ namespace ConsolePlayground {
 			//DotRunner.Run(earley2.ParseGetForest(sentence).GetRawDot(), "testEarleyNew");
 			DotRunner.Run(DotBuilder.GetRawDot(earley.ParseGetForest(sentence)), "testEarleyOld");
 			DotRunner.Run(DotBuilder.GetRawDot(earley2.ParseGetForest(sentence)), "testEarleyNew");
+			DotRunner.Run(DotBuilder.GetFlattenedDot(earley2.ParseGetForest(sentence)), "testEarleyFlat");
+			
 
 			// var prob0 = earley.ParseGetProbability(sentence);
 			var prob = earley2.ParseGetProbability(sentence);

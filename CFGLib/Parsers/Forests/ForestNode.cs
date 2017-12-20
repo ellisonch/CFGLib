@@ -1,7 +1,6 @@
 ﻿using CFGLib.Parsers.Forests.ForestVisitors;
 using CFGLib.Parsers.Graphs;
 using CFGLib.Parsers.Sppf;
-using CFGLib.Parsers.Sppf.Old;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +17,22 @@ namespace CFGLib.Parsers.Forests {
 			EndPosition = endPosition;
 		}
 
-		internal abstract string ToStringHelper(int level, HashSet<InteriorNode> visited);
+		internal abstract string ToStringHelper(int level, HashSet<SppfNode2> visited);
 
 		internal abstract string ToStringSelf();
 		
 		internal abstract bool Accept(IForestVisitor visitor);
+
+		internal static ForestInternal SppfToForest(SppfNode2 internalSppf) {
+			if (!(internalSppf is SppfWord sppfWord)) {
+				throw new Exception();
+			}
+			if (!sppfWord.Word.IsNonterminal) {
+				throw new Exception();
+			}
+			var nonterminal = (Nonterminal)sppfWord.Word;
+
+			return new ForestInternal(internalSppf, nonterminal);
+		}
 	}
 }

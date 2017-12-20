@@ -60,11 +60,6 @@ namespace CFGLib.Parsers.Earley {
 			return internalSppf;
 		}
 
-		internal static ForestInternal SppfToForest(BaseGrammar _grammar, SppfNode2 internalSppf) {
-			var sppf = SppfBridge.OldFromNew(internalSppf);
-			return new ForestInternal(sppf, sppf.Symbol);
-		}
-
 		/// <summary>
 		/// Compute E_0 ... E_i as in [ES2008] Sec 4.0
 		/// </summary>

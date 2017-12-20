@@ -1,7 +1,6 @@
 ﻿using CFGLib.Parsers.Forests.ForestVisitors;
 using CFGLib.Parsers.Graphs;
 using CFGLib.Parsers.Sppf;
-using CFGLib.Parsers.Sppf.Old;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +9,11 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
 	public class ForestLeaf : ForestNode {
-		private readonly LeafNode _leafNode;
+		private readonly SppfNode2 _leafNode;
 		// private readonly Terminal _terminal;
 
-		internal ForestLeaf(EpsilonNode epsilonChild) : base(epsilonChild.StartPosition, epsilonChild.EndPosition) {
-			_leafNode = epsilonChild;
-		}
-		internal ForestLeaf(TerminalNode terminalChild) : base(terminalChild.StartPosition, terminalChild.EndPosition) {
-			_leafNode = terminalChild;
-			// _terminal = terminalChild.Terminal;
+		internal ForestLeaf(SppfNode2 node) : base(node.StartPosition, node.EndPosition) {
+			_leafNode = node;
 		}
 
 		internal override bool Accept(IForestVisitor visitor) {
@@ -26,10 +21,10 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		internal override string ToStringSelf() {
-			return string.Format("{0} ({1}, {2})", _leafNode.GetSentence(), StartPosition, EndPosition);
+			return _leafNode.ToString();
 		}
 
-		internal override string ToStringHelper(int level, HashSet<InteriorNode> visited) {
+		internal override string ToStringHelper(int level, HashSet<SppfNode2> visited) {
 			var retval = "";
 			retval += string.Format("{0}\n", ToStringSelf()).Indent(2 * level);
 			return retval;
