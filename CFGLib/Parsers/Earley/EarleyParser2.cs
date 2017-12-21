@@ -22,19 +22,9 @@ namespace CFGLib.Parsers.Earley {
 
 			_S = _grammar.Start;
 		}
-
-		public SppfNode ParseGetSppf2(Sentence s) {
-			var sppf = ParseGetSppf(s);
-			return sppf;
-		}
-
+		
 		public override SppfNode ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
-			if (sppf == null) {
-				return null;
-			}
-			// var oldSppf = SppfBridge.OldFromNew(sppf);
-			// var forest = EarleyParser.SppfToForest(_grammar, sppf);
 			return sppf;
 		}
 

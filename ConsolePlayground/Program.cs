@@ -243,7 +243,7 @@ namespace ConsolePlayground {
 			for (var i = 0; i < times; i++) {
 				sw.Restart();
 				// var sppf = ep.ParseGetRawSppf(input);
-				var sppf = ep.ParseGetSppf2(input);
+				var sppf = ep.ParseGetForest(input);
 				//var trav = new Traversal(sppf, input, gp);
 				//var resultList = trav.Traverse();
 				//if (resultList.Count() != 1) {
