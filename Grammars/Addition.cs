@@ -8,9 +8,7 @@ namespace Grammars {
 	public static class Addition {
 		public static string Raw {
 			get {
-				return @"<S> ::= <S> '+' <S>
-<S> ::= '1'
-";
+				return Properties.Resources.Addition;
 			}
 		}
 	}

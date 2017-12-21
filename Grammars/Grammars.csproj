@@ -44,13 +44,26 @@
     <Compile Include="Addition.cs" />
     <Compile Include="Bnf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Raw\Addition.txt" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CFGLib\CFGLib.csproj">
       <Project>{9afc68e6-543b-4071-ba05-eb5fc4e9b839}</Project>
       <Name>CFGLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -69,6 +69,7 @@ namespace Grammars
 					Nonterminal.Of("list"),
 					Nonterminal.Of("opt_whitespace"),
 					Terminal.Of("|"),
+					Nonterminal.Of("opt_whitespace"),
 					Nonterminal.Of("expression"),
 				}),
 
