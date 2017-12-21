@@ -22,7 +22,7 @@ namespace Grammars.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Grammars.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Grammars.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace Grammars.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -62,12 +62,28 @@ namespace Grammars.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;S&gt; ::= &lt;S&gt; &apos;+&apos; &lt;S&gt;
-        ///&lt;S&gt; ::= &apos;1&apos;
+        ///&lt;S&gt; ::= &apos;0&apos; | &apos;1&apos; | &apos;2&apos; | &apos;3&apos; | &apos;4&apos; | &apos;5&apos; | &apos;6&apos; | &apos;7&apos; | &apos;8&apos; | &apos;9&apos;
         ///.
         /// </summary>
-        internal static string Addition {
+        public static string Addition {
             get {
                 return ResourceManager.GetString("Addition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Exp&gt; ::= &lt;Exp&gt; &apos;+&apos; &lt;Exp&gt;
+        ///&lt;Exp&gt; ::= &lt;Exp&gt; &apos;-&apos; &lt;Exp&gt;
+        ///&lt;Exp&gt; ::= &lt;Exp&gt; &apos;*&apos; &lt;Exp&gt;
+        ///&lt;Exp&gt; ::= &lt;Exp&gt; &apos;/&apos; &lt;Exp&gt;
+        ///&lt;Exp&gt; ::= &apos;(&apos; &lt;Exp&gt; &apos;)&apos;
+        ///&lt;Number&gt; ::= &lt;Digit&gt; | &lt;Digit&gt; &lt;Number&gt;
+        ///&lt;Digit&gt; ::= &apos;0&apos; | &apos;1&apos; | &apos;2&apos; | &apos;3&apos; | &apos;4&apos; | &apos;5&apos; | &apos;6&apos; | &apos;7&apos; | &apos;8&apos; | &apos;9&apos;
+        ///.
+        /// </summary>
+        public static string Arithmetic {
+            get {
+                return ResourceManager.GetString("Arithmetic", resourceCulture);
             }
         }
     }
