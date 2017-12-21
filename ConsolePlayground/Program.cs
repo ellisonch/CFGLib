@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CFGLib.Actioneer;
 using CFGLib.Parsers.Sppf;
+using Grammars;
 
 namespace ConsolePlayground {
 	/// <summary>
@@ -33,12 +34,12 @@ namespace ConsolePlayground {
 			// var testp = new TestParsing();
 			// testp.TestParsing02();
 
-
+			BnfPlay();
 			// VisitorPlay();
 			
-			(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 13)).Run();
+			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 13)).Run();
 
-			Benchmark();
+			// Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
@@ -140,6 +141,20 @@ namespace ConsolePlayground {
 
 			Console.WriteLine("Finished!");
 			Console.Read();
+		}
+
+		private static void BnfPlay() {
+			var bnf = Bnf.Grammar();
+			var earley = new EarleyParser2(bnf);
+			var sentence1 = Sentence.FromLetters(Addition.Raw);
+			// var sentence2 = Sentence.FromLetters("<S> ::= <S> '+' <S>\r\n<S> ::= '1'\r\n");
+			// if (!sentence1.Equals(sentence2)) { 			}
+			// int index = sentence1.Zip(sentence2, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
+			var sppf = earley.ParseGetForest(sentence1);
+			if (sppf == null) {
+				throw new Exception();
+			}
+			DotRunner.Run(DotBuilder.GetRawDot(sppf), "additionGrammar");
 		}
 
 		private static void DebugGrammar() {
