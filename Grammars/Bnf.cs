@@ -11,6 +11,7 @@ namespace Grammars
 
 		/*
 		Based on https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form#Further_examples
+		This work was released under CC-BY-SA (https://creativecommons.org/licenses/by-sa/3.0/)
 
 <syntax>         ::= <rule> | <rule> <syntax>
 <rule>           ::= <opt-whitespace> "<" <rule-name> ">" <opt-whitespace> "::=" <opt-whitespace> <expression> <line-end>
@@ -54,6 +55,13 @@ namespace Grammars
 					Nonterminal.Of("expression"),
 					Nonterminal.Of("line_end"),
 				}),
+				new Production(Nonterminal.Of("rule"), new Sentence {
+					Nonterminal.Of("opt_whitespace"),
+					Terminal.Of("/"),
+					Terminal.Of("/"),
+					Nonterminal.Of("comment_text"),
+					Nonterminal.Of("line_end"),
+				}), // ambiguous with space at end
 
 				new Production(Nonterminal.Of("opt_whitespace"), new Sentence {
 					Terminal.Of(" "),
@@ -111,6 +119,13 @@ namespace Grammars
 					Terminal.Of("'"),
 				}),
 
+				new Production(Nonterminal.Of("comment_text"), new Sentence {
+				}),
+				new Production(Nonterminal.Of("comment_text"), new Sentence {
+					Nonterminal.Of("comment_char"),
+					Nonterminal.Of("comment_text"),
+				}),
+
 				new Production(Nonterminal.Of("text1"), new Sentence {
 				}),
 				new Production(Nonterminal.Of("text1"), new Sentence {
@@ -133,6 +148,16 @@ namespace Grammars
 				}),
 				new Production(Nonterminal.Of("character"), new Sentence {
 					Nonterminal.Of("symbol"),
+				}),
+
+				new Production(Nonterminal.Of("comment_char"), new Sentence {
+					Nonterminal.Of("character"),
+				}),
+				new Production(Nonterminal.Of("comment_char"), new Sentence {
+					Terminal.Of("\""),
+				}),
+				new Production(Nonterminal.Of("comment_char"), new Sentence {
+					Terminal.Of("'"),
 				}),
 
 				// letters
@@ -168,7 +193,10 @@ namespace Grammars
 					Nonterminal.Of("digit"),
 				}),
 				new Production(Nonterminal.Of("rule_char"), new Sentence {
-					Nonterminal.Of("_"),
+					Terminal.Of("_"),
+				}),
+				new Production(Nonterminal.Of("rule_char"), new Sentence {
+					Terminal.Of("-"),
 				}),
 
 				new Production(Nonterminal.Of("EOL"), new Sentence {

@@ -146,7 +146,9 @@ namespace ConsolePlayground {
 		private static void BnfPlay() {
 			var bnf = Bnf.Grammar();
 			var earley = new EarleyParser2(bnf);
-			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic);
+
+			// var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic);
+			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
 			// var sentence2 = Sentence.FromLetters("<S> ::= <S> '+' <S>\r\n<S> ::= '1'\r\n");
 			// if (!sentence1.Equals(sentence2)) { 			}
 			// int index = sentence1.Zip(sentence2, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
@@ -154,7 +156,7 @@ namespace ConsolePlayground {
 			if (sppf == null) {
 				throw new Exception();
 			}
-			DotRunner.Run(DotBuilder.GetRawDot(sppf), "additionGrammar");
+			DotRunner.Run(DotBuilder.GetRawDot(sppf), "bnfPlay");
 		}
 
 		private static void DebugGrammar() {
