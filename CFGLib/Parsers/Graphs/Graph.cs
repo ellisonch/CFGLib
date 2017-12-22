@@ -76,7 +76,10 @@ namespace CFGLib.Parsers.Graphs {
 				}
 			});
 			foreach (var node in nodes) {
-				retval += string.Format("\"{0}\" [ordering=out {4} shape={2} style=filled fillcolor={3} label=\"{1}\" {5}];\n", node.Name, node.Label, node.Shape, node.Color, node.Ordering, node.Other);
+				var label = node.Label;
+				label = label.Replace("\\", "\\\\");
+				label = label.Replace("\"", "\\\"");
+				retval += string.Format("\"{0}\" [ordering=out {4} shape={2} style=filled fillcolor={3} label=\"{1}\" {5}];\n", node.Name, label, node.Shape, node.Color, node.Ordering, node.Other);
 			}
 			foreach (var edge in Edges) {
 				retval += string.Format("\"{0}\" -> \"{1}\" [label=\"{2}\"]\n", edge.Left.Name, edge.Right.Name, edge.Label?.ToStringNoWeight());
