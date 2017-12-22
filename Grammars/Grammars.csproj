@@ -65,6 +65,9 @@
     <None Include="Raw\Addition.bnf" />
     <None Include="Raw\Arithmetic.bnf" />
     <None Include="Raw\Bnf.bnf" />
+    <None Include="Raw\Ebnf.ebnf" />
+    <None Include="Raw\Lua.ebnf" />
+    <None Include="Raw\Smalltalk.ebnf" />
     <None Include="Raw\Sql92.ebnf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
