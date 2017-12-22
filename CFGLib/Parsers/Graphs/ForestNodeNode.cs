@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
-	internal struct ForestNodeNode : INode {
+	internal struct ForestNodeNode : IGraphNode {
 		public readonly ForestNode Node;
 		public int Rank { get; set; }
 		public readonly string Id;

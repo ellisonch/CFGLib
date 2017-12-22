@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
 	internal class Graph {
-		private Dictionary<INode, int> dict = new Dictionary<INode, int>();
-		public HashSet<INode> Nodes = new HashSet<INode>();
+		private Dictionary<IGraphNode, int> dict = new Dictionary<IGraphNode, int>();
+		public HashSet<IGraphNode> Nodes = new HashSet<IGraphNode>();
 		public HashSet<Edge> Edges = new HashSet<Edge>();
-		private readonly INode _root;
-		private readonly Dictionary<string, INode> _nodeLookup = new Dictionary<string, INode>();
+		private readonly IGraphNode _root;
+		private readonly Dictionary<string, IGraphNode> _nodeLookup = new Dictionary<string, IGraphNode>();
 
-		public Graph(INode root) {
+		public Graph(IGraphNode root) {
 			_root = root;
 		}
 
@@ -20,15 +20,15 @@ namespace CFGLib.Parsers.Graphs {
 			var retval = "";
 
 			var highestRank = 0;
-			var rankDict = new Dictionary<int, List<INode>>();
+			var rankDict = new Dictionary<int, List<IGraphNode>>();
 
 			foreach (var node in Nodes) {
 				if (node.Rank > highestRank) {
 					highestRank = node.Rank;
 				}
-				List<INode> list;
+				List<IGraphNode> list;
 				if (!rankDict.TryGetValue(node.Rank, out list)) {
-					list = new List<INode>();
+					list = new List<IGraphNode>();
 					rankDict[node.Rank] = list;
 				}
 				list.Add(node);
@@ -138,17 +138,17 @@ namespace CFGLib.Parsers.Graphs {
 			return retval;
 		}
 
-		internal bool AddEdge(INode newNode1, INode newNode2, Production label = null) {
+		internal bool AddEdge(IGraphNode newNode1, IGraphNode newNode2, Production label = null) {
 			// var node1 = new NodeNode(forestInternal);
 			// var node2 = new NodeNode(option);
 			var newEdge = new Edge(newNode1, newNode2, label);
-			INode node1;
+			IGraphNode node1;
 			if (!_nodeLookup.TryGetValue(newNode1.Name, out node1)) {
 				node1 = newNode1;
 				_nodeLookup[newNode1.Name] = newNode1;
 			}
 			Nodes.Add(node1);
-			INode node2;
+			IGraphNode node2;
 			if (!_nodeLookup.TryGetValue(newNode2.Name, out node2)) {
 				node2 = newNode2;
 				_nodeLookup[newNode2.Name] = newNode2;

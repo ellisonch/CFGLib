@@ -7,7 +7,7 @@ using CFGLib.Parsers.Forests;
 using CFGLib.Parsers.Sppf;
 
 namespace CFGLib.Parsers.Graphs {
-	internal interface INode {
+	internal interface IGraphNode {
 		string Label { get; }
 		string Name { get; }
 		string Shape { get; }

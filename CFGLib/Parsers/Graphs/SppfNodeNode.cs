@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
-	internal class SppfNodeNode : INode {
+	internal class SppfNodeNode : IGraphNode {
 		public readonly SppfNode Node;
 		public int Rank { get; set; }
 		private SppfFamily _theFamily;

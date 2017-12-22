@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
-	internal struct ChildNode : INode {
+	internal struct ChildNode : IGraphNode {
 		public readonly Sentence Sentence;
 		public int StartPosition { get; set; }
 		public int EndPosition { get; set; }

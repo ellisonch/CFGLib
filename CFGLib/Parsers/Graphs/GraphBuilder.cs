@@ -38,7 +38,7 @@ namespace CFGLib.Parsers.Graphs {
 				// for (int i = 0; i < Families.Count; i++) {
 				// var family = Families[i];
 				//Production singletonProduction = null;
-				INode prevNode;
+				IGraphNode prevNode;
 				if (node.Families.Count() == 1) {
 					prevNode = myNode;
 					//singletonProduction = Families[0].Production;

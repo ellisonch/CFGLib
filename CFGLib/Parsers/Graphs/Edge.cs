@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
 	internal struct Edge {
-		public readonly INode Left;
-		public readonly INode Right;
+		public readonly IGraphNode Left;
+		public readonly IGraphNode Right;
 
 		public Production Label;
 
-		public Edge(INode left, INode right, Production label) {
+		public Edge(IGraphNode left, IGraphNode right, Production label) {
 			Left = left;
 			Right = right;
 			Label = label;

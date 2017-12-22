@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
-	internal class FamilyNode : INode {
+	internal class FamilyNode : IGraphNode {
 		private SppfFamily _family;
 		private string _id;
 		public int StartPosition { get; set; }
