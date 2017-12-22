@@ -60,6 +60,10 @@
       <Project>{9afc68e6-543b-4071-ba05-eb5fc4e9b839}</Project>
       <Name>CFGLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Grammars\Grammars.csproj">
+      <Project>{185272d8-2c38-4456-b5b3-ff408bc51f93}</Project>
+      <Name>Grammars</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

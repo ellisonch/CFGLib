@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolePlayground", "ConsolePlayground\ConsolePlayground.csproj", "{7C0EEEB7-1EA8-41E9-BBEB-36A552E4147B}"
 EndProject
@@ -9,7 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CFGLibTest", "CFGLibTest\CF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CFGLib", "CFGLib\CFGLib.csproj", "{9AFC68E6-543B-4071-BA05-EB5FC4E9B839}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grammars", "Grammars\Grammars.csproj", "{185272D8-2C38-4456-B5B3-FF408BC51F93}"
+EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -27,8 +32,18 @@ Global
 		{9AFC68E6-543B-4071-BA05-EB5FC4E9B839}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AFC68E6-543B-4071-BA05-EB5FC4E9B839}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AFC68E6-543B-4071-BA05-EB5FC4E9B839}.Release|Any CPU.Build.0 = Release|Any CPU
+		{185272D8-2C38-4456-B5B3-FF408BC51F93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{185272D8-2C38-4456-B5B3-FF408BC51F93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{185272D8-2C38-4456-B5B3-FF408BC51F93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{185272D8-2C38-4456-B5B3-FF408BC51F93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4EF96DC6-F09A-43CE-AC09-FDE84E9B13F9}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

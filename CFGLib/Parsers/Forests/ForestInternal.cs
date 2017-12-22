@@ -1,5 +1,6 @@
 ﻿using CFGLib.Parsers.Forests.ForestVisitors;
 using CFGLib.Parsers.Graphs;
+using CFGLib.Parsers.Sppf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Forests {
 	public class ForestInternal : ForestNode {
-		private readonly InteriorNode _node;
+		private readonly SppfNode _node;
 		private readonly Nonterminal _nonterminal;
 		//private readonly Dictionary<InteriorNode, ForestInternal> _nodeLookup;
 		private readonly List<ForestOption> _options = new List<ForestOption>();
@@ -19,7 +20,7 @@ namespace CFGLib.Parsers.Forests {
 			}
 		}
 
-		internal InteriorNode InternalNode {
+		internal SppfNode InternalNode {
 			get {
 				return _node;
 			}
@@ -31,7 +32,7 @@ namespace CFGLib.Parsers.Forests {
 			}
 		}
 
-		internal ForestInternal(InteriorNode node, Nonterminal nonterminal) : base(node.StartPosition, node.EndPosition) {
+		internal ForestInternal(SppfNode node, Nonterminal nonterminal) : base(node.StartPosition, node.EndPosition) {
 			_node = node;
 			_nonterminal = nonterminal;
 			//_nodeLookup = new Dictionary<InteriorNode, ForestInternal>();
@@ -45,12 +46,12 @@ namespace CFGLib.Parsers.Forests {
 		}
 
 		public override string ToString() {
-			return ToStringHelper(0, new HashSet<InteriorNode>());
+			return ToStringHelper(0, new HashSet<SppfNode>());
 		}
 		internal override string ToStringSelf() {
 			return string.Format("{0} ({1}, {2})", Nonterminal, StartPosition, EndPosition);
 		}
-		internal override string ToStringHelper(int level, HashSet<InteriorNode> visited) {
+		internal override string ToStringHelper(int level, HashSet<SppfNode> visited) {
 			var retval = "";
 
 			retval += string.Format("{0}\n", ToStringSelf()).Indent(2 * level);
@@ -86,19 +87,5 @@ namespace CFGLib.Parsers.Forests {
 
 			return retval;
 		}
-
-		public string GetRawDot() {
-			var graph = ((SymbolNode)_node).GetGraph();
-			return graph.ToDot();
-		}
-
-		public string ToDot() {
-			// var graph = GetGraph();
-			var gv = new ForestVisitors.GraphVisitors.GraphVisitor(this);
-			var graph = gv.Graph();
-			return graph.ToDot();
-		}
-
-
 	}
 }

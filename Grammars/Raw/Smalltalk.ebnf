@@ -1,0 +1,125 @@
+﻿(* 
+from http://chronos-st.blogspot.com/2007/12/smalltalk-in-one-page.html 
+Copyright (c) 2007 Alan Lovejoy 
+*)
+Character = ? Any Unicode character ?;
+WhitespaceCharacter = ? Any space, newline or horizontal tab character ?;
+DecimalDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+Letter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" 
+                | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" 
+                | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" 
+                | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z";
+CommentCharacter = Character - '"';
+        (* Any character other than a double quote *)
+Comment = '"', {CommentCharacter}, '"';
+OptionalWhitespace = {WhitespaceCharacter | Comment};
+Whitespace = (WhitespaceCharacter | Comment), OptionalWhitespace;
+LetterOrDigit =
+                DecimalDigit
+                | Letter;
+Identifier = (Letter | "_"), {(LetterOrDigit | "_")};
+Reference = Identifier;
+ConstantReference = 
+                "nil" 
+                | "false" 
+                | "true";
+PseudoVariableReference = 
+                "self" 
+                | "super" 
+                | "thisContext"; 
+        (* "thisContext" is not defined by the ANSI Standard, but is widely used anyway *)
+ReservedIdentifier = 
+                PseudoVariableReference 
+                | ConstantReference;
+BindableIdentifier = Identifier - ReservedIdentifier;
+UnaryMessageSelector = Identifier;
+Keyword = Identifier, ":";
+KeywordMessageSelector = Keyword, {Keyword};
+BinarySelectorChar = "~" | "!" | "@" | "%" | "&" | "*" | "-" | "+" | "=" | "|" | "\" | "<" | ">" | "," | "?" | "/";
+BinaryMessageSelector = BinarySelectorChar, [BinarySelectorChar];
+
+IntegerLiteral = ["-"], UnsignedIntegerLiteral;
+UnsignedIntegerLiteral = 
+                DecimalIntegerLiteral 
+                | Radix, "r", BaseNIntegerLiteral;
+DecimalIntegerLiteral = DecimalDigit, {DecimalDigit};
+Radix = DecimalIntegerLiteral;
+BaseNIntegerLiteral = LetterOrDigit, {LetterOrDigit};
+ScaledDecimalLiteral = ["-"], DecimalIntegerLiteral, [".", DecimalIntegerLiteral], "s", [DecimalIntegerLiteral];
+FloatingPointLiteral = ["-"], DecimalIntegerLiteral, (".", DecimalIntegerLiteral, [Exponent] | Exponent);
+Exponent = ("e" | "d" | "q"), [["-"], DecimalIntegerLiteral];
+CharacterLiteral = "$", Character;
+StringLiteral = "'", {StringLiteralCharacter | "''"}, "'"; 
+        (* To embed a "'" character in a String literal, use two consecutive single quotes *)
+StringLiteralCharacter = Character - "'"; 
+        (* Any character other than a single quote *)
+SymbolInArrayLiteral = 
+                UnaryMessageSelector - ConstantReference 
+                | KeywordMessageSelector 
+                | BinaryMessageSelector;
+SymbolLiteral = "#", (SymbolInArrayLiteral | ConstantReference | StringLiteral);
+ArrayLiteral = 
+                ObjectArrayLiteral 
+                | ByteArrayLiteral;
+ObjectArrayLiteral = "#", NestedObjectArrayLiteral;
+NestedObjectArrayLiteral = "(", OptionalWhitespace, [LiteralArrayElement, {Whitespace, LiteralArrayElement}], OptionalWhitespace, ")";
+LiteralArrayElement = 
+                Literal - BlockLiteral 
+                | NestedObjectArrayLiteral 
+                | SymbolInArrayLiteral 
+                | ConstantReference;
+ByteArrayLiteral = "#[", OptionalWhitespace, [UnsignedIntegerLiteral, {Whitespace, UnsignedIntegerLiteral}], OptionalWhitespace,"]";
+
+(* The preceding production rules would usually be handled by the lexical analyzer; 
+     the following production rules would usually be handled by the parser *)
+FormalBlockArgumentDeclaration = ":", BindableIdentifier;
+FormalBlockArgumentDeclarationList = FormalBlockArgumentDeclaration, {Whitespace, FormalBlockArgumentDeclaration};
+BlockLiteral = "[", [OptionalWhitespace, FormalBlockArgumentDeclarationList, OptionalWhitespace, "|"], ExecutableCode, OptionalWhitespace, "]";
+
+Literal = ConstantReference 
+                | IntegerLiteral 
+                | ScaledDecimalLiteral 
+                | FloatingPointLiteral 
+                | CharacterLiteral 
+                | StringLiteral 
+                | SymbolLiteral 
+                | ArrayLiteral 
+                | BlockLiteral;
+
+NestedExpression = "(", Statement, OptionalWhitespace, ")";
+Operand = 
+                Literal 
+                | Reference 
+                | NestedExpression;
+
+UnaryMessage = UnaryMessageSelector;
+UnaryMessageChain = {OptionalWhitespace, UnaryMessage};
+BinaryMessageOperand = Operand, UnaryMessageChain;
+BinaryMessage = BinaryMessageSelector, OptionalWhitespace, BinaryMessageOperand;
+BinaryMessageChain = {OptionalWhitespace, BinaryMessage};
+KeywordMessageArgument = BinaryMessageOperand, BinaryMessageChain;
+KeywordMessageSegment = Keyword, OptionalWhitespace, KeywordMessageArgument;
+KeywordMessage = KeywordMessageSegment, {OptionalWhitespace, KeywordMessageSegment};
+MessageChain = 
+                UnaryMessage, UnaryMessageChain, BinaryMessageChain, [KeywordMessage] 
+                | BinaryMessage, BinaryMessageChain, [KeywordMessage] 
+                | KeywordMessage;
+CascadedMessage = ";", OptionalWhitespace, MessageChain;
+Expression = Operand, [OptionalWhitespace, MessageChain, {OptionalWhitespace, CascadedMessage}];
+
+AssignmentOperation = OptionalWhitespace, BindableIdentifier, OptionalWhitespace, ":=";
+Statement = {AssignmentOperation}, OptionalWhitespace, Expression;
+MethodReturnOperator = OptionalWhitespace, "^";
+FinalStatement = [MethodReturnOperator], Statement;
+LocalVariableDeclarationList = OptionalWhitespace, "|", OptionalWhitespace, [BindableIdentifier, {Whitespace, BindableIdentifier}], OptionalWhitespace, "|";
+ExecutableCode = [LocalVariableDeclarationList], [{Statement, OptionalWhitespace, "."}, FinalStatement, ["."]];
+
+UnaryMethodHeader = UnaryMessageSelector;
+BinaryMethodHeader = BinaryMessageSelector, OptionalWhitespace, BindableIdentifier;
+KeywordMethodHeaderSegment = Keyword, OptionalWhitespace, BindableIdentifier;
+KeywordMethodHeader = KeywordMethodHeaderSegment, {Whitespace, KeywordMethodHeaderSegment};
+MethodHeader = 
+                UnaryMethodHeader 
+                | BinaryMethodHeader 
+                | KeywordMethodHeader;
+MethodDeclaration = OptionalWhiteSpace, MethodHeader, ExecutableCode;

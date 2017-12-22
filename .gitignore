@@ -218,3 +218,9 @@ _Pvt_Extensions
 
 # Custom
 /docs
+/comparison/*.c
+/comparison/*.dll
+/comparison/*.o
+/comparison/*.exe
+/comparison/*.output
+/comparison/*.h

@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Sppf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,10 +7,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
-	internal struct ForestNodeNode : INode {
+	internal struct ForestNodeNode : IGraphNode {
 		public readonly ForestNode Node;
 		public int Rank { get; set; }
 		public readonly string Id;
+		private SppfFamily[] _theFamily;
+		public SppfFamily TheFamily {
+			get {
+				return _theFamily[0];
+			}
+			set {
+				_theFamily[0] = value;
+			}
+		}
 
 		public string Other {
 			get {
@@ -59,6 +69,8 @@ namespace CFGLib.Parsers.Graphs {
 			Node = node;
 			Id = id;
 			Rank = rank;
+			_theFamily = new SppfFamily[1];
+			// _theFamily = null;
 		}
 	}
 }

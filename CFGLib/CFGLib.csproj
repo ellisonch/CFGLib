@@ -34,6 +34,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,8 +45,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actioneer\GatherOption.cs" />
+    <Compile Include="Actioneer\GrammarPlus.cs" />
+    <Compile Include="Actioneer\ParserAction.cs" />
+    <Compile Include="Actioneer\ProductionPlus.cs" />
+    <Compile Include="Actioneer\TraverseResult.cs" />
+    <Compile Include="Actioneer\TraverseResultCollection.cs" />
     <Compile Include="Parsers\CYK\CykParser.cs" />
     <Compile Include="Parsers\CYK\LocalCykProduction.cs" />
+    <Compile Include="Parsers\Earley\DecoratedProduction.cs" />
+    <Compile Include="Parsers\Earley\EarleyItem.cs" />
+    <Compile Include="Parsers\Earley\EarleyParser2.cs" />
+    <Compile Include="Parsers\Earley\EarleySet.cs" />
+    <Compile Include="Parsers\Earley\ProbabilityCalculator.cs" />
+    <Compile Include="Parsers\Graphs\GraphBuilder.cs" />
+    <Compile Include="Parsers\Sppf\DotBuilder.cs" />
+    <Compile Include="Parsers\Sppf\SppfFamily.cs" />
+    <Compile Include="Parsers\Sppf\SppfBranch.cs" />
+    <Compile Include="Parsers\Sppf\SppfNode.cs" />
+    <Compile Include="Parsers\Earley\SppfNodeDictionary.cs" />
+    <Compile Include="Parsers\Sppf\SppfEpsilon.cs" />
+    <Compile Include="Parsers\Sppf\SppfWord.cs" />
+    <Compile Include="Parsers\Earley\Stats.cs" />
     <Compile Include="Parsers\Forests\ForestInternal.cs" />
     <Compile Include="Parsers\Forests\ForestNode.cs" />
     <Compile Include="Parsers\Forests\ForestOption.cs" />
@@ -51,26 +74,20 @@
     <Compile Include="Parsers\Forests\ForestVisitors\DefaultVisitor.cs" />
     <Compile Include="Parsers\Forests\ForestVisitors\GraphVisitors\GraphVisitor.cs" />
     <Compile Include="Parsers\Forests\ForestVisitors\IForestVisitor.cs" />
+    <Compile Include="Actioneer\Traversal.cs" />
     <Compile Include="Parsers\Graphs\ChildNode.cs" />
     <Compile Include="Parsers\Graphs\Edge.cs" />
     <Compile Include="Parsers\Graphs\FamilyNode.cs" />
     <Compile Include="Parsers\Graphs\ForestNodeNode.cs" />
     <Compile Include="Parsers\Graphs\Graph.cs" />
-    <Compile Include="Parsers\Forests\LeafNode.cs" />
-    <Compile Include="Parsers\Forests\TerminalNode.cs" />
-    <Compile Include="Parsers\Forests\EpsilonNode.cs" />
-    <Compile Include="Parsers\Forests\Family.cs" />
-    <Compile Include="Parsers\Forests\IntermediateNode.cs" />
-    <Compile Include="Parsers\Forests\SppfNode.cs" />
-    <Compile Include="Parsers\Forests\SymbolNode.cs" />
     <Compile Include="Parsers\Earley\EarleyParser.cs" />
-    <Compile Include="Parsers\Forests\InteriorNode.cs" />
     <Compile Include="Parsers\Earley\Item.cs" />
     <Compile Include="GrammarHelpers.cs" />
     <Compile Include="Parsers\Earley\Pointer.cs" />
-    <Compile Include="Parsers\Graphs\INode.cs" />
+    <Compile Include="Parsers\Graphs\IGraphNode.cs" />
     <Compile Include="Parsers\Graphs\SppfNodeNode.cs" />
     <Compile Include="Parsers\Parser.cs" />
+    <Compile Include="Parsers\Sppf\SppfWriter.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="CFGParser.cs" />
@@ -92,6 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GrammarGenerator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

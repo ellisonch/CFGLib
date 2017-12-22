@@ -1,16 +1,27 @@
-﻿using System;
+﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Sppf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
-	internal struct ChildNode : INode {
+	internal struct ChildNode : IGraphNode {
 		public readonly Sentence Sentence;
 		public int StartPosition { get; set; }
 		public int EndPosition { get; set; }
 		public int Rank { get; set; }
 		public readonly string Id;
+		private SppfFamily _theFamily;
+		public SppfFamily TheFamily {
+			get {
+				return _theFamily;
+			}
+			set {
+				_theFamily = value;
+			}
+		}
 
 		public string Other {
 			get {

@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Sppf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +7,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
-	internal class SppfNodeNode : INode {
+	internal class SppfNodeNode : IGraphNode {
 		public readonly SppfNode Node;
 		public int Rank { get; set; }
+		private SppfFamily _theFamily;
+		public SppfFamily TheFamily {
+			get {
+				return _theFamily;
+			}
+			set {
+				_theFamily = value;
+			}
+		}
 
 		public string Other {
 			get {
@@ -32,7 +42,10 @@ namespace CFGLib.Parsers.Graphs {
 		public string Label {
 			get {
 				// return string.Format("{0} {1}", Node.ToStringSelf(), Id);
-				return string.Format("{0}", Node.ToStringSimple());
+				var production = TheFamily.Production;
+				var productionString = string.Format("\nr:{0}", production);
+				productionString = null;
+				return string.Format("{0}{1}", Node.ToString(), productionString);
 			}
 		}
 		public string Shape {
@@ -42,11 +55,14 @@ namespace CFGLib.Parsers.Graphs {
 		}
 		public string Color {
 			get {
-				if (Node is LeafNode) {
+				if (Node is SppfEpsilon) {
 					return "yellow";
-				} else {
-					return "white";
+				} else if (Node is SppfWord sppfWord) {
+					if (sppfWord.Word.IsTerminal) {
+						return "yellow";
+					}
 				}
+				return "white";
 			}
 		}
 		public string Ordering {

@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Graphs;
+using CFGLib.Parsers.Sppf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,10 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Forests.ForestVisitors.GraphVisitors {
 	public class GraphVisitor : DefaultVisitor {
 		private Graph _graph;
-		private INode _currentNode;
+		private IGraphNode _currentNode;
 		private int _id = 0;
-		private HashSet<InteriorNode> _visited = new HashSet<InteriorNode>();
-		private Dictionary<InteriorNode, int> _ids = new Dictionary<InteriorNode, int>();
+		private HashSet<SppfNode> _visited = new HashSet<SppfNode>();
+		private Dictionary<SppfNode, int> _ids = new Dictionary<SppfNode, int>();
 
 		public GraphVisitor(ForestInternal root) : base(root) {
 		}

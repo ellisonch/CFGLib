@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("CFGLibTest")]
 namespace CFGLib {
-	internal static class Helpers {
+	public static class Helpers {
 		public static IEnumerable<T> LookupEnumerable<TKey, T>(
 			this IDictionary<TKey, ICollection<T>> dictionary,
 			TKey key

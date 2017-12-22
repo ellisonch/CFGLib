@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Sppf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -551,10 +552,10 @@ namespace CFGLib {
 		}
 
 		public string ToCodeString() {
-			var productions = string.Join(",\n  ", this.Productions.Select((p) => "CFGParser.Production(\"" + p.ToCodeString() + "\")"));
+			var productions = string.Join(",\n\t", this.Productions.Select((p) => "CFGParser.Production(\"" + p.ToCodeString() + "\")"));
 
 			var start = string.Format("Nonterminal.Of(\"{0}\")", this.Start.Name);
-			var retval = string.Format("new Grammar(new List<Production>{{\n  {0}\n}}, {1})", productions, start);
+			var retval = string.Format("new Grammar(new List<Production>{{\n\t{0}\n}}, {1})", productions, start);
 			return retval;
 		}
 
@@ -562,7 +563,7 @@ namespace CFGLib {
 			var earley = new Parsers.Earley.EarleyParser(this);
 			return earley.ParseGetProbability(s);
 		}
-		public ForestInternal ParseGetForest(Sentence s) {
+		public SppfNode ParseGetForest(Sentence s) {
 			var earley = new Parsers.Earley.EarleyParser(this);
 			return earley.ParseGetForest(s);
 		}

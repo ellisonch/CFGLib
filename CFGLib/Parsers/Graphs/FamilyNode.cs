@@ -1,4 +1,5 @@
 ﻿using CFGLib.Parsers.Forests;
+using CFGLib.Parsers.Sppf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +8,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
-	internal class FamilyNode : INode {
-		private Family _family;
+	internal class FamilyNode : IGraphNode {
+		private SppfFamily _family;
 		private string _id;
 		public int StartPosition { get; set; }
 		public int EndPosition { get; set; }
 		public int Rank { get; set; }
+		private SppfFamily _theFamily;
+		public SppfFamily TheFamily {
+			get {
+				return _theFamily;
+			}
+			set {
+				_theFamily = value;
+			}
+		}
 
 		public string Color {
 			get {
@@ -23,6 +33,10 @@ namespace CFGLib.Parsers.Graphs {
 		public string Label {
 			get {
 				return "";
+				
+				//var production = _family.Production;
+				//var fakeProduction = _family.Members[0].FakeProduction;
+				//return string.Format("\n{0}\n{1}", production, fakeProduction);
 			}
 		}
 
@@ -50,7 +64,7 @@ namespace CFGLib.Parsers.Graphs {
 			}
 		}
 
-		public FamilyNode(Family family, string id, int rank) {
+		public FamilyNode(SppfFamily family, string id, int rank) {
 			_family = family;
 			_id = id;
 			Rank = rank;
