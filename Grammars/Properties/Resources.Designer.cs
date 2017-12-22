@@ -86,5 +86,21 @@ namespace Grammars.Properties {
                 return ResourceManager.GetString("Arithmetic", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;syntax&gt;         ::= &lt;rule&gt; | &lt;rule&gt; &lt;syntax&gt;
+        ///&lt;rule&gt;           ::= &lt;opt-whitespace&gt; &quot;&lt;&quot; &lt;rule-name&gt; &quot;&gt;&quot; &lt;opt-whitespace&gt; &quot;::=&quot; &lt;opt-whitespace&gt; &lt;expression&gt; &lt;line-end&gt;
+        ///&lt;opt-whitespace&gt; ::= &quot; &quot; &lt;opt-whitespace&gt; | &quot;&quot;
+        ///&lt;expression&gt;     ::= &lt;list&gt; | &lt;list&gt; &lt;opt-whitespace&gt; &quot;|&quot; &lt;opt-whitespace&gt; &lt;expression&gt;
+        ///&lt;line-end&gt;       ::= &lt;opt-whitespace&gt; &lt;EOL&gt; | &lt;line-end&gt; &lt;line-end&gt;
+        ///&lt;list&gt;           ::= &lt;term&gt; | &lt;term&gt; &lt;opt-whitespace&gt; &lt;list&gt;
+        ///&lt;term&gt;           ::= &lt;literal&gt; | &quot;&lt;&quot; &lt;rule-name&gt; &quot;&gt;&quot;
+        ///&lt;literal&gt;        ::= [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string Bnf {
+            get {
+                return ResourceManager.GetString("Bnf", resourceCulture);
+            }
+        }
     }
 }
