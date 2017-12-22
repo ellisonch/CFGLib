@@ -8,17 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Earley {
-
-	/*
-	Inspired by
-	 * Elizabeth Scott's 2008 paper "SPPF-Style Parsing From Earley Recognisers" (http://dx.doi.org/10.1016/j.entcs.2008.03.044) [ES2008]
-	 * John Aycock and Nigel Horspool's 2002 paper "Practical Earley Parsing" (http://dx.doi.org/10.1093/comjnl/45.6.620) [AH2002]
-	 * Loup Vaillant's tutorial (http://loup-vaillant.fr/tutorials/earley-parsing/)
-	*/
-
+	/// <summary>
+	/// This parser is inspired by
+	/// * Section 4 of Elizabeth Scott's 2008 paper "SPPF-Style Parsing From Earley Recognisers" (http://dx.doi.org/10.1016/j.entcs.2008.03.044) [ES2008]
+	/// * John Aycock and Nigel Horspool's 2002 paper "Practical Earley Parsing" (http://dx.doi.org/10.1093/comjnl/45.6.620) [AH2002]
+	/// * Loup Vaillant's tutorial (http://loup-vaillant.fr/tutorials/earley-parsing/)
+	/// 
+	/// <para/>
+	/// It exists mainly for didactic reasons.  <see cref="EarleyParser2"/> Should be as fast and take less memory.
+	/// </summary>
 	public class EarleyParser : Parser {
 		private readonly BaseGrammar _grammar;
-		private static readonly double _probabilityChangePercentage = 1e-15;
 
 		public EarleyParser(BaseGrammar grammar) {
 			_grammar = grammar;
@@ -32,21 +32,7 @@ namespace CFGLib.Parsers.Earley {
 
 			var internalSppf = ConstructInternalSppf(successes, s);
 
-			return GetProbFromSppf(_grammar, internalSppf);
-		}
-
-		internal static double GetProbFromSppf(BaseGrammar _grammar, SppfNode internalSppf) {
-			var nodeProbs = new Dictionary<SppfNode, double>();
-			var prob = CalculateProbability(_grammar, internalSppf, nodeProbs);
-
-			//PrintForest(internalSppf, nodeProbs);
-			//Console.WriteLine();
-			//PrintDebugForest(internalSppf, s, nodeProbs);
-			//var pp = new PrettyPrinter();
-			//internalSppf.Accept(pp);
-			//Console.WriteLine(pp.Result);
-
-			return prob;
+			return ProbabilityCalculator.GetProbFromSppf(_grammar, internalSppf);
 		}
 
 		public override SppfNode ParseGetForest(Sentence s) {
@@ -145,129 +131,6 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		private static double CalculateProbability(BaseGrammar _grammar, SppfNode sppf, Dictionary<SppfNode, double> nodeProbs) {
-			var nodes = GetAllNodes(sppf);
-
-			var indexToNode = nodes.ToArray();
-			var nodeToIndex = new Dictionary<SppfNode, int>(nodes.Count);
-			for (int i = 0; i < indexToNode.Length; i++) {
-				var node = indexToNode[i];
-				nodeToIndex[node] = i;
-			}
-
-			var previousEstimates = Enumerable.Repeat(1.0, indexToNode.Length).ToArray();
-			var currentEstimates = new double[indexToNode.Length];
-
-			//for (var i = 0; i < indexToNode.Length; i++) {
-			//	Console.WriteLine("{0,-40}: {1}", indexToNode[i], previousEstimates[i]);
-			//}
-
-			bool changed = true;
-			while (changed == true) {
-				changed = false;
-				
-				Array.Clear(currentEstimates, 0, currentEstimates.Length);
-
-				for (var i = 0; i < indexToNode.Length; i++) {
-					var node = indexToNode[i];
-					var estimate = StepProbability(_grammar, node, nodeToIndex, previousEstimates);
-					currentEstimates[i] = estimate;
-
-					if (currentEstimates[i] > previousEstimates[i]) {
-						throw new Exception("Didn't expect estimates to increase");
-					} else if (currentEstimates[i] < previousEstimates[i]) {
-						var diff = previousEstimates[i] - currentEstimates[i];
-						var tolerance = _probabilityChangePercentage * previousEstimates[i];
-						if (diff > _probabilityChangePercentage) {
-							changed = true;
-						}
-					}
-				}
-				
-				//Console.WriteLine("--------------------------");
-				//for (var i = 0; i < indexToNode.Length; i++) {
-				//	Console.WriteLine("{0,-40}: {1}", indexToNode[i], currentEstimates[i]);
-				//}
-
-				Helpers.Swap(ref previousEstimates, ref currentEstimates);
-			}
-
-			for (var i = 0; i < indexToNode.Length; i++) {
-				nodeProbs[indexToNode[i]] = currentEstimates[i];
-			}
-
-			return currentEstimates[nodeToIndex[sppf]];
-		}
-		
-		private static double StepProbability(BaseGrammar _grammar, SppfNode node, Dictionary<SppfNode, int> nodeToIndex, double[] previousEstimates) {
-			var l = node.Families;
-			var familyCount = l.Count();
-
-			if (familyCount == 0) {
-				return 1.0;
-			}
-			
-			var familyProbs = new double[familyCount];
-			var i = 0;
-			foreach (var alternative in l) {
-			// for (int i = 0; i < familyCount; i++) {
-				// var alternative = l[i];
-				
-				double prob = GetChildProb(_grammar, alternative.Production);
-
-				//var childrenProbs = l[i].Members.Select((child) => previousEstimates[nodeToIndex[child]]);
-				//var childrenProb = childrenProbs.Aggregate(1.0, (p1, p2) => p1 * p2);
-				var childrenProb = 1.0;
-				foreach (var child in alternative.Members) {
-					var index = nodeToIndex[child];
-					var estimate = previousEstimates[index];
-					childrenProb *= estimate;
-				}
-
-				familyProbs[i] = prob * childrenProb;
-
-				i++;
-			}
-			var familyProb = familyProbs.Sum();
-			if (familyProb > 1) {
-				familyProb = 1.0;
-			}
-			var result = familyProb;
-
-			return result;
-		}
-
-		private static double GetChildProb(BaseGrammar _grammar, Production production) {
-			// var production = alternative.Production;
-			var prob = 1.0;
-			if (production != null) {
-				prob = _grammar.GetProbability(production);
-			}
-
-			return prob;
-		}
-
-		private static HashSet<SppfNode> GetAllNodes(SppfNode sppf) {
-			var nodes = new HashSet<SppfNode>();
-			var stack = new Stack<SppfNode>();
-
-			stack.Push(sppf);
-			while (stack.Count > 0) {
-				var node = stack.Pop();
-				if (nodes.Contains(node)) {
-					continue;
-				}
-				nodes.Add(node);
-
-				foreach (var family in node.Families) {
-					foreach (var child in family.Members) {
-						stack.Push(child);
-					}
-				}
-			}
-
-			return nodes;
-		}
 		
 		private SppfNode ConstructInternalSppf(IEnumerable<Item> successes, Sentence s) {
 			// var root = new SymbolNode(_grammar.Start, 0, s.Count);
@@ -282,53 +145,7 @@ namespace CFGLib.Parsers.Earley {
 
 			return root;
 		}
-
-		private void PrintForest(SppfNode node, Dictionary<SppfNode, double> nodeProbs = null, string padding = "", HashSet<SppfNode> seen = null) {
-			if (seen == null) {
-				seen = new HashSet<SppfNode>();
-			}
-			
-			var nodeProb = "";
-			if (nodeProbs != null) {
-				nodeProb = " p=" + nodeProbs[node];
-			}
-
-			Console.WriteLine("{0}{1}{2}", padding, node, nodeProb);
-
-			var l = node.Families;
-			var familiesCount = l.Count();
-
-			if (familiesCount > 0 && seen.Contains(node)) {
-				Console.WriteLine("{0}Already seen this node!", padding);
-				return;
-			}
-			seen.Add(node);
-
-			//if (node is IntermediateNode) {
-			//	foreach (var family in node.Families) {
-			//		if (family.Production != null) {
-			//			// throw new Exception();
-			//		}
-			//	}
-			//	if (node.Families.Count > 1) {
-
-			//	}
-			//}
-
-			var i = 0;
-			foreach (var alternative in l) {
-			// for (int i = 0; i < l.Count; i++) {
-				// var alternative = l[i];
-				if (familiesCount > 1) {
-					Console.WriteLine("{0}Alternative {1}", padding, i);
-				}
-				foreach (var member in alternative.Members) {
-					PrintForest(member, nodeProbs, padding + "  ", seen);
-				}
-				i++;
-			}
-		}
-
+		
 		// [Sec 4, ES2008]
 		private void BuildTree(Dictionary<SppfNode, SppfNode> nodes, HashSet<Item> processed, SppfNode node, Item item) {
 			processed.Add(item);
@@ -409,6 +226,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+		// TODO this should be removed; Item should use DecoratedProductions directly
 		private DecoratedProduction ItemToDecoratedProduction(Item item) {
 			return new DecoratedProduction(item.Production, item.CurrentPosition);
 		}

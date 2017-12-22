@@ -57,6 +57,7 @@
     <Compile Include="Parsers\Earley\EarleyItem.cs" />
     <Compile Include="Parsers\Earley\EarleyParser2.cs" />
     <Compile Include="Parsers\Earley\EarleySet.cs" />
+    <Compile Include="Parsers\Earley\ProbabilityCalculator.cs" />
     <Compile Include="Parsers\Graphs\GraphBuilder.cs" />
     <Compile Include="Parsers\Sppf\DotBuilder.cs" />
     <Compile Include="Parsers\Sppf\SppfFamily.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Parsers\Graphs\IGraphNode.cs" />
     <Compile Include="Parsers\Graphs\SppfNodeNode.cs" />
     <Compile Include="Parsers\Parser.cs" />
+    <Compile Include="Parsers\Sppf\SppfWriter.cs" />
     <Compile Include="Production.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="CFGParser.cs" />

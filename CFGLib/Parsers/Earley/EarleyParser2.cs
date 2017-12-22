@@ -8,6 +8,9 @@ using CFGLib.Actioneer;
 using CFGLib.Parsers.Sppf;
 
 namespace CFGLib.Parsers.Earley {
+	/// <summary>
+	/// This parser is based directly on Section 5 of Elizabeth Scott's 2008 paper "SPPF-Style Parsing From Earley Recognisers" (http://dx.doi.org/10.1016/j.entcs.2008.03.044) [ES2008]
+	/// </summary>
 	public class EarleyParser2 : Parser {
 		private readonly BaseGrammar _grammar;
 		public static Stats _stats = new Stats();
@@ -35,7 +38,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 			// var oldSppf = SppfBridge.OldFromNew(sppf);
 			// EarleyParser.AnnotateWithProductions(_grammar, oldSppf);
-			var prob = EarleyParser.GetProbFromSppf(_grammar, sppf);
+			var prob = ProbabilityCalculator.GetProbFromSppf(_grammar, sppf);
 			return prob;
 		}
 
