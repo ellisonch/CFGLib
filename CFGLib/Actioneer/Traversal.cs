@@ -159,7 +159,7 @@ namespace CFGLib.Actioneer {
 			// TODO: just picking one for now
 			// this triggers when you've got a long RHS
 			if (startList.Count > 1) {
-
+				throw new Exception();
 			}
 			var actual = startList[0];
 			return actual;

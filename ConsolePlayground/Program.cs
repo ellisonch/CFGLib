@@ -42,7 +42,7 @@ namespace ConsolePlayground {
 			
 			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 13)).Run();
 
-			// Benchmark();
+			Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
