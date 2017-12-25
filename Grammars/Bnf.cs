@@ -35,11 +35,18 @@ namespace Grammars
 		public static Grammar Grammar() {
 			var productions = new List<Production> {
 				new Production(Nonterminal.Of("syntax"), new Sentence {
-					Nonterminal.Of("rule"),
+					Nonterminal.Of("line"),
 				}),
 				new Production(Nonterminal.Of("syntax"), new Sentence {
-					Nonterminal.Of("rule"),
+					Nonterminal.Of("line"),
 					Nonterminal.Of("syntax"),
+				}),
+
+				new Production(Nonterminal.Of("line"), new Sentence {
+					Nonterminal.Of("rule"),
+				}),
+				new Production(Nonterminal.Of("line"), new Sentence {
+					Nonterminal.Of("comment"),
 				}),
 
 				new Production(Nonterminal.Of("rule"), new Sentence {
@@ -55,7 +62,8 @@ namespace Grammars
 					Nonterminal.Of("expression"),
 					Nonterminal.Of("line_end"),
 				}),
-				new Production(Nonterminal.Of("rule"), new Sentence {
+
+				new Production(Nonterminal.Of("comment"), new Sentence {
 					Nonterminal.Of("opt_whitespace"),
 					Terminal.Of("/"),
 					Terminal.Of("/"),
