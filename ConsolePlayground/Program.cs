@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 using CFGLib.Actioneer;
 using CFGLib.Parsers.Sppf;
 using Grammars;
+using CFGLib.ProductionAnnotations.Actioning;
+using CFGLib.ProductionAnnotations;
+using CFGLib.ProductionAnnotations.Precedencing;
+using CFGLib.ProductionAnnotations.Gathering;
 
 namespace ConsolePlayground {
 	/// <summary>
@@ -159,12 +163,12 @@ namespace ConsolePlayground {
 		}
 
 		private static void DebugGrammar() {
-			var g = new Grammar(new List<Production>{
+			BaseGrammar g = new Grammar(new List<Production>{
 				CFGParser.Production("<S> → ε"),
 			}, Nonterminal.Of("S"));
 			var sentence = Sentence.FromWords("1 + 1 + 1");
 			var grammar = AdditionGrammar(argList => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload));
-			g = grammar.Grammar;
+			g = grammar;
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 			//DotRunner.Run(earley.ParseGetForest(sentence).GetRawDot(), "testEarleyOld");
@@ -231,7 +235,7 @@ namespace ConsolePlayground {
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
-			var ep = new EarleyParser2(gp.Grammar);
+			var ep = new EarleyParser2(gp);
 
 			// var totalSw = Stopwatch.StartNew();
 			double totalMs = 0;
@@ -298,11 +302,35 @@ namespace ConsolePlayground {
 			DotRunner.Run(dot, "example3");
 		}
 
-		private static GrammarPlus AdditionGrammar<T>(Func<TraverseResult[], T> func) {
-			var p1 = CFGParser.Production("<S> → <S> '+' <S>");
+		private static BaseGrammar AdditionGrammar<T>(Func<TraverseResult[], T> func) {
+			var p1 = new Production(
+				Nonterminal.Of("S"), 
+				new Sentence {
+					Nonterminal.Of("S"),
+					Terminal.Of("+"),
+					Nonterminal.Of("S")
+				},
+				1,
+				new Annotations(new List<IAnnotation> {
+					new PrecedenceAnnotation(5),
+					new ActionAnnotation(argList => func(argList)),
+					new GatherAnnotation(new GatherOption[]{ GatherOption.SameOrLower, GatherOption.StrictlyLower })
+				})
+			);
 			var nums = new List<Production> {
 				// CFGParser.Production("<S> → '0'"),
-				CFGParser.Production("<S> → '1'"),
+				new Production(
+					Nonterminal.Of("S"),
+					new Sentence {
+						Terminal.Of("1"),
+					},
+					1,
+					new Annotations(new List<IAnnotation> {
+						new PrecedenceAnnotation(0),
+						new ActionAnnotation(x => Convert.ToInt64(x[0].Payload)),
+						new GatherAnnotation(new GatherOption[]{ })
+					})
+				),
 				//CFGParser.Production("<S> → '2'"),
 				//CFGParser.Production("<S> → '3'"),
 				//CFGParser.Production("<S> → '4'"),
@@ -320,17 +348,17 @@ namespace ConsolePlayground {
 			//Console.WriteLine(g.ToCodeString());
 			//Console.WriteLine();
 
-			var actions = new List<ProductionPlus> {
-				// new Dictionary<Production, IParserAction> {
-				new ProductionPlus(p1, new ParserAction(argList => func(argList)), 5, new GatherOption[]{ GatherOption.SameOrLower, GatherOption.StrictlyLower }),
-			};
-			var termAction1 = new ParserAction(x => Convert.ToInt64(x[0].Payload));
-			foreach (var num in nums) {
-				actions.Add(new ProductionPlus(num, termAction1, 0, new GatherOption[] { }));
-				// actions[num] = ;
-			}
-			var gp = new GrammarPlus(g, actions);
-			return gp;
+			//var actions = new List<Production> {
+			//	 new Dictionary<Production, IParserAction> {
+			//	new ProductionPlus(p1/*, new ParserAction(argList => func(argList))*//*, 5*//*, new GatherOption[]{ GatherOption.SameOrLower, GatherOption.StrictlyLower }*/),
+			//};
+			// var termAction1 = new ActionAnnotation(x => Convert.ToInt64(x[0].Payload));
+			//foreach (var num in nums) {
+			//	actions.Add(new ProductionPlus(num/*, termAction1, 0*//*, new GatherOption[] { }*/));
+			//	// actions[num] = ;
+			//}
+			// var gp = new Grammar(productions, actions);
+			return g;
 		}
 
 		private static void VisitorPlay() {
@@ -344,7 +372,7 @@ namespace ConsolePlayground {
 			//	actions2[num] = termAction2;
 			//}
 
-			var ep = new EarleyParser2(gp.Grammar);
+			var ep = new EarleyParser2(gp);
 
 			var inputString = AdditionInput(3);
 			var input = Sentence.FromWords(inputString);

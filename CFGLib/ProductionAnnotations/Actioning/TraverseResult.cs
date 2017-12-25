@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Actioneer {
+namespace CFGLib.ProductionAnnotations.Actioning {
 	public class TraverseResult {
 		public object Payload { get; }
 		internal SppfNode Node { get; }

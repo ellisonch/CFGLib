@@ -1,5 +1,6 @@
 ﻿using CFGLib;
 using CFGLib.Parsers.Sppf;
+using CFGLib.ProductionAnnotations.Actioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,9 @@ namespace CFGLib.Actioneer {
 	public class Traversal {
 		private readonly SppfNode _root;
 		private readonly Sentence _input;
-		private readonly GrammarPlus _annotatedGrammar;
+		private readonly BaseGrammar _annotatedGrammar;
 
-		public Traversal(SppfNode root, Sentence input, GrammarPlus annotatedGrammar) {
+		public Traversal(SppfNode root, Sentence input, BaseGrammar annotatedGrammar) {
 			_root = root;
 			_input = input;
 			_annotatedGrammar = annotatedGrammar;

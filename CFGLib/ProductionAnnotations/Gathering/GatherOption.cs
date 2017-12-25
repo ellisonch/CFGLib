@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Actioneer {
+namespace CFGLib.ProductionAnnotations.Gathering {
 	public enum GatherOption {
 		None = 0,
 		SameOrLower,

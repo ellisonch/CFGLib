@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CFGLib.ProductionAnnotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,10 +22,14 @@ namespace CFGLib {
 		/// </summary>
 		public Sentence Rhs { get; }
 
+		public Annotations Annotations {
+			get;
+		}
+
 		/// <summary>
 		/// Returns a new production.
 		/// </summary>
-		public Production(Nonterminal lhs, Sentence rhs, double weight = 1.0) {
+		public Production(Nonterminal lhs, Sentence rhs, double weight = 1.0, Annotations annotations = null) {
 			if (lhs == null) {
 				throw new ArgumentNullException("Lhs must be non-null");
 			}
@@ -34,6 +39,10 @@ namespace CFGLib {
 			this.Lhs = lhs;
 			Rhs = rhs;
 			this.Weight = weight;
+			if (annotations == null) {
+				annotations = Annotations.Empty;
+			}
+			Annotations = annotations;
 		}
 
 		public Production(string lhsName, Sentence rhs, double weight = 1.0) : this(Nonterminal.Of(lhsName), rhs, weight) {
