@@ -146,7 +146,7 @@ namespace CFGLib.Parsers.Earley {
 					}
 					var h = Λ.StartPosition;
 					var w = Λ.SppfNode;
-					var β0 = Λ.TailFirst;
+					var β0 = Λ.DecoratedProduction.TailFirst;
 
 					// let y = MAKE NODE(B ::= α a_i · β, h, i + 1, w, v, V)
 					var productionAdvanced = Λ.DecoratedProduction.Increment();
@@ -178,7 +178,7 @@ namespace CFGLib.Parsers.Earley {
 			//var β = Λ.Tail;
 			var w = Λ.SppfNode;
 			var h = Λ.StartPosition;
-			var β0 = Λ.TailFirst;
+			var β0 = Λ.DecoratedProduction.TailFirst;
 			// for all (C ::= δ) ∈ P {
 			foreach (var production in _grammar.ProductionsFrom(C)) {
 				// if δ ∈ Σ_N and (C ::= ·δ, i, null) ̸∈ E_i {
@@ -263,7 +263,7 @@ namespace CFGLib.Parsers.Earley {
 				var k = item.StartPosition;
 				var z = item.SppfNode;
 				// var δ = item.Tail;
-				var δ0 = item.TailFirst;
+				var δ0 = item.DecoratedProduction.TailFirst;
 
 				// Λ is child, item is parent
 				var gatherExcludes = GatherExcludes(item, Λ);

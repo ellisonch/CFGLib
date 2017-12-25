@@ -30,6 +30,13 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
+		public Word TailFirst {
+			get {
+				var pos = CurrentPosition + 1;
+				return Production.Rhs.ElementAtOrDefault(pos);
+			}
+		}
+
 		public DecoratedProduction(Production production, int currentPosition) {
 			if (production == null) {
 				throw new ArgumentNullException();
