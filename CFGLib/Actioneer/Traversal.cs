@@ -39,14 +39,7 @@ namespace CFGLib.Actioneer {
 			var sub = _input.GetRange(start, length);
 
 			if (node.Families.Count() == 0) {
-				if (node is SppfEpsilon) {
-					return new TraverseResultCollection(new List<TraverseResult> { new TraverseResult("", node, null) });
-				} else if (node is SppfWord sppfWord) {
-					if (!(sppfWord.Word is Terminal terminal)) {
-						throw new Exception();
-					}
-					return new TraverseResultCollection(new List<TraverseResult> { new TraverseResult(terminal.Name, node, null) });
-				}
+				return TraverseLeaf(node);
 				
 				//	return new TraverseResultCollection(resultList);
 			}
@@ -70,7 +63,15 @@ namespace CFGLib.Actioneer {
 						//	continue;
 						//}
 						var action = productionPlus.Annotations.Action;
-						payload = action.Act(oneSet);
+						if (action == null) {
+							if (oneSet.Length > 0) {
+								payload = oneSet[0].Payload; // default action
+							} else {
+								payload = null;
+							}
+						} else {
+							payload = action.Act(oneSet);
+						}
 					}
 
 					var result = new TraverseResult(payload, node, family.Production);
@@ -78,6 +79,18 @@ namespace CFGLib.Actioneer {
 				}
 			}
 			return new TraverseResultCollection(resultList);
+		}
+
+		private TraverseResultCollection TraverseLeaf(SppfNode node) {
+			if (node is SppfEpsilon) {
+				return new TraverseResultCollection(new List<TraverseResult> { new TraverseResult("", node, null) });
+			} else if (node is SppfWord sppfWord) {
+				if (!(sppfWord.Word is Terminal terminal)) {
+					throw new Exception();
+				}
+				return new TraverseResultCollection(new List<TraverseResult> { new TraverseResult(terminal.Name, node, null) });
+			}
+			throw new Exception();
 		}
 
 		//private TraverseResultCollection TraverseTerminal(TerminalNode nt, int level) {
@@ -153,6 +166,9 @@ namespace CFGLib.Actioneer {
 		}
 
 		private TraverseResultCollection[] TraverseChildren(SppfNode node, SppfFamily family, int count, int level) {
+			if (count == 0) {
+				return new TraverseResultCollection[0];
+			}
 			var start = new TraverseResultCollection[count];
 			var startList = new List<TraverseResultCollection[]> { start };
 			TraverseChildrenHelper(node, family, startList, family.Production.Rhs, count - 1, level);
@@ -166,6 +182,9 @@ namespace CFGLib.Actioneer {
 		}
 
 		private void TraverseChildrenHelper(SppfNode node, SppfFamily family, List<TraverseResultCollection[]> startList, Sentence rhs, int position, int level) {
+			if (position < 0) {
+				throw new ArgumentOutOfRangeException();
+			}
 			if (position + 1 != rhs.Count && family.Production != null) {
 				throw new Exception();
 			}
@@ -177,6 +196,9 @@ namespace CFGLib.Actioneer {
 				var result = Traverse(onlyNode, level);
 				AddNode(result, startList, rhs, position);
 			} else if (family.Members.Count == 2) {
+				//if (position <= 0) {
+				//	throw new Exception();
+				//}
 				var rightNode = family.Members[1];
 				var result = Traverse(rightNode, level);
 				AddNode(result, startList, rhs, position);

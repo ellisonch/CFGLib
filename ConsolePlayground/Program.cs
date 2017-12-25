@@ -38,11 +38,12 @@ namespace ConsolePlayground {
 			// testp.TestParsing02();
 
 			// BnfPlay();
-			VisitorPlay();
+			ParserGenerator();
+			// VisitorPlay();
 			
 			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 13)).Run();
 
-			Benchmark();
+			// Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
@@ -150,8 +151,8 @@ namespace ConsolePlayground {
 			var bnf = Bnf.Grammar();
 			var earley = new EarleyParser2(bnf);
 
-			// var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic);
-			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
+			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic);
+			// var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
 			// var sentence2 = Sentence.FromLetters("<S> ::= <S> '+' <S>\r\n<S> ::= '1'\r\n");
 			// if (!sentence1.Equals(sentence2)) { 			}
 			// int index = sentence1.Zip(sentence2, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
@@ -160,6 +161,28 @@ namespace ConsolePlayground {
 				throw new Exception();
 			}
 			DotRunner.Run(DotBuilder.GetRawDot(sppf), "bnfPlay");
+		}
+
+		private static void ParserGenerator() {
+			var bnf = Bnf.Grammar();
+			var earley = new EarleyParser2(bnf);
+
+			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Addition);
+			// var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
+			// var sentence2 = Sentence.FromLetters("<S> ::= <S> '+' <S>\r\n<S> ::= '1'\r\n");
+			// if (!sentence1.Equals(sentence2)) { 			}
+			// int index = sentence1.Zip(sentence2, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
+
+			var sppf = earley.ParseGetForest(sentence1);
+			if (sppf == null) {
+				throw new Exception();
+			}
+
+			DotRunner.Run(DotBuilder.GetRawDot(sppf), "parserGenerator");
+
+			var traversal = new Traversal(sppf, sentence1, bnf);
+			var result = traversal.Traverse();
+			Console.WriteLine(result);
 		}
 
 		private static void DebugGrammar() {
@@ -228,9 +251,9 @@ namespace ConsolePlayground {
 			// for (var i = 170; i < 195; i++) { // 9203ms after hash change
 			// for (var i = 170; i < 195; i++) { // 2703ms after doing gather earlier
 			// for (var i = 170; i < 195; i++) {
-			for (var i = 751; i < 752; i++) {
+			// for (var i = 751; i < 752; i++) {
 			// for (var i = 95; i < 130; i++) { // new; 15385
-			// for (var i = 120; i < 160; i++) { // new; 10649ms
+			for (var i = 120; i < 160; i++) { // new; 10649ms
 			// for (var i = 300; i < 350; i++) { // new; 
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
@@ -249,7 +272,7 @@ namespace ConsolePlayground {
 
 				Console.WriteLine("{0}, {1}", i, time);
 			}
-			Console.WriteLine("Done in {0}ms (prev 3832ms)", (int)totalMs);
+			Console.WriteLine("Done in {0}ms (prev 3686ms)", (int)totalMs);
 
 			foreach (var kvp in EarleyParser2._stats.Data) {
 				Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);

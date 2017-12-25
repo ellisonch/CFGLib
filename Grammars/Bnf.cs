@@ -1,4 +1,7 @@
 ﻿using CFGLib;
+using CFGLib.Parsers.Sppf;
+using CFGLib.ProductionAnnotations;
+using CFGLib.ProductionAnnotations.Actioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,22 +37,41 @@ namespace Grammars
 		*/
 		public static Grammar Grammar() {
 			var productions = new List<Production> {
-				new Production(Nonterminal.Of("syntax"), new Sentence {
-					Nonterminal.Of("line"),
-				}),
-				new Production(Nonterminal.Of("syntax"), new Sentence {
-					Nonterminal.Of("line"),
+				new Production(
 					Nonterminal.Of("syntax"),
-				}),
+					new Sentence {
+						Nonterminal.Of("rule"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => new List<Production> { (Production)args[0].Payload })
+					})
+				),
+				new Production(
+					Nonterminal.Of("syntax"), 
+					new Sentence {
+						Nonterminal.Of("rule"),
+						Nonterminal.Of("syntax"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => {
+							var list = (List<Production>)args[1].Payload;
+							list.Add((Production)args[0].Payload);
+							return list;
+						})
+					})
+				),
 
-				new Production(Nonterminal.Of("line"), new Sentence {
-					Nonterminal.Of("rule"),
+				new Production(Nonterminal.Of("opt_comments"), new Sentence {
 				}),
-				new Production(Nonterminal.Of("line"), new Sentence {
+				new Production(Nonterminal.Of("opt_comments"), new Sentence {
 					Nonterminal.Of("comment"),
+					Nonterminal.Of("opt_comments"),
 				}),
 
 				new Production(Nonterminal.Of("rule"), new Sentence {
+					Nonterminal.Of("opt_comments"),
 					Nonterminal.Of("opt_whitespace"),
 					Terminal.Of("<"),
 					Nonterminal.Of("rule_name"),
@@ -110,11 +132,18 @@ namespace Grammars
 				new Production(Nonterminal.Of("term"), new Sentence {
 					Nonterminal.Of("literal"),
 				}),
-				new Production(Nonterminal.Of("term"), new Sentence {
-					Terminal.Of("<"),
-					Nonterminal.Of("rule_name"),
-					Terminal.Of(">"),
-				}),
+				new Production(
+					Nonterminal.Of("term"), 
+					new Sentence {
+						Terminal.Of("<"),
+						Nonterminal.Of("rule_name"),
+						Terminal.Of(">"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => Nonterminal.Of((string)args[1].Payload))
+					})
+				),
 
 				new Production(Nonterminal.Of("literal"), new Sentence {
 					Terminal.Of("\""),
