@@ -33,7 +33,12 @@ namespace CFGLib.Parsers.Earley {
 		public Word TailFirst {
 			get {
 				var pos = CurrentPosition + 1;
-				return Production.Rhs.ElementAtOrDefault(pos);
+				var rhs = Production.Rhs;
+				if (pos >= rhs.Count) {
+					return null;
+				}
+				return rhs[pos];
+				// return Production.Rhs.ElementAtOrDefault(pos);
 			}
 		}
 
