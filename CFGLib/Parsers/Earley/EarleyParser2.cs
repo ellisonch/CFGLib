@@ -261,33 +261,39 @@ namespace CFGLib.Parsers.Earley {
 				if (item.DecoratedProduction.NextWord != D) {
 					continue;
 				}
-				var k = item.StartPosition;
-				var z = item.SppfNode;
-				// var δ = item.Tail;
-				var δ0 = item.DecoratedProduction.TailFirst;
+				LinkCompletedChildWithParent(V, i, item, Λ, R, Q, w);
+			}
+		}
 
-				// Λ is child, item is parent
-				var gatherExcludes = GatherExcludes(item, Λ);
-				if (!gatherExcludes) {
-					// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
-					var productionAdvanced = item.DecoratedProduction.Increment();
-					var y = MakeNode(productionAdvanced, k, i, z, w, V);
-					var newItem = new EarleyItem(productionAdvanced, k, y);
+		private void LinkCompletedChildWithParent(SppfNodeDictionary V, int i, EarleyItem parent, EarleyItem child, EarleySet R, EarleySet Q, SppfNode w) {
+			var k = parent.StartPosition;
+			var z = parent.SppfNode;
+			// var δ = item.Tail;
+			var δ0 = parent.DecoratedProduction.TailFirst;
 
-					// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
-					if (PrefixInSigma(δ0)) {
-						// add (A ::= τD · δ, k, y) to E_i and R
-						if (_E[i].Add(newItem)) {
-							R.Add(newItem);
-						}
-					} else {
-						// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
-						if (i < _a.Count) {
-							var aCurr = _a[i];
-							if (δ0 == aCurr) {
-								Q.Add(newItem);
-							}
-						}
+			// Λ is child, item is parent
+			var gatherExcludes = GatherExcludes(parent, child);
+			if (gatherExcludes) {
+				return;
+			}
+
+			// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
+			var productionAdvanced = parent.DecoratedProduction.Increment();
+			var y = MakeNode(productionAdvanced, k, i, z, w, V);
+			var newItem = new EarleyItem(productionAdvanced, k, y);
+
+			// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
+			if (PrefixInSigma(δ0)) {
+				// add (A ::= τD · δ, k, y) to E_i and R
+				if (_E[i].Add(newItem)) {
+					R.Add(newItem);
+				}
+			} else {
+				// if δ = a_i δ′ { add (A ::= τD · δ, k, y) to Q } }
+				if (i < _a.Count) {
+					var aCurr = _a[i];
+					if (δ0 == aCurr) {
+						Q.Add(newItem);
 					}
 				}
 			}
