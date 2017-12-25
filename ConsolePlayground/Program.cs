@@ -249,7 +249,7 @@ namespace ConsolePlayground {
 
 				Console.WriteLine("{0}, {1}", i, time);
 			}
-			Console.WriteLine("Done in {0}ms (prev 10649ms)", (int)totalMs);
+			Console.WriteLine("Done in {0}ms (prev 3832ms)", (int)totalMs);
 
 			foreach (var kvp in EarleyParser2._stats.Data) {
 				Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);

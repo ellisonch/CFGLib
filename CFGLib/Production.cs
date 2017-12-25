@@ -26,6 +26,21 @@ namespace CFGLib {
 			get;
 		}
 
+		private int[] _numNonterminalsBefore = null;
+		public int NumNonterminalsBefore(int pos) {
+			if (_numNonterminalsBefore == null) {
+				_numNonterminalsBefore = new int[Rhs.Count];
+				var count = 0;
+				for (var i = 0; i < Rhs.Count; i++) {
+					_numNonterminalsBefore[i] = count;
+					if (Rhs[i].IsNonterminal) {
+						count++;
+					}
+				}
+			}
+			return _numNonterminalsBefore[pos];
+		}
+
 		/// <summary>
 		/// Returns a new production.
 		/// </summary>

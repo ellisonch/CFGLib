@@ -329,8 +329,9 @@ namespace CFGLib.Parsers.Earley {
 				return false;
 			}
 			// S + * S [* is at 2]
-			var subSentence = parent.DecoratedProduction.Production.Rhs.GetRange(0, parent.DecoratedProduction.CurrentPosition);
-			var numNonterminals = subSentence.Count(word => word.IsNonterminal);
+			//var subSentence = parent.DecoratedProduction.Production.Rhs.Take(parent.DecoratedProduction.CurrentPosition);
+			//var numNonterminals = subSentence.Count(word => word.IsNonterminal);
+			var numNonterminals = parentProduction.NumNonterminalsBefore(parent.DecoratedProduction.CurrentPosition);
 			var parentGather = parentGathers.Value[numNonterminals];
 			switch (parentGather) {
 				case GatherOption.SameOrLower:
