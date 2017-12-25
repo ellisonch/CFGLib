@@ -31,9 +31,8 @@ namespace CFGLib {
 			InvalidateCaches();
 		}
 
-		public Grammar(IEnumerable<Production> productions, Nonterminal start) {
+		public Grammar(IEnumerable<Production> productions, Nonterminal start) : base(start) {
 			_productions = new List<Production>(productions);
-			this.Start = start;
 			
 			// if (simplify) {
 			SimplifyWithoutInvalidate();

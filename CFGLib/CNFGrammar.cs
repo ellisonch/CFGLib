@@ -107,12 +107,7 @@ namespace CFGLib {
 			InvalidateCaches();
 		}
 
-		private CNFGrammar() {
-		}
-
-		public CNFGrammar(IEnumerable<Production> productions, Nonterminal start) {
-			this.Start = start;
-
+		public CNFGrammar(IEnumerable<Production> productions, Nonterminal start) : base(start) {
 			foreach (var production in productions) {
 				if (production.Lhs == start && production.Rhs.Count == 0) {
 					if (production.Weight == 0.0) {

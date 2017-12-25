@@ -12,23 +12,24 @@ namespace CFGLib {
 	/// Represents an abstract (probabilistic) context free grammar
 	/// </summary>
 	public abstract class BaseGrammar {
-		private Random _rand = new Random(0);
-		private Nonterminal _start;
-		private List<IDirtyable> _caches = new List<IDirtyable>();
+		private readonly Random _rand = new Random(0);
+		private readonly List<IDirtyable> _caches = new List<IDirtyable>();
+		/// <summary>
+		/// The start symbol
+		/// </summary>
+		public Nonterminal Start { get; }
+
 		private Cache<Dictionary<Nonterminal, Boxed<double>>> _weightTotalsByNonterminal;
 		private Cache<ISet<Nonterminal>> _nonterminals;
 		private Cache<ISet<Terminal>> _terminals;
 		private Cache<Dictionary<Nonterminal, double>> _nullableDict;
-		public abstract IEnumerable<Production> Productions {
-			get;
+
+		public BaseGrammar(Nonterminal start) {
+			Start = start;
 		}
 
-		/// <summary>
-		/// The start symbol
-		/// </summary>
-		public Nonterminal Start {
-			get { return _start; }
-			protected set { _start = value; }
+		public abstract IEnumerable<Production> Productions {
+			get;
 		}
 
 		protected List<IDirtyable> Caches {
