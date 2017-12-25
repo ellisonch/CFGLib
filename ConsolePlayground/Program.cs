@@ -32,13 +32,13 @@ namespace ConsolePlayground {
 
 			// PaperExamples();
 
-			DebugGrammar();
+			// DebugGrammar();
 
 			// var testp = new TestParsing();
 			// testp.TestParsing02();
 
 			// BnfPlay();
-			// VisitorPlay();
+			VisitorPlay();
 			
 			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 13)).Run();
 
@@ -175,7 +175,7 @@ namespace ConsolePlayground {
 			//DotRunner.Run(earley2.ParseGetForest(sentence).GetRawDot(), "testEarleyNew");
 			DotRunner.Run(DotBuilder.GetRawDot(earley.ParseGetForest(sentence)), "testEarleyOld");
 			DotRunner.Run(DotBuilder.GetRawDot(earley2.ParseGetForest(sentence)), "testEarleyNew");
-			// DotRunner.Run(DotBuilder.GetFlattenedDot(earley2.ParseGetForest(sentence)), "testEarleyFlat");
+			DotRunner.Run(DotBuilder.GetFlattenedDot(earley2.ParseGetForest(sentence)), "testEarleyFlat");
 			
 
 			// var prob0 = earley.ParseGetProbability(sentence);
@@ -343,21 +343,7 @@ namespace ConsolePlayground {
 			var g = new Grammar(new List<Production>{
 				p1,
 			}.Concat(nums), Nonterminal.Of("S"));
-
-			//var h = g.ToCNF();
-			//Console.WriteLine(g.ToCodeString());
-			//Console.WriteLine();
-
-			//var actions = new List<Production> {
-			//	 new Dictionary<Production, IParserAction> {
-			//	new ProductionPlus(p1/*, new ParserAction(argList => func(argList))*//*, 5*//*, new GatherOption[]{ GatherOption.SameOrLower, GatherOption.StrictlyLower }*/),
-			//};
-			// var termAction1 = new ActionAnnotation(x => Convert.ToInt64(x[0].Payload));
-			//foreach (var num in nums) {
-			//	actions.Add(new ProductionPlus(num/*, termAction1, 0*//*, new GatherOption[] { }*/));
-			//	// actions[num] = ;
-			//}
-			// var gp = new Grammar(productions, actions);
+			
 			return g;
 		}
 
@@ -374,7 +360,7 @@ namespace ConsolePlayground {
 
 			var ep = new EarleyParser2(gp);
 
-			var inputString = AdditionInput(3);
+			var inputString = AdditionInput(5);
 			var input = Sentence.FromWords(inputString);
 			var sppf = ep.ParseGetForest(input);
 
@@ -393,10 +379,9 @@ namespace ConsolePlayground {
 			}
 
 			//Console.WriteLine("-----------------");
-			//foreach (var result in new Traversal(sppf, input, actions2).Traverse()) {
+			//foreach (var result in new Traversal(sppf, input, gp).Traverse()) {
 			//	Console.WriteLine(result.Payload);
 			//}
-
 		}
 
 		private static string AdditionInput(int count) {

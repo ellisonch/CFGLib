@@ -19,5 +19,9 @@ namespace CFGLib.ProductionAnnotations.Actioning {
 			Node = node;
 			Production = production;
 		}
+
+		public override string ToString() {
+			return string.Format("{0} ({1})", Node.ToString(), Payload.ToString());
+		}
 	}
 }

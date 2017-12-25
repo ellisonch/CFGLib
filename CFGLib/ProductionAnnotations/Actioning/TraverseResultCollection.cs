@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CFGLib.ProductionAnnotations.Actioning {
 	public class TraverseResultCollection : IEnumerable<TraverseResult> {
@@ -13,6 +14,10 @@ namespace CFGLib.ProductionAnnotations.Actioning {
 
 		IEnumerator IEnumerable.GetEnumerator() {
 			return GetEnumerator();
+		}
+
+		public override string ToString() {
+			return string.Join(", ", _results.Select((x) => x.ToString()));
 		}
 	}
 }
