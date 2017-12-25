@@ -11,10 +11,11 @@ namespace CFGLib.Parsers.Earley {
 
 		public Word NextWord {
 			get {
-				if (CurrentPosition >= Production.Rhs.Count) {
+				var rhs = Production.Rhs;
+				if (CurrentPosition >= rhs.Count) {
 					return null;
 				}
-				return Production.Rhs[CurrentPosition];
+				return rhs[CurrentPosition];
 			}
 		}
 

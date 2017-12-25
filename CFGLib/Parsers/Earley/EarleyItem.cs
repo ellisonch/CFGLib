@@ -35,12 +35,6 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		public Word NextWord {
-			get {
-				return DecoratedProduction.NextWord;
-			}
-		}
-
 		public static bool operator ==(EarleyItem x, EarleyItem y) {
 			if (ReferenceEquals(x, null)) {
 				return ReferenceEquals(y, null);

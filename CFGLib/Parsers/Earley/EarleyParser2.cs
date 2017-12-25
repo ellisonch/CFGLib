@@ -115,13 +115,13 @@ namespace CFGLib.Parsers.Earley {
 			while (!R.IsEmpty) {
 				// remove an element, Λ say, from R
 				var Λ = R.TakeOne();
-
+				var nextWord = Λ.DecoratedProduction.NextWord;
 				// if Λ = (B ::= α · Cβ, h, w) {
-				if (Λ.NextWord is Nonterminal C) {
+				if (nextWord is Nonterminal C) {
 					Predict(V, i, H, R, Q, Λ, C);
 				}
 				// if Λ = (D ::= α·, h, w) {
-				else if (Λ.NextWord == null) {
+				else if (nextWord == null) {
 					Complete(V, i, H, R, Q, Λ);
 				} else {
 					throw new Exception("Didn't expect a terminal");
@@ -140,7 +140,7 @@ namespace CFGLib.Parsers.Earley {
 					// remove an element, Λ = (B ::= α · a_i β, h, w) say, from Q
 					// TODO: the statement above seems to imply all elements of Q have that form, but this doesn't seem to happen.  Skip them if they don't?
 					var Λ = Q.TakeOne();
-					if (Λ.NextWord != _a[i]) {
+					if (Λ.DecoratedProduction.NextWord != _a[i]) {
 						throw new Exception();
 						// continue;
 					}
@@ -254,10 +254,11 @@ namespace CFGLib.Parsers.Earley {
 				}
 			}
 
+			var eh = _E[h];
 			// for all (A ::= τ · Dδ, k, z) in E_h {
-			for (var itemi = 0; itemi < _E[h].Count; itemi++) {
-				var item = _E[h][itemi];
-				if (item.NextWord != D) {
+			for (var itemi = 0; itemi < eh.Count; itemi++) {
+				var item = eh[itemi];
+				if (item.DecoratedProduction.NextWord != D) {
 					continue;
 				}
 				var k = item.StartPosition;
