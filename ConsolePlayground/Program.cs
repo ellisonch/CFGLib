@@ -178,11 +178,15 @@ namespace ConsolePlayground {
 				throw new Exception();
 			}
 
-			DotRunner.Run(DotBuilder.GetRawDot(sppf), "parserGenerator");
+			// DotRunner.Run(DotBuilder.GetRawDot(sppf), "parserGenerator");
 
 			var traversal = new Traversal(sppf, sentence1, bnf);
 			var result = traversal.Traverse();
-			Console.WriteLine(result);
+			if (result.Count() != 1) {
+				throw new Exception();
+			}
+			var generatedGrammar = new Grammar((IEnumerable<Production>)result.First().Payload, Nonterminal.Of("S"));
+			Console.WriteLine(generatedGrammar);
 		}
 
 		private static void DebugGrammar() {
