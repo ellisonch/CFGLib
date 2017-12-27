@@ -68,6 +68,7 @@
     <None Include="Raw\Arithmetic.bnf" />
     <None Include="Raw\Bnf.bnf" />
     <None Include="Raw\Ebnf.ebnf" />
+    <None Include="Raw\Ebnf_whole.ebnf" />
     <None Include="Raw\Lua.ebnf" />
     <None Include="Raw\Smalltalk.ebnf" />
     <None Include="Raw\Sql92.ebnf" />

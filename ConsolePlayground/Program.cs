@@ -38,7 +38,8 @@ namespace ConsolePlayground {
 			// testp.TestParsing02();
 
 			// BnfPlay();
-			ParserGenerator();
+			// ParserGenerator();
+			EbnfPlay();
 			// VisitorPlay();
 			
 			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 13)).Run();
@@ -147,6 +148,31 @@ namespace ConsolePlayground {
 			Console.Read();
 		}
 
+		private static void EbnfPlay() {
+			var input = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_ebnf);
+			Sentence inputNoLayout = Ebnf.RemoveLayout(input);
+
+			var layoutGrammar = Ebnf.Grammar(Nonterminal.Of("Syntax"));
+			var earley = new EarleyParser2(layoutGrammar);
+
+			var sppf = earley.ParseGetForest(inputNoLayout);
+			if (sppf == null) {
+				throw new Exception();
+			}
+
+			DotRunner.Run(DotBuilder.GetRawDot(sppf), "arithmetic_ebnf");
+
+			//var traversal = new Traversal(sppf, input, layoutGrammar);
+			//var result = traversal.Traverse();
+			//if (result.Count() != 1) {
+			//	throw new Exception();
+			//}
+			//var inputNoLayout = new Sentence((List<Terminal>)result.First().Payload);
+			//return inputNoLayout;
+
+			//Console.WriteLine(inputNoLayout);
+		}
+		
 		private static void BnfPlay() {
 			var bnf = Bnf.Grammar();
 			var earley = new EarleyParser2(bnf);
@@ -164,7 +190,7 @@ namespace ConsolePlayground {
 		}
 
 		private static void ParserGenerator() {
-			var g = Ebnf.Grammar(Nonterminal.Of("Syntax"));
+			var g = Ebnf.Grammar(Nonterminal.Of("SyntaxLayout"));
 			var earley = new EarleyParser2(g);
 
 			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_ebnf);
@@ -398,7 +424,7 @@ namespace ConsolePlayground {
 			Console.WriteLine();
 
 			Console.WriteLine("Starting Traversal...");
-			var trav = new Traversal(sppf, input, gp);
+			var trav = new Traversal(sppf, gp);
 			var resultList = trav.Traverse();
 			Console.WriteLine("-----------------");
 			foreach (var result in resultList) {

@@ -88,13 +88,13 @@ namespace Grammars.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;Exp&gt; ::= &lt;Exp&gt; &apos;+&apos; &lt;Exp&gt;
-        ///&lt;Exp&gt; ::= &lt;Exp&gt; &apos;-&apos; &lt;Exp&gt;
-        ///&lt;Exp&gt; ::= &lt;Exp&gt; &apos;*&apos; &lt;Exp&gt;
-        ///&lt;Exp&gt; ::= &lt;Exp&gt; &apos;/&apos; &lt;Exp&gt;
-        ///&lt;Exp&gt; ::= &apos;(&apos; &lt;Exp&gt; &apos;)&apos;
-        ///&lt;Number&gt; ::= &lt;Digit&gt; | &lt;Digit&gt; &lt;Number&gt;
-        ///&lt;Digit&gt; ::= &apos;0&apos; | &apos;1&apos; | &apos;2&apos; | &apos;3&apos; | &apos;4&apos; | &apos;5&apos; | &apos;6&apos; | &apos;7&apos; | &apos;8&apos; | &apos;9&apos;
+        ///   Looks up a localized string similar to Exp = Exp, &apos;+&apos;, Exp;
+        ///Exp = Exp, &apos;-&apos;, Exp;
+        ///Exp = Exp, &apos;*&apos;, Exp;
+        ///Exp = Exp, &apos;/&apos;, Exp;
+        ///Exp = &apos;(&apos;, Exp, &apos;)&apos;;
+        ///Number = Digit | Digit, Number;
+        ///Digit = &apos;0&apos; | &apos;1&apos; | &apos;2&apos; | &apos;3&apos; | &apos;4&apos; | &apos;5&apos; | &apos;6&apos; | &apos;7&apos; | &apos;8&apos; | &apos;9&apos;;
         ///.
         /// </summary>
         public static string Arithmetic_ebnf {
@@ -115,6 +115,15 @@ namespace Grammars.Properties {
         public static string Bnf {
             get {
                 return ResourceManager.GetString("Bnf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to syntax = syntax rule, {syntax rule};.
+        /// </summary>
+        public static string Ebnf {
+            get {
+                return ResourceManager.GetString("Ebnf", resourceCulture);
             }
         }
     }

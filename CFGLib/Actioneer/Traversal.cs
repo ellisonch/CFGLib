@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 namespace CFGLib.Actioneer {
 	public class Traversal {
 		private readonly SppfNode _root;
-		private readonly Sentence _input;
+		//private readonly Sentence _input;
 		private readonly BaseGrammar _annotatedGrammar;
 
-		public Traversal(SppfNode root, Sentence input, BaseGrammar annotatedGrammar) {
+		public Traversal(SppfNode root, BaseGrammar annotatedGrammar) {
 			_root = root;
-			_input = input;
+			//_input = input;
 			_annotatedGrammar = annotatedGrammar;
 		}
 
@@ -36,7 +36,7 @@ namespace CFGLib.Actioneer {
 
 			var start = node.StartPosition;
 			var length = node.EndPosition - node.StartPosition;
-			var sub = _input.GetRange(start, length);
+			//var sub = _input.GetRange(start, length);
 
 			if (node.Families.Count() == 0) {
 				return TraverseLeaf(node);

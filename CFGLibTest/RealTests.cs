@@ -23,12 +23,14 @@ namespace CFGLibTest {
 			Assert.IsTrue(p2 > 0.0);
 		}
 		private static void EbnfParse(Sentence sentence) {
+			var noLayoutSentence = Ebnf.RemoveLayout(sentence);
+
 			var g = Ebnf.Grammar(Nonterminal.Of("Syntax"));
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 			
-			var p2 = earley.ParseGetProbability(sentence);
-			var p3 = earley2.ParseGetProbability(sentence);
+			var p2 = earley.ParseGetProbability(noLayoutSentence);
+			var p3 = earley2.ParseGetProbability(noLayoutSentence);
 			Helpers.AssertNear(p2, p3);
 			Assert.IsTrue(p2 > 0.0);
 		}
@@ -51,6 +53,11 @@ namespace CFGLibTest {
 		[TestMethod]
 		public void ParseArithmeticEbnf() {
 			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_ebnf);
+			EbnfParse(sentence);
+		}
+		[TestMethod]
+		public void ParseEbnfEbnf() {
+			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf);
 			EbnfParse(sentence);
 		}
 	}

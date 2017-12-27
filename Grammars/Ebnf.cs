@@ -1,4 +1,8 @@
 ﻿using CFGLib;
+using CFGLib.Actioneer;
+using CFGLib.Parsers.Earley;
+using CFGLib.ProductionAnnotations;
+using CFGLib.ProductionAnnotations.Actioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +14,26 @@ namespace Grammars {
 	// In particular, the structure was borrowed from Section 8.1 "The Syntax of Extended BNF"
 	public class Ebnf {
 		private static readonly List<char> _lettersUc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToList();
+
+		public static Sentence RemoveLayout(Sentence input) {
+			var layoutGrammar = Ebnf.Grammar(Nonterminal.Of("SyntaxLayout"));
+			var earley = new EarleyParser2(layoutGrammar);
+
+			var sppf = earley.ParseGetForest(input);
+			if (sppf == null) {
+				throw new Exception();
+			}
+
+			// DotRunner.Run(DotBuilder.GetRawDot(sppf), "arithmetic_ebnf");
+
+			var traversal = new Traversal(sppf, layoutGrammar);
+			var result = traversal.Traverse();
+			if (result.Count() != 1) {
+				throw new Exception();
+			}
+			var inputNoLayout = new Sentence((List<Terminal>)result.First().Payload);
+			return inputNoLayout;
+		}
 
 		public static Grammar Grammar(Nonterminal start) {
 			// var start = Nonterminal.Of("Syntax");
@@ -103,29 +127,43 @@ namespace Grammars {
 				new Production("GapSeparator", Nonterminal.Of("SpaceCharacter")),
 				new Production("GapSeparator", Nonterminal.Of("HorizontalTabulationCharacter")),
 				new Production("GapSeparator", Nonterminal.Of("NewLine")),
-				new Production("GapSeparator", Nonterminal.Of("CarriageReturn")),				
+				new Production("GapSeparator", Nonterminal.Of("CarriageReturn")),
 				new Production("GapSeparator", Nonterminal.Of("VerticalTabulationCharacter")),
 				new Production("GapSeparator", Nonterminal.Of("FormFeed")),
 
 				// TODO
-				new Production("SyntaxLayout", new Sentence {
-					Nonterminal.Of("GapSeparatorList0"),
-					Nonterminal.Of("SymbolWithOptionalGapList1"),
-				}),
+				new Production(
+					Nonterminal.Of("SyntaxLayout"),
+					new Sentence {
+						Nonterminal.Of("GapSeparatorList0"),
+						Nonterminal.Of("SymbolWithOptionalGapList1"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => args[1].Payload)
+					})
+				),
 
-				new Production("SymbolWithOptionalGap", new Sentence {
-					Nonterminal.Of("GapFreeSymbol"),
-					Nonterminal.Of("GapSeparatorList0"),
-				}),
+				new Production(
+					Nonterminal.Of("SymbolWithOptionalGap"),
+					new Sentence {
+						Nonterminal.Of("GapFreeSymbol"),
+						Nonterminal.Of("GapSeparatorList0"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => Terminal.Of((string)args[0].Payload))
+					})
+				),
 
 			}.Concat(
-				MakeList("FirstTerminalCharacter", 1)
+				MakeList<object>("FirstTerminalCharacter", 1)
 			).Concat(
-				MakeList("SecondTerminalCharacter", 1)
+				MakeList<object>("SecondTerminalCharacter", 1)
 			).Concat(
-				MakeList("GapSeparator", 0)
+				MakeList<object>("GapSeparator", 0)
 			).Concat(
-				MakeList("SymbolWithOptionalGap", 1)
+				MakeList<Terminal>("SymbolWithOptionalGap", 1)
 			);
 		}
 
@@ -192,17 +230,17 @@ namespace Grammars {
 				}),
 
 			}.Concat(
-				MakeList("DecimalDigit", 1)
+				MakeList<object>("DecimalDigit", 1)
 			).Concat(
-				MakeList("MetaIdentifierCharacter", 0)
+				MakeList<object>("MetaIdentifierCharacter", 0)
 			).Concat(
-				MakeList("SpecialSequenceCharacter", 0)
+				MakeList<object>("SpecialSequenceCharacter", 0)
 			).Concat(
-				MakeList("CommentSymbol", 0)
+				MakeList<object>("CommentSymbol", 0)
 			).Concat(
-				MakeList("BracketedTextualComment", 0)
+				MakeList<object>("BracketedTextualComment", 0)
 			).Concat(
-				MakeList("CommentlessSymbolWithOptionalComment", 1)
+				MakeList<object>("CommentlessSymbolWithOptionalComment", 1)
 			);
 		}
 
@@ -212,13 +250,13 @@ namespace Grammars {
 
 				new Production("SyntaxRule", new Sentence {
 					Nonterminal.Of("MetaIdentifier"),
-					Nonterminal.Of("GapSeparatorList0"),
+					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("DefiningSymbol"),
-					Nonterminal.Of("GapSeparatorList0"),
+					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("DefinitionsList"),
-					Nonterminal.Of("GapSeparatorList0"),
+					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("TerminatorSymbol"),
-					Nonterminal.Of("GapSeparatorList0"),
+					//Nonterminal.Of("GapSeparatorList0"),
 				}),
 
 				new Production("DefinitionsList", new Sentence {
@@ -227,9 +265,9 @@ namespace Grammars {
 				}),
 
 				new Production("SeparatedDefinition", new Sentence {
-					Nonterminal.Of("GapSeparatorList0"),
+					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("DefinitionSeparatorSymbol"),
-					Nonterminal.Of("GapSeparatorList0"),
+					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("SingleDefinition"),
 				}),
 
@@ -239,9 +277,9 @@ namespace Grammars {
 				}),
 
 				new Production("ConcatenatedSyntacticTerm", new Sentence {
-					Nonterminal.Of("GapSeparatorList0"),
+					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("ConcatenateSymbol"),
-					Nonterminal.Of("GapSeparatorList0"),
+					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("SyntacticTerm"),
 				}),
 
@@ -301,15 +339,15 @@ namespace Grammars {
 				new Production("EmptySequence", new Sentence()),
 
 			}.Concat(
-				MakeList("SyntaxRule", 1)
+				MakeList<object>("SyntaxRule", 1)
 			).Concat(
-				MakeList("SeparatedDefinition", 0)
+				MakeList<object>("SeparatedDefinition", 0)
 			).Concat(
-				MakeList("ConcatenatedSyntacticTerm", 0)
+				MakeList<object>("ConcatenatedSyntacticTerm", 0)
 			);
 		}
 
-		private static IEnumerable<Production> MakeList(string baseName, int minimum) {
+		private static IEnumerable<Production> MakeList<T>(string baseName, int minimum) {
 			if (minimum < 0 || minimum > 1) {
 				throw new ArgumentOutOfRangeException();
 			}
@@ -319,13 +357,31 @@ namespace Grammars {
 
 			if (minimum == 1) {
 				retval = retval.Concat(new List<Production>() {
-					new Production(listName, new Sentence {
-						Nonterminal.Of(baseName),
+					new Production(
 						Nonterminal.Of(listName),
-					}),
-					new Production(listName, new Sentence {
-						Nonterminal.Of(baseName),
-					}),
+						new Sentence {
+							Nonterminal.Of(baseName),
+							Nonterminal.Of(listName),
+						},
+						1,
+						new Annotations(new List<IAnnotation>{
+							new ActionAnnotation(args => {
+								var list = (List<T>)args[1].Payload;
+								list.Insert(0, (T)args[0].Payload); // TODO: slow
+								return list;
+							})
+						})
+					),
+					new Production(
+						Nonterminal.Of(listName), 
+						new Sentence {
+							Nonterminal.Of(baseName),
+						},
+						1,
+						new Annotations(new List<IAnnotation>{
+							new ActionAnnotation(args => new List<T>{ (T)args[0].Payload })
+						})
+					),
 				});
 			} else {
 				retval = retval.Concat(new List<Production>() {
