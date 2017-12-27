@@ -119,11 +119,42 @@ namespace Grammars.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to syntax = syntax rule, {syntax rule};.
+        ///   Looks up a localized string similar to syntax = syntax rule, {syntax rule};
+        ///syntax rule = meta identifier, defining symbol, definitions list, terminator symbol;
+        ///definitions list = single definition, {definition separator symbol, single definition};
+        ///single definition = syntactic term, {concatenate symbol, syntactic term};
+        ///syntactic term = syntactic factor, [except symbol, syntactic exception];
+        ///
+        ///
+        ///syntactic factor = [integer, repetition symbol], syntactic primary;
+        ///syntactic primary
+        ///= optional sequence
+        ///| repeated sequence
+        ///| grouped sequen [rest of string was truncated]&quot;;.
         /// </summary>
         public static string Ebnf {
             get {
                 return ResourceManager.GetString("Ebnf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to syntax = syntax rule, {syntax rule};
+        ///syntax rule = meta identifier, defining symbol, definitions list, terminator symbol;
+        ///definitions list = single definition, {definition separator symbol, single definition};
+        ///single definition = syntactic term, {concatenate symbol, syntactic term};
+        ///syntactic term = syntactic factor, [except symbol, syntactic exception];
+        ///
+        ///
+        ///syntactic factor = [integer, repetition symbol], syntactic primary;
+        ///syntactic primary
+        ///= optional sequence
+        ///| repeated sequence
+        ///| grouped sequen [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string Ebnf_bench {
+            get {
+                return ResourceManager.GetString("Ebnf_bench", resourceCulture);
             }
         }
     }
