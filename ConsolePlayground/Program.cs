@@ -164,10 +164,10 @@ namespace ConsolePlayground {
 		}
 
 		private static void ParserGenerator() {
-			var bnf = Bnf.Grammar();
-			var earley = new EarleyParser2(bnf);
+			var g = Ebnf.Grammar(Nonterminal.Of("Syntax"));
+			var earley = new EarleyParser2(g);
 
-			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Addition);
+			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_ebnf);
 			// var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
 			// var sentence2 = Sentence.FromLetters("<S> ::= <S> '+' <S>\r\n<S> ::= '1'\r\n");
 			// if (!sentence1.Equals(sentence2)) { 			}
@@ -178,15 +178,15 @@ namespace ConsolePlayground {
 				throw new Exception();
 			}
 
-			// DotRunner.Run(DotBuilder.GetRawDot(sppf), "parserGenerator");
+			DotRunner.Run(DotBuilder.GetRawDot(sppf), "arithmetic_ebnf");
 
-			var traversal = new Traversal(sppf, sentence1, bnf);
-			var result = traversal.Traverse();
-			if (result.Count() != 1) {
-				throw new Exception();
-			}
-			var generatedGrammar = new Grammar((IEnumerable<Production>)result.First().Payload, Nonterminal.Of("S"));
-			Console.WriteLine(generatedGrammar);
+			//var traversal = new Traversal(sppf, sentence1, g);
+			//var result = traversal.Traverse();
+			//if (result.Count() != 1) {
+			//	throw new Exception();
+			//}
+			//var generatedGrammar = new Grammar((IEnumerable<Production>)result.First().Payload, Nonterminal.Of("S"));
+			//Console.WriteLine(generatedGrammar);
 		}
 
 		private static void DebugGrammar() {

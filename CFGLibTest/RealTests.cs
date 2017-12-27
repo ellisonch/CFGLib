@@ -22,6 +22,16 @@ namespace CFGLibTest {
 			Helpers.AssertNear(p2, p3);
 			Assert.IsTrue(p2 > 0.0);
 		}
+		private static void EbnfParse(Sentence sentence) {
+			var g = Ebnf.Grammar(Nonterminal.Of("Syntax"));
+			var earley = new EarleyParser(g);
+			var earley2 = new EarleyParser2(g);
+			
+			var p2 = earley.ParseGetProbability(sentence);
+			var p3 = earley2.ParseGetProbability(sentence);
+			Helpers.AssertNear(p2, p3);
+			Assert.IsTrue(p2 > 0.0);
+		}
 
 		[TestMethod]
 		public void ParseAddition() {
@@ -37,6 +47,11 @@ namespace CFGLibTest {
 		public void ParseBnf() {
 			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
 			BnfParse(sentence);
+		}
+		[TestMethod]
+		public void ParseArithmeticEbnf() {
+			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_ebnf);
+			EbnfParse(sentence);
 		}
 	}
 }
