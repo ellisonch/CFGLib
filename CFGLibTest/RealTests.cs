@@ -23,16 +23,16 @@ namespace CFGLibTest {
 			Assert.IsTrue(p2 > 0.0);
 		}
 		private static void EbnfParse(Sentence sentence) {
-			var noLayoutSentence = Ebnf.RemoveLayout(sentence);
+			var noLayoutSentence = Ebnf.RemoveLayout(sentence, out var layoutSppf);
 
 			var g = Ebnf.Grammar(Nonterminal.Of("Syntax"));
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
-			
-			var p2 = earley.ParseGetProbability(noLayoutSentence);
-			var p3 = earley2.ParseGetProbability(noLayoutSentence);
-			Helpers.AssertNear(p2, p3);
-			Assert.IsTrue(p2 > 0.0);
+
+			var sppf1 = earley.ParseGetForest(noLayoutSentence);
+			Assert.IsNotNull(sppf1);
+			var sppf2 = earley2.ParseGetForest(noLayoutSentence);
+			Assert.IsNotNull(sppf2);
 		}
 
 		[TestMethod]

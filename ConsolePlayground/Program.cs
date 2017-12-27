@@ -150,8 +150,10 @@ namespace ConsolePlayground {
 
 		private static void EbnfPlay() {
 			var input = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf);
-			Sentence inputNoLayout = Ebnf.RemoveLayout(input);
+			Sentence inputNoLayout = Ebnf.RemoveLayout(input, out var layoutSppf);
 
+			//DotRunner.Run(DotBuilder.GetRawDot(layoutSppf), "arithmetic_ebnf_layout");
+			Console.WriteLine(inputNoLayout.AsTerminals());
 			var layoutGrammar = Ebnf.Grammar(Nonterminal.Of("Syntax"));
 			var earley = new EarleyParser2(layoutGrammar);
 
@@ -160,7 +162,7 @@ namespace ConsolePlayground {
 				throw new Exception();
 			}
 
-			DotRunner.Run(DotBuilder.GetRawDot(sppf), "arithmetic_ebnf");
+			//DotRunner.Run(DotBuilder.GetRawDot(sppf), "arithmetic_ebnf");
 
 			//var traversal = new Traversal(sppf, input, layoutGrammar);
 			//var result = traversal.Traverse();

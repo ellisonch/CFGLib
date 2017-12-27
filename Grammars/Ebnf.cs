@@ -1,6 +1,7 @@
 ﻿using CFGLib;
 using CFGLib.Actioneer;
 using CFGLib.Parsers.Earley;
+using CFGLib.Parsers.Sppf;
 using CFGLib.ProductionAnnotations;
 using CFGLib.ProductionAnnotations.Actioning;
 using System;
@@ -14,17 +15,15 @@ namespace Grammars {
 	// In particular, the structure was borrowed from Section 8.1 "The Syntax of Extended BNF"
 	public class Ebnf {
 		private static readonly List<char> _lettersUc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToList();
-
-		public static Sentence RemoveLayout(Sentence input) {
+		
+		public static Sentence RemoveLayout(Sentence input, out SppfNode sppf) {
 			var layoutGrammar = Ebnf.Grammar(Nonterminal.Of("SyntaxLayout"));
 			var earley = new EarleyParser2(layoutGrammar);
 
-			var sppf = earley.ParseGetForest(input);
+			sppf = earley.ParseGetForest(input);
 			if (sppf == null) {
 				throw new Exception();
 			}
-
-			// DotRunner.Run(DotBuilder.GetRawDot(sppf), "arithmetic_ebnf");
 
 			var traversal = new Traversal(sppf, layoutGrammar);
 			var result = traversal.Traverse();
@@ -88,40 +87,88 @@ namespace Grammars {
 			}.Concat(
 				":+_%@&#$<>\\^`~".Select((x) => new Production("OtherCharacter", Terminal.Of(x.ToString())))
 			);
+			// !, ., and / are defined elsewhere
+			// including space seems like a bug
 		}
 
 		private static IEnumerable<Production> SecondPart() {
 			return new List<Production> {
-				new Production("TerminalCharacterBasic", Nonterminal.Of("CommentlessTerminal")),
 				new Production("TerminalCharacterBasic", Nonterminal.Of("Letter")),
 				new Production("TerminalCharacterBasic", Nonterminal.Of("DecimalDigit")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("CommentlessTerminal")),
 				new Production("TerminalCharacterBasic", Nonterminal.Of("EndCommentSymbol")),
 				new Production("TerminalCharacterBasic", Nonterminal.Of("StartCommentSymbol")),
 				new Production("TerminalCharacterBasic", Nonterminal.Of("OtherCharacter")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("SpecialSequenceSymbol")),
+
 
 				new Production("TerminalCharacter", Nonterminal.Of("TerminalCharacterBasic")),
 				new Production("TerminalCharacter", Nonterminal.Of("FirstQuoteSymbol")),
 				new Production("TerminalCharacter", Nonterminal.Of("SecondQuoteSymbol")),
-				new Production("TerminalCharacter", Nonterminal.Of("SpecialSequenceSymbol")),
+				new Production("TerminalCharacter", Nonterminal.Of("SpaceCharacter")),
 
-				new Production("GapFreeSymbol", Nonterminal.Of("TerminalCharacterBasic")),
-				new Production("GapFreeSymbol", Nonterminal.Of("TerminalString")),
+				new Production("GapFreeSymbolTerminal", Nonterminal.Of("TerminalCharacterBasic")),
+				// new Production("GapFreeSymbolTerminal", Nonterminal.Of("SpecialSequenceSymbol")),
 
-				new Production("TerminalString", new Sentence {
-					Nonterminal.Of("FirstQuoteSymbol"),
-					Nonterminal.Of("FirstTerminalCharacterList1"),
-					Nonterminal.Of("FirstQuoteSymbol"),
-				}),
-				new Production("TerminalString", new Sentence {
-					Nonterminal.Of("SecondQuoteSymbol"),
-					Nonterminal.Of("SecondTerminalCharacterList1"),
-					Nonterminal.Of("SecondQuoteSymbol"),
-				}),
+				new Production(
+					Nonterminal.Of("GapFreeSymbol"),
+					new Sentence {
+						Nonterminal.Of("GapFreeSymbolTerminal")
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => new List<Terminal>{ Terminal.Of((string)args[0].Payload) })
+					})
+				),
+				new Production(
+					Nonterminal.Of("GapFreeSymbol"), 
+					new Sentence {
+						Nonterminal.Of("TerminalString")
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => {
+							var tup = (Tuple<string, List<Terminal>>)args[0].Payload;
+							// TODO shouldn't mutate
+							var list = tup.Item2;
+							list.Insert(0, Terminal.Of(tup.Item1));
+							list.Add(Terminal.Of(tup.Item1));
+							return list;
+						})
+					})
+				),
+
+				new Production(
+					Nonterminal.Of("TerminalString"),
+					new Sentence {
+						Nonterminal.Of("FirstQuoteSymbol"),
+						Nonterminal.Of("FirstTerminalCharacterList1"),
+						Nonterminal.Of("FirstQuoteSymbol"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => Tuple.Create("'", ((List<string>)args[1].Payload).Select(x => Terminal.Of(x)).ToList()))
+					})
+				),
+				new Production(
+					Nonterminal.Of("TerminalString"), 
+					new Sentence {
+						Nonterminal.Of("SecondQuoteSymbol"),
+						Nonterminal.Of("SecondTerminalCharacterList1"),
+						Nonterminal.Of("SecondQuoteSymbol"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => Tuple.Create("\"", ((List<string>)args[1].Payload).Select(x => Terminal.Of(x)).ToList()))
+					})
+				),
 
 				new Production("FirstTerminalCharacter", Nonterminal.Of("TerminalCharacterBasic")),
+				new Production("FirstTerminalCharacter", Nonterminal.Of("SpaceCharacter")),
 				new Production("FirstTerminalCharacter", Nonterminal.Of("SecondQuoteSymbol")),
 
 				new Production("SecondTerminalCharacter", Nonterminal.Of("TerminalCharacterBasic")),
+				new Production("SecondTerminalCharacter", Nonterminal.Of("SpaceCharacter")),
 				new Production("SecondTerminalCharacter", Nonterminal.Of("FirstQuoteSymbol")),
 
 				new Production("GapSeparator", Nonterminal.Of("SpaceCharacter")),
@@ -136,34 +183,34 @@ namespace Grammars {
 					Nonterminal.Of("SyntaxLayout"),
 					new Sentence {
 						Nonterminal.Of("GapSeparatorList0"),
-						Nonterminal.Of("SymbolWithOptionalGapList1"),
+						Nonterminal.Of("GapFreeSymbolWithOptionalGapSeparatorList1"),
 					},
 					1,
 					new Annotations(new List<IAnnotation>{
-						new ActionAnnotation(args => args[1].Payload)
+						new ActionAnnotation(args => ((List<List<Terminal>>)args[1].Payload).SelectMany(term => term).ToList())
 					})
 				),
 
 				new Production(
-					Nonterminal.Of("SymbolWithOptionalGap"),
+					Nonterminal.Of("GapFreeSymbolWithOptionalGapSeparator"),
 					new Sentence {
 						Nonterminal.Of("GapFreeSymbol"),
 						Nonterminal.Of("GapSeparatorList0"),
 					},
 					1,
 					new Annotations(new List<IAnnotation>{
-						new ActionAnnotation(args => Terminal.Of((string)args[0].Payload))
+						new ActionAnnotation(args => (List<Terminal>)args[0].Payload)
 					})
 				),
 
 			}.Concat(
-				MakeList<object>("FirstTerminalCharacter", 1)
+				MakeList<string>("FirstTerminalCharacter", 1)
 			).Concat(
-				MakeList<object>("SecondTerminalCharacter", 1)
+				MakeList<string>("SecondTerminalCharacter", 1)
 			).Concat(
 				MakeList<object>("GapSeparator", 0)
 			).Concat(
-				MakeList<Terminal>("SymbolWithOptionalGap", 1)
+				MakeList<List<Terminal>>("GapFreeSymbolWithOptionalGapSeparator", 1)
 			);
 		}
 
@@ -250,13 +297,9 @@ namespace Grammars {
 
 				new Production("SyntaxRule", new Sentence {
 					Nonterminal.Of("MetaIdentifier"),
-					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("DefiningSymbol"),
-					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("DefinitionsList"),
-					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("TerminatorSymbol"),
-					//Nonterminal.Of("GapSeparatorList0"),
 				}),
 
 				new Production("DefinitionsList", new Sentence {
@@ -265,9 +308,7 @@ namespace Grammars {
 				}),
 
 				new Production("SeparatedDefinition", new Sentence {
-					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("DefinitionSeparatorSymbol"),
-					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("SingleDefinition"),
 				}),
 
@@ -277,9 +318,7 @@ namespace Grammars {
 				}),
 
 				new Production("ConcatenatedSyntacticTerm", new Sentence {
-					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("ConcatenateSymbol"),
-					//Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("SyntacticTerm"),
 				}),
 
