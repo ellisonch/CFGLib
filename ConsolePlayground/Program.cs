@@ -149,7 +149,7 @@ namespace ConsolePlayground {
 		}
 
 		private static void EbnfPlay() {
-			var input = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_ebnf);
+			var input = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf);
 			Sentence inputNoLayout = Ebnf.RemoveLayout(input);
 
 			var layoutGrammar = Ebnf.Grammar(Nonterminal.Of("Syntax"));

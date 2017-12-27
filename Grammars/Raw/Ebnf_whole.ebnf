@@ -26,44 +26,39 @@ characters in the 7-bit character set (ISO/IEC
 and gap-separator in Extended BNF.
 *)
 (* see 7.2 *) letter
-= ’a’ | ’b’ | ’c’ | ’d’ | ’e’ | ’f’ | ’g’ | ’h’
-| ’i’ | ’j’ | ’k’ | ’l’ | ’m’ | ’n’ | ’o’ | ’p’
-| ’q’ | ’r’ | ’s’ | ’t’ | ’u’ | ’v’ | ’w’ | ’x’
-| ’y’ | ’z’
-| ’A’ | ’B’ | ’C’ | ’D’ | ’E’ | ’F’ | ’G’ | ’H’
-| ’I’ | ’J’ | ’K’ | ’L’ | ’M’ | ’N’ | ’O’ | ’P’
-| ’Q’ | ’R’ | ’S’ | ’T’ | ’U’ | ’V’ | ’W’ | ’X’
-| ’Y’ | ’Z’;
+= 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h'
+| 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p'
+| 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x'
+| 'y' | 'z'
+| 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H'
+| 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P'
+| 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X'
+| 'Y' | 'Z';
 (* see 7.2 *) decimal digit
-= ’0’ | ’1’ | ’2’ | ’3’ | ’4’ | ’5’ | ’6’ | ’7’
-| ’8’ | ’9’;
+= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 (*
-The representation of the following
-terminal-characters is defined in clauses 7.3,
-7.4 and tables 1, 2.
+The representation of the following terminal-characters is defined in clauses 7.3, 7.4 and tables 1, 2.
 *)
-concatenate symbol = ’,’;
-defining symbol = ’=’;
-definition separator symbol = ’|’ | ’/’ | ’!’;
-end comment symbol = ’*)’;
-end group symbol = ’)’;
-end option symbol = ’]’ | ’/)’;
-end repeat symbol = ’}’ | ’:)’;
-except symbol = ’-’;
-first quote symbol = "’";
-repetition symbol = ’*’;
-second quote symbol = ’"’;
-special sequence symbol = ’?’;
-start comment symbol = ’(*’;
-start group symbol = ’(’;
-start option symbol = ’[’ | ’(/’;
-start repeat symbol = ’{’ | ’(:’;
-terminator symbol = ’;’ | ’.’;
+concatenate symbol = ',';
+defining symbol = '=';
+definition separator symbol = '|' | '/' | '!';
+end comment symbol = '*)';
+end group symbol = ')';
+end option symbol = ']' | '/)';
+end repeat symbol = '}' | ':)';
+except symbol = '-';
+first quote symbol = "'";
+repetition symbol = '*';
+second quote symbol = '"';
+special sequence symbol = '?';
+start comment symbol = '(*';
+start group symbol = '(';
+start option symbol = '[' | '(/';
+start repeat symbol = '{' | '(:';
+terminator symbol = ';' | '.';
 (* see 7.5 *) other character
-= ’ ’ | ’:’ | ’+’ | ’_’ | ’%’ | ’@’
-| ’&’ | ’#’ | ’$’ | ’<’ | ’>’ | ’\’
-| ’ˆ’ | ’‘’ | ’˜’;
-(* see 7.6 *) space character = ’ ’;
+= ' ' | ':' | '+' | '_' | '%' | '@' | '&' | '#' | '$' | '<' | '>' | '\' | 'ˆ' | '‘' | '˜';
+(* see 7.6 *) space character = ' ';
 
 horizontal tabulation character
 = ? ISO 6429 character Horizontal Tabulation ? ;
@@ -102,16 +97,11 @@ from a syntax.
 | terminator symbol
 | other character;
 (* see 6.3 *) gap free symbol
-= terminal character
-- (first quote symbol | second quote symbol)
+= terminal character - (first quote symbol | second quote symbol)
 | terminal string;
 (* see 4.16 *) terminal string
-= first quote symbol, first terminal character,
-{first terminal character},
-first quote symbol
-| second quote symbol, second terminal character,
-{second terminal character},
-second quote symbol;
+= first quote symbol, first terminal character, {first terminal character}, first quote symbol
+| second quote symbol, second terminal character, {second terminal character}, second quote symbol;
 (* see 4.17 *) first terminal character
 = terminal character - first quote symbol;
 (* see 4.18 *) second terminal character
@@ -176,34 +166,18 @@ The final part of the syntax defines the
 abstract syntax of Extended BNF, i.e. the
 structure in terms of the commentless symbols.
 *)
-(* see 4.2 *) syntax
-= syntax rule, {syntax rule};
-(* see 4.3 *) syntax rule
-= meta identifier, defining symbol,
-definitions list, terminator symbol;
-(* see 4.4 *) definitions list
-= single definition,
-{definition separator symbol,
-single definition};
-(* see 4.5 *) single definition
-= syntactic term,
-{concatenate symbol, syntactic term};
-(* see 4.6 *) syntactic term
-= syntactic factor,
-[except symbol, syntactic exception];
-(* see 4.7 *) syntactic exception
-= ? a syntactic-factor that could be replaced
-by a syntactic-factor containing no
-meta-identifiers
-? ;
-(* see 4.8 *) syntactic factor
-= [integer, repetition symbol],
-syntactic primary;
+(* see 4.2 *) syntax = syntax rule, {syntax rule};
+(* see 4.3 *) syntax rule = meta identifier, defining symbol, definitions list, terminator symbol;
+(* see 4.4 *) definitions list = single definition, {definition separator symbol, single definition};
+(* see 4.5 *) single definition = syntactic term, {concatenate symbol, syntactic term};
+(* see 4.6 *) syntactic term = syntactic factor, [except symbol, syntactic exception];
+(* see 4.7 *) syntactic exception = ? a syntactic-factor that could be replaced by a syntactic-factor containing no
+meta-identifiers ? ;
+(* see 4.8 *) syntactic factor = [integer, repetition symbol], syntactic primary;
 (* see 4.10 *) syntactic primary
 = optional sequence
 | repeated sequence
 | grouped sequence
-
 | meta identifier
 | terminal string
 | special sequence
@@ -234,16 +208,16 @@ stated in a comment but not formally defined.
 *)
 syntax = syntax rule, {syntax rule};
 syntax rule
-= meta identifier, ’=’, definitions list, ’;’
+= meta identifier, '=', definitions list, ';'
 (* A <syntax rule> defines the sequences of
 symbols represented by a <meta identifier> *);
 definitions list
-= single definition, {’|’, single definition}
+= single definition, {'|', single definition}
 (* | separates alternative
 <single definitions> *);
-single definition = term, {’,’, term}
+single definition = term, {',', term}
 (* , separates successive <terms> *);
-term = factor, [’-’, exception]
+term = factor, ['-', exception]
 (* A <term> represents any sequence of symbols
 that is defined by the <factor> but
 not defined by the <exception> *);
@@ -251,7 +225,7 @@ exception = factor
 (* A <factor> may be used as an <exception>
 if it could be replaced by a <factor>
 containing no <meta identifiers> *);
-factor = [integer, ’*’], primary
+factor = [integer, '*'], primary
 (* The <integer> specifies the number of
 repetitions of the <primary> *);
 primary
@@ -259,30 +233,30 @@ primary
 | special sequence | grouped sequence
 | meta identifier | terminal string | empty;
 empty = ;
-optional sequence = ’[’, definitions list, ’]’
+optional sequence = '[', definitions list, ']'
 (* The brackets [ and ] enclose symbols
 which are optional *);
-repeated sequence = ’{’, definitions list, ’}’
+repeated sequence = '{', definitions list, '}'
 (* The brackets { and } enclose symbols
 which may be repeated any number of times *);
-grouped sequence = ’(’, definitions list, ’)’
+grouped sequence = '(', definitions list, ')'
 (* The brackets ( and ) allow any
 <definitions list> to be a <primary> *);
 terminal string
-= "’", character - "’", {character - "’"}, "’"
-| ’"’, character - ’"’, {character - ’"’}, ’"’
+= "'", character - "'", {character - "'"}, "'"
+| '"', character - '"', {character - '"'}, '"'
 (* A <terminal string> represents the
 <characters> between the quote symbols
-’_’ or "_" *);
+'_' or "_" *);
 meta identifier = letter, {letter | decimal digit}
 (* A <meta identifier> is the name of a
 syntactic element of the language being
 defined *);
 integer = decimal digit, {decimal digit};
-special sequence = ’?’, {character - ’?’}, ’?’
+special sequence = '?', {character - '?'}, '?'
 (* The meaning of a <special sequence> is not
 defined in the standard metalanguage. *);
-comment = ’(*’, {comment symbol}, ’*)’
+comment = '(*', {comment symbol}, '*)'
 (* A comment is allowed anywhere outside a
 <terminal string>, <meta identifier>,
 <integer> or <special sequence> *);
