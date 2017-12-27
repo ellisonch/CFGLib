@@ -57,7 +57,8 @@ namespace Grammars {
 				new Production("SpaceCharacter", Terminal.Of(" ")),
 				new Production("HorizontalTabulationCharacter", Terminal.Of("\t")),
 				new Production("NewLine", Terminal.Of("\n")),
-				new Production("NewLine", Terminal.Of("\r\n")),
+				new Production("CarriageReturn", Terminal.Of("\r")),
+				//new Production("NewLine", Terminal.Of("\r\n")),
 				new Production("VerticalTabulationCharacter", Terminal.Of("\v")),
 				new Production("FormFeed", Terminal.Of("\f")),
 			}.Concat(
@@ -102,6 +103,7 @@ namespace Grammars {
 				new Production("GapSeparator", Nonterminal.Of("SpaceCharacter")),
 				new Production("GapSeparator", Nonterminal.Of("HorizontalTabulationCharacter")),
 				new Production("GapSeparator", Nonterminal.Of("NewLine")),
+				new Production("GapSeparator", Nonterminal.Of("CarriageReturn")),				
 				new Production("GapSeparator", Nonterminal.Of("VerticalTabulationCharacter")),
 				new Production("GapSeparator", Nonterminal.Of("FormFeed")),
 
@@ -210,9 +212,13 @@ namespace Grammars {
 
 				new Production("SyntaxRule", new Sentence {
 					Nonterminal.Of("MetaIdentifier"),
+					Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("DefiningSymbol"),
+					Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("DefinitionsList"),
+					Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("TerminatorSymbol"),
+					Nonterminal.Of("GapSeparatorList0"),
 				}),
 
 				new Production("DefinitionsList", new Sentence {
@@ -221,7 +227,9 @@ namespace Grammars {
 				}),
 
 				new Production("SeparatedDefinition", new Sentence {
+					Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("DefinitionSeparatorSymbol"),
+					Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("SingleDefinition"),
 				}),
 
@@ -231,7 +239,9 @@ namespace Grammars {
 				}),
 
 				new Production("ConcatenatedSyntacticTerm", new Sentence {
+					Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("ConcatenateSymbol"),
+					Nonterminal.Of("GapSeparatorList0"),
 					Nonterminal.Of("SyntacticTerm"),
 				}),
 
