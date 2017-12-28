@@ -24,24 +24,11 @@ namespace CFGLib.Actioneer {
 		}
 
 		private TraverseResultCollection Traverse(SppfNode node, int level) {
-			//if (node is InteriorNode ni) {
-			//	return TraverseInternal(ni, level);
-			//}
-			//if (node is TerminalNode nt) {
-			//	return TraverseTerminal(nt, level);
-			//}
-
-			// throw new ArgumentException(string.Format("Unhandled case {0}", node.GetType().Name));
-
-
 			var start = node.StartPosition;
 			var length = node.EndPosition - node.StartPosition;
-			//var sub = _input.GetRange(start, length);
 
 			if (node.Families.Count() == 0) {
 				return TraverseLeaf(node);
-				
-				//	return new TraverseResultCollection(resultList);
 			}
 
 			var resultList = new List<TraverseResult>();
@@ -50,28 +37,19 @@ namespace CFGLib.Actioneer {
 					throw new Exception();
 				}
 				var args = TraverseFamily(node, family, level + 1);
-				//if (args.Count() != family.Members.Count) {
-				//	throw new Exception();
-				//}
 
 				foreach (var oneSet in OneOfEach(args)) {
 					object payload = null;
-					// if (_annotatedGrammar.TryGetValue(family.Production, out ProductionPlus productionPlus)) 
-					{
-						var productionPlus = family.Production;
-						//if (!family.Production.Annotations.Gather.Supports(_annotatedGrammar, productionPlus, oneSet)) {
-						//	continue;
-						//}
-						var action = productionPlus.Annotations.Action;
-						if (action == null) {
-							if (oneSet.Length > 0) {
-								payload = oneSet[0].Payload; // default action
-							} else {
-								payload = null;
-							}
+					var productionPlus = family.Production;
+					var action = productionPlus.Annotations.Action;
+					if (action == null) {
+						if (oneSet.Length > 0) {
+							payload = oneSet[0].Payload; // default action
 						} else {
-							payload = action.Act(oneSet);
+							payload = null;
 						}
+					} else {
+						payload = action.Act(oneSet);
 					}
 
 					var result = new TraverseResult(payload, node, family.Production);

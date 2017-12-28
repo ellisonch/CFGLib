@@ -25,7 +25,7 @@ namespace CFGLibTest {
 			ExecuteTest(new Grammar(new List<Production>{
 				CFGParser.Production("<S> → <S> '+' <S>"),
 				CFGParser.Production("<S> → '1'")
-			}, Nonterminal.Of("S")), "1 + 1 + 1");
+			}, Nonterminal.Of("S")), "1 + 1");
 		}
 	}
 }
