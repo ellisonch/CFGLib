@@ -1,7 +1,6 @@
 ﻿using CFGLib;
 using CFGLib.Parsers.CYK;
 using CFGLib.Parsers.Earley;
-using CFGLib.Parsers.Forests;
 using CFGLibTest;
 using CFGLibTest.Unit;
 using System;
@@ -29,12 +28,12 @@ namespace ConsolePlayground {
 
 			// PaperExamples();
 
-			// DebugGrammar();
+			DebugGrammar();
 
 			// var testp = new TestParsing();
 			// testp.TestParsing02();
 
-			BnfPlay();
+			// BnfPlay();
 			// VisitorPlay();
 			
 			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 13)).Run();
@@ -172,7 +171,7 @@ namespace ConsolePlayground {
 			//DotRunner.Run(earley2.ParseGetForest(sentence).GetRawDot(), "testEarleyNew");
 			DotRunner.Run(DotBuilder.GetRawDot(earley.ParseGetForest(sentence)), "testEarleyOld");
 			DotRunner.Run(DotBuilder.GetRawDot(earley2.ParseGetForest(sentence)), "testEarleyNew");
-			DotRunner.Run(DotBuilder.GetFlattenedDot(earley2.ParseGetForest(sentence)), "testEarleyFlat");
+			// DotRunner.Run(DotBuilder.GetFlattenedDot(earley2.ParseGetForest(sentence)), "testEarleyFlat");
 			
 
 			// var prob0 = earley.ParseGetProbability(sentence);
