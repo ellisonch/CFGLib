@@ -255,12 +255,19 @@ namespace CFGLib.Parsers.Earley {
 
 			var eh = _E[h];
 			// for all (A ::= τ · Dδ, k, z) in E_h {
-			var count = eh.Count; // TODO: notice this doesn't run on items added to eh during the loop, not sure if this is right
-			for (var itemi = 0; itemi < count; itemi++) {
-				var item = eh[itemi];
-				if (item.DecoratedProduction.NextWord != D) {
-					continue;
-				}
+			//var count = eh.Count; // TODO: notice this doesn't run on items added to eh during the loop, not sure if this is right
+			//for (var itemi = 0; itemi < count; itemi++) {
+			//	var item = eh[itemi];
+			//	if (item.DecoratedProduction.NextWord != D) {
+			//		continue;
+			//	}
+			//	LinkCompletedChildWithParent(V, i, item, Λ, R, Q, w);
+			//}
+			
+			foreach (var item in eh.ItemsAtNonterminal(D)) {
+				//if (item.DecoratedProduction.NextWord != D) {
+				//	continue;
+				//}
 				LinkCompletedChildWithParent(V, i, item, Λ, R, Q, w);
 			}
 		}
