@@ -64,6 +64,7 @@
     <Compile Include="TestEarleys.cs" />
     <Compile Include="TestParsing.cs" />
     <Compile Include="RealTests.cs" />
+    <Compile Include="TestTraversal.cs" />
     <Compile Include="Unit\TestCFGToCNFEmptyProb.cs" />
     <Compile Include="Unit\TestCFGToCNF.cs" />
     <Compile Include="Unit\TestCFGParser.cs" />

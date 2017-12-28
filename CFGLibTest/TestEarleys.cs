@@ -1,4 +1,5 @@
 ﻿using CFGLib;
+using CFGLib.Actioneer;
 using CFGLib.Parsers.CYK;
 using CFGLib.Parsers.Earley;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,9 +17,9 @@ namespace CFGLibTest {
 			var earley2 = new EarleyParser2(g);
 			var sentence = Sentence.FromWords(input);
 
-			var p2 = earley1.ParseGetProbability(sentence);
-			var p3 = earley2.ParseGetProbability(sentence);
-			Helpers.AssertNear(p2, p3);
+			var p1 = earley1.ParseGetProbability(sentence);
+			var p2 = earley2.ParseGetProbability(sentence);
+			Helpers.AssertNear(p1, p2);
 		}
 
 		[TestMethod]

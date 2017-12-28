@@ -40,10 +40,10 @@ namespace ConsolePlayground {
 			// BnfPlay();
 			// ParserGenerator();
 			// EbnfPlay();
-			EbnfBench();
+			// EbnfBench();
 			// VisitorPlay();
 
-			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 15)).Run();
+			//(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 15)).Run();
 
 			Benchmark();
 			// BenchmarkBison();
@@ -320,7 +320,7 @@ namespace ConsolePlayground {
 				var expectedResult = inputPair.Item2;
 				var i = inputPair.Item3;
 
-				var time = MinTime(3, ep, input);
+				var time = MinTime(3, ep, gp, input);
 				totalMs += time;
 
 				Console.WriteLine("{0}, {1}", i, time);
@@ -332,7 +332,7 @@ namespace ConsolePlayground {
 			}
 		}
 
-		private static double MinTime(int times, EarleyParser2 ep, Sentence input) {
+		private static double MinTime(int times, EarleyParser2 ep, BaseGrammar grammar, Sentence input) {
 			double fastest = double.MaxValue;
 
 			var sw = new Stopwatch();
@@ -340,6 +340,7 @@ namespace ConsolePlayground {
 				sw.Restart();
 				// var sppf = ep.ParseGetRawSppf(input);
 				var sppf = ep.ParseGetForest(input);
+
 				//var trav = new Traversal(sppf, input, gp);
 				//var resultList = trav.Traverse();
 				//if (resultList.Count() != 1) {
