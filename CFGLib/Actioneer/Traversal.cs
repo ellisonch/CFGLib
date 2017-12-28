@@ -141,6 +141,9 @@ namespace CFGLib.Actioneer {
 		private TraverseResultCollection[] TraverseFamily(SppfNode node, SppfFamily family, int level) {
 			var count = family.Production.Rhs.Count;
 			return TraverseChildren(node, family, count, level + 1);
+			//foreach (var child in family.Members) {
+
+			//}
 		}
 
 		private TraverseResultCollection[] TraverseChildren(SppfNode node, SppfFamily family, int count, int level) {
@@ -163,9 +166,9 @@ namespace CFGLib.Actioneer {
 			if (position < 0) {
 				throw new ArgumentOutOfRangeException();
 			}
-			if (position + 1 != rhs.Count && family.Production != null) {
-				throw new Exception();
-			}
+			//if (position + 1 != rhs.Count && family.Production != null) {
+			//	throw new Exception();
+			//}
 			if (family.Members.Count == 1) {
 				if (position != 0) {
 					throw new Exception();
