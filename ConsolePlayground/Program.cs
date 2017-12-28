@@ -43,9 +43,9 @@ namespace ConsolePlayground {
 			EbnfBench();
 			// VisitorPlay();
 
-			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 14)).Run();
+			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 15)).Run();
 
-			// Benchmark();
+			Benchmark();
 			// BenchmarkBison();
 
 			#region junk 

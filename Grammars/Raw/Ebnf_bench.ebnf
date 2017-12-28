@@ -45,3 +45,14 @@ repetition symbol = '*';
 second quote symbol = '"';
 special sequence symbol = '?';
 start comment symbol = '(*';
+start group symbol = '(';
+start option symbol = '[' | '(/';
+start repeat symbol = '{' | '(:';
+terminator symbol = ';' | '.';
+other character = ' ' | ':' | '+' | '_' | '%' | '@' | '&' | '#' | '$' | '<' | '>' | '\' | '^' | '`' | '~';
+space character = ' ';
+
+horizontal tabulation character = ? ISO 6429 character Horizontal Tabulation ? ;
+new line = { ? ISO 6429 character Carriage Return ? }, ? ISO 6429 character Line Feed ?, { ? ISO 6429 character Carriage Return ? };
+vertical tabulation character = ? ISO 6429 character Vertical Tabulation ? ;
+form feed = ? ISO 6429 character Form Feed ? ;
