@@ -33,18 +33,11 @@ namespace CFGLib.Parsers.Earley {
 				yield return _items[i];
 			}
 		}
-		public IEnumerable<EarleyItem> ItemsAtNonterminal(Nonterminal nonterminal) {
+		public IList<EarleyItem> ItemsAtNonterminal(Nonterminal nonterminal) {
 			if (!_nonterminalCache.TryGetValue(nonterminal, out var list)) {
-				yield break;
+				return null;
 			}
-			var count = list.Count;
-			for (var i = 0; i < count; i++) {
-				var item = list[i];
-				if (item.DecoratedProduction.NextWord != nonterminal) {
-					continue;
-				}
-				yield return item;
-			}
+			return list;
 		}
 
 		public EarleySet() { }

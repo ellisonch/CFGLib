@@ -263,11 +263,14 @@ namespace CFGLib.Parsers.Earley {
 			//	}
 			//	LinkCompletedChildWithParent(V, i, item, Λ, R, Q, w);
 			//}
-			
-			foreach (var item in eh.ItemsAtNonterminal(D)) {
-				//if (item.DecoratedProduction.NextWord != D) {
-				//	continue;
-				//}
+
+			var list = eh.ItemsAtNonterminal(D);
+			if (list == null) {
+				return;
+			}
+			var count = list.Count;
+			for (var listi = 0; listi < count; listi++) {
+				var item = list[listi];
 				LinkCompletedChildWithParent(V, i, item, Λ, R, Q, w);
 			}
 		}
