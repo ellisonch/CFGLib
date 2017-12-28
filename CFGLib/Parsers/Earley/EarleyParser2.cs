@@ -138,7 +138,6 @@ namespace CFGLib.Parsers.Earley {
 				// while Q ̸= ∅ {
 				while (!Q.IsEmpty) {
 					// remove an element, Λ = (B ::= α · a_i β, h, w) say, from Q
-					// TODO: the statement above seems to imply all elements of Q have that form, but this doesn't seem to happen.  Skip them if they don't?
 					var Λ = Q.TakeOne();
 					if (Λ.DecoratedProduction.NextWord != _a[i]) {
 						throw new Exception();
@@ -256,7 +255,8 @@ namespace CFGLib.Parsers.Earley {
 
 			var eh = _E[h];
 			// for all (A ::= τ · Dδ, k, z) in E_h {
-			for (var itemi = 0; itemi < eh.Count; itemi++) {
+			var count = eh.Count; // TODO: notice this doesn't run on items added to eh during the loop, not sure if this is right
+			for (var itemi = 0; itemi < count; itemi++) {
 				var item = eh[itemi];
 				if (item.DecoratedProduction.NextWord != D) {
 					continue;
