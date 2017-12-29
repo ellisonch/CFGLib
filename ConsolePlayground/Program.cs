@@ -32,7 +32,7 @@ namespace ConsolePlayground {
 
 			// PaperExamples();
 
-			DebugGrammar();
+			//DebugGrammar();
 
 			// var testp = new TestParsing();
 			// testp.TestParsing02();
@@ -40,12 +40,12 @@ namespace ConsolePlayground {
 			// BnfPlay();
 			// ParserGenerator();
 			// EbnfPlay();
-			// EbnfBench();
+			EbnfBench();
 			// VisitorPlay();
 
 			//(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 15)).Run();
 
-			//Benchmark();
+			Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
@@ -251,7 +251,7 @@ namespace ConsolePlayground {
 			//DotRunner.Run(earley2.ParseGetForest(sentence).GetRawDot(), "testEarleyNew");
 			DotRunner.Run(DotBuilder.GetRawDot(earley.ParseGetForest(sentence)), "testEarleyOld");
 			DotRunner.Run(DotBuilder.GetRawDot(earley2.ParseGetForest(sentence)), "testEarleyNew");
-			DotRunner.Run(DotBuilder.GetFlattenedDot(earley2.ParseGetForest(sentence)), "testEarleyFlat");
+			// DotRunner.Run(DotBuilder.GetFlattenedDot(earley2.ParseGetForest(sentence)), "testEarleyFlat");
 			
 
 			// var prob0 = earley.ParseGetProbability(sentence);
@@ -375,7 +375,7 @@ namespace ConsolePlayground {
 
 			// var sppf3 = ex3.ParseGetForest(Sentence.FromLetters("abbb"));
 			var dot = DotBuilder.GetRawDot(sppf);
-			System.IO.File.WriteAllText(@"D:\prog\ContextFreeGrammars\ConsolePlayground\bin\Debug\ex3dot.dot", dot);
+			//System.IO.File.WriteAllText(@"D:\prog\ContextFreeGrammars\ConsolePlayground\bin\Debug\ex3dot.dot", dot);
 			DotRunner.Run(dot, "example3");
 		}
 

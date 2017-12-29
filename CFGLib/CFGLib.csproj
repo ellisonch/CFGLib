@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProductionAnnotations\Actioning\IdentityActions.cs" />
     <Compile Include="ProductionAnnotations\Gathering\GatherOption.cs" />
     <Compile Include="ProductionAnnotations\Actioning\ActionAnnotation.cs" />
     <Compile Include="ProductionAnnotations\Actioning\TraverseResult.cs" />

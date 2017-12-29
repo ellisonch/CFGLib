@@ -4,24 +4,33 @@ using CFGLib;
 using System.Collections.Generic;
 using CFGLib.Parsers.Earley;
 using CFGLib.Actioneer;
+using CFGLib.ProductionAnnotations.Actioning;
+using System.Linq;
 
 namespace CFGLibTest {
 	[TestClass]
 	public class TestTraversal {
 		private static void ExecuteTest(Grammar g, string input) {
-			var earley1 = new EarleyParser(g);
-			var earley2 = new EarleyParser2(g);
+			var ag = IdentityActions.Annotate(g);
+			var earley1 = new EarleyParser(ag);
+			var earley2 = new EarleyParser2(ag);
 			var sentence = Sentence.FromWords(input);
 
 			var sppf1 = earley1.ParseGetForest(sentence);
 			var sppf2 = earley2.ParseGetForest(sentence);
-			var t1 = new Traversal(sppf1, g);
-			var t2 = new Traversal(sppf2, g);
-			t1.Traverse();
-			t2.Traverse();
+			var t1 = new Traversal(sppf1, ag);
+			var t2 = new Traversal(sppf2, ag);
+			var r1 = t1.Traverse();
+			var r2 = t2.Traverse();
+
+			var s1 = (Sentence)r1.SingleOrDefault().Payload;
+			var s2 = (Sentence)r2.SingleOrDefault().Payload;
+
+			Assert.IsTrue(sentence.SequenceEqual(s1));
+			Assert.IsTrue(sentence.SequenceEqual(s2));
 		}
 		[TestMethod]
-		public void TestAddition() {
+		public void TestTraversalAddition() {
 			ExecuteTest(new Grammar(new List<Production>{
 				CFGParser.Production("<S> → <S> '+' <S>"),
 				CFGParser.Production("<S> → '1'")

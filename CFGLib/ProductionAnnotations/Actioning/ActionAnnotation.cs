@@ -6,7 +6,7 @@ namespace CFGLib.ProductionAnnotations.Actioning {
 		object Act(TraverseResult[] args);
 	}
 	public class ActionAnnotation : IParserAction, IAnnotation {
-		private Func<TraverseResult[], object> _action;
+		private readonly Func<TraverseResult[], object> _action;
 
 		public ActionAnnotation(Func<TraverseResult[], object> p) {
 			_action = p;
