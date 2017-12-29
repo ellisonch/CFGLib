@@ -9,7 +9,7 @@ namespace CFGLib.Parsers.Graphs {
 		public readonly IGraphNode Left;
 		public readonly IGraphNode Right;
 
-		public Production Label;
+		public readonly Production Label;
 
 		public Edge(IGraphNode left, IGraphNode right, Production label) {
 			Left = left;

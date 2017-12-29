@@ -37,22 +37,23 @@ namespace CFGLib.Parsers.Graphs {
 			foreach (var family in node.Families) {
 				// for (int i = 0; i < Families.Count; i++) {
 				// var family = Families[i];
-				//Production singletonProduction = null;
+				Production lowerProduction = null;
 				IGraphNode prevNode;
 				if (node.Families.Count() == 1) {
 					prevNode = myNode;
-					//singletonProduction = Families[0].Production;
+					lowerProduction = node.Families.Single().Production;
 				} else {
 					prevNode = new FamilyNode(family, myNode.Node.Id + "-" + i, myNode.Rank + 1);
-					// g.AddEdge(myNode, prevNode, family.Production);
-					g.AddEdge(myNode, prevNode);
+					g.AddEdge(myNode, prevNode, family.Production);
+					//g.AddEdge(myNode, prevNode);
 				}
 				prevNode.TheFamily = family;
 				foreach (var child in family.Members) {
 					var childNode = new SppfNodeNode(child, prevNode.Rank + 1);
 					// var childNode = g.GetNode(child, prevNode.Rank + 1);
 					// g.AddEdge(prevNode, childNode, singletonProduction);
-					g.AddEdge(prevNode, childNode);
+					// g.AddEdge(prevNode, childNode, singletonProduction);
+					g.AddEdge(prevNode, childNode, lowerProduction);
 					GetGraphHelper(g, child, childNode, visited);
 				}
 				i++;

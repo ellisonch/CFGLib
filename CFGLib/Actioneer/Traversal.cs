@@ -166,38 +166,66 @@ namespace CFGLib.Actioneer {
 			if (position < 0) {
 				throw new ArgumentOutOfRangeException();
 			}
-			//if (position + 1 != rhs.Count && family.Production != null) {
-			//	throw new Exception();
-			//}
+// 			if (position + 2 != rhs.Count && family.Production != null) {
+			//	HandleContraction(node, family, startList, rhs, position, level);
+			//} else {
+				HandleFamily(node, family, startList, rhs, position, level);
+			// }
+		}
+
+		private void HandleFamily(SppfNode node, SppfFamily family, List<TraverseResultCollection[]> startList, Sentence rhs, int position, int level) {
 			if (family.Members.Count == 1) {
 				if (position != 0) {
 					throw new Exception();
 				}
 				var onlyNode = family.Members[0];
 				var result = Traverse(onlyNode, level);
-				AddNode(result, startList, rhs, position);
+				AddNode(result, startList, position);
 			} else if (family.Members.Count == 2) {
-				//if (position <= 0) {
-				//	throw new Exception();
-				//}
-				var rightNode = family.Members[1];
-				var result = Traverse(rightNode, level);
-				AddNode(result, startList, rhs, position);
-				var intermediateNode = family.Members[0]; // (IntermediateNode)
-
-				var firstCopy = startList.ToList();
-				startList.Clear();
-				foreach (var subfamily in intermediateNode.Families) {
-					var listCopy = firstCopy.ToList();
-					TraverseChildrenHelper(node, subfamily, listCopy, rhs, position - 1, level);
-					startList.AddRange(listCopy);
+				if (position < 1) {
+					throw new Exception();
+				}
+				if (position == 1) {
+					var leftNode = family.Members[0];
+					if (leftNode is SppfBranch sppfBranch) {
+						if (!sppfBranch.DecoratedProduction.AtEnd) {
+							HandleBranch(node, family, startList, rhs, position, level);
+							return;
+						}
+					}
+					HandleContraction(family, startList, position, level, leftNode);
+				} else {
+					HandleBranch(node, family, startList, rhs, position, level);
 				}
 			} else {
 				throw new Exception();
 			}
 		}
 
-		private static void AddNode(TraverseResultCollection result, List<TraverseResultCollection[]> startList, Sentence rhs, int position) {
+		private void HandleBranch(SppfNode node, SppfFamily family, List<TraverseResultCollection[]> startList, Sentence rhs, int position, int level) {
+			var rightNode = family.Members[1];
+			var rightResult = Traverse(rightNode, level);
+			AddNode(rightResult, startList, position);
+			var intermediateNode = family.Members[0]; // (IntermediateNode)
+
+			var firstCopy = startList.ToList();
+			startList.Clear();
+			foreach (var subfamily in intermediateNode.Families) {
+				var listCopy = firstCopy.ToList();
+				TraverseChildrenHelper(node, subfamily, listCopy, rhs, position - 1, level);
+				startList.AddRange(listCopy);
+			}
+		}
+
+		private void HandleContraction(SppfFamily family, List<TraverseResultCollection[]> startList, int position, int level, SppfNode leftNode) {
+			var rightNode = family.Members[1];
+			var leftResult = Traverse(leftNode, level);
+			var rightResult = Traverse(rightNode, level);
+			AddNode(rightResult, startList, position);
+			AddNode(leftResult, startList, position - 1);
+		}
+
+		private static void AddNode(TraverseResultCollection result, List<TraverseResultCollection[]> startList, int position) {
 			foreach (var children in startList) {
 				children[position] = result;
 			}

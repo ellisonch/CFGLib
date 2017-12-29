@@ -8,7 +8,7 @@ namespace CFGLib.Parsers.CYK {
 	public class CykParser : Parser {
 		private readonly CNFGrammar _grammar;
 
-		public CykParser(CNFGrammar grammar) {
+		public CykParser(CNFGrammar grammar) : base(grammar) {
 			_grammar = grammar;
 		}
 

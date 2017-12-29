@@ -1,6 +1,8 @@
 ﻿using CFGLib;
+using CFGLib.Actioneer;
 using CFGLib.Parsers.CYK;
 using CFGLib.Parsers.Earley;
+using CFGLib.ProductionAnnotations.Actioning;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -102,8 +104,11 @@ namespace CFGLibTest {
 			
 			foreach (var sentence in preparedSentences) {
 				try {
-					var p1 = earley1.ParseGetProbability(sentence);
-					var p2 = earley2.ParseGetProbability(sentence);
+					var sppf1 = earley1.ParseGetForest(sentence);
+					var sppf2 = earley2.ParseGetForest(sentence);
+
+					var p1 = earley1.ProbabilityOfSppf(sppf1);
+					var p2 = earley2.ProbabilityOfSppf(sppf2);
 					var p3 = cyk.ParseGetProbability(sentence);
 					if (!Helpers.IsNear(p1, p2)) {
 						throw new Exception();
@@ -111,6 +116,8 @@ namespace CFGLibTest {
 					if (!Helpers.IsNear(p1, p3)) {
 						throw new Exception();
 					}
+					CheckTraversal(g, sentence, sppf1);
+					CheckTraversal(g, sentence, sppf2);
 				} catch {
 					Report(g, sentence);
 					return true;
@@ -118,6 +125,17 @@ namespace CFGLibTest {
 				}
 			}
 			return false;
+		}
+
+		private static void CheckTraversal(Grammar g, Sentence sentence, CFGLib.Parsers.Sppf.SppfNode sppf) {
+			var t = new Traversal(sppf, g);
+			var r = t.Traverse();
+			foreach (var option in r) {
+				var sgen = (Sentence)option.Payload;
+				if (!sentence.SequenceEqual(sgen)) {
+					throw new Exception();
+				}
+			}
 		}
 
 		private void AddRandomSentences(IList<Sentence> preparedSentences, IList<Terminal> terminals) {
@@ -162,6 +180,7 @@ namespace CFGLibTest {
 					return (g, terminals);
 				}
 			}
+			g = IdentityActions.Annotate(g);
 			return (g, terminals);
 		}
 	}

@@ -23,18 +23,32 @@ namespace CFGLibTest {
 			var r1 = t1.Traverse();
 			var r2 = t2.Traverse();
 
-			var s1 = (Sentence)r1.SingleOrDefault().Payload;
-			var s2 = (Sentence)r2.SingleOrDefault().Payload;
+			foreach (var option in r1) {
+				var s1 = (Sentence)option.Payload;
+				if (!sentence.SequenceEqual(s1)) {
+					throw new Exception();
+				}
+			}
 
-			Assert.IsTrue(sentence.SequenceEqual(s1));
-			Assert.IsTrue(sentence.SequenceEqual(s2));
+			foreach (var option in r2) {
+				var s2 = (Sentence)option.Payload;
+				if (!sentence.SequenceEqual(s2)) {
+					throw new Exception();
+				}
+			}
+
+			//var s1 = (Sentence)r1.SingleOrDefault().Payload;
+			//var s2 = (Sentence)r2.SingleOrDefault().Payload;
+
+			//Assert.IsTrue(sentence.SequenceEqual(s1));
+			//Assert.IsTrue(sentence.SequenceEqual(s2));
 		}
 		[TestMethod]
 		public void TestTraversalAddition() {
 			ExecuteTest(new Grammar(new List<Production>{
 				CFGParser.Production("<S> → <S> '+' <S>"),
 				CFGParser.Production("<S> → '1'")
-			}, Nonterminal.Of("S")), "1 + 1");
+			}, Nonterminal.Of("S")), "1 + 1 + 1");
 		}
 	}
 }

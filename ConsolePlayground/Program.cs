@@ -40,12 +40,13 @@ namespace ConsolePlayground {
 			// BnfPlay();
 			// ParserGenerator();
 			// EbnfPlay();
-			EbnfBench();
+			// EbnfBench();
 			// VisitorPlay();
+			// TraversePlay();
 
-			//(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 15)).Run();
+			(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 16)).Run();
 
-			Benchmark();
+			//Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
@@ -147,6 +148,28 @@ namespace ConsolePlayground {
 
 			Console.WriteLine("Finished!");
 			Console.Read();
+		}
+
+		private static void TraversePlay() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <S> '+' <S>"),
+				CFGParser.Production("<S> → '1'")
+			}, Nonterminal.Of("S"));
+			g = IdentityActions.Annotate(g);
+			
+			var earley2 = new EarleyParser2(g);
+			var sentence = Sentence.FromWords("1 + 1 + 1");
+			var sppf2 = earley2.ParseGetForest(sentence);
+			DotRunner.Run(DotBuilder.GetRawDot(sppf2), "addition_traverse");
+
+			var t2 = new Traversal(sppf2, g);
+			var r2 = t2.Traverse();
+			foreach (var option in r2) {
+				var s2 = (Sentence)option.Payload;
+				if (!sentence.SequenceEqual(s2)) {
+					throw new Exception();
+				}
+			}
 		}
 
 		private static void EbnfPlay() {

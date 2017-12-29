@@ -12,7 +12,6 @@ namespace CFGLib.Parsers.Earley {
 	/// This parser is based directly on Section 5 of Elizabeth Scott's 2008 paper "SPPF-Style Parsing From Earley Recognisers" (http://dx.doi.org/10.1016/j.entcs.2008.03.044) [ES2008]
 	/// </summary>
 	public class EarleyParser2 : Parser {
-		private readonly BaseGrammar _grammar;
 		public static Stats _stats = new Stats();
 		private readonly Nonterminal _S;
 
@@ -20,26 +19,13 @@ namespace CFGLib.Parsers.Earley {
 		private EarleySet[] _E;
 		private EarleySet _QPrime = new EarleySet();
 
-		public EarleyParser2(BaseGrammar grammar) {
-			_grammar = grammar;
-
-			_S = _grammar.Start;
+		public EarleyParser2(BaseGrammar grammar) : base(grammar) {
+			_S = Grammar.Start;
 		}
 		
 		public override SppfNode ParseGetForest(Sentence s) {
 			var sppf = ParseGetSppf(s);
 			return sppf;
-		}
-
-		public override double ParseGetProbability(Sentence s) {
-			var sppf = ParseGetSppf(s);
-			if (sppf == null) {
-				return 0.0;
-			}
-			// var oldSppf = SppfBridge.OldFromNew(sppf);
-			// EarleyParser.AnnotateWithProductions(_grammar, oldSppf);
-			var prob = ProbabilityCalculator.GetProbFromSppf(_grammar, sppf);
-			return prob;
 		}
 
 		//public TraverseResultCollection Traverse(Sentence input) {
@@ -179,7 +165,7 @@ namespace CFGLib.Parsers.Earley {
 			var h = Λ.StartPosition;
 			var β0 = Λ.DecoratedProduction.TailFirst;
 			// for all (C ::= δ) ∈ P {
-			foreach (var production in _grammar.ProductionsFrom(C)) {
+			foreach (var production in Grammar.ProductionsFrom(C)) {
 				// if δ ∈ Σ_N and (C ::= ·δ, i, null) ̸∈ E_i {
 				var δ0 = production.Rhs.FirstOrDefault();
 				var newItem = new EarleyItem(new DecoratedProduction(production, 0), i, null);
@@ -311,7 +297,7 @@ namespace CFGLib.Parsers.Earley {
 
 		private void Initialize() {
 			// for all (S ::= α) ∈ P {
-			foreach (var production in _grammar.ProductionsFrom(_S)) {
+			foreach (var production in Grammar.ProductionsFrom(_S)) {
 				var α0 = production.Rhs.FirstOrDefault();
 				var potentialItem = new EarleyItem(new DecoratedProduction(production, 0), 0, null);
 
