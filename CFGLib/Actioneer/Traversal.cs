@@ -25,6 +25,10 @@ namespace CFGLib.Actioneer {
 		}
 
 		private TraverseResultCollection Traverse(SppfNode node) {
+			//if (_seen.TryGetValue(node, out var cached)) {
+			//	return cached;
+			//}
+
 			var start = node.StartPosition;
 			var length = node.EndPosition - node.StartPosition;
 
@@ -53,11 +57,13 @@ namespace CFGLib.Actioneer {
 						payload = action.Act(oneSet);
 					}
 
-					var result = new TraverseResult(payload, node, family.Production);
-					resultList.Add(result);
+					var oneResult = new TraverseResult(payload, node, family.Production);
+					resultList.Add(oneResult);
 				}
 			}
-			return new TraverseResultCollection(resultList);
+			var result = new TraverseResultCollection(resultList);
+			// _seen[node] = result;
+			return result;
 		}
 
 		private TraverseResultCollection TraverseLeaf(SppfNode node) {
@@ -71,41 +77,7 @@ namespace CFGLib.Actioneer {
 			}
 			throw new Exception();
 		}
-
-		//private TraverseResultCollection TraverseTerminal(TerminalNode nt, int level) {
-		//	var resultList = new List<TraverseResult> { new TraverseResult(nt.Terminal.Name, nt, null) };
-		//	return new TraverseResultCollection(resultList);
-		//}
-
-		//private TraverseResultCollection TraverseInternal(InteriorNode node, int level) {
-		//	var start = node.StartPosition;
-		//	var length = node.EndPosition - node.StartPosition;
-		//	var sub = _input.GetRange(start, length);
-
-		//	var resultList = new List<TraverseResult>();
-		//	foreach (var family in node.Families) {
-		//		if (family.Production == null) {
-		//			throw new Exception();
-		//		}
-		//		var args = TraverseFamily(node, family, level + 1);
-
-		//		foreach (var oneSet in OneOfEach(args)) {
-		//			object payload = null;
-		//			if (_annotatedGrammar.TryGetValue(family.Production, out ProductionPlus productionPlus)) {
-		//				if (!productionPlus.Supports(_annotatedGrammar, oneSet)) {
-		//					continue;
-		//				}
-		//				var action = productionPlus.Action;
-		//				payload = action.Act(oneSet);
-		//			}
-
-		//			var result = new TraverseResult(payload, node, family.Production);
-		//			resultList.Add(result);
-		//		}
-		//	}
-		//	return new TraverseResultCollection(resultList);
-		//}
-
+		
 		private IEnumerable<T[]> OneOfEach<T>(IEnumerable<T>[] args) {
 			var count = args.Length;
 			var start = new T[count];
@@ -142,9 +114,6 @@ namespace CFGLib.Actioneer {
 		private TraverseResultCollection[] TraverseFamily(SppfNode node, SppfFamily family) {
 			var count = family.Production.Rhs.Count;
 			return TraverseChildren(node, family, count);
-			//foreach (var child in family.Members) {
-
-			//}
 		}
 
 		private TraverseResultCollection[] TraverseChildren(SppfNode node, SppfFamily family, int count) {
@@ -167,11 +136,7 @@ namespace CFGLib.Actioneer {
 			if (position < 0) {
 				throw new ArgumentOutOfRangeException();
 			}
-// 			if (position + 2 != rhs.Count && family.Production != null) {
-			//	HandleContraction(node, family, startList, rhs, position, level);
-			//} else {
-				HandleFamily(node, family, startList, rhs, position);
-			// }
+			HandleFamily(node, family, startList, rhs, position);
 		}
 
 		private void HandleFamily(SppfNode node, SppfFamily family, List<TraverseResultCollection[]> startList, Sentence rhs, int position) {

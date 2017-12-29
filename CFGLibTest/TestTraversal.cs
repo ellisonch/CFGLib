@@ -50,5 +50,15 @@ namespace CFGLibTest {
 				CFGParser.Production("<S> → '1'")
 			}, Nonterminal.Of("S")), "1 + 1 + 1");
 		}
+		[TestMethod]
+		[Ignore]
+		public void TestTraversalInfinite() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<A> → <B>"),
+				CFGParser.Production("<B> → <A>"),
+				CFGParser.Production("<B> → 'x'"),
+			}, Nonterminal.Of("A"));
+			ExecuteTest(g, "x");
+		}
 	}
 }
