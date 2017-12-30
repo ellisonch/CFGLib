@@ -152,18 +152,16 @@ namespace ConsolePlayground {
 
 		private static void TraversePlay() {
 			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<S> → <A> <B> <C> <D>"),
-				CFGParser.Production("<A> → '1'"),
-				CFGParser.Production("<B> → '1'"),
-				CFGParser.Production("<C> → '1'"),
-				CFGParser.Production("<D> → '1'")
-			}, Nonterminal.Of("S"));
+				CFGParser.Production("<A> → <B>"),
+				CFGParser.Production("<B> → <A>"),
+				CFGParser.Production("<B> → 'x'"),
+			}, Nonterminal.Of("A"));
 			g = IdentityActions.Annotate(g);
 			
 			var earley2 = new EarleyParser2(g);
-			var sentence = Sentence.FromWords("1 1 1 1");
+			var sentence = Sentence.FromWords("x");
 			var sppf2 = earley2.ParseGetForest(sentence);
-			DotRunner.Run(DotBuilder.GetRawDot(sppf2), "long");
+			DotRunner.Run(DotBuilder.GetRawDot(sppf2), "infinite");
 
 			var t2 = new Traversal(sppf2, g);
 			var r2 = t2.Traverse();

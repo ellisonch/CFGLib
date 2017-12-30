@@ -12,27 +12,36 @@ namespace CFGLib.Actioneer {
 		private readonly BaseGrammar _grammar;
 		private readonly Dictionary<SppfNode, TraverseResultCollection> _cache = new Dictionary<SppfNode, TraverseResultCollection>();
 		private readonly Dictionary<SppfNode, TraverseResultCollection[]> _branchCache = new Dictionary<SppfNode, TraverseResultCollection[]>();
-		private readonly Stack<SppfNode> _stack1 = new Stack<SppfNode>();
+
+		private readonly Stack<Tuple<SppfNode, HashSet<SppfNode>>> _stack1 = new Stack<Tuple<SppfNode, HashSet<SppfNode>>>();
 		private readonly Stack<SppfNode> _stack2 = new Stack<SppfNode>();
+		// private readonly HashSet<SppfNode> _ancestors = new HashSet<SppfNode>();
+		// private readonly HashSet<SppfNode> _seen = new HashSet<SppfNode>();
 
 		public Traversal(SppfNode root, BaseGrammar grammar) {
 			_root = root;
 			_grammar = grammar;
-			_stack1.Push(root);
+			_stack1.Push(Tuple.Create(root, new HashSet<SppfNode>()));
 		}
 
 		public TraverseResultCollection Traverse() {
-			var curr = _root;
-
 			while (_stack1.Count > 0) {
-				var node = _stack1.Pop();
+				var tup = _stack1.Pop();
+				var node = tup.Item1;
+				var ancestors = tup.Item2;
+				if (ancestors.Contains(node)) {
+					throw new TraversalLoopException(node);
+				}
+				//ancestors.Add(node);
 				_stack2.Push(node);
 				foreach (var family in node.Families) {
 					foreach (var child in family.Members) {
-						_stack1.Push(child);
+						_stack1.Push(Tuple.Create(child, new HashSet<SppfNode>(ancestors.Append(node))));
 					}
 				}
+				// _ancestors.Remove(node);
 			}
+
 			while (_stack2.Count > 0) {
 				var node = _stack2.Pop();
 				BuildAndSetResult(node);
@@ -43,7 +52,7 @@ namespace CFGLib.Actioneer {
 		}
 
 		private void BuildAndSetResult(SppfNode node) {
-			if (_cache.ContainsKey(node)) {
+			if (_cache.ContainsKey(node) || _branchCache.ContainsKey(node)) {
 				return;
 			}
 			if (node.Families.Count() == 0) {

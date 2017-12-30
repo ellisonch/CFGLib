@@ -51,7 +51,7 @@ namespace CFGLibTest {
 			}, Nonterminal.Of("S")), "1 + 1 + 1");
 		}
 		[TestMethod]
-		[Ignore]
+		[ExpectedException(typeof(TraversalLoopException))]
 		public void TestTraversalInfinite() {
 			var g = new Grammar(new List<Production>{
 				CFGParser.Production("<A> → <B>"),
