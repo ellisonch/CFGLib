@@ -18,8 +18,8 @@ namespace CFGLibTest {
 
 			var sppf1 = earley1.ParseGetForest(sentence);
 			var sppf2 = earley2.ParseGetForest(sentence);
-			var t1 = new Traversal(sppf1, ag);
-			var t2 = new Traversal(sppf2, ag);
+			var t1 = new Traversal2(sppf1, ag);
+			var t2 = new Traversal2(sppf2, ag);
 			var r1 = t1.Traverse();
 			var r2 = t2.Traverse();
 
