@@ -56,7 +56,6 @@ namespace CFGLibTest {
 			EbnfParse(sentence);
 		}
 		[TestMethod]
-		[Ignore]
 		public void ParseEbnfEbnf() {
 			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf);
 			EbnfParse(sentence);

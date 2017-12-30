@@ -165,7 +165,7 @@ namespace ConsolePlayground {
 			var sppf2 = earley2.ParseGetForest(sentence);
 			DotRunner.Run(DotBuilder.GetRawDot(sppf2), "long");
 
-			var t2 = new Traversal2(sppf2, g);
+			var t2 = new Traversal(sppf2, g);
 			var r2 = t2.Traverse();
 			//foreach (var option in r2) {
 			//	var s2 = (Sentence)option.Payload;
