@@ -16,9 +16,6 @@ namespace CFGLib.Parsers {
 
 		public virtual double ParseGetProbability(Sentence s) {
 			var sppf = ParseGetForest(s);
-			if (sppf == null) {
-				return 0.0;
-			}
 			var prob = ProbabilityOfSppf(sppf);
 			return prob;
 		}

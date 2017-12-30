@@ -128,8 +128,16 @@ namespace CFGLibTest {
 		}
 
 		private static void CheckTraversal(Grammar g, Sentence sentence, CFGLib.Parsers.Sppf.SppfNode sppf) {
+			if (sppf == null) {
+				return;
+			}
 			var t = new Traversal(sppf, g);
-			var r = t.Traverse();
+			TraverseResultCollection r = null;
+			try {
+				r = t.Traverse();
+			} catch (TraversalLoopException) {
+				return;
+			}
 			foreach (var option in r) {
 				var sgen = (Sentence)option.Payload;
 				if (!sentence.SequenceEqual(sgen)) {

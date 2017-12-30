@@ -42,9 +42,9 @@ namespace ConsolePlayground {
 			// EbnfPlay();
 			// EbnfBench();
 			// VisitorPlay();
-			TraversePlay();
+			//TraversePlay();
 
-			//(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 16)).Run();
+			(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 17)).Run();
 
 			//Benchmark();
 			// BenchmarkBison();
