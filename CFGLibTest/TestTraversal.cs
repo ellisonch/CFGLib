@@ -60,5 +60,17 @@ namespace CFGLibTest {
 			}, Nonterminal.Of("A"));
 			ExecuteTest(g, "x");
 		}
+		[TestMethod]
+		public void TestTraversalLinear() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <A>"),
+				CFGParser.Production("<S> → <B>"),
+				CFGParser.Production("<S> → <C>"),
+				CFGParser.Production("<A> → '1'"),
+				CFGParser.Production("<B> → '1'"),
+				CFGParser.Production("<C> → '1'")
+			}, Nonterminal.Of("S"));
+			ExecuteTest(g, "1");
+		}		
 	}
 }
