@@ -71,6 +71,14 @@ namespace CFGLibTest {
 				CFGParser.Production("<C> → '1'")
 			}, Nonterminal.Of("S"));
 			ExecuteTest(g, "1");
-		}		
+		}
+		[TestMethod]
+		public void TestTraversalEmpty() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <A>"),
+				CFGParser.Production("<A> → ε"),
+			}, Nonterminal.Of("S"));
+			ExecuteTest(g, "");
+		}
 	}
 }
