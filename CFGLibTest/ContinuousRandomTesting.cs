@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace CFGLibTest {
 	public class ContinuousRandomTesting {
+		private const int _milestone = 25;
+
 		private readonly Random _r;
 		private readonly int _maxNonterminals;
 		private readonly int _maxTerminals;
@@ -61,7 +63,7 @@ namespace CFGLibTest {
 					timeouts++;
 				}
 				total++;
-				if (total % 50 == 0) {
+				if (total % _milestone == 0) {
 					Console.WriteLine("{0} / {1} / {2} fail / timeout / total in {3}ms", fail, timeouts, total, sw.Elapsed.TotalMilliseconds);
 					sw.Restart();
 				}

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace CFGLib.ProductionAnnotations.Actioning {
 	public static class IdentityActions {
+		private static Sentence _emptySentence = new Sentence(); // TODO would be nice to have readonly sentences
 		public static Grammar Annotate(Grammar g) {
 			var start = g.Start;
 			var productions = g.Productions;
@@ -37,7 +38,7 @@ namespace CFGLib.ProductionAnnotations.Actioning {
 
 		private static Sentence GetSentenceForArg(TraverseResult arg) {
 			if (arg.Node is SppfEpsilon) {
-				return new Sentence();
+				return _emptySentence;
 			} else if (arg.Node is SppfWord sppfWord) {
 				if (sppfWord.Word is Terminal term) {
 					return new Sentence(term);

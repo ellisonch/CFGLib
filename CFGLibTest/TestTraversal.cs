@@ -113,5 +113,14 @@ namespace CFGLibTest {
 				CFGParser.Production("<X_0> → <X_0> <X_0> 'x0' 'x0' 'x0' [87.645744548479911]")
 			}, Nonterminal.Of("X_0")), "x0 x0 x0 x0 x0 x0 x0 x0 x0 x0 x0 x0 x0 x0");
 		}
+
+		[TestMethod]
+		public void TestTraversal05() {
+			ExecuteTest(new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <S> <S>"),
+				CFGParser.Production("<S> → 'x'"),
+			}, Nonterminal.Of("S")), "x x x x x x x x x x x x x x x x");
+		}
+		
 	}
 }

@@ -35,30 +35,31 @@ namespace ConsolePlayground {
 			//DebugGrammar();
 
 			// var testp = new TestTraversal();
-			// var sppf = testp.TestTraversal04();
+			// var sppf = testp.TestTraversal05();
 
-			//var g = new Grammar(new List<Production>{
-			//	CFGParser.Production("<X_0> → 'x1' <X_1> <X_1> <X_1> 'x0' 'x0' 'x1' [35.561233564541318]"),
-			//	CFGParser.Production("<X_1> → 'x0' 'x1' <X_1> <X_0> 'x0' <X_0> <X_1> 'x0' 'x1' [93.742161775353438]"),
-			//	CFGParser.Production("<X_0> → 'x0' <X_1> [21.769176176176025]"),
-			//	CFGParser.Production("<X_1> → ε [15.296797436800226]"),
-			//	CFGParser.Production("<X_0> → <X_1> <X_1> <X_1> 'x0' <X_0> <X_0> 'x1' [27.142061933009913]"),
-			//	CFGParser.Production("<X_1> → 'x1' <X_1> 'x1' 'x1' <X_0> [61.381177142439959]"),
-			//	CFGParser.Production("<X_1> → <X_0> 'x1' 'x0' <X_1> [43.405714859443584]"),
-			//	CFGParser.Production("<X_1> → 'x1' <X_1> <X_1> <X_0> <X_1> <X_1> [62.132346960311914]"),
-			//	CFGParser.Production("<X_1> → <X_1> 'x0' 'x0' 'x1' 'x0' 'x1' [86.420178335821333]"),
-			//	CFGParser.Production("<X_0> → 'x0' <X_1> <X_1> 'x1' 'x0' 'x1' [49.638692241459474]"),
-			//	CFGParser.Production("<X_0> → ε [79.0508000767095]"),
-			//	CFGParser.Production("<X_1> → <X_1> <X_1> <X_0> <X_1> <X_0> 'x0' 'x0' 'x1' [83.5624104973685]"),
-			//	CFGParser.Production("<X_1> → <X_1> 'x1' 'x0' [82.773570404282566]"),
-			//	CFGParser.Production("<X_1> → 'x0' 'x1' 'x0' 'x1' <X_1> 'x0' [78.397427464554752]"),
-			//	CFGParser.Production("<X_0> → 'x0' <X_1> <X_1> <X_1> <X_0> 'x0' 'x0' 'x1' 'x0' 'x0' [49.294450411710166]"),
-			//	CFGParser.Production("<X_0> → 'x1' 'x0' 'x1' 'x0' 'x0' 'x1' <X_1> <X_1> 'x0' <X_1> [23.409070712704711]"),
-			//	CFGParser.Production("<X_0> → 'x0' 'x1' <X_1> <X_0> 'x0' <X_1> 'x0' <X_1> 'x0' [20.120124363862036]")
-			//}, Nonterminal.Of("X_0"));
-			//var input = Sentence.FromWords("x1 x0 x0 x0 x0 x1 x1 x1 x1 x1 x1 x1 x0 x0 x1 x1 x1 x1 x1 x1 x0 x0 x1");
-			//var sppf = (new EarleyParser2(g)).ParseGetForest(input);
-			//DotRunner.Run(DotBuilder.GetRawDot(sppf), "oom");
+			
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<S> → <S> <S>"),
+				CFGParser.Production("<S> → 'x'"),
+			}, Nonterminal.Of("S"));
+			g = IdentityActions.Annotate(g);
+			// var input = Sentence.FromWords("x x x x x x x x x x x x x x x x");
+			var input = Sentence.FromWords("x x x x x x x x x x x x x x");
+			var sppf = (new EarleyParser2(g)).ParseGetForest(input);
+
+			var traversal = new Traversal(sppf, g);
+			var result = traversal.Traverse();
+			//foreach (var option in result) {
+			//	if (!(option.Payload is Sentence)) {
+
+			//	}
+			//	var sgen = (Sentence)option.Payload;
+			//	if (!input.SequenceEqual(sgen)) {
+			//		throw new Exception();
+			//	}
+			//}
+
+			// DotRunner.Run(DotBuilder.GetRawDot(sppf), "oom");
 
 			// BnfPlay();
 			// ParserGenerator();
@@ -67,7 +68,7 @@ namespace ConsolePlayground {
 			// VisitorPlay();
 			//TraversePlay();
 
-			(new ContinuousRandomTesting(4, 5, 10, 5, 6, 1000, 18)).Run();
+			// (new ContinuousRandomTesting(4, 5, 10, 5, 6, 1000, 19)).Run();
 
 			//Benchmark();
 			// BenchmarkBison();
