@@ -34,8 +34,8 @@ namespace ConsolePlayground {
 
 			//DebugGrammar();
 
-			// var testp = new TestParsing();
-			// testp.TestParsing02();
+			var testp = new TestTraversal();
+			testp.TestTraversal04();
 
 			// BnfPlay();
 			// ParserGenerator();
@@ -44,7 +44,7 @@ namespace ConsolePlayground {
 			// VisitorPlay();
 			//TraversePlay();
 
-			(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 17)).Run();
+			//(new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 17)).Run();
 
 			//Benchmark();
 			// BenchmarkBison();

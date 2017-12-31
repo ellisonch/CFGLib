@@ -10,6 +10,24 @@ using System.Linq;
 namespace CFGLibTest {
 	[TestClass]
 	public class TestTraversal {
+		public static void CheckTraversal(Grammar g, Sentence sentence, CFGLib.Parsers.Sppf.SppfNode sppf) {
+			if (sppf == null) {
+				return;
+			}
+			var t = new Traversal(sppf, g);
+			TraverseResultCollection r = null;
+			r = t.Traverse();
+			foreach (var option in r) {
+				if (!(option.Payload is Sentence)) {
+
+				}
+				var sgen = (Sentence)option.Payload;
+				if (!sentence.SequenceEqual(sgen)) {
+					throw new Exception();
+				}
+			}
+		}
+
 		private static void ExecuteTest(Grammar g, string input) {
 			var ag = IdentityActions.Annotate(g);
 			var earley1 = new EarleyParser(ag);
@@ -18,30 +36,9 @@ namespace CFGLibTest {
 
 			var sppf1 = earley1.ParseGetForest(sentence);
 			var sppf2 = earley2.ParseGetForest(sentence);
-			var t1 = new Traversal(sppf1, ag);
-			var t2 = new Traversal(sppf2, ag);
-			var r1 = t1.Traverse();
-			var r2 = t2.Traverse();
 
-			foreach (var option in r1) {
-				var s1 = (Sentence)option.Payload;
-				if (!sentence.SequenceEqual(s1)) {
-					throw new Exception();
-				}
-			}
-
-			foreach (var option in r2) {
-				var s2 = (Sentence)option.Payload;
-				if (!sentence.SequenceEqual(s2)) {
-					throw new Exception();
-				}
-			}
-
-			//var s1 = (Sentence)r1.SingleOrDefault().Payload;
-			//var s2 = (Sentence)r2.SingleOrDefault().Payload;
-
-			//Assert.IsTrue(sentence.SequenceEqual(s1));
-			//Assert.IsTrue(sentence.SequenceEqual(s2));
+			CheckTraversal(ag, sentence, sppf1);
+			CheckTraversal(ag, sentence, sppf2);
 		}
 		[TestMethod]
 		public void TestTraversalAddition() {
@@ -80,5 +77,54 @@ namespace CFGLibTest {
 			}, Nonterminal.Of("S"));
 			ExecuteTest(g, "");
 		}
+
+		[TestMethod]
+		public void TestTraversal01() {
+			ExecuteTest(new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → ε [115.49728913674936]"),
+				CFGParser.Production("<X_0> → 'x0' 'x0' <X_0> 'x0' 'x0' [32.857227595456521]")
+			}, Nonterminal.Of("X_0")), "ε");
+		}
+
+		[TestMethod]
+		public void TestTraversal02() {
+			ExecuteTest(new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → 'x0' [91.822083917829246]")
+			}, Nonterminal.Of("X_0")), "x0");
+		}
+
+		[TestMethod]
+		public void TestTraversal03() {
+			ExecuteTest(new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → <X_1> <X_0> <X_1> 'x1' 'x1' <X_0> <X_0> <X_0> 'x0' 'x1' [53.389437636541871]"),
+				CFGParser.Production("<X_0> → <X_1> [11.500305104302385]"),
+				CFGParser.Production("<X_0> → <X_0> <X_0> <X_0> 'x0' [90.413361106726043]"),
+				CFGParser.Production("<X_1> → 'x0' [13.006726633760485]")
+			}, Nonterminal.Of("X_0")), "x0");
+		}
+
+		[TestMethod]
+		public void TestTraversal04() {
+			ExecuteTest(new Grammar(new List<Production>{
+				CFGParser.Production("<X_0> → 'x1' <X_1> <X_1> <X_1> 'x0' 'x0' 'x1' [35.561233564541318]"),
+				CFGParser.Production("<X_1> → 'x0' 'x1' <X_1> <X_0> 'x0' <X_0> <X_1> 'x0' 'x1' [93.742161775353438]"),
+				CFGParser.Production("<X_0> → 'x0' <X_1> [21.769176176176025]"),
+				CFGParser.Production("<X_1> → ε [15.296797436800226]"),
+				CFGParser.Production("<X_0> → <X_1> <X_1> <X_1> 'x0' <X_0> <X_0> 'x1' [27.142061933009913]"),
+				CFGParser.Production("<X_1> → 'x1' <X_1> 'x1' 'x1' <X_0> [61.381177142439959]"),
+				CFGParser.Production("<X_1> → <X_0> 'x1' 'x0' <X_1> [43.405714859443584]"),
+				CFGParser.Production("<X_1> → 'x1' <X_1> <X_1> <X_0> <X_1> <X_1> [62.132346960311914]"),
+				CFGParser.Production("<X_1> → <X_1> 'x0' 'x0' 'x1' 'x0' 'x1' [86.420178335821333]"),
+				CFGParser.Production("<X_0> → 'x0' <X_1> <X_1> 'x1' 'x0' 'x1' [49.638692241459474]"),
+				CFGParser.Production("<X_0> → ε [79.0508000767095]"),
+				CFGParser.Production("<X_1> → <X_1> <X_1> <X_0> <X_1> <X_0> 'x0' 'x0' 'x1' [83.5624104973685]"),
+				CFGParser.Production("<X_1> → <X_1> 'x1' 'x0' [82.773570404282566]"),
+				CFGParser.Production("<X_1> → 'x0' 'x1' 'x0' 'x1' <X_1> 'x0' [78.397427464554752]"),
+				CFGParser.Production("<X_0> → 'x0' <X_1> <X_1> <X_1> <X_0> 'x0' 'x0' 'x1' 'x0' 'x0' [49.294450411710166]"),
+				CFGParser.Production("<X_0> → 'x1' 'x0' 'x1' 'x0' 'x0' 'x1' <X_1> <X_1> 'x0' <X_1> [23.409070712704711]"),
+				CFGParser.Production("<X_0> → 'x0' 'x1' <X_1> <X_0> 'x0' <X_1> 'x0' <X_1> 'x0' [20.120124363862036]")
+			}, Nonterminal.Of("X_0")), "x1 x0 x0 x0 x0 x1 x1 x1 x1 x1 x1 x1 x0 x0 x1 x1 x1 x1 x1 x1 x0 x0 x1");
+		}
+		
 	}
 }

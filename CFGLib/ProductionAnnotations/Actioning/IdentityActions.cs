@@ -41,7 +41,7 @@ namespace CFGLib.ProductionAnnotations.Actioning {
 			} else if (arg.Node is SppfWord sppfWord) {
 				if (sppfWord.Word is Terminal term) {
 					return new Sentence(term);
-				}				
+				}
 			}
 
 			return (Sentence)arg.Payload;
