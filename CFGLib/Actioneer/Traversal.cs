@@ -13,42 +13,51 @@ namespace CFGLib.Actioneer {
 		private readonly Dictionary<SppfNode, TraverseResultCollection> _cache = new Dictionary<SppfNode, TraverseResultCollection>();
 		private readonly Dictionary<SppfNode, TraverseResultCollection[]> _branchCache = new Dictionary<SppfNode, TraverseResultCollection[]>();
 
-		private readonly Stack<Tuple<SppfNode, HashSet<SppfNode>>> _stack1 = new Stack<Tuple<SppfNode, HashSet<SppfNode>>>();
-		private readonly Stack<SppfNode> _stack2 = new Stack<SppfNode>();
-		// private readonly HashSet<SppfNode> _ancestors = new HashSet<SppfNode>();
-		// private readonly HashSet<SppfNode> _seen = new HashSet<SppfNode>();
-
 		public Traversal(SppfNode root, BaseGrammar grammar) {
 			_root = root;
 			_grammar = grammar;
-			_stack1.Push(Tuple.Create(root, new HashSet<SppfNode>()));
 		}
-
+		
 		public TraverseResultCollection Traverse() {
-			while (_stack1.Count > 0) {
-				var tup = _stack1.Pop();
-				var node = tup.Item1;
-				var ancestors = tup.Item2;
-				if (ancestors.Contains(node)) {
-					throw new TraversalLoopException(node);
-				}
-				//ancestors.Add(node);
-				_stack2.Push(node);
-				foreach (var family in node.Families) {
-					foreach (var child in family.Members) {
-						_stack1.Push(Tuple.Create(child, new HashSet<SppfNode>(ancestors.Append(node))));
-					}
-				}
-				// _ancestors.Remove(node);
-			}
+			var queue = GetPostOrderTraversal();
 
-			while (_stack2.Count > 0) {
-				var node = _stack2.Pop();
+			while (queue.Count > 0) {
+				var node = queue.Dequeue();
 				BuildAndSetResult(node);
 			}
 			return _cache[_root];
-			// return Traverse(_root);
-			// throw new NotImplementedException();
+		}
+
+		// based on https://stackoverflow.com/a/46506361 by https://github.com/niemmi
+		private Queue<SppfNode> GetPostOrderTraversal() {			
+			var stack = new Stack<ValueTuple<bool, SppfNode>>();
+			var states = new Dictionary<SppfNode, TraversalState>();
+			var queue = new Queue<SppfNode>();
+			stack.Push((false, _root));
+			while (stack.Count > 0) {
+				var (exiting, v) = stack.Pop();
+				if (exiting) {
+					queue.Enqueue(v);
+					states[v] = TraversalState.Visited;
+				} else {
+					states[v] = TraversalState.InProgress;
+					stack.Push((true, v));
+					foreach (var family in v.Families) {
+						foreach (var n in family.Members) {
+							if (!states.TryGetValue(n, out var state)) {
+								state = TraversalState.Unseen;
+							}
+							if (state == TraversalState.InProgress) {
+								throw new TraversalLoopException(n);
+							} else if (state == TraversalState.Unseen) {
+								stack.Push((false, n));
+							}
+						}
+					}
+				}
+			}
+
+			return queue;
 		}
 
 		private void BuildAndSetResult(SppfNode node) {

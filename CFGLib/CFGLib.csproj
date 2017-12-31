@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Actioneer\Traversal.cs" />
     <Compile Include="Actioneer\TraversalLoopException.cs" />
+    <Compile Include="Actioneer\TraversalState.cs" />
     <Compile Include="ProductionAnnotations\Actioning\IdentityActions.cs" />
     <Compile Include="ProductionAnnotations\Gathering\GatherOption.cs" />
     <Compile Include="ProductionAnnotations\Actioning\ActionAnnotation.cs" />
