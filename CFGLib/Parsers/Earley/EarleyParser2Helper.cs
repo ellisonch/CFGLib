@@ -12,8 +12,11 @@ namespace CFGLib.Parsers.Earley {
 		private readonly EarleySet[] _E;
 		private readonly BaseGrammar _grammar;
 
-		private SppfNodeDictionary _V; // node cache
+		private EarleySet _Q = new EarleySet();
 		private EarleySet _QPrime = new EarleySet();
+
+		private SppfNodeDictionary _V; // node cache
+		
 
 		public EarleyParser2Helper(BaseGrammar grammar, Sentence a) {
 			_grammar = grammar;
@@ -72,19 +75,19 @@ namespace CFGLib.Parsers.Earley {
 				// H = ∅, R = E_i , Q = Q ′
 				var H = new Dictionary<Nonterminal, SppfNode>();
 				var R = new EarleySet(_E[i]);
-				var Q = _QPrime;
+				_Q = _QPrime;
 
 				// Q′ = ∅
 				_QPrime = new EarleySet();
 
-				ProcessR(i, H, R, Q);
+				ProcessR(i, H, R);
 
 				_V = new SppfNodeDictionary(i + 1);
-				ProcessQ(i, Q);
+				ProcessQ(i);
 			}
 		}
 
-		private void ProcessR(int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q) {
+		private void ProcessR(int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R) {
 			// while R ̸= ∅ {
 			while (!R.IsEmpty) {
 				// remove an element, Λ say, from R
@@ -92,26 +95,26 @@ namespace CFGLib.Parsers.Earley {
 				var nextWord = Λ.DecoratedProduction.NextWord;
 				// if Λ = (B ::= α · Cβ, h, w) {
 				if (nextWord is Nonterminal C) {
-					Predict(i, H, R, Q, Λ, C);
+					Predict(i, H, R, Λ, C);
 				}
 				// if Λ = (D ::= α·, h, w) {
 				else if (nextWord == null) {
-					Complete(i, H, R, Q, Λ);
+					Complete(i, H, R, Λ);
 				} else {
 					throw new Exception("Didn't expect a terminal");
 				}
 			}
 		}
 
-		private void ProcessQ(int i, EarleySet Q) {
+		private void ProcessQ(int i) {
 			if (i < _a.Count) {
 				// create an SPPF node v labelled(a_i, i, i + 1)
 				var v2 = new SppfWord(_a[i], i, i + 1);
 
 				// while Q ̸= ∅ {
-				while (!Q.IsEmpty) {
+				while (!_Q.IsEmpty) {
 					// remove an element, Λ = (B ::= α · a_i β, h, w) say, from Q
-					var Λ = Q.TakeOne();
+					var Λ = _Q.TakeOne();
 					if (Λ.DecoratedProduction.NextWord != _a[i]) {
 						throw new Exception();
 						// continue;
@@ -144,7 +147,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// if Λ = (B ::= α · Cβ, h, w) {
-		private void Predict(int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q, EarleyItem Λ, Nonterminal C) {
+		private void Predict(int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleyItem Λ, Nonterminal C) {
 			//var β = Λ.Tail;
 			var w = Λ.SppfNode;
 			var h = Λ.StartPosition;
@@ -164,7 +167,7 @@ namespace CFGLib.Parsers.Earley {
 					if (i < _a.Count) {
 						var aCurr = _a[i];
 						if (δ0 == aCurr) {
-							Q.Add(newItem);
+							_Q.Add(newItem);
 						}
 					}
 				}
@@ -188,7 +191,7 @@ namespace CFGLib.Parsers.Earley {
 					if (i < _a.Count) {
 						var aCurr = _a[i];
 						if (β0 == aCurr) {
-							Q.Add(newItem);
+							_Q.Add(newItem);
 						}
 					}
 				}
@@ -196,7 +199,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// if Λ = (D ::= α·, h, w) {
-		private void Complete(int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q, EarleyItem Λ) {
+		private void Complete(int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleyItem Λ) {
 			var D = Λ.DecoratedProduction.Production.Lhs;
 			var w = Λ.SppfNode;
 			var h = Λ.StartPosition;
@@ -242,11 +245,11 @@ namespace CFGLib.Parsers.Earley {
 			var count = list.Count;
 			for (var listi = 0; listi < count; listi++) {
 				var item = list[listi];
-				LinkCompletedChildWithParent(i, item, Λ, R, Q, w);
+				LinkCompletedChildWithParent(i, item, Λ, R, w);
 			}
 		}
 
-		private void LinkCompletedChildWithParent(int i, EarleyItem parent, EarleyItem child, EarleySet R, EarleySet Q, SppfNode w) {
+		private void LinkCompletedChildWithParent(int i, EarleyItem parent, EarleyItem child, EarleySet R, SppfNode w) {
 			var k = parent.StartPosition;
 			var z = parent.SppfNode;
 			// var δ = item.Tail;
@@ -274,7 +277,7 @@ namespace CFGLib.Parsers.Earley {
 				if (i < _a.Count) {
 					var aCurr = _a[i];
 					if (δ0 == aCurr) {
-						Q.Add(newItem);
+						_Q.Add(newItem);
 					}
 				}
 			}
