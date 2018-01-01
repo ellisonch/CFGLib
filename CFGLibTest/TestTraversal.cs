@@ -115,6 +115,7 @@ namespace CFGLibTest {
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void TestTraversal05() {
 			ExecuteTest(new Grammar(new List<Production>{
 				CFGParser.Production("<S> → <S> <S>"),
