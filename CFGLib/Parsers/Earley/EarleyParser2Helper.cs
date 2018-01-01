@@ -11,12 +11,10 @@ namespace CFGLib.Parsers.Earley {
 		private readonly Sentence _a;
 		private readonly EarleySet[] _E;
 		private readonly BaseGrammar _grammar;
+		private readonly SppfNodeDictionary _V; // node cache
 
 		private EarleySet _Q = new EarleySet();
 		private EarleySet _QPrime = new EarleySet();
-
-		private SppfNodeDictionary _V; // node cache
-		
 
 		public EarleyParser2Helper(BaseGrammar grammar, Sentence a) {
 			_grammar = grammar;
@@ -25,10 +23,11 @@ namespace CFGLib.Parsers.Earley {
 			SppfNode._nextId = 0; // TODO can't be thread safe
 
 			// E_0, ..., E_n, R, Q′, V = ∅
-			_E = new EarleySet[a.Count + 1]; // need +1?
+			_E = new EarleySet[a.Count + 1];
 			for (var i = 0; i < _E.Length; i++) {
 				_E[i] = new EarleySet();
 			}
+			_V = new SppfNodeDictionary(_E.Length);
 		}
 		
 		//public TraverseResultCollection Traverse(Sentence input) {
@@ -68,8 +67,6 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		private void MainLoop() {
-			_V = new SppfNodeDictionary(0);
-
 			// for 0 ≤ i ≤ n {
 			for (var i = 0; i < _E.Length; i++) {
 				// H = ∅, R = E_i , Q = Q ′
@@ -82,7 +79,8 @@ namespace CFGLib.Parsers.Earley {
 
 				ProcessR(i, H, R);
 
-				_V = new SppfNodeDictionary(i + 1);
+				_V.Clear(i);
+				// _V = new SppfNodeDictionary(i + 1);
 				ProcessQ(i);
 			}
 		}
