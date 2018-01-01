@@ -15,6 +15,7 @@ namespace CFGLib.Parsers.Earley {
 		public static Stats _stats = new Stats();
 		private readonly Nonterminal _S;
 
+		private SppfNodeDictionary _V; // node cache
 		private Sentence _a;
 		private EarleySet[] _E;
 		private EarleySet _QPrime = new EarleySet();
@@ -78,7 +79,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		private void MainLoop() {
-			var V = new SppfNodeDictionary(0);
+			_V = new SppfNodeDictionary(0);
 
 			// for 0 ≤ i ≤ n {
 			for (var i = 0; i < _E.Length; i++) {
@@ -90,13 +91,14 @@ namespace CFGLib.Parsers.Earley {
 				// Q′ = ∅
 				_QPrime = new EarleySet();
 
-				ProcessR(V, i, H, R, Q);
+				ProcessR(i, H, R, Q);
 
-				V = ProcessQ(i, Q);
+				_V = new SppfNodeDictionary(i + 1);
+				ProcessQ(i, Q);
 			}
 		}
 
-		private void ProcessR(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q) {
+		private void ProcessR(int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q) {
 			// while R ̸= ∅ {
 			while (!R.IsEmpty) {
 				// remove an element, Λ say, from R
@@ -104,19 +106,18 @@ namespace CFGLib.Parsers.Earley {
 				var nextWord = Λ.DecoratedProduction.NextWord;
 				// if Λ = (B ::= α · Cβ, h, w) {
 				if (nextWord is Nonterminal C) {
-					Predict(V, i, H, R, Q, Λ, C);
+					Predict(i, H, R, Q, Λ, C);
 				}
 				// if Λ = (D ::= α·, h, w) {
 				else if (nextWord == null) {
-					Complete(V, i, H, R, Q, Λ);
+					Complete(i, H, R, Q, Λ);
 				} else {
 					throw new Exception("Didn't expect a terminal");
 				}
 			}
 		}
 
-		private SppfNodeDictionary ProcessQ(int i, EarleySet Q) {
-			var V = new SppfNodeDictionary(i + 1);
+		private void ProcessQ(int i, EarleySet Q) {
 			if (i < _a.Count) {
 				// create an SPPF node v labelled(a_i, i, i + 1)
 				var v2 = new SppfWord(_a[i], i, i + 1);
@@ -135,7 +136,7 @@ namespace CFGLib.Parsers.Earley {
 
 					// let y = MAKE NODE(B ::= α a_i · β, h, i + 1, w, v, V)
 					var productionAdvanced = Λ.DecoratedProduction.Increment();
-					var y = MakeNode(productionAdvanced, h, i + 1, w, v2, V);
+					var y = MakeNode(productionAdvanced, h, i + 1, w, v2);
 
 					var newItem = new EarleyItem(productionAdvanced, h, y);
 					// if β ∈ Σ_N { add (B ::= α a_i · β, h, y) to E_i+1 }
@@ -154,12 +155,10 @@ namespace CFGLib.Parsers.Earley {
 					}
 				}
 			}
-
-			return V;
 		}
 
 		// if Λ = (B ::= α · Cβ, h, w) {
-		private void Predict(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q, EarleyItem Λ, Nonterminal C) {
+		private void Predict(int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q, EarleyItem Λ, Nonterminal C) {
 			//var β = Λ.Tail;
 			var w = Λ.SppfNode;
 			var h = Λ.StartPosition;
@@ -189,7 +188,7 @@ namespace CFGLib.Parsers.Earley {
 			if (H.TryGetValue(C, out SppfNode v)) {
 				// let y = MAKE_NODE(B ::= αC · β, h, i, w, v, V)
 				var productionAdvanced = Λ.DecoratedProduction.Increment();
-				var y = MakeNode(productionAdvanced, h, i, w, v, V);
+				var y = MakeNode(productionAdvanced, h, i, w, v);
 
 				var newItem = new EarleyItem(productionAdvanced, h, y);
 				// if β ∈ Σ N and (B ::= αC · β, h, y) ̸∈ E_i {
@@ -211,7 +210,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// if Λ = (D ::= α·, h, w) {
-		private void Complete(SppfNodeDictionary V, int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q, EarleyItem Λ) {
+		private void Complete(int i, Dictionary<Nonterminal, SppfNode> H, EarleySet R, EarleySet Q, EarleyItem Λ) {
 			var D = Λ.DecoratedProduction.Production.Lhs;
 			var w = Λ.SppfNode;
 			var h = Λ.StartPosition;
@@ -219,7 +218,7 @@ namespace CFGLib.Parsers.Earley {
 			// if w = null {
 			if (w == null) {
 				// if there is no node v ∈ V labelled (D, i, i) create one
-				var v = V.GetOrSet(D, i, i);
+				var v = _V.GetOrSet(D, i, i);
 				// set w = v
 				w = v;
 				Λ.SppfNode = v;
@@ -257,11 +256,11 @@ namespace CFGLib.Parsers.Earley {
 			var count = list.Count;
 			for (var listi = 0; listi < count; listi++) {
 				var item = list[listi];
-				LinkCompletedChildWithParent(V, i, item, Λ, R, Q, w);
+				LinkCompletedChildWithParent(i, item, Λ, R, Q, w);
 			}
 		}
 
-		private void LinkCompletedChildWithParent(SppfNodeDictionary V, int i, EarleyItem parent, EarleyItem child, EarleySet R, EarleySet Q, SppfNode w) {
+		private void LinkCompletedChildWithParent(int i, EarleyItem parent, EarleyItem child, EarleySet R, EarleySet Q, SppfNode w) {
 			var k = parent.StartPosition;
 			var z = parent.SppfNode;
 			// var δ = item.Tail;
@@ -275,7 +274,7 @@ namespace CFGLib.Parsers.Earley {
 
 			// let y = MAKE NODE(A ::= τD · δ, k, i, z, w, V)			
 			var productionAdvanced = parent.DecoratedProduction.Increment();
-			var y = MakeNode(productionAdvanced, k, i, z, w, V);
+			var y = MakeNode(productionAdvanced, k, i, z, w);
 			var newItem = new EarleyItem(productionAdvanced, k, y);
 
 			// if δ ∈ Σ_N and (A ::= τD · δ, k, y) ̸∈ E_i {
@@ -353,22 +352,22 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
-		private static SppfNode MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode w, SppfNode v, SppfNodeDictionary V) {
-			return MakeNodeOriginal(decoratedProduction, j, i, w, v, V);
+		private SppfNode MakeNode(DecoratedProduction decoratedProduction, int j, int i, SppfNode w, SppfNode v) {
+			return MakeNodeOriginal(decoratedProduction, j, i, w, v);
 		}
 
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
-		private static SppfNode MakeNodeSimplified(DecoratedProduction decoratedProduction, int j, int i, SppfNode w, SppfNode v, SppfNodeDictionary V) {
+		private SppfNode MakeNodeSimplified(DecoratedProduction decoratedProduction, int j, int i, SppfNode w, SppfNode v) {
 			SppfNode y;
 			Production production = null;
 			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
 			if (decoratedProduction.AtEnd) {
 				// s = ValueTuple.Create<Word, DecoratedProduction>(decoratedProduction.Production.Lhs, null);
-				y = V.GetOrSet(decoratedProduction.Production.Lhs, j, i);
+				y = _V.GetOrSet(decoratedProduction.Production.Lhs, j, i);
 				production = decoratedProduction.Production;
 			} else {
 				// s = ValueTuple.Create<Word, DecoratedProduction>(null, decoratedProduction);
-				y = V.GetOrSet(decoratedProduction, j, i);
+				y = _V.GetOrSet(decoratedProduction, j, i);
 			}
 
 			// if w = null and y does not have a family of children (v) add one
@@ -384,7 +383,7 @@ namespace CFGLib.Parsers.Earley {
 		}
 
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
-		private static SppfNode MakeNodeOriginal(DecoratedProduction decoratedProduction, int j, int i, SppfNode w, SppfNode v, SppfNodeDictionary V) {
+		private SppfNode MakeNodeOriginal(DecoratedProduction decoratedProduction, int j, int i, SppfNode w, SppfNode v) {
 			// var α = decoratedProduction.Prefix;
 
 			Production production = null;
@@ -411,9 +410,9 @@ namespace CFGLib.Parsers.Earley {
 			} else {
 				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
 				if (s.Item1 != null) {
-					y = V.GetOrSet(s.Item1, j, i);
+					y = _V.GetOrSet(s.Item1, j, i);
 				} else {
-					y = V.GetOrSet(s.Item2, j, i);
+					y = _V.GetOrSet(s.Item2, j, i);
 				}
 
 				//var potentialY = new SppfNode(s, j, i);

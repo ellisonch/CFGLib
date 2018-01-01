@@ -38,17 +38,20 @@ namespace ConsolePlayground {
 			// var sppf = testp.TestTraversal05();
 
 			
-			var g = new Grammar(new List<Production>{
-				CFGParser.Production("<S> → <S> <S>"),
-				CFGParser.Production("<S> → 'x'"),
-			}, Nonterminal.Of("S"));
-			g = IdentityActions.Annotate(g);
-			// var input = Sentence.FromWords("x x x x x x x x x x x x x x x x");
-			var input = Sentence.FromWords("x x x x x x x x x x x x x x");
-			var sppf = (new EarleyParser2(g)).ParseGetForest(input);
+			//var g = new Grammar(new List<Production>{
+			//	CFGParser.Production("<S> → <S> <S>"),
+			//	CFGParser.Production("<S> → 'x'"),
+			//}, Nonterminal.Of("S"));
+			//g = IdentityActions.Annotate(g);
+			//// var input = Sentence.FromWords("x x x x x x x x x x x x x x x x");
+			//var input = Sentence.FromWords("x x x x x x x x x x x x x x");
+			//var sppf = (new EarleyParser2(g)).ParseGetForest(input);
 
-			var traversal = new Traversal(sppf, g);
-			var result = traversal.Traverse();
+
+			//var traversal = new Traversal(sppf, g);
+			//var result = traversal.Traverse();
+
+
 			//foreach (var option in result) {
 			//	if (!(option.Payload is Sentence)) {
 
@@ -64,13 +67,13 @@ namespace ConsolePlayground {
 			// BnfPlay();
 			// ParserGenerator();
 			// EbnfPlay();
-			// EbnfBench();
+			EbnfBench();
 			// VisitorPlay();
 			//TraversePlay();
 
 			// (new ContinuousRandomTesting(4, 5, 10, 5, 6, 1000, 19)).Run();
 
-			//Benchmark();
+			Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
