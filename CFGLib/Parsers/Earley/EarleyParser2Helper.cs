@@ -401,18 +401,12 @@ namespace CFGLib.Parsers.Earley {
 				} else {
 					y = _V.GetOrSet(s.Item2, j, i);
 				}
-
-				//var potentialY = new SppfNode(s, j, i);
-				//if (!V.TryGetValue(potentialY, out y)) {
-				//	V[potentialY] = potentialY;
-				//	y = potentialY;
-				//}
-
+				
 				// if w = null and y does not have a family of children (v) add one
 				if (w == null) {
 					y.AddFamily(production, v);
 				}
-				// if w ̸= null and y does not have a family of children(w, v) add one
+				// if w ̸= null and y does not have a family of children(w, v) add one			
 				else {
 					y.AddFamily(production, w, v);
 				}

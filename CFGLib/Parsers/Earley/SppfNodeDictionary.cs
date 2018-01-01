@@ -16,7 +16,6 @@ namespace CFGLib.Parsers.Earley {
 				_wordDicts[i] = new Dictionary<Word, SppfWord>();
 			}
 		}
-
 		internal SppfWord GetOrSet(Word item, int j, int i) {
 			SppfWord y;
 			var dict = _wordDicts[j];
