@@ -378,9 +378,9 @@ namespace ConsolePlayground {
 			}
 			Console.WriteLine("Done in {0}ms (prev 3686ms)", (int)totalMs);
 
-			foreach (var kvp in EarleyParser2._stats.Data) {
-				Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);
-			}
+			//foreach (var kvp in EarleyParser2._stats.Data) {
+			//	Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);
+			//}
 		}
 
 		private static double MinTime(int times, EarleyParser2 ep, BaseGrammar grammar, Sentence input) {
