@@ -67,7 +67,8 @@ namespace ConsolePlayground {
 			// BnfPlay();
 			// ParserGenerator();
 			// EbnfPlay();
-			EbnfBench();
+			// EbnfBench();
+			EbnfBenchLayout();
 			// VisitorPlay();
 			//TraversePlay();
 
@@ -228,13 +229,10 @@ namespace ConsolePlayground {
 		}
 
 		private static void EbnfBench() {
+			var tup = EbnfBenchLayout();
+			var inputNoLayout = tup.Item1;
+			var ms1 = tup.Item2;
 			var sw = Stopwatch.StartNew();
-			var input = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf_bench);
-			Sentence inputNoLayout = Ebnf.RemoveLayout(input, out var layoutSppf);
-			var ms1 = sw.Elapsed.TotalMilliseconds;
-			Console.WriteLine("Layout: {0:0.#}ms", ms1);
-
-			sw.Restart();
 
 			var grammar = Ebnf.GrammarSyntax();
 			var earley = new EarleyParser2(grammar);
@@ -245,6 +243,15 @@ namespace ConsolePlayground {
 			}
 			Console.WriteLine("Parse: {0:0.#}ms", ms2);
 			Console.WriteLine("Total: {0:0.#}ms", ms1 + ms2);
+		}
+
+		private static Tuple<Sentence, double> EbnfBenchLayout() {
+			var sw = Stopwatch.StartNew();
+			var input = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf_bench);
+			Sentence inputNoLayout = Ebnf.RemoveLayout(input, out var layoutSppf);
+			var ms1 = sw.Elapsed.TotalMilliseconds;
+			Console.WriteLine("Layout: {0:0.#}ms", ms1);
+			return Tuple.Create(inputNoLayout, ms1);
 		}
 
 		private static void BnfPlay() {
