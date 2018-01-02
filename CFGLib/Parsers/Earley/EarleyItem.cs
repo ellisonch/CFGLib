@@ -27,10 +27,6 @@ namespace CFGLib.Parsers.Earley {
 				int hash = 17;
 				hash = hash * 23 + this.DecoratedProduction.GetHashCode();
 				hash = hash * 23 + this.StartPosition.GetHashCode();
-
-				// TODO: because SppfNode has to change, we can't use it in the hash easily
-				// hash = hash * 23 + (this.SppfNode == null ? 0 : this.SppfNode.GetHashCode());
-
 				_cachedHash = hash;
 			}
 		}
