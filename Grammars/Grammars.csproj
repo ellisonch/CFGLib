@@ -60,6 +60,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -67,7 +68,8 @@
     <None Include="Raw\Arithmetic.ebnf" />
     <None Include="Raw\Arithmetic.bnf" />
     <None Include="Raw\Bnf.bnf" />
-    <None Include="Raw\Ebnf.ebnf" />
+    <None Include="Raw\Ebnf_layout.ebnf" />
+    <None Include="Raw\Ebnf_actual.ebnf" />
     <None Include="Raw\Ebnf_bench.ebnf" />
     <None Include="Raw\Ebnf_whole.ebnf" />
     <None Include="Raw\Lua.ebnf" />

@@ -17,7 +17,7 @@ namespace Grammars {
 		private static readonly List<char> _lettersUc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToList();
 		
 		public static Sentence RemoveLayout(Sentence input, out SppfNode sppf) {
-			var layoutGrammar = Ebnf.Grammar(Nonterminal.Of("SyntaxLayout"));
+			var layoutGrammar = Ebnf.GrammarLayout();
 			var earley = new EarleyParser2(layoutGrammar);
 
 			sppf = earley.ParseGetForest(input);
@@ -34,21 +34,38 @@ namespace Grammars {
 			return inputNoLayout;
 		}
 
-		public static Grammar Grammar(Nonterminal start) {
-			// var start = Nonterminal.Of("Syntax");
-			var g = new Grammar(Productions(), start);
+		public static Grammar GrammarLayout() {
+			var start = Nonterminal.Of("SyntaxLayout");
+			var productions = Letter()
+				.Concat(DecimalDigit())
+				.Concat(BasicSymbols())
+				.Concat(Terminals())
+				.Concat(SecondPart());
+			var g = new Grammar(productions, start);
 			return g;
 		}
-		private static IEnumerable<Production> Productions() {
-			var retval = Letter();
-			retval = retval.Concat(DecimalDigit());
-			retval = retval.Concat(BasicSymbols());
-			retval = retval.Concat(SecondPart());
-			retval = retval.Concat(ThirdPart());
-			retval = retval.Concat(FinalPart());
-
-			return retval;
+		public static Grammar GrammarSyntax() {
+			var start = Nonterminal.Of("Syntax");
+			var productions = Letter()
+				.Concat(DecimalDigit())
+				.Concat(BasicSymbols())
+				.Concat(Terminals())
+				.Concat(FinalPart())
+				.Concat(MetaIdentifiers())
+				.Concat(SpecialSequences());
+			var g = new Grammar(productions, start);
+			return g;
 		}
+		//private static IEnumerable<Production> Productions() {
+		//	var retval = Letter();
+		//	retval = retval.Concat(DecimalDigit());
+		//	retval = retval.Concat(BasicSymbols());
+		//	retval = retval.Concat(SecondPart());
+		//	retval = retval.Concat(ThirdPart());
+		//	retval = retval.Concat(FinalPart());
+
+		//	return retval;
+		//}
 
 		private static IEnumerable<Production> BasicSymbols() {
 			return new List<Production> {
@@ -91,17 +108,85 @@ namespace Grammars {
 			// including space seems like a bug
 		}
 
-		private static IEnumerable<Production> SecondPart() {
+		private static IEnumerable<Production> SpecialSequences() {
 			return new List<Production> {
+				new Production("SpecialSequence", new Sentence {
+					Nonterminal.Of("SpecialSequenceSymbol"),
+					Nonterminal.Of("SpecialSequenceCharacterList0"),
+					Nonterminal.Of("SpecialSequenceSymbol"),
+				}),
+
+				new Production("SpecialSequenceCharacter", Nonterminal.Of("TerminalCharacterBasic")),
+				new Production("SpecialSequenceCharacter", Nonterminal.Of("FirstQuoteSymbol")),
+				new Production("SpecialSequenceCharacter", Nonterminal.Of("SecondQuoteSymbol")),
+			}.Concat(
+				MakeList<object>("SpecialSequenceCharacter", 0)
+			);
+		}
+
+		private static IEnumerable<Production> Terminals() {
+			return new List<Production> {
+				new Production(
+					Nonterminal.Of("TerminalString"),
+					new Sentence {
+						Nonterminal.Of("FirstQuoteSymbol"),
+						Nonterminal.Of("FirstTerminalCharacterList1"),
+						Nonterminal.Of("FirstQuoteSymbol"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => Tuple.Create("'", ((List<string>)args[1].Payload).Select(x => Terminal.Of(x)).ToList()))
+					})
+				),
+				new Production(
+					Nonterminal.Of("TerminalString"),
+					new Sentence {
+						Nonterminal.Of("SecondQuoteSymbol"),
+						Nonterminal.Of("SecondTerminalCharacterList1"),
+						Nonterminal.Of("SecondQuoteSymbol"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => Tuple.Create("\"", ((List<string>)args[1].Payload).Select(x => Terminal.Of(x)).ToList()))
+					})
+				),
+
 				new Production("TerminalCharacterBasic", Nonterminal.Of("Letter")),
 				new Production("TerminalCharacterBasic", Nonterminal.Of("DecimalDigit")),
 				new Production("TerminalCharacterBasic", Nonterminal.Of("CommentlessTerminal")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("ConcatenateSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("DefiningSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("DefinitionSeparatorSymbol")),
 				new Production("TerminalCharacterBasic", Nonterminal.Of("EndCommentSymbol")),
-				new Production("TerminalCharacterBasic", Nonterminal.Of("StartCommentSymbol")),
-				new Production("TerminalCharacterBasic", Nonterminal.Of("OtherCharacter")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("EndGroupSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("EndOptionSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("EndRepeatSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("ExceptSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("RepetitionSymbol")),
 				new Production("TerminalCharacterBasic", Nonterminal.Of("SpecialSequenceSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("StartCommentSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("StartGroupSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("StartOptionSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("StartRepeatSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("TerminatorSymbol")),
+				new Production("TerminalCharacterBasic", Nonterminal.Of("OtherCharacter")),
 
+				new Production("FirstTerminalCharacter", Nonterminal.Of("TerminalCharacterBasic")),
+				new Production("FirstTerminalCharacter", Nonterminal.Of("SpaceCharacter")),
+				new Production("FirstTerminalCharacter", Nonterminal.Of("SecondQuoteSymbol")),
 
+				new Production("SecondTerminalCharacter", Nonterminal.Of("TerminalCharacterBasic")),
+				new Production("SecondTerminalCharacter", Nonterminal.Of("SpaceCharacter")),
+				new Production("SecondTerminalCharacter", Nonterminal.Of("FirstQuoteSymbol")),
+			}.Concat(
+				MakeList<string>("FirstTerminalCharacter", 1)
+			).Concat(
+				MakeList<string>("SecondTerminalCharacter", 1)
+			);
+		}
+
+		private static IEnumerable<Production> SecondPart() {
+			return new List<Production> {
 				new Production("TerminalCharacter", Nonterminal.Of("TerminalCharacterBasic")),
 				new Production("TerminalCharacter", Nonterminal.Of("FirstQuoteSymbol")),
 				new Production("TerminalCharacter", Nonterminal.Of("SecondQuoteSymbol")),
@@ -138,39 +223,6 @@ namespace Grammars {
 					})
 				),
 
-				new Production(
-					Nonterminal.Of("TerminalString"),
-					new Sentence {
-						Nonterminal.Of("FirstQuoteSymbol"),
-						Nonterminal.Of("FirstTerminalCharacterList1"),
-						Nonterminal.Of("FirstQuoteSymbol"),
-					},
-					1,
-					new Annotations(new List<IAnnotation>{
-						new ActionAnnotation(args => Tuple.Create("'", ((List<string>)args[1].Payload).Select(x => Terminal.Of(x)).ToList()))
-					})
-				),
-				new Production(
-					Nonterminal.Of("TerminalString"), 
-					new Sentence {
-						Nonterminal.Of("SecondQuoteSymbol"),
-						Nonterminal.Of("SecondTerminalCharacterList1"),
-						Nonterminal.Of("SecondQuoteSymbol"),
-					},
-					1,
-					new Annotations(new List<IAnnotation>{
-						new ActionAnnotation(args => Tuple.Create("\"", ((List<string>)args[1].Payload).Select(x => Terminal.Of(x)).ToList()))
-					})
-				),
-
-				new Production("FirstTerminalCharacter", Nonterminal.Of("TerminalCharacterBasic")),
-				new Production("FirstTerminalCharacter", Nonterminal.Of("SpaceCharacter")),
-				new Production("FirstTerminalCharacter", Nonterminal.Of("SecondQuoteSymbol")),
-
-				new Production("SecondTerminalCharacter", Nonterminal.Of("TerminalCharacterBasic")),
-				new Production("SecondTerminalCharacter", Nonterminal.Of("SpaceCharacter")),
-				new Production("SecondTerminalCharacter", Nonterminal.Of("FirstQuoteSymbol")),
-
 				new Production("GapSeparator", Nonterminal.Of("SpaceCharacter")),
 				new Production("GapSeparator", Nonterminal.Of("HorizontalTabulationCharacter")),
 				new Production("GapSeparator", Nonterminal.Of("NewLine")),
@@ -204,13 +256,23 @@ namespace Grammars {
 				),
 
 			}.Concat(
-				MakeList<string>("FirstTerminalCharacter", 1)
-			).Concat(
-				MakeList<string>("SecondTerminalCharacter", 1)
-			).Concat(
 				MakeList<object>("GapSeparator", 0)
 			).Concat(
 				MakeList<List<Terminal>>("GapFreeSymbolWithOptionalGapSeparator", 1)
+			);
+		}
+
+		private static IEnumerable<Production> MetaIdentifiers() {
+			return new List<Production> {
+				new Production("MetaIdentifier", new Sentence {
+					Nonterminal.Of("Letter"),
+					Nonterminal.Of("MetaIdentifierCharacterList0"),
+				}),
+
+				new Production("MetaIdentifierCharacter", Nonterminal.Of("Letter")),
+				new Production("MetaIdentifierCharacter", Nonterminal.Of("DecimalDigit")),
+			}.Concat(
+				MakeList<object>("MetaIdentifierCharacter", 0)
 			);
 		}
 
@@ -237,24 +299,6 @@ namespace Grammars {
 
 				new Production("Integer", Nonterminal.Of("DecimalDigitList1")),
 
-				new Production("MetaIdentifier", new Sentence {
-					Nonterminal.Of("Letter"),
-					Nonterminal.Of("MetaIdentifierCharacterList0"),
-				}),
-
-				new Production("MetaIdentifierCharacter", Nonterminal.Of("Letter")),
-				new Production("MetaIdentifierCharacter", Nonterminal.Of("DecimalDigit")),
-
-				new Production("SpecialSequence", new Sentence {
-					Nonterminal.Of("SpecialSequenceSymbol"),
-					Nonterminal.Of("SpecialSequenceCharacterList0"),
-					Nonterminal.Of("SpecialSequenceSymbol"),
-				}),
-
-				new Production("SpecialSequenceCharacter", Nonterminal.Of("TerminalCharacterBasic")),
-				new Production("SpecialSequenceCharacter", Nonterminal.Of("FirstQuoteSymbol")),
-				new Production("SpecialSequenceCharacter", Nonterminal.Of("SecondQuoteSymbol")),
-
 				new Production("CommentSymbol", Nonterminal.Of("BracketedTextualComment")),
 				new Production("CommentSymbol", Nonterminal.Of("OtherCharacter")),
 				new Production("CommentSymbol", Nonterminal.Of("CommentlessSymbol")),
@@ -278,10 +322,6 @@ namespace Grammars {
 
 			}.Concat(
 				MakeList<object>("DecimalDigit", 1)
-			).Concat(
-				MakeList<object>("MetaIdentifierCharacter", 0)
-			).Concat(
-				MakeList<object>("SpecialSequenceCharacter", 0)
 			).Concat(
 				MakeList<object>("CommentSymbol", 0)
 			).Concat(

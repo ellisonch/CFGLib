@@ -132,9 +132,9 @@ namespace Grammars.Properties {
         ///| repeated sequence
         ///| grouped sequen [rest of string was truncated]&quot;;.
         /// </summary>
-        public static string Ebnf {
+        public static string Ebnf_actual {
             get {
-                return ResourceManager.GetString("Ebnf", resourceCulture);
+                return ResourceManager.GetString("Ebnf_actual", resourceCulture);
             }
         }
         

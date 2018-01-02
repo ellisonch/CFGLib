@@ -73,7 +73,7 @@ namespace ConsolePlayground {
 
 			// (new ContinuousRandomTesting(4, 5, 10, 5, 6, 1000, 19)).Run();
 
-			Benchmark();
+			//Benchmark();
 			// BenchmarkBison();
 
 			#region junk 
@@ -206,7 +206,7 @@ namespace ConsolePlayground {
 
 			//DotRunner.Run(DotBuilder.GetRawDot(layoutSppf), "arithmetic_ebnf_layout");
 			Console.WriteLine(inputNoLayout.AsTerminals());
-			var layoutGrammar = Ebnf.Grammar(Nonterminal.Of("Syntax"));
+			var layoutGrammar = Ebnf.GrammarSyntax();
 			var earley = new EarleyParser2(layoutGrammar);
 
 			var sppf = earley.ParseGetForest(inputNoLayout);
@@ -236,7 +236,7 @@ namespace ConsolePlayground {
 
 			sw.Restart();
 
-			var grammar = Ebnf.Grammar(Nonterminal.Of("Syntax"));
+			var grammar = Ebnf.GrammarSyntax();
 			var earley = new EarleyParser2(grammar);
 			var sppf = earley.ParseGetForest(inputNoLayout);
 			var ms2 = sw.Elapsed.TotalMilliseconds;
@@ -264,7 +264,7 @@ namespace ConsolePlayground {
 		}
 
 		private static void ParserGenerator() {
-			var g = Ebnf.Grammar(Nonterminal.Of("SyntaxLayout"));
+			var g = Ebnf.GrammarLayout();
 			var earley = new EarleyParser2(g);
 
 			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_ebnf);

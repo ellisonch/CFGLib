@@ -25,7 +25,7 @@ namespace CFGLibTest {
 		private static void EbnfParse(Sentence sentence) {
 			var noLayoutSentence = Ebnf.RemoveLayout(sentence, out var layoutSppf);
 
-			var g = Ebnf.Grammar(Nonterminal.Of("Syntax"));
+			var g = Ebnf.GrammarSyntax();
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 
@@ -58,7 +58,7 @@ namespace CFGLibTest {
 		[TestMethod]
 		[Ignore]
 		public void ParseEbnfEbnf() {
-			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf);
+			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf_actual);
 			EbnfParse(sentence);
 		}
 	}
