@@ -372,44 +372,33 @@ namespace CFGLib.Parsers.Earley {
 		// MAKE_NODE(B ::= αx · β, j, i, w, v, V) {
 		private SppfNode MakeNodeOriginal(DecoratedProduction decoratedProduction, int j, int i, SppfNode w, SppfNode v) {
 			// var α = decoratedProduction.Prefix;
-
-			Production production = null;
-			// hacking in sum type
-			Tuple<Word, DecoratedProduction> s;
-			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
-			if (decoratedProduction.AtEnd) {
-				s = Tuple.Create<Word, DecoratedProduction>(decoratedProduction.Production.Lhs, null);
-				production = decoratedProduction.Production;
-			} else {
-				s = Tuple.Create<Word, DecoratedProduction>(null, decoratedProduction);
-			}
-
-			SppfNode y;
+			
 			// if α = ϵ and β ̸= ϵ { let y = v }
 			if (decoratedProduction.CurrentPosition == 1 && !decoratedProduction.AtEnd) {
-				y = v;
-				//if (y.FakeProduction != null) {
-				//	if (y.FakeProduction != decoratedProduction.Production) {
-				//		throw new Exception("Different production for contracted node");
-				//	}
-				//}
-				//y.FakeProduction = decoratedProduction.Production;
+				return v;
+			}
+
+			Production production = null;
+
+			SppfNode y;
+			// if β = ϵ { let s = B } else { let s = (B ::= αx · β) }
+			// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
+			if (decoratedProduction.AtEnd) {
+				production = decoratedProduction.Production;
+				var s = production.Lhs;
+				y = _V.GetOrSet(s, j, i);
 			} else {
-				// if there is no node y ∈ V labelled (s,j,i) create one and add it to V
-				if (s.Item1 != null) {
-					y = _V.GetOrSet(s.Item1, j, i);
-				} else {
-					y = _V.GetOrSet(s.Item2, j, i);
-				}
+				var s = decoratedProduction;
+				y = _V.GetOrSet(s, j, i);
+			}
 				
-				// if w = null and y does not have a family of children (v) add one
-				if (w == null) {
-					y.AddFamily(production, v);
-				}
-				// if w ̸= null and y does not have a family of children(w, v) add one			
-				else {
-					y.AddFamily(production, w, v);
-				}
+			// if w = null and y does not have a family of children (v) add one
+			if (w == null) {
+				y.AddFamily(production, v);
+			}
+			// if w ̸= null and y does not have a family of children(w, v) add one			
+			else {
+				y.AddFamily(production, w, v);
 			}
 
 			return y;
