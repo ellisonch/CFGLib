@@ -66,16 +66,16 @@ namespace ConsolePlayground {
 
 			// BnfPlay();
 			// ParserGenerator();
-			// EbnfPlay();
-			// EbnfBench();
-			EbnfBenchLayout();
+			// EbnfPlay();		
 			// VisitorPlay();
 			//TraversePlay();
 
 			// (new ContinuousRandomTesting(4, 5, 10, 5, 6, 1000, 19)).Run();
 
-			//Benchmark();
+			Benchmark();
 			// BenchmarkBison();
+			EbnfBench();
+			// EbnfBenchLayout();
 
 			#region junk 
 			//var g = new Grammar(new List<Production>{
