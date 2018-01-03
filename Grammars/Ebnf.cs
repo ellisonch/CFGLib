@@ -276,7 +276,7 @@ namespace Grammars {
 			);
 		}
 
-		public static IEnumerable<Production> ThirdPart() {
+		private static IEnumerable<Production> ThirdPart() {
 			return new List<Production> {
 				new Production("CommentlessTerminal", Nonterminal.Of("ConcatenateSymbol")),
 				new Production("CommentlessTerminal", Nonterminal.Of("DefiningSymbol")),
@@ -331,7 +331,7 @@ namespace Grammars {
 			);
 		}
 
-		public static IEnumerable<Production> FinalPart() {
+		private static IEnumerable<Production> FinalPart() {
 			return new List<Production> {
 				new Production("Syntax", Nonterminal.Of("SyntaxRuleList1")),
 
@@ -475,19 +475,19 @@ namespace Grammars {
 			return retval;
 		}
 
-		public static IEnumerable<Production> Letter() {
+		private static IEnumerable<Production> Letter() {
 			return LetterUc().Concat(LetterLc());
 		}
-		public static IEnumerable<Production> DecimalDigit() {
+		private static IEnumerable<Production> DecimalDigit() {
 			return Enumerable.Range(0, 10).Select((x) => CFGParser.Production(string.Format("<DecimalDigit> → '{0}'", x)));
 		}
 
 		//CFGParser.Production("<S> → '0'"),
 		//		CFGParser.Production("<S> → ε"),
-		public static IEnumerable<Production> LetterUc() {
+		private static IEnumerable<Production> LetterUc() {
 			return _lettersUc.Select((x) => CFGParser.Production(string.Format("<Letter> → '{0}'", x)));
 		}
-		public static IEnumerable<Production> LetterLc() {
+		private static IEnumerable<Production> LetterLc() {
 			return _lettersUc.Select((x) => CFGParser.Production(string.Format("<Letter> → '{0}'", char.ToLower(x))));
 		}
 	}
