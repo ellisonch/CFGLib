@@ -19,7 +19,11 @@ repeated sequence = start repeat symbol, definitions list, end repeat symbol;
 grouped sequence = start group symbol, definitions list, end group symbol;
 empty sequence = ;
 
-
+meta identifier
+= letter, {meta identifier character};
+meta identifier character
+= letter
+| decimal digit;
 
 letter
 = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h'
@@ -52,7 +56,7 @@ terminator symbol = ';' | '.';
 other character = ' ' | ':' | '+' | '_' | '%' | '@' | '&' | '#' | '$' | '<' | '>' | '\' | '^' | '`' | '~';
 space character = ' ';
 
-horizontal tabulation character = ? ISO 6429 character Horizontal Tabulation ? ;
-new line = { ? ISO 6429 character Carriage Return ? }, ? ISO 6429 character Line Feed ?, { ? ISO 6429 character Carriage Return ? };
-vertical tabulation character = ? ISO 6429 character Vertical Tabulation ? ;
-form feed = ? ISO 6429 character Form Feed ? ;
+horizontal tabulation character = ? U+0009 ? ;
+new line = { ? U+000D ? }, ? U+000A ?, { ? U+000D ? };
+vertical tabulation character = ? U+000B ? ;
+form feed = ? U+000C ? ;

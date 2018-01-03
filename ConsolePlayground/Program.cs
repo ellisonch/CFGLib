@@ -37,7 +37,7 @@ namespace ConsolePlayground {
 			// var testp = new TestTraversal();
 			// var sppf = testp.TestTraversal05();
 
-			
+
 			//var g = new Grammar(new List<Production>{
 			//	CFGParser.Production("<S> → <S> <S>"),
 			//	CFGParser.Production("<S> → 'x'"),
@@ -72,10 +72,12 @@ namespace ConsolePlayground {
 
 			// (new ContinuousRandomTesting(4, 5, 10, 5, 6, 1000, 19)).Run();
 
-			Benchmark();
+			//Benchmark();
 			// BenchmarkBison();
-			EbnfBench();
+			//EbnfBench();
 			// EbnfBenchLayout();
+
+			DevelopAnnotations();
 
 			#region junk 
 			//var g = new Grammar(new List<Production>{
@@ -176,6 +178,28 @@ namespace ConsolePlayground {
 
 			Console.WriteLine("Finished!");
 			Console.Read();
+		}
+
+		private static void DevelopAnnotations() {
+			var sw = Stopwatch.StartNew();
+			var input = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_annotated);
+			var inputWithoutLayout = Ebnf.RemoveLayout(input, out _);
+			var grammar = Ebnf.GrammarSyntax();
+			var parser = new EarleyParser2(grammar);
+			var sppf = parser.ParseGetForest(inputWithoutLayout);
+			if (sppf == null) {
+				throw new Exception();
+			}
+			var ms1 = sw.Elapsed.TotalMilliseconds;
+			Console.WriteLine("Parse: {0:0.#}ms", ms1);
+
+			var traversal = new Traversal(sppf, grammar);
+			var resCollection = traversal.Traverse();
+			if (resCollection.Count() > 1) {
+				throw new Exception("ambiguous");
+			}
+			var res = resCollection.Single();
+			Console.WriteLine(res);
 		}
 
 		private static void TraversePlay() {

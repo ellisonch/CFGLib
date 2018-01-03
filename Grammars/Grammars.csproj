@@ -64,6 +64,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Annotated\Arithmetic.ebnf" />
     <None Include="Raw\Addition.bnf" />
     <None Include="Raw\Arithmetic.ebnf" />
     <None Include="Raw\Arithmetic.bnf" />
