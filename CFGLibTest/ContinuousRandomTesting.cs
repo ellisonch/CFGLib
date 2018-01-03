@@ -1,6 +1,8 @@
 ﻿using CFGLib;
+using CFGLib.Actioneer;
 using CFGLib.Parsers.CYK;
 using CFGLib.Parsers.Earley;
+using CFGLib.ProductionAnnotations.Actioning;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace CFGLibTest {
 	public class ContinuousRandomTesting {
+		private const int _milestone = 25;
+
 		private readonly Random _r;
 		private readonly int _maxNonterminals;
 		private readonly int _maxTerminals;
@@ -59,7 +63,7 @@ namespace CFGLibTest {
 					timeouts++;
 				}
 				total++;
-				if (total % 50 == 0) {
+				if (total % _milestone == 0) {
 					Console.WriteLine("{0} / {1} / {2} fail / timeout / total in {3}ms", fail, timeouts, total, sw.Elapsed.TotalMilliseconds);
 					sw.Restart();
 				}
@@ -95,15 +99,25 @@ namespace CFGLibTest {
 				earley1 = new EarleyParser(g);
 				earley2 = new EarleyParser2(g);
 				cyk = new CykParser(h);
-			} catch {
-				Report(g);
+			} catch (Exception e) {
+				Report(g, e);
 				return true;
 			}
 			
 			foreach (var sentence in preparedSentences) {
 				try {
-					var p1 = earley1.ParseGetProbability(sentence);
-					var p2 = earley2.ParseGetProbability(sentence);
+					var sppf1 = earley1.ParseGetForest(sentence);
+					var sppf2 = earley2.ParseGetForest(sentence);
+
+					if (sppf1 == null && sppf2 != null) {
+						throw new Exception();
+					}
+					if (sppf2 == null && sppf1 != null) {
+						throw new Exception();
+					}
+
+					var p1 = earley1.ProbabilityOfSppf(sppf1);
+					var p2 = earley2.ProbabilityOfSppf(sppf2);
 					var p3 = cyk.ParseGetProbability(sentence);
 					if (!Helpers.IsNear(p1, p2)) {
 						throw new Exception();
@@ -111,14 +125,22 @@ namespace CFGLibTest {
 					if (!Helpers.IsNear(p1, p3)) {
 						throw new Exception();
 					}
-				} catch {
-					Report(g, sentence);
+					try {
+						TestTraversal.CheckTraversal(g, sentence, sppf1);
+					} catch (TraversalLoopException) { }
+					try {
+						TestTraversal.CheckTraversal(g, sentence, sppf2);
+					} catch (TraversalLoopException) { }
+				} catch (Exception e) {
+					Report(g, e, sentence);
 					return true;
 					// throw new RandomTestException(e, g, sentence);
 				}
 			}
 			return false;
 		}
+
+		
 
 		private void AddRandomSentences(IList<Sentence> preparedSentences, IList<Terminal> terminals) {
 			for (var i = 0; i < _numRandomSentences; i++) {
@@ -132,7 +154,7 @@ namespace CFGLibTest {
 			}
 		}
 
-		private void Report(Grammar g, Sentence sentence = null) {
+		private void Report(Grammar g, Exception e, Sentence sentence = null) {
 			//Console.WriteLine("Offending grammar:");
 			//Console.WriteLine(g.ToCodeString());
 			//Console.WriteLine("Offending sentence:");
@@ -140,6 +162,7 @@ namespace CFGLibTest {
 			if (sentence == null) {
 				sentence = Sentence.FromLetters("");
 			}
+			_parseErrorFile.WriteLine(e);
 			var test = string.Format("ExecuteTest({0}, \"{1}\");", g.ToCodeString(), sentence.AsTerminals(" "));
 			_parseErrorFile.WriteLine(test);
 			_parseErrorFile.WriteLine("-------------------------------------------");
@@ -159,9 +182,10 @@ namespace CFGLibTest {
 			for (int i = 0; i < 200; i++) {
 				g = _gramGen.NextCFG(numNonterminals, numProductions, maxProductionLength, terminals, true);
 				if (g.Productions.Count() > 0) {
-					return (g, terminals);
+					break;
 				}
 			}
+			g = IdentityActions.Annotate(g);
 			return (g, terminals);
 		}
 	}

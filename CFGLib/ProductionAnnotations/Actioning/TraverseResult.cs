@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CFGLib.Actioneer {
+namespace CFGLib.ProductionAnnotations.Actioning {
 	public class TraverseResult {
 		public object Payload { get; }
 		internal SppfNode Node { get; }
@@ -18,6 +18,10 @@ namespace CFGLib.Actioneer {
 			Payload = payload;
 			Node = node;
 			Production = production;
+		}
+
+		public override string ToString() {
+			return string.Format("{0} ({1})", Node.ToString(), Payload?.ToString());
 		}
 	}
 }

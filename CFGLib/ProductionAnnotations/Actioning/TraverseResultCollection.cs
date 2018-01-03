@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace CFGLib.Actioneer {
+namespace CFGLib.ProductionAnnotations.Actioning {
 	public class TraverseResultCollection : IEnumerable<TraverseResult> {
 		private readonly IEnumerable<TraverseResult> _results;
 		public TraverseResultCollection(IEnumerable<TraverseResult> results) {
@@ -13,6 +14,10 @@ namespace CFGLib.Actioneer {
 
 		IEnumerator IEnumerable.GetEnumerator() {
 			return GetEnumerator();
+		}
+
+		public override string ToString() {
+			return string.Join(", ", _results.Select((x) => x.ToString()));
 		}
 	}
 }

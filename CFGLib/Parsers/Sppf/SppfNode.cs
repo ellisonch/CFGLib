@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Sppf {
 	public abstract class SppfNode {
-		public static int _nextId = 0;
-				
 		public int StartPosition { get; }
 		public int EndPosition { get; }
 		private readonly HashSet<SppfFamily> _families = new HashSet<SppfFamily>();
-		public readonly int Id = _nextId++;
 
 		internal IEnumerable<SppfFamily> Families {
 			get {
@@ -26,23 +23,14 @@ namespace CFGLib.Parsers.Sppf {
 			StartPosition = startPos;
 			EndPosition = endPos;
 		}
-
-		/// <summary>
-		/// Used just to convey production in contracted sppf nodes, for testing
-		/// </summary>
-		// public Production FakeProduction { get; internal set; }
 		
-		//internal void AddFamily(Production production) {
-		//	var family = new Family2<SppfNode2>(production);
-		//	Families.Add(family);
-		//}
 		internal void AddFamily(Production production, SppfNode v) {
-			var family = new SppfFamily(production, v);
+			var family = new SppfFamilySingle(production, v);
 			_families.Add(family);
 		}
-
+		
 		internal void AddFamily(Production production, SppfNode w, SppfNode v) {
-			var family = new SppfFamily(production, w, v);
+			var family = new SppfFamilyDouble(production, w, v);
 			_families.Add(family);
 		}
 

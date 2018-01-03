@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 using CFGLib.Actioneer;
 using CFGLib.Parsers.Sppf;
 using Grammars;
+using CFGLib.ProductionAnnotations.Actioning;
+using CFGLib.ProductionAnnotations;
+using CFGLib.ProductionAnnotations.Precedencing;
+using CFGLib.ProductionAnnotations.Gathering;
 
 namespace ConsolePlayground {
 	/// <summary>
@@ -28,18 +32,50 @@ namespace ConsolePlayground {
 
 			// PaperExamples();
 
-			DebugGrammar();
+			//DebugGrammar();
 
-			// var testp = new TestParsing();
-			// testp.TestParsing02();
+			// var testp = new TestTraversal();
+			// var sppf = testp.TestTraversal05();
+
+			
+			//var g = new Grammar(new List<Production>{
+			//	CFGParser.Production("<S> → <S> <S>"),
+			//	CFGParser.Production("<S> → 'x'"),
+			//}, Nonterminal.Of("S"));
+			//g = IdentityActions.Annotate(g);
+			//// var input = Sentence.FromWords("x x x x x x x x x x x x x x x x");
+			//var input = Sentence.FromWords("x x x x x x x x x x x x x x");
+			//var sppf = (new EarleyParser2(g)).ParseGetForest(input);
+
+
+			//var traversal = new Traversal(sppf, g);
+			//var result = traversal.Traverse();
+
+
+			//foreach (var option in result) {
+			//	if (!(option.Payload is Sentence)) {
+
+			//	}
+			//	var sgen = (Sentence)option.Payload;
+			//	if (!input.SequenceEqual(sgen)) {
+			//		throw new Exception();
+			//	}
+			//}
+
+			// DotRunner.Run(DotBuilder.GetRawDot(sppf), "oom");
 
 			// BnfPlay();
+			// ParserGenerator();
+			// EbnfPlay();		
 			// VisitorPlay();
-			
-			// (new ContinuousRandomTesting(5, 6, 20, 10, 6, 1000, 13)).Run();
+			//TraversePlay();
 
-			// Benchmark();
+			// (new ContinuousRandomTesting(4, 5, 10, 5, 6, 1000, 19)).Run();
+
+			Benchmark();
 			// BenchmarkBison();
+			EbnfBench();
+			// EbnfBenchLayout();
 
 			#region junk 
 			//var g = new Grammar(new List<Production>{
@@ -142,12 +178,88 @@ namespace ConsolePlayground {
 			Console.Read();
 		}
 
+		private static void TraversePlay() {
+			var g = new Grammar(new List<Production>{
+				CFGParser.Production("<A> → <B>"),
+				CFGParser.Production("<B> → <A>"),
+				CFGParser.Production("<B> → 'x'"),
+			}, Nonterminal.Of("A"));
+			g = IdentityActions.Annotate(g);
+			
+			var earley2 = new EarleyParser2(g);
+			var sentence = Sentence.FromWords("x");
+			var sppf2 = earley2.ParseGetForest(sentence);
+			DotRunner.Run(DotBuilder.GetRawDot(sppf2), "infinite");
+
+			var t2 = new Traversal(sppf2, g);
+			var r2 = t2.Traverse();
+			//foreach (var option in r2) {
+			//	var s2 = (Sentence)option.Payload;
+			//	if (!sentence.SequenceEqual(s2)) {
+			//		throw new Exception();
+			//	}
+			//}
+		}
+
+		private static void EbnfPlay() {
+			var input = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf_bench);
+			Sentence inputNoLayout = Ebnf.RemoveLayout(input, out var layoutSppf);
+
+			//DotRunner.Run(DotBuilder.GetRawDot(layoutSppf), "arithmetic_ebnf_layout");
+			Console.WriteLine(inputNoLayout.AsTerminals());
+			var layoutGrammar = Ebnf.GrammarSyntax();
+			var earley = new EarleyParser2(layoutGrammar);
+
+			var sppf = earley.ParseGetForest(inputNoLayout);
+			if (sppf == null) {
+				throw new Exception();
+			}
+
+			//DotRunner.Run(DotBuilder.GetRawDot(sppf), "arithmetic_ebnf");
+
+			//var traversal = new Traversal(sppf, input, layoutGrammar);
+			//var result = traversal.Traverse();
+			//if (result.Count() != 1) {
+			//	throw new Exception();
+			//}
+			//var inputNoLayout = new Sentence((List<Terminal>)result.First().Payload);
+			//return inputNoLayout;
+
+			//Console.WriteLine(inputNoLayout);
+		}
+
+		private static void EbnfBench() {
+			var tup = EbnfBenchLayout();
+			var inputNoLayout = tup.Item1;
+			var ms1 = tup.Item2;
+			var sw = Stopwatch.StartNew();
+
+			var grammar = Ebnf.GrammarSyntax();
+			var earley = new EarleyParser2(grammar);
+			var sppf = earley.ParseGetForest(inputNoLayout);
+			var ms2 = sw.Elapsed.TotalMilliseconds;
+			if (sppf == null) {
+				throw new Exception();
+			}
+			Console.WriteLine("Parse: {0:0.#}ms", ms2);
+			Console.WriteLine("Total: {0:0.#}ms", ms1 + ms2);
+		}
+
+		private static Tuple<Sentence, double> EbnfBenchLayout() {
+			var sw = Stopwatch.StartNew();
+			var input = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf_bench);
+			Sentence inputNoLayout = Ebnf.RemoveLayout(input, out var layoutSppf);
+			var ms1 = sw.Elapsed.TotalMilliseconds;
+			Console.WriteLine("Layout: {0:0.#}ms", ms1);
+			return Tuple.Create(inputNoLayout, ms1);
+		}
+
 		private static void BnfPlay() {
 			var bnf = Bnf.Grammar();
 			var earley = new EarleyParser2(bnf);
 
-			// var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic);
-			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
+			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic);
+			// var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
 			// var sentence2 = Sentence.FromLetters("<S> ::= <S> '+' <S>\r\n<S> ::= '1'\r\n");
 			// if (!sentence1.Equals(sentence2)) { 			}
 			// int index = sentence1.Zip(sentence2, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
@@ -158,13 +270,39 @@ namespace ConsolePlayground {
 			DotRunner.Run(DotBuilder.GetRawDot(sppf), "bnfPlay");
 		}
 
+		private static void ParserGenerator() {
+			var g = Ebnf.GrammarLayout();
+			var earley = new EarleyParser2(g);
+
+			var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_ebnf);
+			// var sentence1 = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
+			// var sentence2 = Sentence.FromLetters("<S> ::= <S> '+' <S>\r\n<S> ::= '1'\r\n");
+			// if (!sentence1.Equals(sentence2)) { 			}
+			// int index = sentence1.Zip(sentence2, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
+
+			var sppf = earley.ParseGetForest(sentence1);
+			if (sppf == null) {
+				throw new Exception();
+			}
+
+			DotRunner.Run(DotBuilder.GetRawDot(sppf), "arithmetic_ebnf");
+
+			//var traversal = new Traversal(sppf, sentence1, g);
+			//var result = traversal.Traverse();
+			//if (result.Count() != 1) {
+			//	throw new Exception();
+			//}
+			//var generatedGrammar = new Grammar((IEnumerable<Production>)result.First().Payload, Nonterminal.Of("S"));
+			//Console.WriteLine(generatedGrammar);
+		}
+
 		private static void DebugGrammar() {
-			var g = new Grammar(new List<Production>{
+			BaseGrammar g = new Grammar(new List<Production>{
 				CFGParser.Production("<S> → ε"),
 			}, Nonterminal.Of("S"));
 			var sentence = Sentence.FromWords("1 + 1 + 1");
 			var grammar = AdditionGrammar(argList => string.Format("({0} + {1})", argList[0].Payload, argList[2].Payload));
-			g = grammar.Grammar;
+			g = grammar;
 			var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 			//DotRunner.Run(earley.ParseGetForest(sentence).GetRawDot(), "testEarleyOld");
@@ -226,12 +364,12 @@ namespace ConsolePlayground {
 			// for (var i = 170; i < 195; i++) {
 			// for (var i = 751; i < 752; i++) {
 			// for (var i = 95; i < 130; i++) { // new; 15385
-			for (var i = 120; i < 160; i++) { // new; 10649ms
+			for (var i = 160; i < 200; i++) {
 			// for (var i = 300; i < 350; i++) { // new; 
 				inputs.Add(Tuple.Create(Sentence.FromWords(AdditionInput(i)), (long)i, i));
 			}
 			var gp = AdditionGrammar(argList => (long)argList[0].Payload + (long)argList[2].Payload);
-			var ep = new EarleyParser2(gp.Grammar);
+			var ep = new EarleyParser2(gp);
 
 			// var totalSw = Stopwatch.StartNew();
 			double totalMs = 0;
@@ -240,19 +378,19 @@ namespace ConsolePlayground {
 				var expectedResult = inputPair.Item2;
 				var i = inputPair.Item3;
 
-				var time = MinTime(3, ep, input);
+				var time = MinTime(3, ep, gp, input);
 				totalMs += time;
 
 				Console.WriteLine("{0}, {1}", i, time);
 			}
-			Console.WriteLine("Done in {0}ms (prev 10649ms)", (int)totalMs);
+			Console.WriteLine("Done in {0}ms (prev 3686ms)", (int)totalMs);
 
-			foreach (var kvp in EarleyParser2._stats.Data) {
-				Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);
-			}
+			//foreach (var kvp in EarleyParser2._stats.Data) {
+			//	Console.WriteLine("{0}, {1}", kvp.Key, kvp.Value);
+			//}
 		}
 
-		private static double MinTime(int times, EarleyParser2 ep, Sentence input) {
+		private static double MinTime(int times, EarleyParser2 ep, BaseGrammar grammar, Sentence input) {
 			double fastest = double.MaxValue;
 
 			var sw = new Stopwatch();
@@ -260,6 +398,7 @@ namespace ConsolePlayground {
 				sw.Restart();
 				// var sppf = ep.ParseGetRawSppf(input);
 				var sppf = ep.ParseGetForest(input);
+
 				//var trav = new Traversal(sppf, input, gp);
 				//var resultList = trav.Traverse();
 				//if (resultList.Count() != 1) {
@@ -287,22 +426,44 @@ namespace ConsolePlayground {
 				CFGParser.Production("<B> → ε"),
 				CFGParser.Production("<T> → 'b' 'b' 'b'"),
 			}, Nonterminal.Of("S"));
-
-			var ep = new EarleyParser2(ex3);
+			
 			var input = Sentence.FromLetters("abbb");
-			var sppf = ep.ParseGetForest(input);
+			var sppf1 = new EarleyParser(ex3).ParseGetForest(input);
+			var sppf2 = new EarleyParser2(ex3).ParseGetForest(input);
 
-			// var sppf3 = ex3.ParseGetForest(Sentence.FromLetters("abbb"));
-			var dot = DotBuilder.GetRawDot(sppf);
-			System.IO.File.WriteAllText(@"D:\prog\ContextFreeGrammars\ConsolePlayground\bin\Debug\ex3dot.dot", dot);
-			DotRunner.Run(dot, "example3");
+			DotRunner.Run(DotBuilder.GetRawDot(sppf1), "example3_old");
+			DotRunner.Run(DotBuilder.GetRawDot(sppf2), "example3_new");
 		}
 
-		private static GrammarPlus AdditionGrammar<T>(Func<TraverseResult[], T> func) {
-			var p1 = CFGParser.Production("<S> → <S> '+' <S>");
+		private static BaseGrammar AdditionGrammar<T>(Func<TraverseResult[], T> func) {
+			var p1 = new Production(
+				Nonterminal.Of("S"), 
+				new Sentence {
+					Nonterminal.Of("S"),
+					Terminal.Of("+"),
+					Nonterminal.Of("S")
+				},
+				1,
+				new Annotations(new List<IAnnotation> {
+					new PrecedenceAnnotation(5),
+					new ActionAnnotation(argList => func(argList)),
+					new GatherAnnotation(new GatherOption[]{ GatherOption.SameOrLower, GatherOption.StrictlyLower })
+				})
+			);
 			var nums = new List<Production> {
 				// CFGParser.Production("<S> → '0'"),
-				CFGParser.Production("<S> → '1'"),
+				new Production(
+					Nonterminal.Of("S"),
+					new Sentence {
+						Terminal.Of("1"),
+					},
+					1,
+					new Annotations(new List<IAnnotation> {
+						new PrecedenceAnnotation(0),
+						new ActionAnnotation(x => Convert.ToInt64(x[0].Payload)),
+						new GatherAnnotation(new GatherOption[]{ })
+					})
+				),
 				//CFGParser.Production("<S> → '2'"),
 				//CFGParser.Production("<S> → '3'"),
 				//CFGParser.Production("<S> → '4'"),
@@ -315,22 +476,8 @@ namespace ConsolePlayground {
 			var g = new Grammar(new List<Production>{
 				p1,
 			}.Concat(nums), Nonterminal.Of("S"));
-
-			//var h = g.ToCNF();
-			//Console.WriteLine(g.ToCodeString());
-			//Console.WriteLine();
-
-			var actions = new List<ProductionPlus> {
-				// new Dictionary<Production, IParserAction> {
-				new ProductionPlus(p1, new ParserAction(argList => func(argList)), 5, new GatherOption[]{ GatherOption.SameOrLower, GatherOption.StrictlyLower }),
-			};
-			var termAction1 = new ParserAction(x => Convert.ToInt64(x[0].Payload));
-			foreach (var num in nums) {
-				actions.Add(new ProductionPlus(num, termAction1, 0, new GatherOption[] { }));
-				// actions[num] = ;
-			}
-			var gp = new GrammarPlus(g, actions);
-			return gp;
+			
+			return g;
 		}
 
 		private static void VisitorPlay() {
@@ -344,9 +491,9 @@ namespace ConsolePlayground {
 			//	actions2[num] = termAction2;
 			//}
 
-			var ep = new EarleyParser2(gp.Grammar);
+			var ep = new EarleyParser2(gp);
 
-			var inputString = AdditionInput(3);
+			var inputString = AdditionInput(5);
 			var input = Sentence.FromWords(inputString);
 			var sppf = ep.ParseGetForest(input);
 
@@ -357,7 +504,7 @@ namespace ConsolePlayground {
 			Console.WriteLine();
 
 			Console.WriteLine("Starting Traversal...");
-			var trav = new Traversal(sppf, input, gp);
+			var trav = new Traversal(sppf, gp);
 			var resultList = trav.Traverse();
 			Console.WriteLine("-----------------");
 			foreach (var result in resultList) {
@@ -365,10 +512,9 @@ namespace ConsolePlayground {
 			}
 
 			//Console.WriteLine("-----------------");
-			//foreach (var result in new Traversal(sppf, input, actions2).Traverse()) {
+			//foreach (var result in new Traversal(sppf, input, gp).Traverse()) {
 			//	Console.WriteLine(result.Payload);
 			//}
-
 		}
 
 		private static string AdditionInput(int count) {

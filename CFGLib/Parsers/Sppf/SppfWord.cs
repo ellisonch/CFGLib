@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Sppf {
 	public class SppfWord : SppfNode {
-		private readonly int _cachedHash;
-
 		public Word Word { get; }
 
 		public SppfWord(Word word, int startPos, int endPos) : base(startPos, endPos) {
 			Word = word;
-			_cachedHash = MyGetHashCode();
 		}
 
 		public static bool operator ==(SppfWord x, SppfWord y) {
@@ -44,12 +41,8 @@ namespace CFGLib.Parsers.Sppf {
 			return true;
 		}
 
-		public override int GetHashCode() {
-			return _cachedHash;
-		}
-
 		// based on http://stackoverflow.com/a/263416/2877032
-		private int MyGetHashCode() {
+		public override int GetHashCode() {
 			unchecked {
 				int hash = 17;
 				hash = hash * 23 + this.StartPosition.GetHashCode();
@@ -59,11 +52,7 @@ namespace CFGLib.Parsers.Sppf {
 				return hash;
 			}
 		}
-
-		//public override string ToString() {
-		//	var firstBit = Word.ToString();
-		//	return string.Format("{0} {1} {2}", firstBit, StartPosition, EndPosition);
-		//}
+		
 		protected override string PayloadToString() {
 			return Word.ToString();
 		}

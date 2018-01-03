@@ -11,10 +11,11 @@ namespace CFGLib.Parsers.Earley {
 
 		public Word NextWord {
 			get {
-				if (CurrentPosition >= Production.Rhs.Count) {
+				var rhs = Production.Rhs;
+				if (CurrentPosition >= rhs.Count) {
 					return null;
 				}
-				return Production.Rhs[CurrentPosition];
+				return rhs[CurrentPosition];
 			}
 		}
 
@@ -27,6 +28,18 @@ namespace CFGLib.Parsers.Earley {
 		public bool NextToEnd {
 			get {
 				return CurrentPosition + 1 == Production.Rhs.Count;
+			}
+		}
+
+		public Word TailFirst {
+			get {
+				var pos = CurrentPosition + 1;
+				var rhs = Production.Rhs;
+				if (pos >= rhs.Count) {
+					return null;
+				}
+				return rhs[pos];
+				// return Production.Rhs.ElementAtOrDefault(pos);
 			}
 		}
 

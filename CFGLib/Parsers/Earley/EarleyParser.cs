@@ -17,10 +17,7 @@ namespace CFGLib.Parsers.Earley {
 	/// It exists mainly for didactic reasons.  <see cref="EarleyParser2"/> Should be as fast and take less memory.
 	/// </summary>
 	public class EarleyParser : Parser {
-		private readonly BaseGrammar _grammar;
-
-		public EarleyParser(BaseGrammar grammar) {
-			_grammar = grammar;
+		public EarleyParser(BaseGrammar grammar) : base(grammar) {
 		}
 
 		public override double ParseGetProbability(Sentence s) {
@@ -31,7 +28,7 @@ namespace CFGLib.Parsers.Earley {
 
 			var internalSppf = ConstructInternalSppf(successes, s);
 
-			return ProbabilityCalculator.GetProbFromSppf(_grammar, internalSppf);
+			return ProbabilityCalculator.GetProbFromSppf(Grammar, internalSppf);
 		}
 
 		public override SppfNode ParseGetForest(Sentence s) {
@@ -41,7 +38,7 @@ namespace CFGLib.Parsers.Earley {
 			}
 
 			var internalSppf = ConstructInternalSppf(successes, s);
-			// return SppfToForest(_grammar, internalSppf);
+			// return SppfToForest(Grammar, internalSppf);
 			return internalSppf;
 		}
 
@@ -51,7 +48,7 @@ namespace CFGLib.Parsers.Earley {
 		private IList<Item> ComputeSuccesses(Sentence s) {
 			// this helps sometimes
 			//var incomingTerminals = s.GetAllTerminals();
-			//var parseableTerminals = _grammar.GetTerminals();
+			//var parseableTerminals = Grammar.GetTerminals();
 			//if (!incomingTerminals.IsSubsetOf(parseableTerminals)) {
 			//	return new List<Item>();
 			//}
@@ -67,8 +64,8 @@ namespace CFGLib.Parsers.Earley {
 			StateSet[] S = new StateSet[s.Count + 1];
 
 			// Initialize S(0)
-			S[0] = new StateSet(_grammar.Start);
-			foreach (var production in _grammar.ProductionsFrom(_grammar.Start)) {
+			S[0] = new StateSet(Grammar.Start);
+			foreach (var production in Grammar.ProductionsFrom(Grammar.Start)) {
 				var item = new Item(production, 0, 0);
 				S[0].Insert(item);
 			}
@@ -132,8 +129,8 @@ namespace CFGLib.Parsers.Earley {
 
 		
 		private SppfNode ConstructInternalSppf(IEnumerable<Item> successes, Sentence s) {
-			// var root = new SymbolNode(_grammar.Start, 0, s.Count);
-			var root = new SppfWord(_grammar.Start, 0, s.Count);
+			// var root = new SymbolNode(Grammar.Start, 0, s.Count);
+			var root = new SppfWord(Grammar.Start, 0, s.Count);
 			var processed = new HashSet<Item>();
 			var nodes = new Dictionary<SppfNode, SppfNode>();
 			nodes[root] = root;
@@ -250,7 +247,7 @@ namespace CFGLib.Parsers.Earley {
 				if (item.StartPosition != 0) {
 					continue;
 				}
-				if (item.Production.Lhs != _grammar.Start) {
+				if (item.Production.Lhs != Grammar.Start) {
 					continue;
 				}
 				successes.Add(item);
@@ -345,7 +342,7 @@ namespace CFGLib.Parsers.Earley {
 			// check if we've already predicted this nonterminal in this state, if so, don't
 			// this optimization may not always be faster, but should help when there are lots of productions or high ambiguity
 			if (!state.PredictedAlreadyAndSet(nonterminal)) {
-				var productions = _grammar.ProductionsFrom(nonterminal);
+				var productions = Grammar.ProductionsFrom(nonterminal);
 
 				// insert, but avoid duplicates
 				foreach (var production in productions) {
@@ -361,7 +358,7 @@ namespace CFGLib.Parsers.Earley {
 			// If the thing we're trying to produce is nullable, go ahead and eagerly derive epsilon. [AH2002]
 			// Except this trick only works easily when we don't want the full parse tree
 			// we save items generated this way to use in completion later
-			var probabilityNull = _grammar.NullableProbabilities[nonterminal];
+			var probabilityNull = Grammar.NullableProbabilities[nonterminal];
 			if (probabilityNull > 0.0) {
 				var newItem = item.Increment();
 				if (item.CurrentPosition != 0) {

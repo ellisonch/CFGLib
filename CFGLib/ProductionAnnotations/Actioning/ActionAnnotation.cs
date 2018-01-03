@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CFGLib.Actioneer {
+namespace CFGLib.ProductionAnnotations.Actioning {
 	public interface IParserAction {
 		object Act(TraverseResult[] args);
 	}
-	public class ParserAction : IParserAction {
-		private Func<TraverseResult[], object> _action;
+	public class ActionAnnotation : IParserAction, IAnnotation {
+		private readonly Func<TraverseResult[], object> _action;
 
-		public ParserAction(Func<TraverseResult[], object> p) {
+		public ActionAnnotation(Func<TraverseResult[], object> p) {
 			_action = p;
 		}
 

@@ -9,6 +9,7 @@ namespace CFGLib.Parsers.Earley {
 	internal class EarleySet : IEnumerable<EarleyItem> {
 		private readonly List<EarleyItem> _items = new List<EarleyItem>();
 		private readonly HashSet<EarleyItem> _hashedItems = new HashSet<EarleyItem>();
+		private readonly Dictionary<Nonterminal, List<EarleyItem>> _nonterminalCache = new Dictionary<Nonterminal, List<EarleyItem>>();
 
 		public bool IsEmpty {
 			get {
@@ -22,8 +23,21 @@ namespace CFGLib.Parsers.Earley {
 			}
 		}
 
-		public EarleyItem this[int i] {
-			get { return _items[i]; }
+		//public EarleyItem this[int i] {
+		//	get { return _items[i]; }
+		//}
+
+		public IEnumerable<EarleyItem> FixedEnum() {
+			var count = _items.Count;
+			for (var i = 0; i < count; i++) {
+				yield return _items[i];
+			}
+		}
+		public IList<EarleyItem> ItemsAtNonterminal(Nonterminal nonterminal) {
+			if (!_nonterminalCache.TryGetValue(nonterminal, out var list)) {
+				return null;
+			}
+			return list;
 		}
 
 		public EarleySet() { }
@@ -41,6 +55,14 @@ namespace CFGLib.Parsers.Earley {
 			
 			if (_hashedItems.Add(earleyItem)) {
 				_items.Add(earleyItem);
+				var nextWord = earleyItem.DecoratedProduction.NextWord;
+				if (nextWord is Nonterminal nt) {
+					if (!_nonterminalCache.TryGetValue(nt, out var ntList)) {
+						ntList = new List<EarleyItem>();
+						_nonterminalCache[nt] = ntList;
+					}
+					ntList.Add(earleyItem);
+				}
 				return true;
 			}
 			return false;

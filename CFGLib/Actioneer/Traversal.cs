@@ -1,5 +1,5 @@
-﻿using CFGLib;
-using CFGLib.Parsers.Sppf;
+﻿using CFGLib.Parsers.Sppf;
+using CFGLib.ProductionAnnotations.Actioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,156 +9,221 @@ using System.Threading.Tasks;
 namespace CFGLib.Actioneer {
 	public class Traversal {
 		private readonly SppfNode _root;
-		private readonly Sentence _input;
-		private readonly GrammarPlus _annotatedGrammar;
+		private readonly BaseGrammar _grammar;
+		private readonly Dictionary<SppfNode, TraverseResultCollection> _cache = new Dictionary<SppfNode, TraverseResultCollection>();
+		private readonly Dictionary<SppfNode, TraverseResultCollection[]> _branchCache = new Dictionary<SppfNode, TraverseResultCollection[]>();
 
-		public Traversal(SppfNode root, Sentence input, GrammarPlus annotatedGrammar) {
+		public Traversal(SppfNode root, BaseGrammar grammar) {
 			_root = root;
-			_input = input;
-			_annotatedGrammar = annotatedGrammar;
+			_grammar = grammar;
 		}
-
+		
 		public TraverseResultCollection Traverse() {
-			return Traverse(_root, 0);
+			var queue = GetPostOrderTraversal();
+
+			while (queue.Count > 0) {
+				var node = queue.Dequeue();
+				BuildAndSetResult(node);
+			}
+			return _cache[_root];
 		}
 
-		private TraverseResultCollection Traverse(SppfNode node, int level) {
-			//if (node is InteriorNode ni) {
-			//	return TraverseInternal(ni, level);
-			//}
-			//if (node is TerminalNode nt) {
-			//	return TraverseTerminal(nt, level);
-			//}
+		// based on https://stackoverflow.com/a/46506361 by https://github.com/niemmi
+		private Queue<SppfNode> GetPostOrderTraversal() {			
+			var stack = new Stack<ValueTuple<bool, SppfNode>>();
+			var states = new Dictionary<SppfNode, TraversalState>();
+			var queue = new Queue<SppfNode>();
+			stack.Push((false, _root));
+			while (stack.Count > 0) {
+				var (exiting, v) = stack.Pop();
+				if (exiting) {
+					queue.Enqueue(v);
+					states[v] = TraversalState.Visited;
+				} else {
+					states[v] = TraversalState.InProgress;
+					stack.Push((true, v));
+					foreach (var family in v.Families) {
+						foreach (var n in family.Members) {
+							if (!states.TryGetValue(n, out var state)) {
+								state = TraversalState.Unseen;
+							}
+							if (state == TraversalState.InProgress) {
+								throw new TraversalLoopException(n);
+							} else if (state == TraversalState.Unseen) {
+								stack.Push((false, n));
+							}
+						}
+					}
+				}
+			}
 
-			throw new ArgumentException(string.Format("Unhandled case {0}", node.GetType().Name));
+			return queue;
 		}
 
-		//private TraverseResultCollection TraverseTerminal(TerminalNode nt, int level) {
-		//	var resultList = new List<TraverseResult> { new TraverseResult(nt.Terminal.Name, nt, null) };
-		//	return new TraverseResultCollection(resultList);
-		//}
+		private void BuildAndSetResult(SppfNode node) {
+			if (_cache.ContainsKey(node) || _branchCache.ContainsKey(node)) {
+				return;
+			}
+			if (node.Families.Count() == 0) {
+				if (node is SppfEpsilon) {
+					_cache[node] = new TraverseResultCollection(new List<TraverseResult> { new TraverseResult("", node, null) });
+				} else if (node is SppfWord sppfWord) {
+					if (!(sppfWord.Word is Terminal terminal)) {
+						throw new Exception();
+					}
+					_cache[node] = new TraverseResultCollection(new List<TraverseResult> { new TraverseResult(terminal.Name, node, null) });
+				}
+				return;
+			}
 
-		//private TraverseResultCollection TraverseInternal(InteriorNode node, int level) {
-		//	var start = node.StartPosition;
-		//	var length = node.EndPosition - node.StartPosition;
-		//	var sub = _input.GetRange(start, length);
+			var resultList = new List<TraverseResult>();
+			foreach (var family in node.Families) {
+				// var argList = new List<TraverseResultCollection>();
+				if (family.Members.Count == 0) {
+					throw new NotImplementedException();
+				} else if (family.Members.Count == 1) {
+					var child = family.Members[0];
+					var childValue = _cache[child];
 
-		//	var resultList = new List<TraverseResult>();
-		//	foreach (var family in node.Families) {
-		//		if (family.Production == null) {
-		//			throw new Exception();
-		//		}
-		//		var args = TraverseFamily(node, family, level + 1);
-				
-		//		foreach (var oneSet in OneOfEach(args)) {
-		//			object payload = null;
-		//			if (_annotatedGrammar.TryGetValue(family.Production, out ProductionPlus productionPlus)) {
-		//				if (!productionPlus.Supports(_annotatedGrammar, oneSet)) {
-		//					continue;
-		//				}
-		//				var action = productionPlus.Action;
-		//				payload = action.Act(oneSet);
-		//			}
+					if (node is SppfBranch) { // this only happens in old (not contracted) sppf
+						if (family.Production != null) {
+							throw new Exception();
+						}
+						var newValues = new TraverseResultCollection[] { childValue };
+						_branchCache[node] = newValues;
+					} else {
+						if (family.Production == null) {
+							throw new Exception();
+						}
+						foreach (var tr in childValue) {
+							var args = new TraverseResult[1] { tr };
+							var payload = GetPayload(args, family.Production);
+							var oneResult = new TraverseResult(payload, node, family.Production);
+							resultList.Add(oneResult);
+						}
+					}
+				} else if (family.Members.Count == 2) {
+					var left = family.Members[0];
+					var right = family.Members[1];
 
-		//			var result = new TraverseResult(payload, node, family.Production);
-		//			resultList.Add(result);
-		//		}
-		//	}
-		//	return new TraverseResultCollection(resultList);
-		//}
-		
-		//private IEnumerable<T[]> OneOfEach<T>(IEnumerable<T>[] args) {
-		//	var count = args.Length;
-		//	var start = new T[count];
-		//	var startList = new List<T[]> { start };
-		//	for (var position = count - 1; position >= 0; position--) {
-		//		startList = OneOfEachAux(args, startList, position);
-		//	}
-		//	foreach (var option in startList) {
-		//		foreach (var place in option) {
-		//			if (place == null) {
-		//				throw new Exception();
-		//			}
-		//		}
-		//	}
-		//	return startList;
-		//}
+					if (family.Production == null) {
+						if (left is SppfBranch) { // middle of long production
+							var leftValues = _branchCache[left];
+							var rightValue = _cache[right];
+							var newValues = AppendToArray(leftValues, rightValue);
+							_branchCache[node] = newValues;
+						} else { // bottom left of a long production
+							var leftValue = _cache[left];
+							var rightValue = _cache[right];
+							var newValues = new TraverseResultCollection[] { leftValue, rightValue };
+							_branchCache[node] = newValues;
+						}
+					} else { // top of production
+						var rightValue = _cache[right];
+						TraverseResultCollection[] args;
+						if (left is SppfBranch) {
+							var leftValues = _branchCache[left];
+							args = AppendToArray(leftValues, rightValue);
+						} else {
+							var leftValue = _cache[left];
+							args = new TraverseResultCollection[] { leftValue, rightValue };
+						}
+						var someResults = BuildResultList(args, node, family.Production);
+						resultList.AddRange(someResults);
+						// throw new NotImplementedException();
+					}					
+				} else {
+					throw new Exception();
+				}
 
-		//private List<T[]> OneOfEachAux<T>(IEnumerable<T>[] args, List<T[]> startList, int position) {
-		//	if (position < 0 || position >= args.Length) {
-		//		throw new ArgumentException();
-		//	}
-		//	var newList = new List<T[]>();
-		//	foreach (var old in startList) {
-		//		foreach (var option in args[position]) {
-		//			var newThing = old.ToArray();
-		//			newThing[position] = option;
-		//			newList.Add(newThing);
-		//		}
-		//	}
+				//foreach (var child in family.Members) {
+				//	if (!_cache.TryGetValue(child, out var childValue)) {
+				//		throw new Exception();
+				//	}
+				//	argList.Add(childValue);
+				//}
+				// argSet.Add(argList.ToArray());
+			}
+			var collection = new TraverseResultCollection(resultList);
+			_cache[node] = collection;
+			// var value = new TraverseResultCollection
+			// var payload = GetPayload(_emptyArgs, )
+		}
 
-		//	return newList;			
-		//}
+		private List<TraverseResult> BuildResultList(TraverseResultCollection[] args, SppfNode node, Production production) {
+			var resultList = new List<TraverseResult>();
+			foreach (var oneSet in OneOfEach(args)) {
+				object payload = null;
+				var action = production.Annotations.Action;
+				if (action == null) {
+					if (oneSet.Length > 0) {
+						payload = oneSet[0].Payload; // default action
+					} else {
+						payload = null;
+					}
+				} else {
+					payload = action.Act(oneSet);
+				}
 
-		//private TraverseResultCollection[] TraverseFamily(InteriorNode node, Family2<SppfNode> family, int level) {
-		//	var count = family.Production.Rhs.Count;
-		//	if (count == 0) {
-		//		if (family.Members.Count != 1) {
-		//			throw new Exception();
-		//		}
-		//		var leaf = (EpsilonNode)family.Members[0];
-		//		var resultList = new List<TraverseResult> { TraverseEpsilon(leaf, level) };
-		//		return new TraverseResultCollection[] { new TraverseResultCollection(resultList) };
-		//	}
-		//	return TraverseChildren(node, family, count, level + 1);
-		//}
+				var oneResult = new TraverseResult(payload, node, production);
+				resultList.Add(oneResult);
+			}
+			return resultList;
+		}
 
-		//private TraverseResultCollection[] TraverseChildren(InteriorNode node, Family2<SppfNode> family, int count, int level) {
-		//	var start = new TraverseResultCollection[count];
-		//	var startList = new List<TraverseResultCollection[]> { start };
-		//	TraverseChildrenHelper(node, family, startList, family.Production.Rhs, count - 1, level);
-		//	// TODO: just picking one for now
-		//	var actual = startList[0];
-		//	return actual;
-		//}
+		private static IEnumerable<T[]> OneOfEach<T>(IEnumerable<T>[] args) {
+			var count = args.Length;
+			var start = new T[count];
+			var startList = new List<T[]> { start };
+			for (var position = count - 1; position >= 0; position--) {
+				startList = OneOfEachAux(args, startList, position);
+			}
+			foreach (var option in startList) {
+				foreach (var place in option) {
+					if (place == null) {
+						throw new Exception();
+					}
+				}
+			}
+			return startList;
+		}
 
-		//private void TraverseChildrenHelper(InteriorNode node, Family2<SppfNode> family, List<TraverseResultCollection[]> startList, Sentence rhs, int position, int level) {
-		//	if (position + 1 != rhs.Count && family.Production != null) {
-		//		throw new Exception();
-		//	}
-		//	if (family.Members.Count == 1) {
-		//		if (position != 0) {
-		//			throw new Exception();
-		//		}
-		//		var onlyNode = family.Members[0];				
-		//		var result = Traverse(onlyNode, level);
-		//		AddNode(result, startList, rhs, position);
-		//	} else if (family.Members.Count == 2) {
-		//		var rightNode = family.Members[1];
-		//		var result = Traverse(rightNode, level);
-		//		AddNode(result, startList, rhs, position);
-		//		var intermediateNode = (IntermediateNode)family.Members[0];
-				
-		//		var firstCopy = startList.ToList();
-		//		startList.Clear();
-		//		foreach (var subfamily in intermediateNode.Families) {
-		//			var listCopy = firstCopy.ToList();
-		//			TraverseChildrenHelper(node, subfamily, listCopy, rhs, position - 1, level);
-		//			startList.AddRange(listCopy);
-		//		}
-		//	} else {
-		//		throw new Exception();
-		//	}
-		//}
-		
-		//private static void AddNode(TraverseResultCollection result, List<TraverseResultCollection[]> startList, Sentence rhs, int position) {
-		//	foreach (var children in startList) {
-		//		children[position] = result;
-		//	}
-		//}
+		private static List<T[]> OneOfEachAux<T>(IEnumerable<T>[] args, List<T[]> startList, int position) {
+			if (position < 0 || position >= args.Length) {
+				throw new ArgumentException();
+			}
+			var newList = new List<T[]>();
+			foreach (var old in startList) {
+				foreach (var option in args[position]) {
+					var newThing = old.ToArray();
+					newThing[position] = option;
+					newList.Add(newThing);
+				}
+			}
 
-		//private TraverseResult TraverseEpsilon(EpsilonNode leaf, int level) {
-		//	return new TraverseResult("", leaf, null);
-		//}
+			return newList;
+		}
+
+		private static T[] AppendToArray<T>(T[] leftValues, T rightValue) {
+			var newValues = new T[leftValues.Length + 1];
+			leftValues.CopyTo(newValues, 0);
+			newValues[leftValues.Length] = rightValue;
+			return newValues;
+		}
+
+		private object GetPayload(TraverseResult[] args, Production production) {
+			object payload = null;
+			var action = production.Annotations.Action;
+			if (action == null) {
+				if (args.Length > 0) {
+					payload = args[0].Payload; // default action
+				} else {
+					payload = null;
+				}
+			} else {
+				payload = action.Act(args);
+			}
+			return payload;
+		}
 	}
 }

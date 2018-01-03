@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Sppf {
 	public class SppfBranch : SppfNode {
 		public DecoratedProduction DecoratedProduction { get; }
-		private readonly int _cachedHash;
 
 		public SppfBranch(DecoratedProduction dprod, int startPos, int endPos) : base(startPos, endPos) {
 			DecoratedProduction = dprod;
-			_cachedHash = MyGetHashCode();
 		}
 
 		public static bool operator ==(SppfBranch x, SppfBranch y) {
@@ -44,12 +42,8 @@ namespace CFGLib.Parsers.Sppf {
 			return true;
 		}
 
-		public override int GetHashCode() {
-			return _cachedHash;
-		}
-
 		// based on http://stackoverflow.com/a/263416/2877032
-		public int MyGetHashCode() {
+		public override int GetHashCode() {
 			unchecked {
 				int hash = 17;
 				hash = hash * 23 + this.StartPosition.GetHashCode();
@@ -59,11 +53,7 @@ namespace CFGLib.Parsers.Sppf {
 				return hash;
 			}
 		}
-
-		//public override string ToString() {
-		//	var firstBit = DecoratedProduction.ToString();
-		//	return string.Format("{0} {1} {2}", firstBit, StartPosition, EndPosition);
-		//}
+		
 		protected override string PayloadToString() {
 			return DecoratedProduction.ToString();
 		}

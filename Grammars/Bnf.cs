@@ -1,4 +1,7 @@
 ﻿using CFGLib;
+using CFGLib.Parsers.Sppf;
+using CFGLib.ProductionAnnotations;
+using CFGLib.ProductionAnnotations.Actioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,28 +37,67 @@ namespace Grammars
 		*/
 		public static Grammar Grammar() {
 			var productions = new List<Production> {
-				new Production(Nonterminal.Of("syntax"), new Sentence {
-					Nonterminal.Of("rule"),
-				}),
-				new Production(Nonterminal.Of("syntax"), new Sentence {
-					Nonterminal.Of("rule"),
+				new Production(
 					Nonterminal.Of("syntax"),
+					new Sentence {
+						Nonterminal.Of("rule"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => ((IEnumerable<Production>)args[0].Payload).ToList())
+					})
+				),
+				new Production(
+					Nonterminal.Of("syntax"), 
+					new Sentence {
+						Nonterminal.Of("rule"),
+						Nonterminal.Of("syntax"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => {
+							var list = (List<Production>)args[1].Payload;
+							list.AddRange((IEnumerable<Production>)args[0].Payload);
+							return list;
+						})
+					})
+				),
+
+				new Production(Nonterminal.Of("opt_comments"), new Sentence {
+				}),
+				new Production(Nonterminal.Of("opt_comments"), new Sentence {
+					Nonterminal.Of("comment"),
+					Nonterminal.Of("opt_comments"),
 				}),
 
-				new Production(Nonterminal.Of("rule"), new Sentence {
-					Nonterminal.Of("opt_whitespace"),
-					Terminal.Of("<"),
-					Nonterminal.Of("rule_name"),
-					Terminal.Of(">"),
-					Nonterminal.Of("opt_whitespace"),
-					Terminal.Of(":"),
-					Terminal.Of(":"),
-					Terminal.Of("="),
-					Nonterminal.Of("opt_whitespace"),
-					Nonterminal.Of("expression"),
-					Nonterminal.Of("line_end"),
-				}),
-				new Production(Nonterminal.Of("rule"), new Sentence {
+				new Production(
+					Nonterminal.Of("rule"),
+					new Sentence {
+						Nonterminal.Of("opt_comments"),
+						Nonterminal.Of("opt_whitespace"),
+						Terminal.Of("<"),
+						Nonterminal.Of("rule_name"),
+						Terminal.Of(">"),
+						Nonterminal.Of("opt_whitespace"),
+						Terminal.Of(":"),
+						Terminal.Of(":"),
+						Terminal.Of("="),
+						Nonterminal.Of("opt_whitespace"),
+						Nonterminal.Of("expression"),
+						Nonterminal.Of("line_end"),
+					},
+					1,
+					new Annotations(new List<IAnnotation> {
+						new ActionAnnotation((args) => {
+							var lhs = Nonterminal.Of((string)args[3].Payload);
+							var rhss = (List<Sentence>)args[10].Payload;
+
+							return rhss.Select(rhs => new Production(lhs, rhs));
+						})
+					})
+				),
+
+				new Production(Nonterminal.Of("comment"), new Sentence {
 					Nonterminal.Of("opt_whitespace"),
 					Terminal.Of("/"),
 					Terminal.Of("/"),
@@ -70,16 +112,34 @@ namespace Grammars
 				new Production(Nonterminal.Of("opt_whitespace"), new Sentence {
 				}),
 
-				new Production(Nonterminal.Of("expression"), new Sentence {
-					Nonterminal.Of("list"),
-				}),
-				new Production(Nonterminal.Of("expression"), new Sentence {
-					Nonterminal.Of("list"),
-					Nonterminal.Of("opt_whitespace"),
-					Terminal.Of("|"),
-					Nonterminal.Of("opt_whitespace"),
-					Nonterminal.Of("expression"),
-				}),
+				new Production(
+					Nonterminal.Of("expression"), 
+					new Sentence {
+						Nonterminal.Of("list"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => new List<Sentence> { (Sentence)args[0].Payload })
+					})
+				),
+				new Production(
+					Nonterminal.Of("expression"), 
+					new Sentence {
+						Nonterminal.Of("list"),
+						Nonterminal.Of("opt_whitespace"),
+						Terminal.Of("|"),
+						Nonterminal.Of("opt_whitespace"),
+						Nonterminal.Of("expression"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => {
+							var list = (List<Sentence>)args[4].Payload;
+							list.Add((Sentence)args[0].Payload);
+							return list;
+						})
+					})
+				),
 
 				new Production(Nonterminal.Of("line_end"), new Sentence {
 					Nonterminal.Of("opt_whitespace"),
@@ -90,34 +150,73 @@ namespace Grammars
 					Nonterminal.Of("line_end"),
 				}),
 
-				new Production(Nonterminal.Of("list"), new Sentence {
-					Nonterminal.Of("term"),
-				}),
-				new Production(Nonterminal.Of("list"), new Sentence {
-					Nonterminal.Of("term"),
-					Nonterminal.Of("opt_whitespace"),
-					Nonterminal.Of("list"),
-				}),
+				new Production(
+					Nonterminal.Of("list"), 
+					new Sentence {
+						Nonterminal.Of("term"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => new Sentence((Word)args[0].Payload))
+					})
+				),
+				new Production(
+					Nonterminal.Of("list"), 
+					new Sentence {
+						Nonterminal.Of("term"),
+						Nonterminal.Of("opt_whitespace"),
+						Nonterminal.Of("list"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => {
+							var sentence = (Sentence)args[2].Payload;
+							sentence.Add((Word)args[0].Payload);
+							return sentence;
+						})
+					})
+				),
 
 				new Production(Nonterminal.Of("term"), new Sentence {
 					Nonterminal.Of("literal"),
 				}),
-				new Production(Nonterminal.Of("term"), new Sentence {
-					Terminal.Of("<"),
-					Nonterminal.Of("rule_name"),
-					Terminal.Of(">"),
-				}),
+				new Production(
+					Nonterminal.Of("term"), 
+					new Sentence {
+						Terminal.Of("<"),
+						Nonterminal.Of("rule_name"),
+						Terminal.Of(">"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => Nonterminal.Of((string)args[1].Payload))
+					})
+				),
 
-				new Production(Nonterminal.Of("literal"), new Sentence {
-					Terminal.Of("\""),
-					Nonterminal.Of("text1"),
-					Terminal.Of("\""),
-				}),
-				new Production(Nonterminal.Of("literal"), new Sentence {
-					Terminal.Of("'"),
-					Nonterminal.Of("text2"),
-					Terminal.Of("'"),
-				}),
+				new Production(
+					Nonterminal.Of("literal"), 
+					new Sentence {
+						Terminal.Of("\""),
+						Nonterminal.Of("text1"),
+						Terminal.Of("\""),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => Terminal.Of((string)args[1].Payload))
+					})
+				),
+				new Production(
+					Nonterminal.Of("literal"), 
+					new Sentence {
+						Terminal.Of("'"),
+						Nonterminal.Of("text2"),
+						Terminal.Of("'"),
+					},
+					1,
+					new Annotations(new List<IAnnotation>{
+						new ActionAnnotation(args => Terminal.Of((string)args[1].Payload))
+					})
+				),
 
 				new Production(Nonterminal.Of("comment_text"), new Sentence {
 				}),

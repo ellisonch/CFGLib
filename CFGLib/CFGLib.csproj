@@ -45,12 +45,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actioneer\GatherOption.cs" />
-    <Compile Include="Actioneer\GrammarPlus.cs" />
-    <Compile Include="Actioneer\ParserAction.cs" />
-    <Compile Include="Actioneer\ProductionPlus.cs" />
-    <Compile Include="Actioneer\TraverseResult.cs" />
-    <Compile Include="Actioneer\TraverseResultCollection.cs" />
+    <Compile Include="Actioneer\Traversal.cs" />
+    <Compile Include="Actioneer\TraversalLoopException.cs" />
+    <Compile Include="Actioneer\TraversalState.cs" />
+    <Compile Include="Parsers\Earley\EarleyParser2Helper.cs" />
+    <Compile Include="Parsers\Sppf\SppfFamilyDouble.cs" />
+    <Compile Include="Parsers\Sppf\SppfFamilySingle.cs" />
+    <Compile Include="ProductionAnnotations\Actioning\IdentityActions.cs" />
+    <Compile Include="ProductionAnnotations\Gathering\GatherOption.cs" />
+    <Compile Include="ProductionAnnotations\Actioning\ActionAnnotation.cs" />
+    <Compile Include="ProductionAnnotations\Actioning\TraverseResult.cs" />
+    <Compile Include="ProductionAnnotations\Actioning\TraverseResultCollection.cs" />
     <Compile Include="Parsers\CYK\CykParser.cs" />
     <Compile Include="Parsers\CYK\LocalCykProduction.cs" />
     <Compile Include="Parsers\Earley\DecoratedProduction.cs" />
@@ -67,7 +72,6 @@
     <Compile Include="Parsers\Sppf\SppfEpsilon.cs" />
     <Compile Include="Parsers\Sppf\SppfWord.cs" />
     <Compile Include="Parsers\Earley\Stats.cs" />
-    <Compile Include="Actioneer\Traversal.cs" />
     <Compile Include="Parsers\Graphs\ChildNode.cs" />
     <Compile Include="Parsers\Graphs\Edge.cs" />
     <Compile Include="Parsers\Graphs\FamilyNode.cs" />
@@ -89,6 +93,10 @@
     <Compile Include="Grammar.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="BaseGrammar.cs" />
+    <Compile Include="ProductionAnnotations\Annotations.cs" />
+    <Compile Include="ProductionAnnotations\Gathering\GatherAnnotation.cs" />
+    <Compile Include="ProductionAnnotations\IAnnotation.cs" />
+    <Compile Include="ProductionAnnotations\Precedencing\PrecedenceAnnotation.cs" />
     <Compile Include="ProductionComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sentence.cs" />

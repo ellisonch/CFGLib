@@ -22,6 +22,18 @@ namespace CFGLibTest {
 			Helpers.AssertNear(p2, p3);
 			Assert.IsTrue(p2 > 0.0);
 		}
+		private static void EbnfParse(Sentence sentence) {
+			var noLayoutSentence = Ebnf.RemoveLayout(sentence, out var layoutSppf);
+
+			var g = Ebnf.GrammarSyntax();
+			var earley = new EarleyParser(g);
+			var earley2 = new EarleyParser2(g);
+
+			var sppf1 = earley.ParseGetForest(noLayoutSentence);
+			Assert.IsNotNull(sppf1);
+			var sppf2 = earley2.ParseGetForest(noLayoutSentence);
+			Assert.IsNotNull(sppf2);
+		}
 
 		[TestMethod]
 		public void ParseAddition() {
@@ -37,6 +49,17 @@ namespace CFGLibTest {
 		public void ParseBnf() {
 			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Bnf);
 			BnfParse(sentence);
+		}
+		[TestMethod]
+		public void ParseArithmeticEbnf() {
+			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Arithmetic_ebnf);
+			EbnfParse(sentence);
+		}
+		[TestMethod]
+		[Ignore]
+		public void ParseEbnfEbnf() {
+			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf_actual);
+			EbnfParse(sentence);
 		}
 	}
 }

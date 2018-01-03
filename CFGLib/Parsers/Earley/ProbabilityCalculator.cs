@@ -31,14 +31,18 @@ namespace CFGLib.Parsers.Earley {
 			return nodes;
 		}
 
-		public static double GetProbFromSppf(BaseGrammar _grammar, SppfNode internalSppf) {
-			var nodeProbs = new Dictionary<SppfNode, double>();
-			var prob = CalculateProbability(_grammar, internalSppf, nodeProbs);
+		public static double GetProbFromSppf(BaseGrammar _grammar, SppfNode node) {
+			var prob = CalculateProbability(_grammar, node);
 
 			return prob;
 		}
 
-		private static double CalculateProbability(BaseGrammar _grammar, SppfNode sppf, Dictionary<SppfNode, double> nodeProbs) {
+		private static double CalculateProbability(BaseGrammar _grammar, SppfNode sppf) {
+			if (sppf == null) {
+				return 0.0;
+			}
+
+			var nodeProbs = new Dictionary<SppfNode, double>();
 			var nodes = GetAllNodes(sppf);
 
 			var indexToNode = nodes.ToArray();

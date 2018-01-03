@@ -88,18 +88,73 @@ namespace Grammars.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;syntax&gt;         ::= &lt;rule&gt; | &lt;rule&gt; &lt;syntax&gt;
+        ///   Looks up a localized string similar to Exp = Exp, &apos;+&apos;, Exp;
+        ///Exp = Exp, &apos;-&apos;, Exp;
+        ///Exp = Exp, &apos;*&apos;, Exp;
+        ///Exp = Exp, &apos;/&apos;, Exp;
+        ///Exp = &apos;(&apos;, Exp, &apos;)&apos;;
+        ///Number = Digit | Digit, Number;
+        ///Digit = &apos;0&apos; | &apos;1&apos; | &apos;2&apos; | &apos;3&apos; | &apos;4&apos; | &apos;5&apos; | &apos;6&apos; | &apos;7&apos; | &apos;8&apos; | &apos;9&apos;;
+        ///.
+        /// </summary>
+        public static string Arithmetic_ebnf {
+            get {
+                return ResourceManager.GetString("Arithmetic_ebnf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to // From https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form#Further_examples
+        ///// This work was released under CC-BY-SA (https://creativecommons.org/licenses/by-sa/3.0/)
+        ///&lt;syntax&gt;         ::= &lt;rule&gt; | &lt;rule&gt; &lt;syntax&gt;
         ///&lt;rule&gt;           ::= &lt;opt-whitespace&gt; &quot;&lt;&quot; &lt;rule-name&gt; &quot;&gt;&quot; &lt;opt-whitespace&gt; &quot;::=&quot; &lt;opt-whitespace&gt; &lt;expression&gt; &lt;line-end&gt;
         ///&lt;opt-whitespace&gt; ::= &quot; &quot; &lt;opt-whitespace&gt; | &quot;&quot;
         ///&lt;expression&gt;     ::= &lt;list&gt; | &lt;list&gt; &lt;opt-whitespace&gt; &quot;|&quot; &lt;opt-whitespace&gt; &lt;expression&gt;
-        ///&lt;line-end&gt;       ::= &lt;opt-whitespace&gt; &lt;EOL&gt; | &lt;line-end&gt; &lt;line-end&gt;
-        ///&lt;list&gt;           ::= &lt;term&gt; | &lt;term&gt; &lt;opt-whitespace&gt; &lt;list&gt;
-        ///&lt;term&gt;           ::= &lt;literal&gt; | &quot;&lt;&quot; &lt;rule-name&gt; &quot;&gt;&quot;
-        ///&lt;literal&gt;        ::= [rest of string was truncated]&quot;;.
+        ///&lt;line-end&gt;       ::= &lt;opt-whites [rest of string was truncated]&quot;;.
         /// </summary>
         public static string Bnf {
             get {
                 return ResourceManager.GetString("Bnf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to syntax = syntax rule, {syntax rule};
+        ///syntax rule = meta identifier, defining symbol, definitions list, terminator symbol;
+        ///definitions list = single definition, {definition separator symbol, single definition};
+        ///single definition = syntactic term, {concatenate symbol, syntactic term};
+        ///syntactic term = syntactic factor, [except symbol, syntactic exception];
+        ///
+        ///
+        ///syntactic factor = [integer, repetition symbol], syntactic primary;
+        ///syntactic primary
+        ///= optional sequence
+        ///| repeated sequence
+        ///| grouped sequen [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string Ebnf_actual {
+            get {
+                return ResourceManager.GetString("Ebnf_actual", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to syntax = syntax rule, {syntax rule};
+        ///syntax rule = meta identifier, defining symbol, definitions list, terminator symbol;
+        ///definitions list = single definition, {definition separator symbol, single definition};
+        ///single definition = syntactic term, {concatenate symbol, syntactic term};
+        ///syntactic term = syntactic factor, [except symbol, syntactic exception];
+        ///
+        ///
+        ///syntactic factor = [integer, repetition symbol], syntactic primary;
+        ///syntactic primary
+        ///= optional sequence
+        ///| repeated sequence
+        ///| grouped sequen [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string Ebnf_bench {
+            get {
+                return ResourceManager.GetString("Ebnf_bench", resourceCulture);
             }
         }
     }
