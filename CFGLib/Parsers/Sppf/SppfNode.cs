@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Sppf {
 	public abstract class SppfNode {
-		public static int _nextId = 0;
-				
 		public int StartPosition { get; }
 		public int EndPosition { get; }
 		private readonly HashSet<SppfFamily> _families = new HashSet<SppfFamily>();
-		public readonly int Id = _nextId++;
 
 		internal IEnumerable<SppfFamily> Families {
 			get {

@@ -426,15 +426,13 @@ namespace ConsolePlayground {
 				CFGParser.Production("<B> → ε"),
 				CFGParser.Production("<T> → 'b' 'b' 'b'"),
 			}, Nonterminal.Of("S"));
-
-			var ep = new EarleyParser2(ex3);
+			
 			var input = Sentence.FromLetters("abbb");
-			var sppf = ep.ParseGetForest(input);
+			var sppf1 = new EarleyParser(ex3).ParseGetForest(input);
+			var sppf2 = new EarleyParser2(ex3).ParseGetForest(input);
 
-			// var sppf3 = ex3.ParseGetForest(Sentence.FromLetters("abbb"));
-			var dot = DotBuilder.GetRawDot(sppf);
-			//System.IO.File.WriteAllText(@"D:\prog\ContextFreeGrammars\ConsolePlayground\bin\Debug\ex3dot.dot", dot);
-			DotRunner.Run(dot, "example3");
+			DotRunner.Run(DotBuilder.GetRawDot(sppf1), "example3_old");
+			DotRunner.Run(DotBuilder.GetRawDot(sppf2), "example3_new");
 		}
 
 		private static BaseGrammar AdditionGrammar<T>(Func<TraverseResult[], T> func) {

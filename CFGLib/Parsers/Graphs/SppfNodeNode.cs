@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace CFGLib.Parsers.Graphs {
 	internal class SppfNodeNode : IGraphNode {
 		public readonly SppfNode Node;
+		private readonly int _id;
 		public int Rank { get; set; }
 		private SppfFamily _theFamily;
 		public SppfFamily TheFamily {
@@ -34,16 +35,22 @@ namespace CFGLib.Parsers.Graphs {
 		public string Name {
 			get {
 				// return string.Format("\"{0} {1}\"", Node.ToStringSelf(), Id);
-				return string.Format("{0}", Node.Id);
+				return string.Format("{0}", _id);
 				// return string.Format("{0}", &Node);
 			}
 		}
 		public string Label {
 			get {
 				// return string.Format("{0} {1}", Node.ToStringSelf(), Id);
-				var production = TheFamily.Production;
-				var productionString = string.Format("\nr:{0}", production);
-				productionString = null;
+				string productionString = null;
+				if (TheFamily == null) {
+					productionString = null;
+				} else {
+					var production = TheFamily.Production;
+					productionString = string.Format("\nr:{0}", production);
+					productionString = null;
+				}
+				
 				return string.Format("{0}{1}", Node.ToString(), productionString);
 			}
 		}
@@ -69,9 +76,10 @@ namespace CFGLib.Parsers.Graphs {
 				return "";
 			}
 		}
-		public SppfNodeNode(SppfNode node, int rank) {
+		public SppfNodeNode(SppfNode node, int rank, int id) {
 			Node = node;
 			Rank = rank;
+			_id = id;
 		}
 	}
 }

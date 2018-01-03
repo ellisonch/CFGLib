@@ -6,32 +6,28 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CFGLib.Parsers.Graphs {
-	internal static class GraphBuilder {
-		public static Graph GetGraph(SppfNode node) {
-			var graphNode = new SppfNodeNode(node, 0);
-			var g = new Graph(graphNode);
-			GetGraphHelper(g, node, graphNode, new HashSet<SppfNode>());
-			return g;
+	internal class GraphBuilder {
+		private readonly SppfNode _root;
+		private readonly Dictionary<SppfNode, int> _nodeIdDict = new Dictionary<SppfNode, int>();
+		private int _nextId = 0;
+		private readonly Graph _g;
+		private readonly HashSet<SppfNode> _visited = new HashSet<SppfNode>();
+
+		public GraphBuilder(SppfNode root) {
+			_root = root;
+			var graphNode = new SppfNodeNode(root, 0, GetOrSetId(root));
+			_g = new Graph(graphNode);
+			GetGraphHelper(root, graphNode);
 		}
-
-		// internal void GetGraphHelper(Graph g, SppfNodeNode myNode, HashSet<InteriorNode> visited);
-
-		private static void GetGraphHelper(Graph g, SppfNode node, SppfNodeNode myNode, HashSet<SppfNode> visited) {
-			//if (node is InteriorNode interiorNode) {
-			//	GetGraphInterior(g, interiorNode, myNode, visited);
-			//} else if (node is LeafNode) {
-			//	// do nothing
-			//} else {
-			//	throw new Exception();
-			//}
-			GetGraphInterior(g, node, myNode, visited);
+		public Graph GetGraph() {
+			return _g;
 		}
-
-		internal static void GetGraphInterior(Graph g, SppfNode node, SppfNodeNode myNode, HashSet<SppfNode> visited) {
-			if (visited.Contains(node)) {
+		
+		internal void GetGraphHelper(SppfNode node, SppfNodeNode myNode) {
+			if (_visited.Contains(node)) {
 				return;
 			}
-			visited.Add(node);
+			_visited.Add(node);
 
 			var i = 0;
 			foreach (var family in node.Families) {
@@ -43,21 +39,32 @@ namespace CFGLib.Parsers.Graphs {
 					prevNode = myNode;
 					lowerProduction = node.Families.Single().Production;
 				} else {
-					prevNode = new FamilyNode(family, myNode.Node.Id + "-" + i, myNode.Rank + 1);
-					g.AddEdge(myNode, prevNode, family.Production);
+					var id = GetOrSetId(node);
+					prevNode = new FamilyNode(family, id + "-" + i, myNode.Rank + 1);
+					_g.AddEdge(myNode, prevNode, family.Production);
 					//g.AddEdge(myNode, prevNode);
 				}
 				prevNode.TheFamily = family;
 				foreach (var child in family.Members) {
-					var childNode = new SppfNodeNode(child, prevNode.Rank + 1);
+					var id = GetOrSetId(child);
+					var childNode = new SppfNodeNode(child, prevNode.Rank + 1, id);
 					// var childNode = g.GetNode(child, prevNode.Rank + 1);
 					// g.AddEdge(prevNode, childNode, singletonProduction);
 					// g.AddEdge(prevNode, childNode, singletonProduction);
-					g.AddEdge(prevNode, childNode, lowerProduction);
-					GetGraphHelper(g, child, childNode, visited);
+					_g.AddEdge(prevNode, childNode, lowerProduction);
+					GetGraphHelper(child, childNode);
 				}
 				i++;
 			}
+		}
+
+		private int GetOrSetId(SppfNode node) {
+			if (!_nodeIdDict.TryGetValue(node, out var id)) {
+				id = _nextId;
+				_nextId++;
+				_nodeIdDict[node] = id;
+			}
+			return id;
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace CFGLib.Parsers.Earley {
 			_grammar = grammar;
 			_a = a;
 
-			SppfNode._nextId = 0; // TODO can't be thread safe
+			// SppfNode._nextId = 0; // TODO can't be thread safe
 
 			// E_0, ..., E_n, R, Q′, V = ∅
 			_E = new EarleySet[a.Count + 1];
