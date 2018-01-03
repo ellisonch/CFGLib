@@ -26,11 +26,11 @@ namespace CFGLibTest {
 			var noLayoutSentence = Ebnf.RemoveLayout(sentence, out var layoutSppf);
 
 			var g = Ebnf.GrammarSyntax();
-			var earley = new EarleyParser(g);
+			//var earley = new EarleyParser(g);
 			var earley2 = new EarleyParser2(g);
 
-			var sppf1 = earley.ParseGetForest(noLayoutSentence);
-			Assert.IsNotNull(sppf1);
+			//var sppf1 = earley.ParseGetForest(noLayoutSentence);
+			//Assert.IsNotNull(sppf1);
 			var sppf2 = earley2.ParseGetForest(noLayoutSentence);
 			Assert.IsNotNull(sppf2);
 		}
@@ -56,7 +56,6 @@ namespace CFGLibTest {
 			EbnfParse(sentence);
 		}
 		[TestMethod]
-		[Ignore]
 		public void ParseEbnfEbnf() {
 			var sentence = Sentence.FromLetters(Grammars.Properties.Resources.Ebnf_actual);
 			EbnfParse(sentence);
