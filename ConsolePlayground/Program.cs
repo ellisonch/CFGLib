@@ -192,6 +192,7 @@ namespace ConsolePlayground {
 			}
 			var ms1 = sw.Elapsed.TotalMilliseconds;
 			Console.WriteLine("Parse: {0:0.#}ms", ms1);
+			DotRunner.Run(DotBuilder.GetRawDot(sppf), "annotations");
 
 			var traversal = new Traversal(sppf, grammar);
 			var resCollection = traversal.Traverse();

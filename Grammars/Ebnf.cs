@@ -52,7 +52,9 @@ namespace Grammars {
 				.Concat(Terminals())
 				.Concat(FinalPart())
 				.Concat(MetaIdentifiers())
-				.Concat(SpecialSequences());
+				.Concat(SpecialSequences())
+				.Concat(Annotations())
+				;
 			var g = new Grammar(productions, start);
 			return g;
 		}
@@ -66,7 +68,33 @@ namespace Grammars {
 
 		//	return retval;
 		//}
-
+		private static IEnumerable<Production> Annotations() {
+			return new List<Production> {
+				new Production("SyntacticTerm", new Sentence {
+					Nonterminal.Of("SyntacticFactor"),
+					Nonterminal.Of("Annotations"),
+				}),
+				new Production("Annotations", new Sentence {
+					Terminal.Of("("),
+					Nonterminal.Of("AnnotationList0"),
+					Terminal.Of(")"),
+				}),
+				new Production("Annotation", new Sentence {
+					Nonterminal.Of("Cons")
+				}),
+				new Production("Cons", new Sentence {
+					Terminal.Of("c"),
+					Terminal.Of("o"),
+					Terminal.Of("n"),
+					Terminal.Of("s"),
+					Terminal.Of("("),
+					Nonterminal.Of("TerminalString"),
+					Terminal.Of(")")
+				}),
+			}.Concat(
+				MakeList<object>("Annotation", 0)
+			);
+		}
 		private static IEnumerable<Production> BasicSymbols() {
 			return new List<Production> {
 				new Production("ConcatenateSymbol", Terminal.Of(",")),

@@ -1,7 +1,7 @@
-﻿Exp = Exp, '+', Exp;
-Exp = Exp, '-', Exp;
-Exp = Exp, '*', Exp;
-Exp = Exp, '/', Exp;
-Exp = '(', Exp, ')';
+﻿Exp = Exp, '+', Exp (cons("Plus"));
+Exp = Exp, '-', Exp (cons("Minus"));
+Exp = Exp, '*', Exp (cons("Times"));
+Exp = Exp, '/', Exp (cons("Divide"));
+Exp = '(', Exp, ')' (cons("Paren"));
 Number = Digit | Digit, Number;
 Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
