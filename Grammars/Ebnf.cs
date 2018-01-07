@@ -72,31 +72,52 @@ namespace Grammars {
 			return new List<Production> {
 				new Production("SyntacticTerm", new Sentence {
 					Nonterminal.Of("SyntacticFactor"),
-					Nonterminal.Of("Annotations"),
-				}),
-				new Production("Annotations", new Sentence {
 					Terminal.Of("("),
-					Nonterminal.Of("AnnotationList0"),
+					Nonterminal.Of("Annotations"),
 					Terminal.Of(")"),
 				}),
-				new Production("Annotation", new Sentence {
-					Nonterminal.Of("Cons")
+				new Production("Annotations", new Sentence {
 				}),
-				new Production("Cons", new Sentence {
-					Terminal.Of("c"),
-					Terminal.Of("o"),
-					Terminal.Of("n"),
-					Terminal.Of("s"),
+				new Production("Annotations", new Sentence {
+					Nonterminal.Of("Annotation"),
+					Nonterminal.Of("AnnotationWithSepList0"),
+				}),
+				new Production("AnnotationWithSep", new Sentence {
+					Terminal.Of(","),
+					Nonterminal.Of("Annotation"),
+				}),
+				new Production("Annotation", new Sentence {
+					Nonterminal.Of("MetaIdentifier"),
 					Terminal.Of("("),
-					Nonterminal.Of("TerminalString"),
+					Nonterminal.Of("AnnotationArgs"),
 					Terminal.Of(")")
 				}),
+				new Production("AnnotationArgs", new Sentence {
+				}),
+				new Production("AnnotationArgs", new Sentence {
+					Nonterminal.Of("AnnotationArg"),
+					Nonterminal.Of("AnnotationArgWithSepList0"),
+				}),
+				new Production("AnnotationArgWithSep", new Sentence {
+					Terminal.Of(","),
+					Nonterminal.Of("AnnotationArg"),
+				}),
+				new Production("AnnotationArg", new Sentence {
+					Nonterminal.Of("TerminalString"),
+				}),
+				new Production("AnnotationArg", new Sentence {
+					Nonterminal.Of("Integer"),
+				}),
 			}.Concat(
-				MakeList<object>("Annotation", 0)
+				MakeList<object>("AnnotationWithSep", 0)
+			).Concat(
+				MakeList<object>("AnnotationArgWithSep", 0)
 			);
 		}
 		private static IEnumerable<Production> BasicSymbols() {
 			return new List<Production> {
+				new Production("Integer", Nonterminal.Of("DecimalDigitList1")),
+
 				new Production("ConcatenateSymbol", Terminal.Of(",")),
 				new Production("DefiningSymbol", Terminal.Of("=")),
 				new Production("DefinitionSeparatorSymbol", Terminal.Of("|")),
@@ -131,6 +152,8 @@ namespace Grammars {
 				new Production("FormFeed", Terminal.Of("\f")),
 			}.Concat(
 				":+_%@&#$<>\\^`~".Select((x) => new Production("OtherCharacter", Terminal.Of(x.ToString())))
+			).Concat(
+				MakeList<object>("DecimalDigit", 1)
 			);
 			// !, ., and / are defined elsewhere
 			// including space seems like a bug
@@ -325,8 +348,6 @@ namespace Grammars {
 				new Production("CommentlessSymbol", Nonterminal.Of("TerminalString")),
 				new Production("CommentlessSymbol", Nonterminal.Of("SpecialSequence")),
 
-				new Production("Integer", Nonterminal.Of("DecimalDigitList1")),
-
 				new Production("CommentSymbol", Nonterminal.Of("BracketedTextualComment")),
 				new Production("CommentSymbol", Nonterminal.Of("OtherCharacter")),
 				new Production("CommentSymbol", Nonterminal.Of("CommentlessSymbol")),
@@ -349,8 +370,6 @@ namespace Grammars {
 				}),
 
 			}.Concat(
-				MakeList<object>("DecimalDigit", 1)
-			).Concat(
 				MakeList<object>("CommentSymbol", 0)
 			).Concat(
 				MakeList<object>("BracketedTextualComment", 0)
