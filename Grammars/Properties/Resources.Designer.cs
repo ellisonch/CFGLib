@@ -97,6 +97,22 @@ namespace Grammars.Properties {
         ///Digit = &apos;0&apos; | &apos;1&apos; | &apos;2&apos; | &apos;3&apos; | &apos;4&apos; | &apos;5&apos; | &apos;6&apos; | &apos;7&apos; | &apos;8&apos; | &apos;9&apos;;
         ///.
         /// </summary>
+        public static string Arithmetic_annotated {
+            get {
+                return ResourceManager.GetString("Arithmetic_annotated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exp = Exp, &apos;+&apos;, Exp;
+        ///Exp = Exp, &apos;-&apos;, Exp;
+        ///Exp = Exp, &apos;*&apos;, Exp;
+        ///Exp = Exp, &apos;/&apos;, Exp;
+        ///Exp = &apos;(&apos;, Exp, &apos;)&apos;;
+        ///Number = Digit | Digit, Number;
+        ///Digit = &apos;0&apos; | &apos;1&apos; | &apos;2&apos; | &apos;3&apos; | &apos;4&apos; | &apos;5&apos; | &apos;6&apos; | &apos;7&apos; | &apos;8&apos; | &apos;9&apos;;
+        ///.
+        /// </summary>
         public static string Arithmetic_ebnf {
             get {
                 return ResourceManager.GetString("Arithmetic_ebnf", resourceCulture);
@@ -124,13 +140,9 @@ namespace Grammars.Properties {
         ///definitions list = single definition, {definition separator symbol, single definition};
         ///single definition = syntactic term, {concatenate symbol, syntactic term};
         ///syntactic term = syntactic factor, [except symbol, syntactic exception];
-        ///
-        ///
-        ///syntactic factor = [integer, repetition symbol], syntactic primary;
-        ///syntactic primary
-        ///= optional sequence
-        ///| repeated sequence
-        ///| grouped sequen [rest of string was truncated]&quot;;.
+        ///syntactic exception = ? a syntactic-factor that could be replaced by a syntactic-factor containing no
+        ///meta-identifiers ?;
+        ///syntactic factor = [intege [rest of string was truncated]&quot;;.
         /// </summary>
         public static string Ebnf_actual {
             get {

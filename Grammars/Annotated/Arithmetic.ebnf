@@ -1,0 +1,7 @@
+﻿Exp = Exp, '+', Exp (cons("Plus"), prec(5), gather("<=", "<"));
+Exp = Exp, '-', Exp (cons("Minus"), prec(5), gather("<=", "<"));
+Exp = Exp, '*', Exp (cons("Times"), prec(10), gather("<=", "<"));
+Exp = Exp, '/', Exp (cons("Divide"), prec(10), gather("<=", "<"));
+Exp = '(', Exp, ')' (cons("Paren"));
+Number = Digit | Digit, Number;
+Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
