@@ -125,18 +125,18 @@
     <value>..\Raw\Arithmetic.bnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="Arithmetic_annotated" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\annotated\arithmetic.ebnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\Annotated\Arithmetic.ebnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="Arithmetic_ebnf" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\raw\arithmetic.ebnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\Raw\Arithmetic.ebnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="Bnf" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Raw\Bnf.bnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="Ebnf_actual" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\raw\ebnf_actual.ebnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\Raw\Ebnf_actual.ebnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="Ebnf_bench" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\raw\ebnf_bench.ebnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\Raw\Ebnf_bench.ebnf;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>
